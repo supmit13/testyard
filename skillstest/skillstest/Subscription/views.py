@@ -27,11 +27,6 @@ from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
 
-@skillutils.is_session_valid
-@skillutils.session_location_match
-@csrf_protect
-def subscriptions(request):
-    pass
 
 @skillutils.is_session_valid
 @skillutils.session_location_match

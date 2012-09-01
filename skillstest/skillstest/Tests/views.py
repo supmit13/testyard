@@ -37,6 +37,34 @@ def get_user_tests(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
+    # Determine if the user should be shown the "Create Test" link
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv = "", "", "", "", "", "", "", ""
+    if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
+        createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);'>Create New Test</a>"%userobj.id
+        for ttcode in mysettings.TEST_TYPES.keys():
+            if ttcode == 'MULT':
+                testtypes += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcode, mysettings.TEST_TYPES[ttcode])
+            else:
+                testtypes += "<option value=&quot;%s&quot;>%s</option>"%(ttcode, mysettings.TEST_TYPES[ttcode])
+        for trule in mysettings.RULES_DICT.keys():
+            testrules += "<option value=&quot;%s&quot;>%s</option>"%(trule, mysettings.RULES_DICT[trule])
+        for ttopics in mysettings.TEST_TOPICS:
+            testtopics += "<option value=&quot;%s&quot;>%s</option>"%(ttopics, ttopics)
+        for skillcode in mysettings.SKILL_QUALITY.keys():
+            skilltarget += "<option value=&quot;%s&quot;>%s</option>"%(skillcode, mysettings.SKILL_QUALITY[skillcode])
+        for tscope in mysettings.TEST_SCOPES:
+            if tscope == 'public':
+                testscope += "<option value=&quot;%s&quot; selected>%s</option>"%(tscope, tscope)
+            else:
+                testscope += "<option value=&quot;%s&quot;>%s</option>"%(tscope, tscope)
+        for alang in mysettings.ANSWER_LANG_DICT.keys():
+            if alang == 'enus':
+                answeringlanguage += "<option value=&quot;%s&quot; selected>%s</option>"%(alang, mysettings.ANSWER_LANG_DICT[alang])
+            else:
+                answeringlanguage += "<option value=&quot;%s&quot;>%s</option>"%(alang, mysettings.ANSWER_LANG_DICT[alang])
+        progenv += "<option value=&quot;0&quot; selected>None</option>"
+        for proglang in mysettings.COMPILER_LOCATIONS.keys():
+            progenv += "<option value=&quot;%s&quot;>Yes - %s</option>"%(proglang, proglang)
     evaluator_groups = Evaluator.objects.filter(Q(groupmember1=userobj)|Q(groupmember2=userobj)|Q(groupmember3=userobj)| \
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
@@ -76,10 +104,46 @@ def get_user_tests(request):
     tests_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
     tests_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     tests_user_dict['displayname'] = userobj.displayname
+    tests_user_dict['createlink'] = createlink
+    tests_user_dict['testtypes'] = testtypes
+    tests_user_dict['testrules'] = testrules
+    tests_user_dict['testtopics'] = testtopics
+    tests_user_dict['skilltarget'] = skilltarget
+    tests_user_dict['answeringlanguage'] = answeringlanguage
+    tests_user_dict['testscope'] = testscope
+    tests_user_dict['progenv'] = progenv
+    tests_user_dict['creatoremail'] = userobj.emailid
     return  tests_user_dict
 
 
-
+"""
+This view will provide the following functionalities:
+Display a table of tests with latest first... These are all tests the user has created. This page will give the user
+# all access to all those tests in which she/he is a creator, evaluator or candidate. For tests in which  user is
+# creator or evaluator, she/he will be able to access the answer scripts of candidates who took those tests. We get
+all this data in dashboard too, but from here the user will be able to go into deeper details like exact questions
+attempted by a certain candidate, the exact choices/answers the candidate made and how much points/grades the user
+conceded to the candidate for that answer. NOTE: This page will also provide the user with the capability to add and
+modify tests that are scheduled in future and in which she/he is creator. This page will display a link that will
+enable the user to create tests (if he is a premium user or has conducted less than skills_settings.NEW_USER_FREE_TESTS_COUNT since registering), add/modify/delete candidates to those tests, make assessm-
+ents for tests in which she/he is the evaluator, etc.
+The page consists of following:
+    1) A list of all tests (of past) in which she/he is creator, ordered latest first. The fields are "Test name", "Test URL"
+    (This is the url at which the creator or evaluators can access just the questions of the test in one place (as if written
+    down on a physical paper), the "Test rules" associated with the entire test (or rather a popup/popunder that lists out
+    the actual rules), "Full Marks", "How many candidates were invited", "How many candidates took the test", "How many suc-
+    ceeded", "Percentage of successful candidates", "Percent failure", "Candidates disqualified, if any, and a popunder dis-
+    playing a note of the reason of disqualification", "total marks", "negative marking, if set", "Date of test creation",
+    "Date of test", "Date of test assessment (if it took more than one day to assess, then the day assessment  was completed",
+    "List of the evaluators of the test (the evaluator group name, and the evaluator names too, each evaluator name will be
+    a link which will lead to a page that displays the details of that evaluator pertaining to that test)", "topic and sub-
+    topic of the test" and  any comments on the test made by an evaluator (or creator herself/himself) about the test.
+    2) List of all tests in which the user is evaluator. Fields will be similar to above and with the addition of "Creator name of the test" and number of candidates the user assessed. This will be a link to the page which lists all candidates of the test that the user had evaluated and the names of the candidates will be links to the score (for each
+question) made by the candidate and any comment added by the user against it. (The same will be available to creator if the creator is given permission to view evaluator info)
+    3) List of all tests in which user had been a candidate and this will display such fields as appropriate.
+    4)There will be a create test link on the top (accessible only to paid users and new users whose quota of complimentary tests is not finished)
+    5) Next it will list out all upcoming tests in which the user  can register as a candidate (there would link to a page that registers a user for a test). However candidates can take that test only if the creator allows it. That mechanism will be detailed later. Whenever a user registers for a specific test, the creator of that test is sent  an email mentioning that. 
+"""
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
@@ -91,39 +155,6 @@ def manage(request):
         # such requests come and that may, sometimes, tell a curious story.
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
-    """
-    Display a table of tests with latest first... These are all tests the user has created. This page will give the user
-    # all access to all those tests in which she/he is a creator, evaluator or candidate. For tests in which  user is
-    # creator or evaluator, she/he will be able to access the answer scripts of candidates who took those tests. We get
-    all this data in dashboard too, but from here the user will be able to go into deeper details like exact questions
-    attempted by a certain candidate, the exact choices/answers the candidate made and how much points/grades the user
-    conceded to the candidate for that answer. NOTE: This page will also provide the user with the capability to add and
-    modify tests that are scheduled in future and in which she/he is creator. This page will display a link that will
-    enable the user to create tests (if he is a premium user), add/modify/delete candidates to those tests, make assessm-
-    ents for tests in which she/he is the evaluator, etc.
-    The page consists of following:
-    1) A list of all tests (of past) in which she/he is creator, ordered latest first. The fields are "Test name", "Test URL"
-    (This is the url at which the creator or evaluators can access just the questions of the test in one place (as if written
-    down on a physical paper), the "Test rules" associated with the entire test (or rather a popup/popunder that lists out
-    the actual rules), "Full Marks", "How many candidates were invited", "How many candidates took the test", "How many suc-
-    ceeded", "Percentage of successful candidates", "Percent failure", "Candidates disqualified, if any, and a popunder dis-
-    playing a note of the reason of disqualification", "total marks", "negative marking, if set", "Date of test creation",
-    "Date of test", "Date of test assessment (if it took more than one day to assess, then the day assessment  was completed",
-    "List of the evaluators of the test (the evaluator group name, and the evaluator names too, each evaluator name will be
-    a link which will lead to a page that displays the details of that evaluator pertaining to that test)", "topic and sub-
-    topic of the test" and  any comments on the test made by an evaluator (or creator herself/himself) about the test.
-    2) List of all tests in which the user is evaluator. Fields will be similar to above and with the addition of "Creator
-    name of the test" and number of candidates the user assessed. This will be a link to the page which lists all cand-
-    idates of the test that the user had evaluated and the names of the candidates will be links to the score (for each
-    question) made by the candidate and any comment added by the user against it. (The same will be available to creator
-    if the creator is given permission to view evaluator info)
-    3) List of all tests in which user had been a candidate and this will display such fields as appropriate.
-    4)There will be a create test link on the top (accessible only to paid users)
-    5) Next it will list out all upcoming tests in which the user  can register as a candidate (there would link to a page that
-    registers a user for a test). However candidates can take that test only if the creator allows it. That mechanism will
-    be detailed later. Whenever a user registers for a specific test, the creator of that test is sent  an email mentioning
-    that. 
-    """
     tests_user_dict = get_user_tests(request)
     inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Dashboard' page for the user.
     for inc_key in inc_context.keys():

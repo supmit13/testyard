@@ -1,5 +1,11 @@
-1. Image upload should function correctly.
-2. Create space in profile page for image.
+1. Image upload should function correctly. [Done]
+2. Create space in profile page for image. [Done]
 3. Messages are not being printed properly in HTML. Fix it. [Done]
 4. Complete the first cut versions of the lesser pages (help, careers, aboutus, etc).
 5. Email address validation link is inappropriate in yahoo mail inbox.
+6. The profile image tag and profile image upload div is not printed correctly in the email validation page. The HTML source of the block gets printed.
+7. Create installation package for the project using distutils.
+8. Create a branch containing the login, registration, image change, and other user authentication related features in app's skeletal code. Name the branch 'commoncode'.
+9. On changing profile image, the whole page is refreshed at present. This should be replaced with the functionality to refresh the uploaded image on the page only.
+10. Need to add condition to check user's 'plan' to show the 'Create New Test' link in skillstest.Test.views.get_user_tests().
+11. 

@@ -206,7 +206,7 @@ def getprofileimgtag(request):
         csrftoken = request.COOKIES['csrftoken']
     profimgfile = userobj.userpic.__str__()
     profimagepath = os.path.sep.join([ mysettings.MEDIA_ROOT, userobj.displayname, "images", profimgfile ])
-    profileimgtag = "<img src='media/square.gif' height='102' width='102' alt='Profile Image'><br /><div id='uploadbox' style='display: none;'></div><a href='#' onClick='return uploader(&quot;%s&quot;,&quot;%s&quot;);'><font size='-1'>upload profile image</font></a>"%(mysettings.PROFIMG_CHANGE_URL, csrftoken)
+    profileimgtag = "<img src='media/square.gif' height='102' width='102' alt='Profile Image' id='profileimage'><br /><div id='uploadbox' style='display: none;'></div><a href='#' onClick='return uploader(&quot;%s&quot;,&quot;%s&quot;);'><font size='-1'>upload profile image</font></a>"%(mysettings.PROFIMG_CHANGE_URL, csrftoken)
     if os.path.exists(profimagepath) and profimgfile != "":
         profileimgtag = "<img src='media/%s/images/%s' height='102' width='102' alt='Profile Image'><br /><div id='uploadbox' style='display: none;'></div><a href='#' onClick='return uploader(&quot;%s&quot;, &quot;%s&quot;);'><font size='-1'>change profile image</font></a>"%(userobj.displayname, profimgfile, mysettings.PROFIMG_CHANGE_URL, csrftoken)
     return profileimgtag

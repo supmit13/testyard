@@ -6,6 +6,8 @@ TEST_TOPICS = ("Programming", "Project Management", "Database Management", "Qual
                "UI Design", "Web Design", "Application Development")
 
 TEST_TYPES = { 'MULT' : "Multiple Choice", 'FILB' : "Fill up the Blanks", 'SUBJ' :  "Subjective", 'CODN' : "Coding", 'ALGO' : "Algorithm", 'COMP' : "Composite"}
+
+TEST_SCOPES = { 'public', 'protected', 'private' }
 # A 'composite' test is test that contains more than one of the  other TEST_TYPES. The default choice is 'composite'.
 
 TEST_SEARCH_SCOPE = ("Public", "Protected", "Private Tests Only", "All Tests")
@@ -130,14 +132,19 @@ MULTIPLE_WS_PATTERN = re.compile(r"^\s*$", re.MULTILINE | re.DOTALL)
 PHONENUM_PATTERN = re.compile(r"^\d+$", re.MULTILINE | re.DOTALL)
 REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]*)$", re.MULTILINE | re.DOTALL)
 
-RULES_DICT = {} # Dictionary containing all rules that may be imposed on a test.
+# Dictionary containing all rules that may be imposed on a test.
+RULES_DICT = { \
+        'breakallowed' : 'Breaks are allowed while taking the test', \
+        'responsenoreturn' : 'Responded challenges may not be revisited', \
+        'unidirectional' : 'Previous challenges may not be revisited', \
+        }
 
-ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English', 'lat' : 'Latin', 'fr' : 'French', \
+ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \
                      'hndi' : 'Hindi', 'bngw' : 'Bengali - WB', 'bnge' : 'Bengali - Bangladesh', } # Allowed languages
 
 SKILL_QUALITY = { 'BEG' : 'Beginner', 'INT' : 'Intermediate', 'PRO' : 'Proficient' }
 
-PLAN_GUIDELINES = {} # A map of test types, duration, and their  associated costs - used in Subscription.model
+PLAN_GUIDELINES = {} # A map of test types, duration, and their  associated costs - used in Subscription.models
 
 PAYMENT_PLATFORMS = {}
 
@@ -147,4 +154,9 @@ OAUTH_API_KEY = '78wxi7pqmstzbg'
 OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
 OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
 OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
+
+# Number of complimentary tests a newly registered user can conduct:
+NEW_USER_FREE_TESTS_COUNT = 5
+# Types of tests the user can conduct as part of complimentary test:
+NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 

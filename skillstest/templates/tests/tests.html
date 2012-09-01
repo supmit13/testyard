@@ -1,14 +1,47 @@
 	{% include "inc/html_head.html" %}
 	
 	{% include "inc/mission_statement.html" %}
-		<!-- ### Post Entry Begin ###  -->
+		<script language='javascript'>
+		function createtest(){
+		}
+
+		function autosuggestevaluators(){
+		}
+
+		function displayattemptparams(){
+		}
+
+		function closediv(){
+		  var thediv=document.getElementById('createtestdiv');
+		  thediv.style.display = "none";
+		  thediv.innerHTML = '';
+		}
+
+		function showcreatetestform(uid){
+		  // Populate the div (id='createtestdiv') with the form
+		  var thediv=document.getElementById('createtestdiv');
+		  if(thediv.style.display == "none"){
+		    thediv.style.display = "";
+		    thediv.innerHTML = "{% include 'tests/create_test_form.html' %}";
+		  }
+		  else{
+		    thediv.style.display = "none";
+		    thediv.innerHTML = '';
+		  }
+		  return false;
+		}
+		</script>
 
 		<div class="post">
 			<span class="meta">
 			<h3>Dear {{ displayname }},</h3>
 			{{ msg }} {{ newuser }}
 			<div class="entry">
-			<!-- Profile HTML goes here. -->
+			<!-- Tests HTML goes here. -->
+			<div id='createtestdiv' style='display: none;'></div>
+			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
+			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
+			{{ test_tables }}
 			
 			</div>
 			</span>
