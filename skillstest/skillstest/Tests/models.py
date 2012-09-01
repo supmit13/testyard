@@ -77,8 +77,6 @@ class Evaluator(models.Model):
         return "%s"%(self.evalgroupname)
 
 
-
-
 """
 The 'Test' object defines the test. This model stores such information
 as the type of test, the max points in it, the minimum points/grades a
@@ -86,7 +84,9 @@ test taker needs to achieve in order to pass it, etc.
 """
 class Test(models.Model):
     testname = models.CharField(max_length=150)
-    subtopic = models.ForeignKey(Subtopic, null=False, blank=False)
+    topic = models.ForeignKey(Topic, blank=True, default='') # If topic is custom topic created by user, then this will point to the 'Tests_topic' record.
+    topicname = models.CharField(max_length=200, blank=True) # If topic is one of the built-in topics, then this will hold the name of it. In that case, topic will be ''.
+    subtopic = models.ForeignKey(Subtopic, null=True, blank=True)
     creator = models.ForeignKey(User, blank=False, null=False) # In case the 'creator' is some board or association, one of its members
     # will need to come forward to be accountable for the  test.
     creatorisevaluator = models.BooleanField(default=True)
@@ -94,14 +94,23 @@ class Test(models.Model):
     testtype = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.TEST_TYPES.iteritems()), default='COMP')
     createdate = models.DateTimeField(auto_now_add=True)
     maxscore = models.IntegerField(default=0, null=False, blank=False)
-    passscore = models.IntegerField(default=0, null=False, blank=False)
-    ruleset = models.CharField(max_length=4, choices=()) # ruleset defines the rules for taking the test. See mysettings.RULES_DICT
+    passscore = models.IntegerField(null=True, blank=False)
+    ruleset = models.CharField(max_length=200, blank=True, default='') # ruleset defines the rules for taking the test. See mysettings.RULES_DICT
     duration = models.IntegerField(default=0, null=False, blank=False)
-    allowedlanguages = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.ANSWER_LANG_DICT.iteritems()), default='enus') # see mysettings.ANSWER_LANG_DICT
+    allowedlanguages = models.CharField(max_length=200, default='enus') # see mysettings.ANSWER_LANG_DICT. If more than one language is allowed, then the language keys should be separated from each other by '#||#'
     challengecount = models.IntegerField(default=0, null=False, blank=False)
     activationdate = models.DateTimeField(auto_now=True)
-    status = models.BooleanField(default=True) # Determines if the 'Test' creation is complete.
+    publishdate = models.DateTimeField(null=False, blank=True)
+    status = models.BooleanField(default=True) # Determines if the 'Test' is being edited (or created).
     # 'User's may create a 'Test' over a period of time, adding questions every now and then.
+    allowmultiattempts = models.BooleanField(default=False)
+    maxattemptscount = models.IntegerField(default=1, blank=False) # If allowmultiattempts is False, then maxattemptscount = 1
+    attemptsinterval = models.IntegerField(default=None, null=True, blank=False);
+    randomsequencing = models.BooleanField(default=True, null=False, blank=False)
+    multimediareqd = models.BooleanField(default=False, null=False, blank=False)
+    testlinkid = models.CharField(max_length=200, null=False, blank=False)
+    progenv = models.CharField(max_length=100, null=True, default=None)
+    scope = models.CharField(max_length=50, null=False, default='public')
     quality = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()), default='INT') # Determines the class of users the 'Test' is for.
     # Proficient/Beginner/Intermediate etc. Refer to mysettings.SKILL_QUALITY
 
@@ -185,6 +194,7 @@ class Challenge(models.Model):
     #dependency = models.ForeignKey(Challenge, null=True, default=None) # Dependency to any other Challenge object.
     subtopic = models.ForeignKey(Subtopic, null=False, blank=False) # Specifies the subtopic to which this Challenge belongs.
     challengequality = models.CharField(max_length=3, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()))
+    testlinkid = models.CharField(max_length=200, null=False, blank=False)
 
     class Meta:
         verbose_name = "Challenge Table"

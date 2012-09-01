@@ -149,3 +149,9 @@ function checknumeric(field){
   return true;
 }
 
+function showworking(){
+  var workstatusdiv = document.getElementById('workstatus');
+  workstatusdiv.style.display = "";
+  workstatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+}
+

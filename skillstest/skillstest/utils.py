@@ -20,6 +20,8 @@ from skillstest.Subscription.models import Plan, UserPlan, Transaction
 
 multiplecommapattern = re.compile("\,+")
 endcommapattern = re.compile("\,$")
+multiplewhitespacepattern = re.compile("\s+", re.DOTALL)
+numericpattern = re.compile("\d+")
 
 """
 Creates and returns a session object if the request is a

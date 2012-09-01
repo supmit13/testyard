@@ -297,4 +297,32 @@ CREATE TABLE `Auth_emailvalidationkey` (
 ALTER TABLE Tests_topic drop column topicshortname;
 ALTER TABLE Test_topic add column user_id int not NULL references Auth_user(id);
 
+alter table Tests_test add column publishdate datetime;
+
+alter table Tests_test add column testlinkid varchar(200) not null;
+
+alter table Tests_test add column topic_id int(11) not null references Tests_topic(id);
+
+alter table Tests_test add column topicname varchar(200) default "";
+
+alter table Tests_test modify subtopic_id int default NULL;
+
+alter table Tests_challenge add column testlinkid varchar(200) not null;
+
+alter table Tests_test modify passscore int(11) default NULL;
+
+alter table Tests_test add column allowmultiattempts tinyint(1) default False;
+alter table Tests_test add column maxattemptscount int(11) default 1 not NULL;
+alter table Tests_test add column attemptsinterval int(11) default NULL;
+
+alter table Tests_test add column randomsequencing tinyint(1) default True not null;
+
+alter table Tests_test add column multimediareqd tinyint(1) default False not null;
+
+alter table Tests_test add column progenv varchar(100) default null;
+alter table Tests_test add column scope varchar(50) default 'public' not null;
+
+alter table Tests_test modify column allowedlanguages varchar(200) default 'enus' not null;
+alter table Tests_test modify column ruleset varchar(200) default '' not null;
+
 COMMIT;

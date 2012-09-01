@@ -404,9 +404,21 @@ Sun, 01 Feb 2015, 01:52 HRS (IST).
 
 =====================================
 
-Sun, 01 Feb 2015, 11:23 HRS (IST).
+Thu, 05 Feb 2015, 23:50 HRS (IST).
 ----------------------------------
 1. templates/tests/create_test_form.html
 2. templates/tests/tests.html
 3. skillstest/Tests/views.py
-4. 
+4. skillstest/skills_settings.py
+5. static/javascript/pageutils.js
+6. templates/tests/edit_challenge.html
+7. static/images/greendot2.jpg
+8. skillstest/Tests/models.py
+9. db.sql
+10.db_02_02_2015.sql
+11.skillstest/utils.py
+12.skillstest/errors.py
+13.files_to_commit.txt
+							
+=====================================
+

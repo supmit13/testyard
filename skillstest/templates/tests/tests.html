@@ -60,13 +60,11 @@
 		}
 
 		// Javascript todo's:
-		// 1. input validation function (validate())
-		// 2. evaluator groups drag and drop
-		// 3. evaluator groups expansion (containing email ids) in textarea.
-		// 4. add text input to allow user to enter a evaluator group name. Default name will be same as the username part of the first email id in the group. Add a number (1,2,3... etc.) to it if a group with the same name already exists for the user (i.e., this user created a group with the same name before). [Done]
-		// 5. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form. [Done]
-		// 6. submit data when user clicks on 'Continue' button and pass value of 'testlinkid' to the next screen.
-
+		// 1. evaluator groups drag and drop
+		// 2. evaluator groups expansion (containing email ids) in textarea
+		// 3. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form. 
+		// 4. submit data when user clicks on 'Continue' button and pass value of 'testlinkid' to the next screen.
+		// 5. Both 'activedate' and 'publishdate' should be in 'dd-Mon-yyyy' format. Validate this.
 
 		function validate(){
 		  // Need to validate input - 
@@ -76,6 +74,9 @@
 		  alphanumericpattern = new RegExp("^([\\w\\d]+)$");
 		  publishdate = document.createtestform.publishdate.value;
 		  activedate = document.createtestform.activedate.value;
+		  if(activedate.trim() == ''){
+		    activedate = publishdate;
+		  }
 		  publishdateparts = publishdate.split("-");
 		  pubdd = publishdateparts[0];
 		  pubmm = months[publishdateparts[1]];
@@ -147,6 +148,9 @@
 		  }
 		  challdur = document.createtestform.challengeduration.value;
 		  durunit = document.getElementById('challengedurationunit').value;
+		  if(challdur.trim() == ''){
+		    challdur = 0
+		  }
 		  challdur_sec = challdur;
 		  if(durunit == 'h'){
 		    challdur_sec = challdur * 3600;
@@ -154,7 +158,7 @@
 		  else if(durunit == 'm'){
 		    challdur_sec = challdur * 60;
 		  }
-		  if(challdur_sec > testdur_sec){
+		  if(challdur_sec != 0 && challdur_sec > testdur_sec){
 		    alert("Time taken to solve a single challenge cannot be greater than the duration of the entire test.");
 		    document.createtestform.testduration.focus();
 		    return(false);
@@ -191,6 +195,13 @@
 		    document.createtestform.grpname.focus();
 		    return(false);
 		  }
+		  // 12.'passscore' should be numeric and should be less than 'totalscore'.
+		  if(document.createtestform.passscore.value.trim() != '' && (!numericpattern.test(document.createtestform.passscore.value.trim()) || parseInt(document.createtestform.passscore.value.trim()) > parseInt(document.createtestform.totalscore.value.trim()))){
+		    alert("Pass score should be numeric and less than total score");
+		    document.createtestform.passscore.value = '';
+		    document.createtestform.passscore.focus();
+		    return(false);
+		  }
 		  return(true);
 		}
 
@@ -199,16 +210,66 @@
 		  if(!validate()){
 		    return false;
 		  }
-		  document.createtestform.method = 'POST';
-		  document.createtestform.action = '{{ createtesturl }}';
-		  document.createtestform.submit();
+		  // We make an ajax call to the correct view and after we are
+		  // done, we replace the div showing the create test form
+		  // with the form for adding a challenge/question.
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  postdata = "";
+		  for(var i=0; i < document.forms[0].elements.length; i++){
+		    elementname = document.forms[0].elements[i].name;
+		    elementvalue = document.forms[0].elements[i].value;
+		    if(document.forms[0].elements[i].type == 'radio'){
+		      if(document.forms[0].elements[i].checked == true){
+			postdata += elementname + "=" + elementvalue + "&";
+			continue;
+		      }
+		    }
+		    else if(document.forms[0].elements[i].type == 'checkbox'){
+		      if(document.forms[0].elements[i].checked == true){
+			postdata += elementname + "=" + elementvalue + "&";
+			continue;
+		      }
+		    }
+		    else if(document.forms[0].elements[i].type == 'select-multiple'){
+		      postdata += elementname + "="
+		      for(var j=0; j < document.forms[0].elements[i].options.length; j++){
+			if(document.forms[0].elements[i].options[j].selected == true){
+			  postdata += document.forms[0].elements[i].options[j].value + '#||#';
+			}
+		      }
+		      postdata += "&";
+		    }
+		    else{
+		      postdata += elementname + "=" + elementvalue + "&";
+		    }
+		  }
+		  // Remove quote marks from values
+		  postdata = postdata.replace(/\"/g,'');
+		  // alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+		    // alert(xmlhttp.responseText);
+		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      // Data has been posted successfully, so show the challenge insertion form.
+		      var thediv=document.getElementById('createtestdiv');
+		      thediv.style.display = "";
+		      thediv.innerHTML = "{% include 'tests/edit_challenge.html' %}";
+		      return(false);
+		    }
+		  };
+		  xmlhttp.open('POST','{{ createtesturl }}', true);
+		  xmlhttp.send(postdata);
+		  showworking();
 		}
-
 
 		function expandevaluatorgroup(){
 		  {{ assocevalgrps  }}
 		}
-
 
 		function autosuggestgrpname(){
 		  // Suggest a name for the group only if the group name is empty.

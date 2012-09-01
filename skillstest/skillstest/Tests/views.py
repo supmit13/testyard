@@ -38,26 +38,29 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "<li id=&quot;drag_eval_groups&quot; title=&quot;drag,eval,groups&quot;>drag eval groups</li>", mysettings.CREATE_TEST_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
+            ttcodeval = ttcode.replace(" ", "__")
             if ttcode == 'MULT':
-                testtypes += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcode, mysettings.TEST_TYPES[ttcode])
+                testtypes += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
             else:
-                testtypes += "<option value=&quot;%s&quot;>%s</option>"%(ttcode, mysettings.TEST_TYPES[ttcode])
+                testtypes += "<option value=&quot;%s&quot;>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
         for trule in mysettings.RULES_DICT.keys():
             testrules += "<option value=&quot;%s&quot;>%s</option>"%(trule, mysettings.RULES_DICT[trule])
         for ttopics in mysettings.TEST_TOPICS:
-            testtopics += "<option value=&quot;%s&quot;>%s</option>"%(ttopics, ttopics)
+            ttopicsval = ttopics.replace(" ", "__")
+            testtopics += "<option value=&quot;%s&quot;>%s</option>"%(ttopicsval, ttopics)
         # Get topics created in the past by this user
         usertopics = Topic.objects.filter(user=userobj, isactive=True)
         for topic in usertopics:
-            testtopics += "<option value='%s'>%s</option>"%(topic.topicname, topic.topicname)
+            topicname = topic.topicname.replace(" ", "__")
+            testtopics += "<option value=&quot;%s&quot;>%s</option>"%(topicname, topic.topicname)
         for skillcode in mysettings.SKILL_QUALITY.keys():
             skilltarget += "<option value=&quot;%s&quot;>%s</option>"%(skillcode, mysettings.SKILL_QUALITY[skillcode])
         for tscope in mysettings.TEST_SCOPES:
-            if tscope == 'public':
+            if tscope == 'private':
                 testscope += "<option value=&quot;%s&quot; selected>%s</option>"%(tscope, tscope)
             else:
                 testscope += "<option value=&quot;%s&quot;>%s</option>"%(tscope, tscope)
@@ -81,11 +84,31 @@ def get_user_tests(request):
                                                               test.evaluator.groupmember3, test.evaluator.groupmember4, test.evaluator.groupmember5, \
                                                               test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
                                                               test.evaluator.groupmember9, test.evaluator.groupmember10 )
-        evalgrpemails = ",".join(test.evaluator.groupmember1.emailid, test.evaluator.groupmember2.emailid, test.evaluator.groupmember3.emailid, test.evaluator.groupmember4.emailid, test.evaluator.groupmember5.emailid, test.evaluator.groupmember6.emailid, test.evaluator.groupmember7.emailid, test.evaluator.groupmember8.emailid, test.evaluator.groupmember9.emailid, test.evaluator.groupmember10.emailid)
-        evalgrpemails = re.sub(skillutils.multiplecommapattern, ",", evalgrpemails)
-        evalgrpemails = re.sub(skillutils.endcommapattern, "",evalgrpemails)
-        assocevalgrps += "evalgrpsdict.%s = %s;"%(test.evaluator.evalgroupname, evalgrpemails)
+        evalgrpemaillist = []
+        if test.evaluator.groupmember1 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember1.emailid)
+        if test.evaluator.groupmember2 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember2.emailid)
+        if test.evaluator.groupmember3 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember3.emailid)
+        if test.evaluator.groupmember4 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember4.emailid)
+        if test.evaluator.groupmember5 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember5.emailid)
+        if test.evaluator.groupmember6 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember6.emailid)
+        if test.evaluator.groupmember7 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember7.emailid)
+        if test.evaluator.groupmember8 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember8.emailid)
+        if test.evaluator.groupmember9 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember9.emailid)
+        if test.evaluator.groupmember10 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember10.emailid)
+        evalgrpemails = ",".join(evalgrpemaillist)
+        assocevalgrps += "evalgrpsdict.%s = '%s';"%(test.evaluator.evalgroupname, evalgrpemails)
         evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, test.evaluator.evalgroupname)
+        evalgroupslitags = evalgroupslitags.replace('&quot;', '\\"')
 
     user_evaluator_creator_other_evaluators_dict = {}
     test = None
@@ -123,7 +146,8 @@ def get_user_tests(request):
     tests_user_dict['testscope'] = testscope
     tests_user_dict['progenv'] = progenv
     tests_user_dict['creatoremail'] = userobj.emailid
-    tests_user_dict['existingtestnames'] = ",".join(user_creator_other_evaluators_dict.keys())
+    tests_user_dict['existingtestnames'] = "','".join(user_creator_other_evaluators_dict.keys())
+    tests_user_dict['existingtestnames'] = "'" + tests_user_dict['existingtestnames'] + "'"
     tests_user_dict['assocevalgrps'] = assocevalgrps
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
@@ -199,7 +223,306 @@ def create(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    return HttpResponse(createtestshtml)
+    testlinkid, testname, testtype, testrules, testtopic, othertopicname, \
+    totalscore, numchallenges, evendistribution, negativescoring, testduration,\
+    testdurationunit, challengeduration, challengedurationunit, evaluators, \
+    grpname, publishdate, activedate, skilltarget, testscope,answerlanguage, \
+    progenv, multimediareqd, randomsequencing, multipleattemptsallowed, \
+    maxattemptscount, attemptsinterval, attemptsintervalunit, testlinkid, \
+    csrfmiddlewaretoken  = "", "", "", "", "", "", "", "", "", "", "", "", "", \
+     "", "", "", "", "", "", "", "", "", False, False, False, "", "", "", "", ""
+    lastchallengectr, challengenumbersstr, passscore = "", "", "" # \
+    # 'lastchallengectr' is the counter of the last challenge entered. \
+    # 'challengenumbersstr' is a string consisting of all the created \
+    # challenge counters separated by '#||#'.
+    challengectr, challengestatement, challengetype, responsekey, imageurl, \
+    additionalurl, timeframe, challengequality, mustrespond, challengescore, \
+    challengeoptions = "", "", "", "", "", "", "", "", "", "", []
+    message, activedatemysql, publishdatemysql = "", "", ""
+    # First get the testlinkid. If its value doesn't exist in DB, then create 
+    # a new test. Otherwise, simply display the challenges of the existing test
+    # and allow the user to edit them.
+    if request.POST.has_key('testlinkid'):
+        testlinkid = request.POST['testlinkid']
+    if request.POST.has_key('testname'):
+        testname = request.POST['testname']
+    if request.POST.has_key('testtype'):
+        testtype = request.POST['testtype']
+    if request.POST.has_key('testrules'):
+        testrules = request.POST['testrules']
+    if request.POST.has_key('testtopic'):
+        testtopic = request.POST['testtopic']
+    if request.POST.has_key('othertopicname'):
+        othertopicname = request.POST['othertopicname']
+    if request.POST.has_key('totalscore'):
+        totalscore = request.POST['totalscore']
+    if request.POST.has_key('passscore'):
+        passscore = request.POST['passscore']
+    if request.POST.has_key('numchallenges'):
+        numchallenges = request.POST['numchallenges']
+    if request.POST.has_key('evendistribution'):
+        evendistribution = request.POST['evendistribution']
+    if request.POST.has_key('negativescoring'):
+        negativescoring = request.POST['negativescoring']
+    if request.POST.has_key('testduration'):
+        testduration = request.POST['testduration']
+    if request.POST.has_key('testdurationunit'):
+        testdurationunit = request.POST['testdurationunit']
+    if request.POST.has_key('challengeduration'):
+        challengeduration = request.POST['challengeduration']
+    if request.POST.has_key('challengedurationunit'):
+        challengedurationunit = request.POST['challengedurationunit']
+    if request.POST.has_key('evaluators'):
+        evaluators = request.POST['evaluators']
+    if request.POST.has_key('grpname'):
+        grpname = request.POST['grpname']
+    if request.POST.has_key('publishdate'):
+        publishdate = request.POST['publishdate']
+    if request.POST.has_key('activedate'):
+        activedate = request.POST['activedate']
+    if request.POST.has_key('skilltarget'):
+        skilltarget = request.POST['skilltarget']
+    if request.POST.has_key('testscope'):
+        testscope = request.POST['testscope']
+    if request.POST.has_key('answerlanguage'):
+        answerlanguage = request.POST['answerlanguage']
+    if request.POST.has_key('progenv'):
+        progenv = request.POST['progenv']
+    if request.POST.has_key('multimediareqd'):
+        multimediareqd = True
+    if request.POST.has_key('randomsequencing'):
+        randomsequencing = True
+    if request.POST.has_key('multipleattemptsallowed'):
+        multipleattemptsallowed = True
+    if request.POST.has_key('maxattemptscount'):
+        maxattemptscount = request.POST['maxattemptscount']
+    if request.POST.has_key('attemptsinterval'):
+        attemptsinterval = request.POST['attemptsinterval']
+    if request.POST.has_key('attemptsintervalunit'):
+        attemptsintervalunit = request.POST['attemptsintervalunit']
+    if request.POST.has_key('testlinkid'):
+        testlinkid = request.POST['testlinkid']
+    if request.POST.has_key('csrfmiddlewaretoken'):
+        csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
+    testqueryset = Test.objects.filter(testlinkid=testlinkid, creator=userobj) # Returns a Queryset object
+    testobj = None
+    if testqueryset.__len__() == 0: # This is a new test being created.
+        testobj = Test()
+        testobj.createdate = datetime.datetime.now()
+    else:
+        testobj = testqueryset[0]
+    testobj.testname = testname
+    if testtopic == "Other": # Topic is custom, so testobj.topicname will be "".
+        topic = Topic()
+        topic.topicname = othertopicname
+        topic.user = userobj
+        topic.isactive = True
+        topic.save()
+        testobj.topic = topic
+        testobj.topicname = ""
+    else: # Topic is built-in, so testobj.testtopic will be None.
+        testobj.topic = Topic.objects.filter(id=-1)[0]
+        testobj.topicname = testtopic.replace("__", " ")
+    testobj.testtype = testtype
+    testobj.creator = userobj
+    creatoremailid = userobj.emailid
+    evaluatorslist = evaluators.split(",")
+    testobj.creatorisevaluator = False
+    evalemailsdict = {} # This will help in removing duplicates, if any.
+    for evalem in evaluatorslist:
+        evalem = re.sub(skillutils.multiplewhitespacepattern, '', evalem)
+        if not evalemailsdict.has_key(evalem):
+            evalemailsdict[evalem] = 1
+        if evalem == creatoremailid:
+            testobj.creatorisevaluator = True
+    if not re.search(skillutils.numericpattern, totalscore) or not re.search(skillutils.numericpattern, numchallenges):
+        message = error_msg('1047')
+        return HttpResponse(message)
+    testobj.maxscore = totalscore
+    testobj.challengecount = numchallenges
+    if passscore == '' or not passscore:
+        passscore = None
+    testobj.passscore = passscore
+    # Note: Both test duration and challenge duration will converted to seconds\
+    # and then saved in DB.
+    if testdurationunit == 'h':
+        testobj.duration = int(testduration) * 3600 # Conversion to seconds from hr.
+    elif testdurationunit == 'm':
+        testobj.duration = int(testduration) * 60 # Seconds from minutes.
+    else:
+        testobj.duration = int(testduration)
+    activedateparts = activedate.split('-')
+    publishdateparts = publishdate.split('-')
+    # Verify whether the date formats received are in 'dd-MON-yyyy' format.
+    if activedateparts.__len__() < 3 or activedateparts[1].upper() not in mysettings.MONTHS_DICT.keys() or activedateparts[2].__len__() != 4 or not re.search(skillutils.numericpattern, activedateparts[2]) or activedateparts[0].__len__() != 2 or not re.search(skillutils.numericpattern, activedateparts[0]):
+        message = error_msg('1042')
+        return HttpResponse(message)
+    else:
+        activemm = mysettings.MONTHS_DICT[activedateparts[1].upper()]
+        if activemm in ('01', '03', '05', '07', '08', '10', '12') and int(activedateparts[0]) > 31:
+            message = error_msg('1043')
+            return HttpResponse(message)
+        elif activemm in ('04', '06', '09', '11') and int(activedateparts[0]) > 30:
+            message = error_msg('1043')		
+            return HttpResponse(message)
+        elif activemm == '02' and int(activedateparts[2]) % 4 == 0 and int(activedateparts[2]) % 100 != 0 and int(activedateparts[0]) > 29: # Leap year
+            message = error_msg('1043')
+            return HttpResponse(message)
+        elif activemm == '02' and int(activedateparts[2]) % 100 == 0 and int(activedateparts[2]) % 400 == 0 and int(activedateparts[0]) > 29: # Leap year
+            message = error_msg('1043')
+            return HttpResponse(message)
+        elif activemm == '02' and int(activedateparts[0]) > 28:
+            message = error_msg('1043')
+            return HttpResponse(message)
+        else:
+            activedatemysql = activedateparts[2] + "-" + activemm + "-" + activedateparts[0] + " 00:00:00"
+    #######################
+    if publishdateparts.__len__() < 3 or publishdateparts[1].upper() not in mysettings.MONTHS_DICT.keys() or publishdateparts[2].__len__() != 4 or not re.search(skillutils.numericpattern, publishdateparts[2]) or publishdateparts[0].__len__() != 2 or not re.search(skillutils.numericpattern, publishdateparts[0]):
+        message = error_msg('1044')
+        return HttpResponse(message)
+    else:
+        publishmm = mysettings.MONTHS_DICT[publishdateparts[1].upper()]
+        if publishmm in ('01', '03', '05', '07', '08', '10', '12') and int(publishdateparts[0]) > 31:
+            message = error_msg('1045')
+            return HttpResponse(message)
+        elif publishmm in ('04', '06', '09', '11') and int(publishdateparts[0]) > 30:
+            message = error_msg('1045')
+            return HttpResponse(message)
+        elif publishmm == '02' and int(publishdateparts[2]) % 4 == 0 and int(publishdateparts[2]) % 100 != 0 and int(publishdateparts[0]) > 29: # Leap year
+            message = error_msg('1045')
+            return HttpResponse(message)
+        elif publishmm == '02' and int(publishdateparts[2]) % 100 == 0 and int(publishdateparts[2]) % 400 == 0 and int(publishdateparts[0]) > 29: # Leap year
+            message = error_msg('1045')
+            return HttpResponse(message)
+        elif publishmm == '02' and int(publishdateparts[0]) > 28:
+            message = error_msg('1045')
+            return HttpResponse(message)
+        else:
+            publishdatemysql = publishdateparts[2] + "-" + publishmm + "-" + publishdateparts[0] + " 00:00:00"
+    if datetime.datetime(int(activedateparts[2]), int(activemm), int(activedateparts[0]), int('00'), int('00'), int('00')) < datetime.datetime(int(publishdateparts[2]), int(publishmm), int(publishdateparts[0]), int('00'), int('00'), int('00')):
+        message = error_msg('1046')
+        return HttpResponse(message)
+    testobj.activationdate = activedatemysql
+    testobj.publishdate = publishdatemysql
+    testobj.status = False # Remember to set this to True when we finally save the test along with its constituent challenges.
+    testobj.allowedlanguages = answerlanguage
+    # 'answerlanguage' may contain '#||#' at the end. If so, remove it.
+    if re.search(re.compile(r"#||#$"), answerlanguage):
+        testobj.allowedlanguages = answerlanguage[:-4]
+    testobj.ruleset = testrules
+    # 'testrules' may contain '#||#' at the end too. Remove it.
+    if re.search(re.compile(r"#||#$"), testrules):
+        testobj.ruleset = testrules[:-4]
+    testobj.testlinkid = testlinkid
+    testobj.quality = skilltarget
+    # Handle evaluator grouping and 'Evaluator' object creation.
+    evalobj = Evaluator()
+    testsbycreator = Test.objects.filter(creator = userobj)
+    evalnamesbycreator = []
+    evalidsbycreator = []
+    for tobj in testsbycreator:
+        existevalobj = tobj.evaluator
+        if existevalobj.evalgroupname not in evalnamesbycreator: # This is to ensure that a single evaluator name doesn't get listed more than once.
+            evalnamesbycreator.append(existevalobj.evalgroupname)
+            evalidsbycreator.append(existevalobj.id)
+    if grpname not in evalnamesbycreator:
+        evalobj.evalgroupname = grpname
+        memberctr = 1
+        for evalemailid in evalemailsdict.keys():
+            uobjqset = User.objects.filter(emailid=evalemailid)
+            if uobjqset.__len__() > 0: # Valid user exists
+                uobj = uobjqset[0]
+                if memberctr == 1:
+                    evalobj.groupmember1 = uobj
+                elif memberctr == 2:
+                    evalobj.groupmember2 = uobj
+                elif memberctr == 3:
+                    evalobj.groupmember3 = uobj
+                elif memberctr == 4:
+                    evalobj.groupmember4 = uobj
+                elif memberctr == 5:
+                    evalobj.groupmember5 = uobj
+                elif memberctr == 6:
+                    evalobj.groupmember6 = uobj
+                elif memberctr == 7:
+                    evalobj.groupmember7 = uobj
+                elif memberctr == 8:
+                    evalobj.groupmember8 = uobj
+                elif memberctr == 9:
+                    evalobj.groupmember9 = uobj
+                elif memberctr == 10:
+                    evalobj.groupmember10 = uobj
+                memberctr += 1
+            else: # User with the email id in 'evalemailid' doesn't exist.
+                pass
+        evalobj.save()
+        testobj.evaluator = evalobj
+    else: # So a group with this name already exists. We need to see if the existing group has the same set of evaluator email Ids. If so, we simply get the existing evaluator object and assign it to this test.
+        ctr = 0
+        matchedgrpemails = {}
+        evalid = -1
+        while ctr < evalnamesbycreator.__len__():
+            evalid = evalidsbycreator[ctr]
+            if grpname == evalnamesbycreator[ctr]:
+                matchedevalobj = Evaluator.objects.filter(id=evalid)[0]
+                if matchedevalobj.groupmember1 is not None and matchedevalobj.groupmember1.emailid and matchedevalobj.groupmember1.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember1.emailid] = 1
+                if matchedevalobj.groupmember2 is not None and matchedevalobj.groupmember2.emailid and matchedevalobj.groupmember2.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember2.emailid] = 1
+                if matchedevalobj.groupmember3 is not None and matchedevalobj.groupmember3.emailid and matchedevalobj.groupmember3.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember3.emailid] = 1
+                if matchedevalobj.groupmember4 is not None and matchedevalobj.groupmember4.emailid and matchedevalobj.groupmember4.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember4.emailid] = 1
+                if matchedevalobj.groupmember5 is not None and matchedevalobj.groupmember5.emailid and matchedevalobj.groupmember5.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember5.emailid] = 1
+                if matchedevalobj.groupmember6 is not None and matchedevalobj.groupmember6.emailid and matchedevalobj.groupmember6.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember6.emailid] = 1
+                if matchedevalobj.groupmember7 is not None and matchedevalobj.groupmember7.emailid and matchedevalobj.groupmember7.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember7.emailid] = 1
+                if matchedevalobj.groupmember8 is not None and matchedevalobj.groupmember8.emailid and matchedevalobj.groupmember8.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember8.emailid] = 1
+                if matchedevalobj.groupmember9 is not None and  matchedevalobj.groupmember9.emailid and matchedevalobj.groupmember9.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember9.emailid] = 1
+                if matchedevalobj.groupmember10 is not None and  matchedevalobj.groupmember10.emailid and matchedevalobj.groupmember10.emailid != "":
+                    matchedgrpemails[matchedevalobj.groupmember10.emailid] = 1
+                break
+            ctr += 1
+        if matchedgrpemails.keys().__len__() == evalemailsdict.keys().__len__():
+            for matchemail in matchedgrpemails.keys():
+                if not evalemailsdict.has_key(matchemail):
+                    message = error_msg('1048')
+                    return HttpResponse(message)
+            testobj.evaluator = matchedevalobj
+        else:
+            message = error_msg('1048')
+            return HttpResponse(message)
+    testobj.allowmultiattempts = multipleattemptsallowed
+    if multipleattemptsallowed:
+        testobj.maxattemptscount = maxattemptscount
+        testobj.attemptsinterval = attemptsinterval
+        if attemptsintervalunit == 'h':
+            testobj.attemptsinterval = int(attemptsinterval) * 3600
+        elif attemptsintervalunit == 'm':
+            testobj.attemptsinterval = int(attemptsinterval) * 60
+    else:
+        testobj.maxattemptscount = 1
+        testobj.attemptsinterval = None
+    testobj.randomsequencing = randomsequencing
+    testobj.multimediareqd = multimediareqd
+    testobj.progenv = None
+    if progenv != '0':
+        testobj.progenv = progenv
+    if not testscope:
+        testobj.scope = 'private' # The default value
+    else:
+        testobj.scope = testscope
+    testobj.save()
+    if request.POST.has_key('lastchallengectr'):
+        lastchallengectr = request.POST['lastchallengectr']
+    if request.POST.has_key('challengenumbersstr'):
+        challengenumbersstr = request.POST['challengenumbersstr']
+    message = error_msg('1050')
+    return HttpResponse(message)
 
 
 def search(request):

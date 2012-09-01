@@ -5,10 +5,11 @@ TEST_TOPICS = ("Programming", "Project Management", "Database Management", "Qual
                "Software Architecture", "Delivery Management", "System Administration", "System Analyst",\
                "UI Design", "Web Design", "Application Development", "Other")
 
+# Keys of the following dict should NOT be multi-word strings.
 TEST_TYPES = { 'MULT' : "Multiple Choice", 'FILB' : "Fill up the Blanks", 'SUBJ' :  "Subjective", 'CODN' : "Coding", 'ALGO' : "Algorithm", 'COMP' : "Composite"}
-
-TEST_SCOPES = { 'public', 'protected', 'private' }
 # A 'composite' test is test that contains more than one of the  other TEST_TYPES. The default choice is 'composite'.
+
+TEST_SCOPES = ( 'public', 'protected', 'private' )
 
 TEST_SEARCH_SCOPE = ("Public", "Protected", "Private Tests Only", "All Tests")
 """
@@ -20,6 +21,7 @@ the creator of the 'Test' only. So, 'TEST_SEARCH_SCOPE' will not be used for the
 
 BLACKLISTED_MEMBERS = ()
 
+# The keys in the following dict should NOT be multi-word strings.
 COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Perl' : '/usr/bin/perl', \
                          'Python' : '/home/supriyo/work/testyard/pyenv/bin/python', \
@@ -159,4 +161,6 @@ OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 NEW_USER_FREE_TESTS_COUNT = 5
 # Types of tests the user can conduct as part of complimentary test:
 NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
+
+MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '05', 'JUN' : '06', 'JUL' : '07', 'AUG' : '08', 'SEP' : '09', 'OCT' : '10', 'NOV' : '11', 'DEC' : '12'}
 

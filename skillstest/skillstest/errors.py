@@ -25,6 +25,22 @@ error_codes = { \
         '1031' : 'You have been logged out from the system.', \
 
         '1041' : 'Failed to upload profile image', \
+
+        '1042' : 'Error in test metadata: Incorrect date format submitted for date of activation. Format should be dd-MON-yyyy', \
+
+        '1043' : 'Error in test metadata: Inappropriate number of days for given month in date of activation', \
+
+        '1044' : 'Error in test metadata: Incorrect date format submitted for date of publication of test. Format should be dd-MON-yyyy', \
+
+        '1045' : 'Error in test metadata: Inappropriate number of days for given month in date of publication of test', \
+
+        '1046' : 'Error in test metadata: Date of activation of a test cannot be prior to its date of publication on testyard', \
+
+        '1047' : 'Error in test metadata: Incorrect data type for total score or number of challenges or both', \
+
+        '1048' : 'Error in evaluator group name: An evaluator group with the same name but with a different set of email ids already exist', \
+
+        '1050' : 'Entered test metadata successfully', \
     }
 
 def error_msg(code):

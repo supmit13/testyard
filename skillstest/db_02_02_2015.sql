@@ -437,6 +437,35 @@ CREATE TABLE `Tests_usertest` (
   CONSTRAINT `test_id_refs_id_68cc46a6` FOREIGN KEY (`test_id`) REFERENCES `Tests_test` (`id`),
   CONSTRAINT `user_id_refs_id_4487dbd7` FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+alter table Tests_test add column publishdate datetime;
+
+alter table Tests_test add column testlinkid varchar(200) not null;
+
+alter table Tests_test add column topic_id int(11) not null references Tests_topic(id);
+
+alter table Tests_test add column topicname varchar(200) default "";
+
+alter table Tests_test modify subtopic_id int default NULL;
+
+alter table Tests_challenge add column testlinkid varchar(200) not null;
+
+alter table Tests_test modify passscore int(11) default NULL;
+
+alter table Tests_test add column allowmultiattempts tinyint(1) default False;
+alter table Tests_test add column maxattemptscount int(11) default 1 not NULL;
+alter table Tests_test add column attemptsinterval int(11) default NULL;
+
+alter table Tests_test add column randomsequencing tinyint(1) default True not null;
+
+alter table Tests_test add column multimediareqd tinyint(1) default False not null;
+
+alter table Tests_test add column progenv varchar(100) default null;
+alter table Tests_test add column scope varchar(50) default 'public' not null;
+
+alter table Tests_test modify column allowedlanguages varchar(200) default 'enus' not null;
+alter table Tests_test modify column ruleset varchar(200) default '' not null;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
