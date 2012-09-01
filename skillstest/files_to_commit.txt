@@ -392,6 +392,11 @@ Sun, 25 Jan 2015, 10:43 HRS (IST).
 6. templates/tests/tests.html
 7. templates/inc/html_head.html
 8. templates/tests/create_test_form.html
-9. files_to_commit.txt
+9. static/javascript/pageutils.js
+10.static/datepick/*
+11.static/datepick/images/*
+12.static/javascript/*
+13.static/css/*
+14.files_to_commit.txt
 
 =====================================
