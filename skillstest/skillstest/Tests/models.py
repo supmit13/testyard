@@ -98,7 +98,7 @@ class Test(models.Model):
     ruleset = models.CharField(max_length=200, blank=True, default='') # ruleset defines the rules for taking the test. See mysettings.RULES_DICT
     duration = models.IntegerField(default=0, null=False, blank=False)
     allowedlanguages = models.CharField(max_length=200, default='enus') # see mysettings.ANSWER_LANG_DICT. If more than one language is allowed, then the language keys should be separated from each other by '#||#'
-    challengecount = models.IntegerField(default=0, null=False, blank=False)
+    challengecount = models.IntegerField(default=-1, null=False, blank=False)
     activationdate = models.DateTimeField(auto_now=True)
     publishdate = models.DateTimeField(null=False, blank=True)
     status = models.BooleanField(default=True) # Determines if the 'Test' is being edited (or created).

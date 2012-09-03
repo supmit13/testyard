@@ -47,6 +47,10 @@ error_codes = { \
         '1052' : 'Challenge/Question has been successfully saved.', \
         '1053' : 'No test type was specified with the request.', \
         '1054' : 'The specified challenge type is not recognized.', \
+        '1055' : 'Bad request - no test Id was passed.', \
+        '1056' : 'Test with the specified Id was not found', \
+
+        '1057' : 'No key named challengeid from the POST request', \
     }
 
 def error_msg(code):

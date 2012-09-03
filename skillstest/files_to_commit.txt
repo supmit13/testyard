@@ -418,7 +418,10 @@ Thu, 05 Feb 2015, 23:50 HRS (IST). * [Not Pushed Yet]
 10.db_02_02_2015.sql
 11.skillstest/utils.py
 12.skillstest/errors.py
-13.files_to_commit.txt
+13.skillstest/urls.py
+14.templates/tests/left_panel.html
+15.templates/tests/test_summary.html
+16.files_to_commit.txt																																										
 							
 =====================================
 

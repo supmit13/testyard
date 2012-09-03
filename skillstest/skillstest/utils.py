@@ -181,20 +181,20 @@ Handle uploaded file. Create the destination path if required.
 Returns a list containing the path to the uploaded file and a message
 (which would be '' in case of success).
 """
-def handleuploadedfile(uploaded_file, targetdir):
+def handleuploadedfile(uploaded_file, targetdir, filename=mysettings.PROFILE_PHOTO_NAME):
     mkdir_p(targetdir)
     if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
         message = error_msg['1005']
         return [ None, message, '' ]
     ext = get_extension(uploaded_file.name)
-    destinationfile = os.path.sep.join([ targetdir, mysettings.PROFILE_PHOTO_NAME + "." + ext, ])
+    destinationfile = os.path.sep.join([ targetdir, filename + "." + ext, ])
     with open(destinationfile, 'wb+') as destination:
         for chunk in uploaded_file.chunks():
             destination.write(chunk)
         destination.close()
         os.chmod(targetdir, 0777)
         os.chmod(destinationfile, 0777) # Is there a way to club these 'chmod' statements?
-    return [ destinationfile, '', mysettings.PROFILE_PHOTO_NAME + "." + ext ]
+    return [ destinationfile, '', filename + "." + ext ]
 
 
 """

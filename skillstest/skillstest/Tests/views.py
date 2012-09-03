@@ -152,6 +152,9 @@ def get_user_tests(request):
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
     tests_user_dict['addeditchallengeurl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_TEST_URL
+    tests_user_dict['testsummaryurl'] = mysettings.TEST_SUMMARY_URL
+    tests_user_dict['deletechallengesurl'] = skillutils.gethosturl(request) + "/" + mysettings.DELETE_CHALLENGE_URL
+    tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     return  tests_user_dict
 
@@ -336,9 +339,11 @@ def create(request):
             evalemailsdict[evalem] = 1
         if evalem == creatoremailid:
             testobj.creatorisevaluator = True
-    if not re.search(skillutils.numericpattern, totalscore) or not re.search(skillutils.numericpattern, numchallenges):
+    if  not re.search(skillutils.numericpattern, totalscore) or (numchallenges != "" and not re.search(skillutils.numericpattern, numchallenges)):
         message = error_msg('1047')
         return HttpResponse(message)
+    if numchallenges == "":
+        numchallenges = -1 # -1 means the user didn't enter a value
     testobj.maxscore = totalscore
     testobj.challengecount = numchallenges
     if passscore == '' or not passscore:
@@ -579,8 +584,10 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     edit_challenge_dict['challengenumbersstr'] = lastchallengectr.__str__()
     edit_challenge_dict['evendistribution'] = evendistribution # This will be '1' or '0'.
     edit_challenge_dict['challengescore'] = -1
-    if evendistribution:
+    if evendistribution and totalchallenges > 0:
         edit_challenge_dict['challengescore'] = str(float(totalscore)/float(totalchallenges))
+    elif totalchallenges == -1:
+        edit_challenge_dict['challengescore'] = ""
     edit_challenge_dict['negativescoring'] = negativescoring
     edit_challenge_dict['skillqualitylist'] = ""
     for skillqual in mysettings.SKILL_QUALITY.keys():
@@ -598,6 +605,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
         edit_challenge_dict['challenge_links_list'].append((challenge.id, challengestmt, testobj.id, testlinkid)) # So 'challenge_links_list' is a list of tuples whose elements (in order) are challenge Id (0), abbreviated challenge statement (1) (first 20 characters), test Id (2) and the testlinkid (3).
     # Create and render the template
     edit_challenge_dict['usrid'] = testobj.creator.id
+    #edit_challenge_dict['treeview'] = _showtreeview(request, testobj)
     tmpl = get_template("tests/edit_challenge.html")
     cxt = Context(edit_challenge_dict)
     editchallengehtml = tmpl.render(cxt)
@@ -694,13 +702,22 @@ def edit(request):
         challengeobj.challengescore = request.POST['challengescore']
     if request.POST.has_key('negativescore'):
         challengeobj.negativescore = request.POST['negativescore']
-    if request.POST.has_key('mediafile'):
-        mediafile = request.POST['mediafile']
+    if request.FILES.has_key('mediafile'):
+        mediafilename = request.FILES['mediafile'].name.split(".")[0]
+        username = userobj.displayname
+        fpath, message, challengemedia = skillutils.handleuploadedfile(request.FILES['mediafile'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__(), mediafilename)
+        challengeobj.mediafile = request.FILES['mediafile'].name
     challengeobj.maxresponsesizeallowable = -1
     if request.POST.has_key('maxsizewords'):
         challengeobj.maxresponsesizeallowable = request.POST['maxsizewords']
+        challengeobj.maxresponsesizeallowable = re.sub(re.compile(r"&#39;"), '', challengeobj.maxresponsesizeallowable)
+        if challengeobj.maxresponsesizeallowable == "":
+            challengeobj.maxresponsesizeallowable = -1
     elif request.POST.has_key('maxsizelines'):
         challengeobj.maxresponsesizeallowable = request.POST['maxsizelines']
+        challengeobj.maxresponsesizeallowable = re.sub(re.compile(r"&#39;"), '', challengeobj.maxresponsesizeallowable)
+        if challengeobj.maxresponsesizeallowable == "":
+            challengeobj.maxresponsesizeallowable = -1
     if request.POST.has_key('oneormore'):
         oneormore = request.POST['oneormore']
     if request.POST.has_key('skillquality'):
@@ -738,17 +755,157 @@ def edit(request):
             challengeobj.responsekey = '#||#'.join(responses)
     # ... and finally save the challenge object.
     challengeobj.save()
-    tests_user_dict = get_user_tests(request)
-    inc_context = skillutils.includedtemplatevars("Tests", request)
-    for inc_key in inc_context.keys():
-        tests_user_dict[inc_key] = inc_context[inc_key]
-    # Now create and render the template here
-    tmpl = get_template("tests/edit_challenge.html")
-    tests_user_dict.update(csrf(request))
-    cxt = Context(tests_user_dict)
-    editchallengehtml = tmpl.render(cxt)
+    savedchallengesqset = Challenge.objects.filter(test=testobj)
+    savedchallengescount = savedchallengesqset.__len__()
+    totalchallengescount = testobj.challengecount
+    if savedchallengescount > totalchallengescount: # reconcile the difference
+        testobj.challengecount = savedchallengescount
+        testobj.save()
+        totalchallengescount = testobj.challengecount
+    savedchallengesscore = 0
+    for chlng in savedchallengesqset:
+        savedchallengesscore += chlng.challengescore
+    statusmessage = "<font color='#0000AA'>Number of Challenges framed:<b>%s</b><br>Total Number of Challenges in the test: <b>%s</b><br>Score accounted for: <b>%s</b><br>Total Score: <b>%s</b></font><br>"%(savedchallengescount.__str__(), totalchallengescount.__str__(), savedchallengesscore.__str__(), testobj.maxscore.__str__())
+    editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(negativescoring))
+    return HttpResponse(statusmessage + editchallengehtml)
+    
+
+
+def _showtreeview(request, testobj):
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    treeview = "<center><SCRIPT language='JavaScript' src='%s/javascript/treeview/ua.js'></SCRIPT><SCRIPT language='JavaScript' src='%s/javascript/treeview/ftiens4.js'></SCRIPT><SCRIPT language='JavaScript'> USETEXTLINKS = 1;STARTALLOPEN = 0;ICONPATH = '%s/images/treeview/';"%(mysettings.STATIC_ROOT, mysettings.STATIC_ROOT, mysettings.STATIC_ROOT)
+    treeview += "foldersTree = gFld(\"<i><font size='-1' color='#0000AA'>%s</font></i>\", \"diffFolder.gif\", \"<img src=''>\");"%testobj.testname
+    challengesqset = Challenge.objects.filter(test=testobj)
+    varcounter = 1
+    for chlng in challengesqset:
+        treeview += "foldersTree.treeID = 'Frameset';"
+        statementshort = chlng.statement[:10]
+        treeview += "var varservice_%s = \"<a href='#' id='chkservice_%s' onClick='javascript:editchallange(%s);'>%s</a>\";"%(varcounter.__str__(),varcounter.__str__(), chlng.id, statementshort)
+        varcounter += 1
+    treeview += "</SCRIPT></center><DIV style='position:absolute; top:0; left:0;'><TABLE border=0><TR><TD><FONT size=-2><A style='font-size:7pt;text-decoration:none;color:silver' href='http://www.treemenu.net/'></A></FONT></TD></TR></TABLE></DIV><SCRIPT language='JavaScript'>initializeDocument();</SCRIPT>"
+    return treeview
+
+
+"""
+View to display the test summary screen.  This screen allows the creator
+to view challenges and various attributes of the challenges on one screen,
+enabling the creator to modify/edit/delete them.
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def testsummary(request):
+    message = ''
+    if request.method != "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    test_id = None
+    if not request.GET.has_key('test_id'):
+        message = error_msg('1055')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    test_id = request.GET['test_id']
+    testobj = None
+    tests_summary_dict = {}
+    testqset = Test.objects.filter(id=test_id)
+    if testqset.__len__() == 0:
+        message = error_msg('1056')
+        response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    else:
+        testobj = testqset[0]
+    challengesqset = Challenge.objects.filter(test=testobj) # This should yield one or more challenges
+    tests_summary_dict['challenge_links_list'] = []
+    tests_summary_dict['challenges'] = []
+    testlinkid = testobj.testlinkid
+    for chlng in challengesqset:
+        challenge = {}
+        challenge['shortform'] = chlng.statement[:12] + " ..."
+        challenge['id'] = chlng.id
+        challenge['challengescore'] = chlng.challengescore
+        challenge['challengetype'] = mysettings.TEST_TYPES[chlng.challengetype]
+        challenge['timeframe'] = chlng.timeframe
+        challenge['mediafile'] = chlng.mediafile
+        challenge['mediafileshortname'] = challenge['mediafile']
+        if not challenge['mediafile']:
+            challenge['mediafileshortname'] = ""
+        else:
+            challenge['mediafileshortname'] = chlng.mediafile[:8] + " ..."
+        challenge['statement'] = chlng.statement
+        tests_summary_dict['challenge_links_list'].append((chlng.id, chlng.statement[:20] + " ...", testobj.id, testlinkid))
+        tests_summary_dict['challenges'].append(challenge)
+    tests_summary_dict['testname'] = testobj.testname
+    tests_summary_dict['test_id'] = testobj.id
+    tmpl = get_template("tests/test_summary.html")
+    tests_summary_dict.update(csrf(request))
+    cxt = Context(tests_summary_dict)
+    testsummaryhtml = tmpl.render(cxt)
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
-        editchallengehtml = editchallengehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
-    return HttpResponse(editchallengehtml)
+        testsummaryhtml = testsummaryhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(testsummaryhtml)
+
+
+"""
+This view is responsible for handling all delete challenge requests.
+Delete challenge requests come from one of 2 javascript functions in
+test.html - 'deletechallenge()' to delete a single challenge and
+'deleteselected()' to delete multiple challenges at a single sweep.
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def deletechallenges(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    challenge_id = None
+    if not request.POST.has_key('challengeid'):
+        message = error_msg('1057')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    else:
+        challenge_id = request.POST['challengeid']
+    numchallenges = 1
+    if request.POST.has_key('numchallenges'):
+        numchallenges = request.POST['numchallenges']
+    challengeidlist = challenge_id.split("#||#")
+    if numchallenges == 1:
+        challengeidlist = [challengeidlist[0], ]
+    #elif numchallenges > 1:
+    #    challengeidlist.pop() # pop the last element as it is bound to be empty.
+    challengesdeleted = []
+    missingchidlist = []
+    for chid in challengeidlist:
+        try:
+            chlng = Challenge.objects.filter(id=chid)[0]
+            chlng.delete()
+            challengesdeleted.append(chid)
+        except:
+            missingchidlist.append(chid)
+    message = "The challenges/questions identified by the following Ids have been deleted: " + ", ".join(challengesdeleted) + ". "
+    if missingchidlist.__len__() > 0:
+        message += "The following challenge Ids could not be found: " + ", ".join(missingchidlist) + ". "
+    if challengesdeleted.__len__() == numchallenges:
+        message = "The selected challenges where successfully deleted."
+    response = HttpResponse(message)
+    return response
 
 

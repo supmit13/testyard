@@ -390,8 +390,100 @@
 		  }
 		}
 
-		
-		function editchallenge(){
+		// Javascript to update challenges
+		function editchallenge(challengeid){
+		  
+		}
+
+		// Function to delete a challenge from the challenges 
+		// list screen
+		function deletechallenge(challengeid, challengestatement, test_id){
+		  var resp = confirm("This action will permanently delete the challenge '" + challengestatement + "'. Do you want to continue?");
+		  if(!resp){
+		    return false;
+		  }
+		  else{ // Make an xmlhttp call to the appropriate view.
+		    var xmlhttp; 
+		    if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "challengeid=" + challengeid + "&numchallenges=1&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value; // Need to send challenge Id as POST param
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        alert(xmlhttp.responseText);
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ deletechallengesurl }}', true); // Not an ajax call since we want to ensure that the  action has been successfully completed before taking any further steps.
+  		    xmlhttp.send(postdata);
+		    // IMPORTANT NOTE:
+		    // Here we need to create a mechanism to wait for a fixed
+		    // interval of time and if the POST request doesn't fetch
+		    // us any results from the server within that time, we
+		    // will need to tell the user that the action wasn't
+		    // successfully performed.
+		  }
+		  showtestsummary(test_id);
+		  return true;
+		}
+
+		//Function to delete multiple selected challenges at one stroke.
+		//This is available from the challenges list screen.
+		function deleteselected(test_id){
+		  var resp = confirm("This action will permanently delete the selected challenges. Do you want to continue?");
+		  if(!resp){
+		    return false;
+		  }
+		  else{ // Make an ajax call to the appropriate view.
+		    var xmlhttp;
+		    var numchallenges = 0;
+		    var chkchallengepattern = new RegExp("^chk_(\\d+)$");
+		    var challengeids = "";
+		    for(var ctr=0; ctr < document.frmedittest.elements.length; ctr++){
+		      frmelement = document.frmedittest.elements[ctr];
+		      if(!chkchallengepattern.test(frmelement.name)){ // not a checkbox
+		        continue;
+		      }
+		      else{ // if it is a checkbox, check its state...
+			if(frmelement.checked == true){ // if checked, annex to 'challengeids'.
+			  challengeids += frmelement.value + "#||#";
+			  numchallenges++;
+			}
+		      }
+		    }
+		    if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    // Multiple challenge ids should be separatd by '#||#'
+		    postdata = "challengeid=" + challengeids + "&numchallenges=" + numchallenges + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value; // Need to send challenge Ids as POST param
+		    // alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        alert(xmlhttp.responseText);
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ deletechallengesurl }}', true); // Not an ajax call since we want to ensure that the  action has been successfully completed before taking any further steps.
+  		    xmlhttp.send(postdata); // There! data POSTed.
+		  }
+		  showtestsummary(test_id);
+		  return true;
+		}
+
+		// Function to save changes to score and timeframe of 
+		// multiple challenges of a test. Available from a button
+		// ("Save Changes") on challenges list screen.
+		function savechanges(){
+		}
+
+		// Function to initiate addition of challenge from the
+		// challenges list screen.
+		function addchallenges(testid){
 		}
 
 		// Validate the data entered by the user in the challenge
@@ -441,19 +533,42 @@
 		  return true;
 		}
 
+		function savechallenge(usrid){
+		  var postdata = new FormData(document.forms.namedItem("challengeform"));
+		  var xmlhttp;
+  		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+  		  // Register the handler
+  		  xmlhttp.onreadystatechange = function(){
+  		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		    var thediv=document.getElementById('createtestdiv');
+		    thediv.style.display = "";
+		    thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+  		  }
+  		  };
+  		  xmlhttp.open("POST", '{{ addeditchallengeurl }}', true);
+  		xmlhttp.send(postdata);
+  		// document.getElementById('uploadbox').style.display = '';
+  		// document.getElementById('uploadbox').innerHTML += "<br><img src='static/images/loading_small.gif'>";
+		return true;
+		}
+
 		function saveandcontinue(usrid){
 		  if(!validatechallengedata()){
 		    return false;
 		  }
-		  createtest(usrid, '{{ addeditchallengeurl }}', 1); // Calling the same test creator function but with the challenge add/edit URL.
-		  return true;
+		  savechallenge(usrid);
 		}
 
 		function saveandclose(usrid){
 		  if(!validatechallengedata()){
 		    return false;
 		  }
-		  createtest(usrid, '{{ addeditchallengeurl }}', 1); // Calling the same test creator function but with the challenge add/edit URL.
+		  savechallenge(usrid);
 		  closediv();
 		  return true;
 		}
@@ -550,6 +665,35 @@
 		    thediv.innerHTML = '';
 		  }
 		  return false;
+		}
+
+		// Function to show test summary from where one can manipulate challenge scores, add/delete challenges, etc. (ah! here we go again!).
+		function showtestsummary(testid){
+		  // Send a xmlhttp GET request with the test id. Take the response and mount it on 'createtestdiv'.
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+  		  // Register the handler
+  		  xmlhttp.onreadystatechange = function(){
+		  // alert(xmlhttp.responseText);
+  		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		    var thediv=document.getElementById('createtestdiv');
+		    thediv.style.display = "";
+		    thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+  		  }
+  		  };
+		  //alert('{{hosturl}}/{{ testsummaryurl }}?test_id=' + testid);
+		  xmlhttp.open("GET", '{{hosturl}}/{{ testsummaryurl }}?test_id=' + testid, true);
+  		  xmlhttp.send();
+		  return true;
+		}
+
+		// Opens the test metadata edit screen.
+		function edittest(testid){
 		}
 		</script>
 
