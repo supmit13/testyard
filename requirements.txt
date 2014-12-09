@@ -35,4 +35,5 @@ TestYard Functional Requirements
 
 17. A recruiter member should be able to copy a publicly available test (created by any other member) or a privately shared test (created and shared by a connected member). This will create a duplicate copy of the test under the member who copied it. The member would then be able to make changes to this test and share it with candidates by sending a link to the test to each candidate's email address (the system should take care of this automatically). By default, the copied test will have the same scope as the original test, but the member would be able to modify the scope of this duplicated test.
 
+18. The system should support execution of code in the following programming languages: C, Perl, Python, Ruby, Linux Bash Script, Linux CShell Script, C++, C# (Mono on Linux), Java, Javascript, Lua, Objective-C, PHP, SQL, VB.NET, VBScript, Pascal, Fortran, Lisp, SmallTalk, Scala, Tcl, Ada 95, Delphi and ColdFusion. The system should also allow compilation and building of the source code in all the above languages.
 
