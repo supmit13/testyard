@@ -39,3 +39,4 @@ TestYard Functional Requirements
 
 19. The system should also support various frameworks (like Django (python), Pylons (python), Class::DBI (perl), Zend (PHP), NodeJS (javascript)) etc.
 
+20. Recruiters can also post projects on this website for freelancers with the requisite skills to bid on them. The recruiter should specify the skill required to do the project, and freelancers/candidates with more than a predefined score in that skill can bid on the project. That way, there will be less number of bidders who are not serious enough for the project.
