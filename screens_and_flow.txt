@@ -1,0 +1,18 @@
+Screen Name: Registration screen (Applicable only for recruiters. Candidates need not have a registered account)
+Fields: Username (type=text), Password (type=password), Confirm Password (type=password), Email Id (type=text), Technologies (select), Captcha (type=text), Membership Plan (type=radio), Payment Gateway Integration, Register (button), Clear (button).
+
+Screen Name: Login screen
+Fields: Username (type=text), Password (type=password), Keep me logged in (type=checkbox), Login (type=button), Reset Password (link URL).
+
+Screen Name: Dashboard (landing page after logging in)
+Display: Username, Email Id, Change Password link, Links to the list of tests created by the recruiter (enclosed in anchor tags), Number of candidates appeared for each of them (enclosed in anchor tag), Number of candidates passed (enclosed in anchor tag), Number of candidates failed (enclosed in anchor tag), Topics/subjects of the test, Type of test (objective/subjective/coding/algorithm), Scope of the test (private or public), a multi-select dropdown listing all recruiters who are connected to the logged  in user, a "Share" link (enclosed in anchor tag) for privately scoped tests and "Invite Candidates" link to invite candidates to take the test. Clicking on this "Share" link will share the test with the selected recruiters in the multi-select dropdown. Clicking on the "Invite Candidates" link will open a simple textarea control where the recruiter would be able to add email Ids as a comma separated list. Next to the textarea there will be a "Send" button, and clicking on it will email the test link to all the email Ids specified in the textarea. (The links sent to the email Ids will be different for each email Id. The link to the test will have a fixed part that specifies the test and a dynamic part that specifies the candidate).
+Clicking the mouse on any of the test links will open the test in a new window. Recruiter would be able to edit the test here. 
+Placing the tooltip on the <Number of candidates appeared> will display a layer with the names/email ids of all candidates and their respective scores. 
+Placing the tooltip on the <Number of candidates passed> will display a layer with the names/email ids of candidates who passed the test and their respective scores. 
+Placing the tooltip on the <Number of candidates failed> will display a layer with the names/email ids of candidates who failed and their respective scores.
+
+Screen Name: Search Tests
+Display: Test Topics (select), Test Type (select), Search (type=button). Search will be performed on all publicly scoped tests of all users, all privately scoped tests of the logged in users, and all privately scoped tests of connected users that have been shared explicitly with the logged in user.
+
+Screen Name: Left Panel
+Display: Various links - Search Tests, Create Test Plan, Create Test, Logout, Change Password, List Connections, Add Technologies.
