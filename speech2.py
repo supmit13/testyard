@@ -19,8 +19,7 @@ def decodeSpeech(hmmd,lmdir,dictp,wavfile):
     wavFile.seek(44)
     speechRec.decode_raw(wavFile)
     result = speechRec.get_hyp()
-
-    return result[0]
+    return result
 
 if __name__ == "__main__":
     hmdir = "/usr/share/pocketsphinx/model/hmm/wsj1"
@@ -28,7 +27,10 @@ if __name__ == "__main__":
     dictd = "/usr/share/pocketsphinx/model/lm/wsj/wlist5o.dic"
     wavfile = sys.argv[1]
     recognised = decodeSpeech(hmdir,lmd,dictd,wavfile)
+    #print recognised
+    for word in recognised:
+        print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+        print word.__str__() + " "
+        print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
-    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-    print recognised
-    print "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
+# http://cmusphinx.sourceforge.net/wiki/gstreamer
