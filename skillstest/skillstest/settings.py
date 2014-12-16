@@ -1,6 +1,6 @@
 # Django settings for skillstest project.
 
-import skills_settings
+from skills_settings import *
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
