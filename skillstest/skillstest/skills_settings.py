@@ -18,22 +18,22 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Ruby' : '/usr/local/bin/ruby', \
                          'Curl' : '/usr/bin/curl', \
                          'Bash' : '/bin/bash', \
-                         'Cshell' : '', \
+                         'Cshell' : '/bin/csh', \
                          'C++' : '/usr/bin/g++', \
                          'C#' : '/usr/bin/mono', \
                          'Java' : '/usr/bin/java', \
                          'JavaScript' : '/usr/bin/js', \
                          'Lua' : '/usr/local/bin/lua', \
-                         'Objective-C' : '', \
-                         'PHP' : '', \
+                         'Objective-C' : '/usr/bin/clang', \
+                         'PHP' : '/usr/bin/php5', \
                          'VB.NET' : '', \
                          'VBScript' : '', \
-                         'Pascal' : '', \
-                         'Fortran' : '', \
+                         'Pascal' : '/usr/local/bin/fpc', \
+                         'Fortran' : '/usr/bin/gfortran', \
                          'Lisp' : '', \
                          'SmallTalk' : '', \
                          'Scala' : '', \
-                         'Tcl' : '', \
+                         'Tcl' : '/usr/bin/tclsh', \
                          'Ada95' : '', \
                          'Delphi' : '', \
                          'ColdFusion' : '',}
