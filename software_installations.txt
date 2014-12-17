@@ -101,3 +101,10 @@ to this script:
 If you have installed libsigsegv, but clisp does not detect it,
 you might have installed it incorrectly, see section 2 in in unix/INSTALL.
 
+
+===================================================================================
+
+Dependencies:
+--------------
+
+PIL-1.1.7
