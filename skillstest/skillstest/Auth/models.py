@@ -28,5 +28,32 @@ class User(models.Model):
 
 
 class Session(models.Model):
-    pass
+    sessioncode = models.CharField(max_length=50, unique=True)
+    status = models.BooleanField(default=True) # Will be 'True' as soon as the user logs in, and will be 'False' when user logs out.
+    # The 'status' will automatically be set to 'False' after a predefined period. So users will need to login again after that period.
+    # The predefined value will be set in the settings file skills_settings.py.
+    userid = models.ForeignKey(User)
+    starttime = models.DateTimeField(auto_now_add=True) # Should be automatically set when the object is created.
+    endtime = models.DateTimeField(default=None)
+    sourceip = models.GenericIPAddressField(protocol='both')
+    istest = models.BooleanField(default=False) # Set it to True during testing the app.
+    useragent = models.CharField(max_length=255, default="") # Signature of the user-agent to guess the device used by the user.
+    # This info may later be used for analytics.
+
+
+
+class Privilege(models.Model):
+    privname = models.CharField(max_length=50, unique=True)
+    privdesc = models.TextField(default="")
+    createdate = models.DateTimeField(auto_now_add=True) # Date and time at which this privilege was created.
+
+
+class UserPrivilege(models.Model):
+    userid = models.ForeignKey(User)
+    privilegeid = models.ForeignKey(Privilege)
+    lastmod = models.DateTimeField(auto_now=True) # Date and time at which this privilege was last modified.
+    status = models.BooleanField(default=True) # This will be used in a case where the user has a privilege but
+    # is not allowed to use it for a certain span of time. For example, a user may be allowed to conduct a test
+    # only once in a month (a little far-fetched, but it might be necessary later).
+    
 

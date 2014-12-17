@@ -1,0 +1,16 @@
+Wed, 17 Dec 2014, 17:27 HRS.
+----------------------------
+1. skillstest/skills_settings.py
+2. skillstest/Auth/models.py
+3. skillstest/Auth/views.py
+4. skillstest/settings.py
+===============================
+
+Wed, 17 Dec 2014, 22:51 HRS.
+----------------------------
+1. skillstest/Auth/models.py
+2. skillstest/urls.py
+3. db.sql
+4. skillstest/Auth/views.py
+5. skillstest/skills_settings.py
+6. skillstest/settings.py
