@@ -38,3 +38,10 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Delphi' : '', \
                          'ColdFusion' : '',}
  
+
+SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
+                         'CONS' : 86400, \
+                         'ACAD' : 86400, \
+                         'CERT' : 86400, }
+
+
