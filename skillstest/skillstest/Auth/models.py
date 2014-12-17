@@ -22,8 +22,8 @@ class User(models.Model):
     # OTHR users are the ones who do not fall in any of the above 4 categories.
     usertype = models.CharField(max_length=4, choices=(('CORP', 'Corporate'), ('CONS', 'Consultant'), ('ACAD', 'Academic'), ('CERT', 'Certification')))
     mobileno = models.CharField(max_length=12, blank=True)
-    userpic = models.ImageField(max_length=100, upload_to=picpath)
-    #skinpic = models.ImageField(max_length=100, upload_to=picpath)
+    userpic = models.ImageField(max_length=100, upload_to=profpicpath)
+    #skinpic = models.ImageField(max_length=100, upload_to=profpicpath)
     
 
 
