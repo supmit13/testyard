@@ -1,8 +1,13 @@
-# Create your views here.
 import os, sys, re, time
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 
-
-def login(request):
+def entry(request):
     pass
+
+
+def dashboard(request):
+    pass
+
+
+
