@@ -1,6 +1,6 @@
 # Django specific imports...
 from django.conf import settings
-from skillstest import settings as mysettings
+
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.views.generic import View
 from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedirect, QueryDict
@@ -14,6 +14,7 @@ from django.utils.translation import ugettext as _
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.template import Template, Context
+from django.template.loader import get_template
 
 #from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
@@ -29,6 +30,8 @@ import decimal, math
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session
+from skillstest import settings as mysettings
+from skillstest.errors import error_msg
 
 """
 @sensitive_post_parameters()
@@ -75,8 +78,23 @@ def login(request, template_name='authentication/login.html',
     return TemplateResponse(request, template_name, context,
                             current_app=current_app)
 """
-    
+
+@sensitive_post_parameters()
+@csrf_protect
+@never_cache
 def login(request):
+    if request.method == "GET":
+        # Display login form
+        curdate = datetime.datetime.now()
+        tmpl = get_template("authentication/login.html")
+        cxt = Context({'curdate' : curdate, })
+        loginhtml = tmpl.render(cxt)
+        return HttpResponse(loginhtml)
+    elif request.method == "POST":
+        pass
+    else:
+        message = error_msg('1001')
+        return HttpResponse(message)
     try:
         fp = open(mysettings.PROJECT_ROOT + "/templates/authentication/login.html")
         html = fp.read()

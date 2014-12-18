@@ -24,3 +24,24 @@ Wed, 18 Dec 2014, 1:58 HRS.
 4. skillstest/settings.py
 5. templates
 6. skillstest/views.py
+
+Thu, 18 Dec 2014, 15:24 HRS.
+----------------------------
+1. requirements.txt
+2. screens_and_flow.txt
+3. skillstest/templates/authentication/login.html
+
+=================================
+
+Fri, 19 Dec 2014, 00:05 HRS
+---------------------------
+1. skillstest/errors.py
+2. skillstest/Auth/views.py
+3. skillstest/urls.py
+4. skillstest/skills_settings.py
+5. templates/authentication/login.html
+6. templates/comments.html
+7. static/images
+8. static/css/style.css
+9. static/javascript/pageutils.js
+10.

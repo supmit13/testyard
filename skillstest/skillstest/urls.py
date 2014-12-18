@@ -17,4 +17,5 @@ urlpatterns = patterns('',
     url(r'^$', 'skillstest.views.entry', name='home'),
     url(r'skillstest/$', 'skillstest.views.dashboard', name='dashboard'),
     url(r'skillstest/login/$', 'skillstest.Auth.views.login', name='login'),
+    url(r'skillstest/landing/$', 'skillstest.views.entry', name='landing')
 )

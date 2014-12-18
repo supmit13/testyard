@@ -45,3 +45,4 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'CERT' : 86400, }
 
 
+LOGIN_REDIRECT_URL = "/skillstest/landing/"

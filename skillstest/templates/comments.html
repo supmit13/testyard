@@ -3,8 +3,7 @@
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
 <title>TechOne Template</title>
-<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
-<script language='JavaScript' src='/static/javascript/pageutils.js'></script>
+<link rel="stylesheet" type="text/css" href="style.css" />
 </head>
 <body>
 
@@ -34,49 +33,81 @@
 		
 		<div class="post">
 			
-			<h2>Welcome to TestYard - </h2><h3> {{ curdate }}
-			
-			
+			<h2>Welcome to Template</h2>
+			<p class="posted"><span class="meta">March 17, 2010 - Posted by Lorem in <a href="#">Uncategorized</a></span></p>
+
 			<div class="entry">
-			
+
 			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam sem neque, porttitor vestibulum, porta eu, dignissim non, leo. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nunc eu nibh. Vivamus augue lacus, gravida ac, pellentesque nec, varius at, mi.</p>
 			<p><a href="#">Vestibulum scelerisque</a>, tortor vel dignissim dapibus, sapien tellus semper velit, et rutrum magna lacus sed mauris. Nam tincidunt facilisis nisl. Mauris libero nunc, accumsan id, ultrices ac, venenatis at, nisi. Curabitur ullamcorper. Suspendisse ipsum metus, mollis id, facilisis eu, suscipit sit amet, magna. Nullam neque lorem, sollicitudin eu, elementum scelerisque, aliquam a, nunc.</p>
 			<blockquote><p>Penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin ut diam sit amet leo dictum interdum. Nulla ornare nisl id elit. In consequat. Fusce sed pede. Donec quis sem et lacus feugiat nonummy. Fusce id nunc non nulla dapibus mollis.</p></blockquote>
 			<p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam sem neque, porttitor vestibulum, porta eu, dignissim non, leo. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nunc eu nibh. Vivamus augue lacus, gravida ac, pellentesque nec, varius at, mi.</p>
-			
+
 			</div>
 		
 		</div>
 
 		<!-- ### Post Entry End ### -->
 
-		<!-- ### Post Entry Begin ###  -->
+		<!-- #### Comments #### -->
 
-		<div class="post">
-			<span class="meta">
-			<h3>Login below&nbsp;&nbsp; |&nbsp;&nbsp; <font size=-2>New user?&nbsp;&nbsp;</font> <a href='/skillstest/register/'>Register here</a></h3>
-			
-			<div class="entry">
+		<h3>4 Comments on "Welcome to Template Design"</h3>
+	
+		<ul id="commentlist">
 
-			<form name='loginform' method='POST' action='/skillstest/login/'>
-			<b>Username: </b><input type='text' name='username' value=''><br />
-			<b>Password: </b><input type='password' name='password' value=''><br />
-			{% csrf_token %}
-			<input type='button' name='login' value='Login' onClick='javascript:process_login();'>
-			<input type='checkbox' name='keepmeloggedin' value='1' checked><b><i>Keep me logged in</i></b>
-			</form>
-			</div>
-			</span>
+	
+		<li class="altcolor1">
+
+		<a href="#">Vestibulum</a> said on March 18th, 2010 at 10:15 AM:
+		<p>Cras risus diam, condimentum at, fermentum sagittis, euismod sit amet, odio. Nulla facilisi. Curabitur purus lectus, iaculis nec, facilisis et, hendrerit non, felis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Suspendisse tincidunt interdum mi.</p>
+		</li>
+	
+		<li class="altcolor2">
+		<a href="#">Phasellus</a> said on March 18th, 2010 at 18:55 PM:
+		<p>Nam id mi nec arcu facilisis tincidunt. Etiam sed eros et diam bibendum bibendum. In hac habitasse platea dictumst. Nullam eu odio et arcu pharetra consectetuer.</p>	
+		</li>
+
+		<li class="altcolor1">
+		<a href="#">Aenean</a> said on March 20th, 2010 at 14:25 PM:
+		<p>Sed mi nisl, pharetra a, posuere a, laoreet id, mi. Duis elit dolor, tempus sed, molestie id, sollicitudin nec, felis. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam metus elit, vehicula quis, blandit id, viverra sed, erat.</p>	
+		</li>
+
+		<li class="altcolor2">
+		<a href="#">Mauris</a> said on March 21th, 2010 at 9:13 AM:
+		<p>In suscipit, nisi ullamcorper ornare lobortis, neque erat rutrum arcu, id sollicitudin ligula libero et nisl. Aenean porttitor. Fusce ac justo ut elit laoreet sodales.</p>	
+		</li>
+
+		</ul>		
+
+		<!-- #### Comments End #### -->
+	
+		<!-- #### Post Comment Form #### -->
+
+		<h3>Leave a comment</h3>
+		
+		<div id="writecomment">
+
+		<form action="#" method="post" id="commentform">
+		<p><input type="text" name="author" id="author" value="" size="22" tabindex="1" />
+
+		<label for="author">Name (required)</label></p>
+
+		<p><input type="text" name="email" id="email" value="" size="22" tabindex="2" />
+		<label for="email">E-Mail (will not be published) (required)</label></p>
+
+		<p><input type="text" name="url" id="url" value="" size="22" tabindex="3" />
+		<label for="url">Website</label></p>
+
+		<p><textarea name="comment" id="comment" cols="100%" rows="10" tabindex="4"></textarea></p>
+
+		<p><input name="submit" type="submit" id="submit" tabindex="5" value="Submit Comment" />
+		<input type="hidden" name="comment_post_ID" value="1" /></p>
+		</form>
+
 		</div>
-		
-		<!-- ### Post Entry End ###  -->
-		
-		
 
-		<div class="postpagesnav">
-		<div class="older"><a href="#">&laquo; Older entries</a></div>
-		<div class="newer"><a href="#">Newer entries &raquo;</a></div>
-		</div>
+		<!-- #### Post Comment Form End #### -->
+
 		
 		</div>
 		
@@ -111,9 +142,9 @@
 	
 		<li><h2>Archives</h2>
 		<ul>
-			<li><a href="#">March 2010</a></li>
-			<li><a href="#">Febuary 2010</a></li>
-			<li><a href="#">January 2010</a></li>
+			<li><a href="#">March 2009</a></li>
+			<li><a href="#">Febuary 2009</a></li>
+			<li><a href="#">January 2009</a></li>
 		</ul>
 
 		</li>
