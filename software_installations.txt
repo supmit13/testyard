@@ -108,3 +108,19 @@ Dependencies:
 --------------
 
 PIL-1.1.7
+
+
+
+
+==================================================================================
+Cloud9: 
+------
+Username: supmit (supmit2k3@yahoo.com)
+Password: spmprx
+
+Start mysql server: sudo service mysql start
+
+Login in to mysql client: mysql -u root
+(Note: no password entered).
+
+
