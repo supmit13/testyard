@@ -22,5 +22,5 @@ Wed, 18 Dec 2014, 1:58 HRS.
 2. skillstest/Auth/views.py
 3. skillstest/skills_settings.py
 4. skillstest/settings.py
-5. templates/*
+5. templates
 6. skillstest/views.py
