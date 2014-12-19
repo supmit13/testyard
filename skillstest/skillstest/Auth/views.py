@@ -98,17 +98,6 @@ def login(request):
     else:
         message = error_msg('1001')
         return HttpResponse(message)
-    try:
-        logintemplate = os.path.join(mysettings.PROJECT_ROOT, "templates/authentication/login.html")
-        fp = open(logintemplate)
-        html = fp.read()
-        fp.close()
-    except:
-        return HttpResponse("Crapped!")
-    t = Template(html)
-    c = Context({})
-    out = t.render(c)
-    return HttpResponse(out)
 
 
 def isloggedin(user, session):
