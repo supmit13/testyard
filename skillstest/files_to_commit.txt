@@ -44,4 +44,4 @@ Fri, 19 Dec 2014, 00:05 HRS
 7. static/images
 8. static/css/style.css
 9. static/javascript/pageutils.js
-10.
+10.files_to_commit.txt
