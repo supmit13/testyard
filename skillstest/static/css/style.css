@@ -3,7 +3,7 @@ body {
 	padding: 0px;
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
-	background: #ffffff url('images/bg.gif') left top repeat-x; 
+	background: #ffffff url('../../static/images/bg.gif') left top repeat-x; 
 	color: #1e1e1e;
 }
 
@@ -110,7 +110,7 @@ img.alignleft {
 	float: left;
 	display: block;
 	color: #ffffff;
-	background: url('images/bbg.gif') top left repeat-x;
+	background: url('../../static/images/bbg.gif') top left repeat-x;
 	font-weight: bold;
 	font-size: 13px;
 	text-decoration: none;

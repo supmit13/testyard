@@ -1,10 +1,18 @@
 from django.conf.urls import patterns, include, url
+from django.conf import settings
+from skillstest import settings as mysettings
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'/static/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': mysettings.STATIC_ROOT}),
+
+)
+
+urlpatterns += patterns('',
     # Examples:
     # url(r'^$', 'skillstest.views.home', name='home'),
     # url(r'^skillstest/', include('skillstest.foo.urls')),
