@@ -63,4 +63,5 @@ Sat, 20 Dec 2014, 00:19 HRS (IST).
 
 Sat, 20 Dec 2014, 
 --------------------------
-1. 
+1. templates/authentication/login.html
+2. skillstest/Auth/views.py

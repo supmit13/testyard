@@ -80,6 +80,15 @@ def login(request, template_name='authentication/login.html',
                             current_app=current_app)
 """
 
+def authenticate(**credentials):
+    uname, passwd = credentials.items()
+    user = User.objects.get(displayname__exact=uname)
+    if passwd == user.password:
+        return user
+    else:
+        return None
+
+
 @sensitive_post_parameters()
 @csrf_protect
 @never_cache
@@ -94,7 +103,14 @@ def login(request):
         loginhtml = tmpl.render(cxt)
         return HttpResponse(loginhtml)
     elif request.method == "POST":
-        pass
+        username = request.POST.get('username') or ""
+        password = request.POST.get('password') or ""
+        keeploggedin = request.POST.get('keepmeloggedin') or 0
+        obj = authenticate(username=username, password=password)
+        if not obj: # Incorrect password - return user to login screen with an appropriate message.
+            pass
+        else: # user will be logged in
+            pass
     else:
         message = error_msg('1001')
         return HttpResponse(message)
