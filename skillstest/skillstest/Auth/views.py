@@ -2,6 +2,7 @@
 from django.conf import settings
 
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
+from django.core.context_processors import csrf
 from django.views.generic import View
 from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedirect, QueryDict
 from django.core.urlresolvers import reverse
@@ -87,7 +88,9 @@ def login(request):
         # Display login form
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
-        cxt = Context({'curdate' : curdate, })
+        c = {'curdate' : curdate, }
+        c.update(csrf(request))
+        cxt = Context(c)
         loginhtml = tmpl.render(cxt)
         return HttpResponse(loginhtml)
     elif request.method == "POST":
@@ -96,7 +99,8 @@ def login(request):
         message = error_msg('1001')
         return HttpResponse(message)
     try:
-        fp = open(mysettings.PROJECT_ROOT + "/templates/authentication/login.html")
+        logintemplate = os.path.join(mysettings.PROJECT_ROOT, "templates/authentication/login.html")
+        fp = open(logintemplate)
         html = fp.read()
         fp.close()
     except:
