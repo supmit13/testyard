@@ -24,6 +24,6 @@ urlpatterns += patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'skillstest.views.entry', name='home'),
     url(r'skillstest/$', 'skillstest.views.dashboard', name='dashboard'),
-    url(r'skillstest/login/$', 'skillstest.Auth.views.login', name='login'),
+    url("%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login'),
     url(r'skillstest/landing/$', 'skillstest.views.entry', name='landing')
 )

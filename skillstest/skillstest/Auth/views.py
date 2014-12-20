@@ -20,9 +20,11 @@ from django.template.loader import get_template
 #from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
 #from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User as djangoUser
+#from django.contrib.auth.models import Session as djangoSession
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
+from django.contrib.sessions.backends.db import SessionStore
 
 # Standard libraries...
 import os, sys, re, time, datetime
@@ -106,14 +108,37 @@ def login(request):
         username = request.POST.get('username') or ""
         password = request.POST.get('password') or ""
         keeploggedin = request.POST.get('keepmeloggedin') or 0
-        obj = authenticate(username=username, password=password)
-        if not obj: # Incorrect password - return user to login screen with an appropriate message.
-            pass
-        else: # user will be logged in
-            pass
+        userobj = authenticate(username=username, password=password)
+        if not userobj: # Incorrect password - return user to login screen with an appropriate message.
+            message = error_msg('1002')
+            return HttpResponseRedirect(mysettings.LOGIN_URL + "?msg" + message)
+        else: # user will be logged in after checking the active field
+            if userobj.active:
+                sessobj = Session()
+                s = SessionStore()
+                sesscode = s.session_key
+                sessobj.sessioncode = sesscode
+                sessobj.userid = userobj.id
+                # sessobj.starttime should get populated on its own when we save this session object.
+                sessobj.endtime = None
+                sessobj.sourceip = request.META['REMOTE_ADDR']
+                if userobj.istest: # This session is being performed by a test user, so this must be a test session.
+                    sessobj.istest = True
+                elif mysettings.TEST_RUN: # This is a test run as mysettings.TEST_RUN is set to True
+                    sessobj.istest = True
+                else:
+                    sessobj.istest = False
+                sessobj.useragent = request.META['HTTP_USER_AGENT']
+                # Now save the session...
+                sessobj.save()
+                # ... and redirect to landing page.
+                return HttpResponseRedirect(mysettings.LOGIN_REDIRECT_URL)
+            else:
+                message = error_msg('1003')
+                return HttpResponseRedirect(mysettings.LOGIN_URL + "?msg" + message)
     else:
         message = error_msg('1001')
-        return HttpResponse(message)
+        return HttpResponseRedirect(mysettings.LOGIN_URL + "?msg" + message)
 
 
 def isloggedin(user, session):

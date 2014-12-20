@@ -3,7 +3,8 @@ import inspect
 
 error_codes = { \
         '1001' : 'Unsupported request method', \
-        '1002' : '', \
+        '1002' : 'Authentication Failed - username or password didn\'t match', \
+        '1003' : 'User is not active', \
     }
 
 def error_msg(code):

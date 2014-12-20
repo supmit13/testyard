@@ -29,6 +29,7 @@ class User(models.Model):
         return "%s %s %s (%s)"%(self.firstname, self.middlename, self.lastname, self.displayname)
 
 
+
 class Session(models.Model):
     sessioncode = models.CharField(max_length=50, unique=True)
     status = models.BooleanField(default=True) # Will be 'True' as soon as the user logs in, and will be 'False' when user logs out.
@@ -45,6 +46,11 @@ class Session(models.Model):
     def __unicode__(self):
         return self.sessioncode
 
+    def isauthenticated(self):
+        if self.status and self.User.active:
+            return self.User
+        else:
+            return None
 
 
 class Privilege(models.Model):

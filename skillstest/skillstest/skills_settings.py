@@ -46,3 +46,6 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
 
 
 LOGIN_REDIRECT_URL = "/skillstest/landing/"
+LOGIN_URL = "skillstest/login/"
+
+TEST_RUN = False # Set this to True during testing the app.

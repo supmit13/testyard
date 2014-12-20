@@ -8,9 +8,16 @@ String.prototype.trim = function() {
 };
 
 // Function to validate user inputs
-function validate_user_input(){
+function validate_user_input(formname){
+    return true;
 }
 
 // Function to submit login form details.
 function process_login(){
+    if (!validate_user_input('loginform')){
+	return false;
+    }
+    else{
+	document.loginform.submit();
+    }
 }
