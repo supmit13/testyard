@@ -162,3 +162,8 @@ LOGGING = {
         },
     }
 }
+
+SESSION_COOKIE_NAME = 'sessioncode'
+SESSION_COOKIE_SECURE = False # Should be set  to True later to enable HTTPS
+SESSION_COOKIE_DOMAIN = None
+

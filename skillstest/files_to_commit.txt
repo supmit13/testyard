@@ -74,3 +74,17 @@ Sat, 20 Dec 2014, 17:32 HRS (IST).
 
 ===================================
 
+Sun, 21 Dec 2014, 06:41 HRS (IST).
+--------------------------
+1. templates/authentication/login.html
+2. skillstest/Auth/views.py
+3. skillstest/errors.py
+4. files_to_commit.txt
+5. skillstest/skills_settings.py
+6. db.sql
+7. skillstest/urls.py
+8. skillstest/settings.py
+9. skillstest/errors.py
+10.skillstest/Auth/models.py
+
+====================================

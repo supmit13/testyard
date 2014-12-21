@@ -13,9 +13,9 @@ def error_msg(code):
         callstack = stackrecs[1]
         if callstack.__len__() > 3:
             caller = callstack[3]
-            return caller + " - " + error_codes[code]
+            return caller + ": " + error_codes[code]
         else:
-            return inspect.getmodule(callstack[0]) + " - " + error_codes[code]
+            return inspect.getmodule(callstack[0]) + ": " + error_codes[code]
     else:
         return error_codes[code]
 

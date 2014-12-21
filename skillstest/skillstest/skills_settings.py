@@ -49,3 +49,26 @@ LOGIN_REDIRECT_URL = "/skillstest/landing/"
 LOGIN_URL = "skillstest/login/"
 
 TEST_RUN = False # Set this to True during testing the app.
+
+HEXCODE_CHAR_MAP = { \
+        '%20' : " ", \
+        '%27' : "'", \
+        '%22' : '"', \
+        '%24' : '$', \
+        '%25' : '%', \
+        '%26' : '&', \
+        '%2A' : '*', \
+        '%2B' : '+', \
+        '%2E' : '.', \
+        '%2F' : '/', \
+    }
+
+HTML_ENTITIES_CHAR_MAP = { \
+        '&lt;' : '<', \
+        '&gt;' : '>', \
+        '&amp;': '&', \
+        '&nbsp;' : ' ', \
+        '&quot;' : '"', \
+        '&#91;' : '[', \
+        '&#93;' : ']', \
+    }

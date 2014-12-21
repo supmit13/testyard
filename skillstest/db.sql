@@ -49,4 +49,7 @@ ALTER TABLE `Auth_userprivilege` ADD CONSTRAINT `userid_id_refs_id_42ace1b3` FOR
 CREATE INDEX `Auth_session_e2fd1d24` ON `Auth_session` (`userid_id`);
 CREATE INDEX `Auth_userprivilege_e2fd1d24` ON `Auth_userprivilege` (`userid_id`);
 CREATE INDEX `Auth_userprivilege_b05dc53f` ON `Auth_userprivilege` (`privilegeid_id`);
+
+ALTER TABLE Auth_session MODIFY endtime datetime null;
+ALTER TABLE Auth_session MODIFY sessioncode varchar(150) NOT null;
 COMMIT;

@@ -25,6 +25,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 from django.contrib.sessions.backends.db import SessionStore
+from django.contrib.auth.hashers import make_password # We will use this to generate a hash from csrftoken and user Id.
+# We will use that as our sessionid.
 
 # Standard libraries...
 import os, sys, re, time, datetime
@@ -82,13 +84,20 @@ def login(request, template_name='authentication/login.html',
                             current_app=current_app)
 """
 
-def authenticate(**credentials):
-    uname, passwd = credentials.items()
-    user = User.objects.get(displayname__exact=uname)
-    if passwd == user.password:
-        return user
-    else:
+def authenticate(uname, passwd):
+    try:
+        user = User.objects.get(displayname=uname)
+        if passwd == user.password:
+            return user
+        else:
+            return None
+    except:
         return None
+
+
+def generatesessionid(username, csrftoken, userip):
+    hashstr = make_password(username + csrftoken + userip)
+    return hashstr
 
 
 @sensitive_post_parameters()
@@ -96,32 +105,46 @@ def authenticate(**credentials):
 @never_cache
 def login(request):
     if request.method == "GET":
+        msg = None
+        if request.META.has_key('QUERY_STRING'):
+            msg = request.META.get('QUERY_STRING', '')
+        if msg is not None and msg != '':
+            var, msg = msg.split("=")
+            for hexkey in mysettings.HEXCODE_CHAR_MAP.keys():
+                msg = msg.replace(hexkey, mysettings.HEXCODE_CHAR_MAP[hexkey])
+            msg = "<p style=\"color:#FF0000;font-size:14;font-face:'helvetica neue';font-style:bold;\">%s</p>"%msg
+        else:
+            msg = ""
         # Display login form
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
-        c = {'curdate' : curdate, }
+        c = {'curdate' : curdate, 'msg' : msg, }
         c.update(csrf(request))
         cxt = Context(c)
         loginhtml = tmpl.render(cxt)
+        for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+            loginhtml = loginhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
         return HttpResponse(loginhtml)
     elif request.method == "POST":
         username = request.POST.get('username') or ""
         password = request.POST.get('password') or ""
         keeploggedin = request.POST.get('keepmeloggedin') or 0
-        userobj = authenticate(username=username, password=password)
+        csrfmiddlewaretoken = request.POST.get('csrfmiddlewaretoken', "")
+        userobj = authenticate(username, password)
         if not userobj: # Incorrect password - return user to login screen with an appropriate message.
             message = error_msg('1002')
-            return HttpResponseRedirect(mysettings.LOGIN_URL + "?msg" + message)
-        else: # user will be logged in after checking the active field
+            return HttpResponseRedirect("/" + mysettings.LOGIN_URL + "?msg=" + message)
+        else: # user will be logged in after checking the 'active' field
             if userobj.active:
                 sessobj = Session()
-                s = SessionStore()
-                sesscode = s.session_key
+                clientip = request.META['REMOTE_ADDR']
+                sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip)
+                request.COOKIES['sessioncode'] = sesscode
                 sessobj.sessioncode = sesscode
-                sessobj.userid = userobj.id
+                sessobj.user = userobj
                 # sessobj.starttime should get populated on its own when we save this session object.
                 sessobj.endtime = None
-                sessobj.sourceip = request.META['REMOTE_ADDR']
+                sessobj.sourceip = clientip
                 if userobj.istest: # This session is being performed by a test user, so this must be a test session.
                     sessobj.istest = True
                 elif mysettings.TEST_RUN: # This is a test run as mysettings.TEST_RUN is set to True
@@ -132,13 +155,13 @@ def login(request):
                 # Now save the session...
                 sessobj.save()
                 # ... and redirect to landing page.
-                return HttpResponseRedirect(mysettings.LOGIN_REDIRECT_URL)
+                return HttpResponseRedirect("/" + mysettings.LOGIN_REDIRECT_URL)
             else:
                 message = error_msg('1003')
-                return HttpResponseRedirect(mysettings.LOGIN_URL + "?msg" + message)
+                return HttpResponseRedirect("/" + mysettings.LOGIN_URL + "?msg=" + message)
     else:
         message = error_msg('1001')
-        return HttpResponseRedirect(mysettings.LOGIN_URL + "?msg" + message)
+        return HttpResponseRedirect("/" + mysettings.LOGIN_URL + "?msg=" + message)
 
 
 def isloggedin(user, session):
