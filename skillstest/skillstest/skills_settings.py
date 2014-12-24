@@ -45,8 +45,10 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'CERT' : 86400, }
 
 
-LOGIN_REDIRECT_URL = "/skillstest/landing/"
 LOGIN_URL = "skillstest/login/"
+REGISTER_URL = "skillstest/newuser/"
+DASHBOARD_URL = "skillstest/dashboard/"
+LOGIN_REDIRECT_URL = DASHBOARD_URL
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -72,3 +74,8 @@ HTML_ENTITIES_CHAR_MAP = { \
         '&#91;' : '[', \
         '&#93;' : ']', \
     }
+
+EMAIL_PATTERN = re.compile(r"[\w\.]*@[\w\.]+")
+MULTIPLE_WS_PATTERN = re.compile(r"^\s*$", re.MULTILINE | re.DOTALL)
+PHONENUM_PATTERN = re.compile(r"^\d+$", re.MULTILINE | re.DOTALL)
+REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]+)$", re.MULTILINE | re.DOTALL)

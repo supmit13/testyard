@@ -1,0 +1,242 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+<script language='JavaScript'>
+function validate_regdata(){
+  if(document.registerform.username.value.trim() == ""){
+    alert("Username cannot be empty.");
+    document.registerform.username.focus();
+    return false;
+  }
+  if(document.registerform.password.value.trim() == "" || document.registerform.password2.value.trim() == ""){
+    alert("Password fields cannot be empty.");
+    document.registerform.password.focus();
+    return false;
+  }
+  if(document.registerform.password.value.trim() != document.registerform.password2.value.trim()){
+    alert("Mismatch in the 2 password fields.");
+    document.registerform.password2.focus();
+    return false;
+  }
+  if(document.registerform.email.value.trim() == ""){
+    alert("Email cannot be empty.");
+    document.registerform.email.focus();
+    return false;
+  }
+  if(!validate_email(document.registerform.email.value.trim())){
+    alert("Please enter a valid email Id.");
+    document.registerform.email.focus();
+    return false;
+  }
+  if(document.registerform.firstname.value.trim() != "" && !check_name(document.registerform.firstname.value.trim())){
+    alert("Names may contain alphabets only. Numbers and special characters not allowed.");
+    document.registerform.firstname.focus();
+    return false;
+  }
+  if(document.registerform.lastname.value.trim() != "" && !check_name(document.registerform.lastname.value.trim())){
+    alert("Names may contain alphabets only. Numbers and special characters not allowed.");
+    document.registerform.lastname.focus();
+    return false;
+  }
+  if(document.registerform.middlename.value.trim() != "" && !check_name(document.registerform.middlename.value.trim())){
+    alert("Names may contain alphabets only. Numbers and special characters not allowed.");
+    document.registerform.middlename.focus();
+    return false;
+  }
+  if(document.registerform.mobilenum.value.trim() != "" && !check_name(document.registerform.mobilenum.value.trim())){
+    alert("Names may contain digits only.");
+    document.registerform.mobilenum.focus();
+    return false;
+  }
+  return true;
+}
+
+function process_register(){
+  var val = validate_regdata();
+  if(!val){
+    return false;
+  }
+  document.registerform.username.value = document.registerform.username.value.trim();
+  document.registerform.password.value = document.registerform.password.value.trim();
+  document.registerform.password2.value = document.registerform.password2.value.trim();
+  document.registerform.email.value = document.registerform.email.value.trim();
+  document.registerform.firstname.value = document.registerform.firstname.value.trim();
+  document.registerform.lastname.value = document.registerform.lastname.value.trim();
+  document.registerform.middlename.value = document.registerform.middlename.value.trim();
+  document.registerform.mobilenum.value = document.registerform.mobilenum.value.trim();
+  document.registerform.submit();
+  return true; // will never come to this line.
+}
+
+function clear_all(){
+    document.registerform.username.value = "";
+    document.registerform.password.value = "";
+    document.registerform.password2.value = "";
+    document.registerform.email.value = "";
+    document.registerform.firstname.value = "";
+    document.registerform.lastname.value = "";
+    document.registerform.middlename.value = "";
+    document.registerform.mobilenum.value = "";
+    return true;
+}
+</script>
+</head>
+<body>
+
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Committed to identifying the best professionals for your business...</p>
+
+		<!-- ### Top Menu ### -->
+
+		<div id="topmenu">
+		<ul>
+			<li><a href="#" class="highlight">Home</a></li>	
+			<li><a href="#">About</a></li>	
+			<li><a href="#">Contact</a></li>	
+		</ul>	
+		</div>
+
+	</div>
+	
+	<div id="contentcontainer">
+	
+		<div id="content">
+
+		<!-- ### Post Entry Begin ###  -->
+		
+		<div class="post">
+			
+			<h2>Welcome to TestYard - </h2><h3> {{ curdate }}
+			
+			
+			<div class="entry">
+			
+			<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
+			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>
+			<blockquote><p>Check our Android&#8482; and iOS&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
+			<p></p>
+			
+			</div>
+		
+		</div>
+
+		<!-- ### Post Entry End ### -->
+
+		<!-- ### Post Entry Begin ###  -->
+
+		<div class="post">
+			<span class="meta">
+			<h3>Register below&nbsp;&nbsp; |&nbsp;&nbsp; <font size=-2>Already a user?&nbsp;&nbsp;</font> <a href='{{ login_url }}'>Sign in here</a></h3>
+			{{ msg }}
+			<div class="entry">
+
+			<form name='registerform' method='POST' action="{{ register_url }}">
+			<b>*Username or Display Name: </b><input type='text' name='username' value=''><br />
+			<b>*Password: </b><input type='password' name='password' value=''><br />
+			<b>*Confirm Password: </b><input type='password' name='password2' value=''><br />
+			<b>*Email: </b><input type='text' name='email' value=''><i>This will be verified before activating your account.</i><br />
+			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value=''><input type='text' name='middlename' value='' max_length=10><input type='text' name='lastname' value=''><br />
+			<b>*Sex: </b><select name='sex'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;*User Type: <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
+			<b>Mobile Number: </b><input type='text' name='mobilenum' value=''><br />
+			<b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}<option value='{{ pn }}'>{{ pd }}</option>{% endfor %}</select>&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value=''><br />
+			{% csrf_token %}
+			<input type='button' name='register' value='Register' onClick='javascript:process_register();'>
+			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();'>
+			</form>
+			</div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+		
+		
+
+		<div class="postpagesnav">
+		
+		</div>
+		
+		</div>
+		
+		<!-- ### Sidebar Begin ### -->
+
+		
+		<div id="sidebar">
+			
+		<ul>
+
+		<li><h2>Search</h2>
+		<form id="searchform" method="get" action="#">
+			<div>
+			<input type="text" value="" name="s" id="searchfield" />
+			<input type="hidden" id="searchsubmit" value="Search" />
+			</div>
+
+		</form>
+		</li>
+	
+		<li><h2>Categories</h2>
+		<ul>
+			<li><a href="#">Test Category</a> (3)</li>
+			<li><a href="#">Test Category 2</a> (4)</li>
+
+			<li><a href="#">Test Category 3</a> (2)</li>
+			<li><a href="#">Test Category 4</a> (3)</li>
+			<li><a href="#">Uncategorized</a> (6)</li>
+		</ul>
+
+		</li>
+	
+		<li><h2>Archives</h2>
+		<ul>
+			<li><a href="#">March 2010</a></li>
+			<li><a href="#">Febuary 2010</a></li>
+			<li><a href="#">January 2010</a></li>
+		</ul>
+
+		</li>
+
+	  	<li class="linkcat"><h2>Blogroll</h2>
+		<ul>
+			<li><a href="#">Integer</a></li>
+			<li><a href="#">Auctor</a></li>
+			<li><a href="#">Vulputate</a></li>
+
+			<li><a href="#">Libero</a></li>
+		</ul>
+		</li>
+
+		<li><h2>Meta</h2>
+		<ul>
+			<li><a href="#">Login</a></li>
+			<li><a href="#">Entries (RSS)</a></li>
+
+			<li><a href="#">Comments (RSS)</a></li>
+		</ul>
+		</li>
+
+		</ul>	
+		
+		</div>
+
+		<!-- ### Sidebar End ### -->
+
+	</div>
+
+<div id="content2">
+	<p>Copyright &copy; 2010 YourSite.com 
+
+	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
+	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
+
+</div>
+
+</div>
+</body>
+</html>

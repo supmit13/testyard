@@ -88,3 +88,17 @@ Sun, 21 Dec 2014, 06:41 HRS (IST).
 10.skillstest/Auth/models.py
 
 ====================================
+
+Wed, 24 Dec 2014, 22:40 HRS (IST).
+--------------------------
+1. skillstest/utils.py
+2. skillstest/Auth/views.py
+3. skillstest/views.py
+4. skillstest/urls.py
+5. static/javascript/pageutils.js
+6. templates/authentication/newuser.html
+7. skillstest/errors.py
+8. skillstest/skills_settings.py
+9. templates/user/dashboard.html
+10.templates/authentication/login.html
+

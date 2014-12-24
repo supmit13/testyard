@@ -16,12 +16,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.template import Template, Context
 from django.template.loader import get_template
-
-#from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
-#from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm
-#from django.contrib.auth.models import User as djangoUser
-#from django.contrib.auth.models import Session as djangoSession
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 from django.contrib.sessions.backends.db import SessionStore
@@ -34,55 +29,12 @@ import cPickle, urlparse
 import decimal, math
 
 # Application specific libraries...
-from skillstest.Auth.models import User, Session
+from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
+import skillstest.utils as skillutils
 
-"""
-@sensitive_post_parameters()
-@csrf_protect
-@never_cache
-def login(request, template_name='authentication/login.html',
-          redirect_field_name=REDIRECT_FIELD_NAME,
-          authentication_form=AuthenticationForm,
-          current_app=None, extra_context=None):
-    
-    #Displays the login form and handles the login action.
-    
-    redirect_to = request.REQUEST.get(redirect_field_name, '')
 
-    if request.method == "POST":
-        form = authentication_form(data=request.POST)
-        if form.is_valid():
-            # Ensure the user-originating redirection url is safe.
-            if not is_safe_url(url=redirect_to, host=request.get_host()):
-                redirect_to = settings.LOGIN_REDIRECT_URL
-
-            # Okay, security check complete. Log the user in.
-            auth_login(request, form.get_user())
-
-            if request.session.test_cookie_worked():
-                request.session.delete_test_cookie()
-
-            return HttpResponseRedirect(redirect_to)
-    else:
-        form = authentication_form(request)
-
-    request.session.set_test_cookie()
-
-    current_site = get_current_site(request)
-
-    context = {
-        'form': form,
-        redirect_field_name: redirect_to,
-        'site': current_site,
-        'site_name': current_site.name,
-    }
-    if extra_context is not None:
-        context.update(extra_context)
-    return TemplateResponse(request, template_name, context,
-                            current_app=current_app)
-"""
 
 def authenticate(uname, passwd):
     try:
@@ -95,8 +47,8 @@ def authenticate(uname, passwd):
         return None
 
 
-def generatesessionid(username, csrftoken, userip):
-    hashstr = make_password(username + csrftoken + userip)
+def generatesessionid(username, csrftoken, userip, ts):
+    hashstr = make_password(username + csrftoken + userip + ts)
     return hashstr
 
 
@@ -118,7 +70,7 @@ def login(request):
         # Display login form
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
-        c = {'curdate' : curdate, 'msg' : msg, }
+        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : mysettings.REGISTER_URL }
         c.update(csrf(request))
         cxt = Context(c)
         loginhtml = tmpl.render(cxt)
@@ -133,13 +85,16 @@ def login(request):
         userobj = authenticate(username, password)
         if not userobj: # Incorrect password - return user to login screen with an appropriate message.
             message = error_msg('1002')
-            return HttpResponseRedirect("/" + mysettings.LOGIN_URL + "?msg=" + message)
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
         else: # user will be logged in after checking the 'active' field
             if userobj.active:
                 sessobj = Session()
                 clientip = request.META['REMOTE_ADDR']
-                sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip)
+                timestamp = int(time.time())
+                # timestamp will be a 10 digit string.
+                sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip, timestamp.__str__())
                 request.COOKIES['sessioncode'] = sesscode
+                request.COOKIES['usertype'] = userobj.usertype
                 sessobj.sessioncode = sesscode
                 sessobj.user = userobj
                 # sessobj.starttime should get populated on its own when we save this session object.
@@ -155,16 +110,115 @@ def login(request):
                 # Now save the session...
                 sessobj.save()
                 # ... and redirect to landing page.
-                return HttpResponseRedirect("/" + mysettings.LOGIN_REDIRECT_URL)
+                return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
             else:
                 message = error_msg('1003')
-                return HttpResponseRedirect("/" + mysettings.LOGIN_URL + "?msg=" + message)
+                return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     else:
         message = error_msg('1001')
-        return HttpResponseRedirect("/" + mysettings.LOGIN_URL + "?msg=" + message)
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
 
 
-def isloggedin(user, session):
-    pass
+
+@csrf_protect
+@never_cache
+def register(request):
+    privs = Privilege.objects.all()
+    privileges = {}
+    for p in privs:
+        privileges[p.privname] = p.privdesc
+    if request.method == "GET": # display the registration form
+        msg = ''
+        if request.META.has_key('QUERY_STRING'):
+            msg = request.META.get('QUERY_STRING', '')
+        if msg is not None and msg != '':
+            var, msg = msg.split("=")
+            for hexkey in mysettings.HEXCODE_CHAR_MAP.keys():
+                msg = msg.replace(hexkey, mysettings.HEXCODE_CHAR_MAP[hexkey])
+            msg = "<p style=\"color:#FF0000;font-size:14;font-face:'helvetica neue';font-style:bold;\">%s</p>"%msg
+        else:
+            msg = ""
+        curdate = datetime.datetime.now()
+        tmpl = get_template("authentication/newuser.html")
+        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + mysettings.REGISTER_URL, 'privileges' : privileges, }
+        c.update(csrf(request))
+        cxt = Context(c)
+        registerhtml = tmpl.render(cxt)
+        for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+            registerhtml = registerhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+        return HttpResponse(registerhtml)
+    elif request.method == "POST": # Process registration form data
+        username = request.POST['username']
+        password = request.POST['password']
+        password2 = request.POST['password2']
+        email = request.POST['email']
+        firstname = request.POST['firstname']
+        middlename = request.POST['middlename']
+        lastname = request.POST['lastname']
+        sex = request.POST['sex']
+        usertype = request.POST['usertype']
+        mobilenum = request.POST['mobilenum']
+        userprivilege = request.POST['userprivilege']
+        csrftoken = request.POST['csrfmiddlewaretoken']
+        message = ""
+        # Validate the collected data...
+        if password != password2:
+            message = error_msg('1011')
+        elif mysettings.MULTIPLE_WS_PATTERN.search(username):
+            message =  error_msg('1012')
+        elif mysettings.EMAIL_PATTERN.search(email):
+            message =  error_msg('1013')
+        elif mobilenum != "" and mysettings.PHONENUM_PATTERN.search(mobilenum):
+            message = error_msg('1014')
+        elif sex not in ('m', 'f', 'u'):
+            message = error_msg('1015')
+        elif usertype not in ('CORP', 'CONS', 'ACAD', 'CERT'):
+            message = error_msg('1016')
+        elif mysettings.REALNAME_PATTERN.search(firstname) or mysettings.REALNAME_PATTERN.search(lastname) or mysettings.REALNAME_PATTERN.search(middlename):
+            message = error_msg('1017')
+        elif userprivilege not in privileges:
+            message = error_msg('1018')
+        if message != "" and mysettings.DEBUG:
+            print message + "\n"
+        if message != "":
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
+        else: # Create the user and redirect to the dashboard page with a status message.
+            user = User()
+            usrpriv = UserPrivilege()
+            user.firstname = firstname
+            user.middlename = middlename
+            user.lastname = lastname
+            user.displayname = username
+            user.emailid = email
+            user.password = password
+            user.mobileno = mobilenum
+            user.sex = sex
+            user.usertype = usertype
+            user.istest = False
+            user.active = False # Will become active when user verifies email Id.
+            user.userpic = ""
+            user.save() # New user record inserted now. 'joindate' added automatically.
+            usrpriv.user = user
+            usrpriv.privilege = userprivilege
+            usrpriv.status = True
+            usrpriv.save() # Associated user privilege saved.
+            skillutils.sendemail(user)
+            # Print a success message and ask user to validate email. The current screen is
+            # only a providential state where the user seems to be logged in but has no right
+            # to perform any action.
+            message = "Hello %s, welcome on board TestYard(&#8482;). We hope you will have a smooth association with us.<br /> \
+            In case of any issues, please feel free to drop us (support@testyard.com) an email regarding the matter. Our 24x7 <br />\
+            support center staff would only be too glad to help you out. Happy testing... "%username
+            tmpl = get_template("user/dashboard.html")
+            c = {'curdate' : curdate, 'msg' : message, 'login_url' : skillutils.gethosturl(request) + mysettings.LOGIN_URL, 'csrftoken' : csrftoken}
+            c.update(csrf(request))
+            cxt = Context(c)
+            dashboard = tmpl.render(cxt)
+            return HttpResponse(dashboard)
+    else: # Process this as erroneous request
+        message = error_msg('1004')
+        if mysettings.DEBUG:
+            print "Unhandled method call during registration.\n"
+        return HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
 
 

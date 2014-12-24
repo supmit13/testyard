@@ -21,3 +21,23 @@ function process_login(){
 	document.loginform.submit();
     }
 }
+
+function validate_email(e) {
+    var filter = /^\s*[\w\-\+_]+(\.[\w\-\+_]+)*\@[\w\-\+_]+\.[\w\-\+_]+(\.[\w\-\+_]+)*\s*$/;
+    return String(e).search (filter) != -1;
+}
+
+
+function check_name(e){
+    var valid_name_pattern = /^[a-zA-Z]+$/;
+    return String(e).search (valid_name_pattern) != -1;
+}
+
+function validate_phonenum(p){
+    var filter = /^\d+$/;
+    return String(p).search (filter) != -1;
+}
+
+
+
+

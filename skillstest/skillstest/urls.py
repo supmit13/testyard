@@ -22,8 +22,8 @@ urlpatterns += patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-    url(r'^$', 'skillstest.views.entry', name='home'),
-    url(r'skillstest/$', 'skillstest.views.dashboard', name='dashboard'),
+    url(r'^%s$'%mysettings.REGISTER_URL, 'skillstest.Auth.views.register', name='newuser'),
+    url(r'^%s$'%mysettings.DASHBOARD_URL, 'skillstest.views.dashboard', name='dashboard'),
     url("%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login'),
-    url(r'%s$'%mysettings.LOGIN_REDIRECT_URL, 'skillstest.views.entry', name='landing')
+    url(r'%s$'%mysettings.LOGIN_REDIRECT_URL, 'skillstest.views.dashboard', name='dashboard')
 )
