@@ -89,7 +89,7 @@ Sun, 21 Dec 2014, 06:41 HRS (IST).
 
 ====================================
 
-Wed, 24 Dec 2014, 22:40 HRS (IST).
+Thu, 25 Dec 2014, 05:23 HRS (IST).
 --------------------------
 1. skillstest/utils.py
 2. skillstest/Auth/views.py
