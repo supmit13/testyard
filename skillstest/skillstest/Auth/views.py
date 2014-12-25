@@ -70,7 +70,7 @@ def login(request):
         # Display login form
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
-        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : mysettings.REGISTER_URL }
+        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL }
         c.update(csrf(request))
         cxt = Context(c)
         loginhtml = tmpl.render(cxt)
@@ -140,7 +140,7 @@ def register(request):
             msg = ""
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/newuser.html")
-        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + mysettings.REGISTER_URL, 'privileges' : privileges, }
+        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, }
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -178,6 +178,12 @@ def register(request):
             message = error_msg('1017')
         elif userprivilege not in privileges:
             message = error_msg('1018')
+        fpath, message = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "images")
+        # User's images will be stored in "MEDIA_ROOT/<Username>/images/".
+        if message != "" and mysettings.DEBUG:
+            print message + "\n"
+        if message != "":
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
         if message != "" and mysettings.DEBUG:
             print message + "\n"
         if message != "":
@@ -210,7 +216,7 @@ def register(request):
             In case of any issues, please feel free to drop us (support@testyard.com) an email regarding the matter. Our 24x7 <br />\
             support center staff would only be too glad to help you out. Happy testing... "%username
             tmpl = get_template("user/dashboard.html")
-            c = {'curdate' : curdate, 'msg' : message, 'login_url' : skillutils.gethosturl(request) + mysettings.LOGIN_URL, 'csrftoken' : csrftoken}
+            c = {'curdate' : curdate, 'msg' : message, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'csrftoken' : csrftoken}
             c.update(csrf(request))
             cxt = Context(c)
             dashboard = tmpl.render(cxt)

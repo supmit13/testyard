@@ -102,3 +102,16 @@ Thu, 25 Dec 2014, 05:23 HRS (IST).
 9. templates/user/dashboard.html
 10.templates/authentication/login.html
 
+====================================
+
+Thu, 25 Dec 2014, 13:00 HRS (IST).
+---------------------------------
+1. skillstest/Auth/views.py
+2. skillstest/utils.py
+3. templates/authentication/newuser.html
+4. templates/authentication/login.html
+5. skillstest/errors.py
+6. skillstest/skills_settings.py
+7. files_to_commit.txt
+
+====================================

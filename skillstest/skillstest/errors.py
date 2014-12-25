@@ -7,6 +7,7 @@ error_codes = { \
         '1003' : 'User is not active', \
         '1004' : 'Unhandled HTTP method called.', \
         '1011' : 'One or more fields have invalid values - the 2 password fields do not match.', \
+        '1005' : 'Uploaded file exceeds max file size limit', \
         '1012' : 'One or more fields have invalid values - username cannot be empty.', \
         '1013' : 'One or more fields have invalid values - invalid email address', \
         '1014' : 'One or more fields have invalid values - invalid mobile number', \

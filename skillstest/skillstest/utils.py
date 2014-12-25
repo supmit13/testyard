@@ -1,5 +1,5 @@
 import os, sys, re, time
-
+import tempfile, shutil
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -80,4 +80,20 @@ Method to send an email to the email id of the user passed in as the argument.
 def sendemail(userobj):
     pass
 
+
+"""
+Handle uploaded file. Create the destination path if required.
+Returns a list containing the path to the uploaded file and a message
+(which would be '' in case of success).
+"""
+def handleuploadedfile(uploaded_file, targetdir):
+    fd, filepath = tempfile.mkstemp(prefix=uploaded_file.name, dir=targetdir)
+    if uploaded_file.size() > mysettings.MAX_FILE_SIZE_ALLOWED:
+        message = error_msg['1005']
+        return [ None, message ]
+    with open(filepath, 'wb') as destination:
+        destinationfile = destination + os.path.sep + mysettings.PROFILE_PHOTO_NAME
+        shutil.copyfileobj(uploaded_file, destinationfile)
+    return [ filepath, '' ]
+    
 

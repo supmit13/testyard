@@ -38,7 +38,10 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Delphi' : '', \
                          'ColdFusion' : '',}
  
-
+# Some application related variables:
+PROFILE_PHOTO_NAME = "profilepic"
+PROFILE_PHOTO_EXT = "gif"
+MAX_FILE_SIZE_ALLOWED = 10000000
 SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'CONS' : 86400, \
                          'ACAD' : 86400, \
@@ -79,3 +82,5 @@ EMAIL_PATTERN = re.compile(r"[\w\.]*@[\w\.]+")
 MULTIPLE_WS_PATTERN = re.compile(r"^\s*$", re.MULTILINE | re.DOTALL)
 PHONENUM_PATTERN = re.compile(r"^\d+$", re.MULTILINE | re.DOTALL)
 REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]+)$", re.MULTILINE | re.DOTALL)
+
+
