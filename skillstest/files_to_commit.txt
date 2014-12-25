@@ -115,3 +115,16 @@ Thu, 25 Dec 2014, 13:00 HRS (IST).
 7. files_to_commit.txt
 
 ====================================
+
+Thu, 25 Dec 2014, 20:18 HRS (IST).
+----------------------------------
+1. db.sql
+2. static/javascript/pageutils.js
+3. skillstest/utils.py
+4. skillstest/skills_settings.py
+5. skillstest/Auth/views.py
+6. templates/authentication/newuser.html
+7. skillstest/errors.py
+8. templates/authentication/newuser.html
+9. templates/authentication/login.html
+10.files_to_commit.txt

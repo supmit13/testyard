@@ -39,7 +39,7 @@ import skillstest.utils as skillutils
 def authenticate(uname, passwd):
     try:
         user = User.objects.get(displayname=uname)
-        if passwd == user.password:
+        if user.password == make_password(passwd):  # Compare the hashes of the password
             return user
         else:
             return None
@@ -140,7 +140,7 @@ def register(request):
             msg = ""
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/newuser.html")
-        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, }
+        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -178,6 +178,8 @@ def register(request):
             message = error_msg('1017')
         elif userprivilege not in privileges:
             message = error_msg('1018')
+        elif skillutils.check_password_strength(password) < mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH:
+            message = error_msg('1019')
         fpath, message = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "images")
         # User's images will be stored in "MEDIA_ROOT/<Username>/images/".
         if message != "" and mysettings.DEBUG:
@@ -196,7 +198,7 @@ def register(request):
             user.lastname = lastname
             user.displayname = username
             user.emailid = email
-            user.password = password
+            user.password = make_password(password) # Store password as a hash.
             user.mobileno = mobilenum
             user.sex = sex
             user.usertype = usertype

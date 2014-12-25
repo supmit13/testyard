@@ -40,8 +40,19 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
  
 # Some application related variables:
 PROFILE_PHOTO_NAME = "profilepic"
-PROFILE_PHOTO_EXT = "gif"
+PROFILE_PHOTO_EXT = ( "gif", "jpg", "jpeg", "png", "tiff", "tif" )
+
+# Max size of file that may be uploaded by user
 MAX_FILE_SIZE_ALLOWED = 10000000
+
+"""
+Passwords should have atleast this grade in a scale of 1 to 5.
+Password strength is gauged by "check_passwd_strength()" function
+(in static/pageutils.js) in frontend and by "check_password_strength()"
+function (in skillstest/utils.py) in backend.
+"""
+MIN_ALLOWABLE_PASSWD_STRENGTH = 3
+
 SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'CONS' : 86400, \
                          'ACAD' : 86400, \

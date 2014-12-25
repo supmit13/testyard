@@ -68,6 +68,9 @@ function process_register(){
   document.registerform.lastname.value = document.registerform.lastname.value.trim();
   document.registerform.middlename.value = document.registerform.middlename.value.trim();
   document.registerform.mobilenum.value = document.registerform.mobilenum.value.trim();
+  if(check_passwd_strength(document.registerform.password.value) < {{ min_passwd_strength }}){
+    return false;
+  }
   document.registerform.submit();
   return true; // will never come to this line.
 }
@@ -143,7 +146,7 @@ function clear_all(){
 			<b>*Confirm Password: </b><input type='password' name='password2' value=''><br />
 			<b>*Email: </b><input type='text' name='email' value=''><i>This will be verified before activating your account.</i><br />
 			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value=''><input type='text' name='middlename' value='' max_length=10><input type='text' name='lastname' value=''><br />
-			<b>*Sex: </b><select name='sex'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;*User Type: <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
+			<b>*Sex: </b><select name='sex'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
 			<b>Mobile Number: </b><input type='text' name='mobilenum' value=''><br />
 			<b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select>&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value=''><br />
 			{% csrf_token %}

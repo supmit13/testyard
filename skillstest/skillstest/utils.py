@@ -97,3 +97,28 @@ def handleuploadedfile(uploaded_file, targetdir):
     return [ filepath, '' ]
     
 
+"""
+Function to check the strength of the password. Returns
+an integer between 1 and 5 with 5 being the strongest and
+1 being the weakest. 0 denotes the absence of any character 
+(empty string '').
+"""
+def check_password_strength(passwd):
+    if passwd.__len__() == 0:
+        return 0
+    strength = 0
+    if passwd.__len__() > 6:
+        strength += 1
+    contains_digits, contains_special_char, contains_lowercase, contains_uppercase = 0, 0, 0, 0
+    special_characters = "~`!#$%^&*+=-[]\\\';,/{}|\":<>?"
+    for i in passwd.__len__() - 1:
+        if passwd[i] >= '0' and passwd[i] <= '9':
+            strength += 1
+        if passwd[i] == passwd[i].upper():
+            strength += 1
+        if passwd[i] == passwd[i].lower():
+            strength += 1
+        if passwd[i] in special_characters:
+            strength += 1
+    return strength
+

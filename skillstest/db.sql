@@ -52,4 +52,15 @@ CREATE INDEX `Auth_userprivilege_b05dc53f` ON `Auth_userprivilege` (`privilegeid
 
 ALTER TABLE Auth_session MODIFY endtime datetime null;
 ALTER TABLE Auth_session MODIFY sessioncode varchar(150) NOT null;
+
+insert into Auth_privilege (privname, privdesc, createdate) values ('admin', 'Admin user can create test, add questions to it, assess responses from assessees, as well as play the role of assessees', NOW());
+
+insert into Auth_privilege (privname, privdesc, createdate) values ('creator', 'Creators can add questions to an existing test, assess responses from assessees, as well as play the role of assessees', NOW());
+
+insert into Auth_privilege (privname, privdesc, createdate) values ('assessor', 'Assessors can  assess responses from assessees and play the role of assessees', NOW());
+
+insert into Auth_privilege (privname, privdesc, createdate) values ('assessee', 'Assessees can only take tests', NOW());
+
+
+
 COMMIT;
