@@ -7,6 +7,7 @@ error_codes = { \
         '1003' : 'User is not active', \
         '1004' : 'Unhandled HTTP method called.', \
         '1005' : 'Uploaded file exceeds max file size limit', \
+        '1006' : 'Session is corrupt or it has expired', \
         
         '1011' : 'One or more fields have invalid values - the 2 password fields do not match.', \
         '1012' : 'One or more fields have invalid values - username cannot be empty.', \

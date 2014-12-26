@@ -61,10 +61,8 @@ def login(request):
         if request.META.has_key('QUERY_STRING'):
             msg = request.META.get('QUERY_STRING', '')
         if msg is not None and msg != '':
-            var, msg = msg.split("=")
-            for hexkey in mysettings.HEXCODE_CHAR_MAP.keys():
-                msg = msg.replace(hexkey, mysettings.HEXCODE_CHAR_MAP[hexkey])
-            msg = "<p style=\"color:#FF0000;font-size:14;font-face:'helvetica neue';font-style:bold;\">%s</p>"%msg
+            msg_color = 'FF0000'
+            msg = skillutils.formatmessage(msg, msg_color)
         else:
             msg = ""
         # Display login form
@@ -212,7 +210,7 @@ def register(request):
             usrpriv.save() # Associated user privilege saved.
             skillutils.sendemail(user)
             # Print a success message and ask user to validate email. The current screen is
-            # only a providential state where the user seems to be logged in but has no right
+            # only a providential state where the user appears to be logged in but has no right
             # to perform any action.
             message = "Hello %s, welcome on board TestYard(&#8482;). We hope you will have a smooth association with us.<br /> \
             In case of any issues, please feel free to drop us (support@testyard.com) an email regarding the matter. Our 24x7 <br />\

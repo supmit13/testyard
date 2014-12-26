@@ -30,7 +30,7 @@ function validate_email(e) {
 
 function check_name(e){
     var valid_name_pattern = /^[a-zA-Z]+$/;
-    return String(e).search (valid_name_pattern) != -1;
+    return String(e).search(valid_name_pattern) != -1;
 }
 
 function validate_phonenum(p){
@@ -48,9 +48,9 @@ function check_passwd_strength(passwd){
   }
   var strength = 0;
   if(passwd.length > 6){
-    strength += 1;
+    strength = strength + 1;
   }
-  var charlist = ();
+  var charlist;
   for(var i=0;i < passwd.length; i++){
     charlist[i] = passwd.substring(i, 1);
   }
@@ -61,18 +61,22 @@ function check_passwd_strength(passwd){
   var spchars = "~`!#$%^&*+=-[]\\\';,/{}|\":<>?";
   for(var i=0;i < charlist.length; i++){
     if(parseInt(charlist[i])){
-      strength += 1;
+      strength +=  1;
+      continue;
     }
     if(!parseInt(charlist[i]) && charlist[i] == charlist[i].toUpperCase()){ // contains lowercase character
       strength += 1;
+      continue;
     }
     if(!parseInt(charlist[i]) && charlist[i] == charlist[i].toLowerCase()){ // contains uppercase character
       strength += 1;
+      continue;
     }
     if(spchars.indexOf(charlist[i])){ // contains special character
       strength += 1;
+      continue;
     }
   }
-  return(strength);
+  return strength; 
 }
 

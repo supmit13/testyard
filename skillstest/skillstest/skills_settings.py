@@ -5,10 +5,16 @@ TEST_TOPICS = ("Programming", "Project Management", "Database Management", "Qual
                "Software Architecture", "Delivery Management", "System Administration", "System Analyst",\
                "UI Design", "Web Design", "Application Development")
 
-TEST_TYPES = ("Multiple Choice", "Fill up the Blanks", "Subjective", "Coding", "Algorithm", "Composite")
+TEST_TYPES = { 'MULT' : "Multiple Choice", 'FILB' : "Fill up the Blanks", 'SUBJ' :  "Subjective", 'CODN' : "Coding", 'ALGO' : "Algorithm", 'COMP' : "Composite"}
 # A 'composite' test is test that contains more than one of the  other TEST_TYPES. The default choice is 'composite'.
 
-TEST_SEARCH_SCOPE = ("Public Tests Only", "Only Tests Accessible by the Recruiter", "Private Tests Only", "All Tests")
+TEST_SEARCH_SCOPE = ("Public", "Protected", "Private Tests Only", "All Tests")
+"""
+For now, we will keep all 'Test's private to the 'User' creating the 'Test'. 'Challenges' belonging to
+a 'Test' are  searchable and viewable by all, but the 'Test' and the 'UserResponse'es are viewable by
+the creator of the 'Test' only. So, 'TEST_SEARCH_SCOPE' will not be used for the first cut.
+"""
+
 
 BLACKLISTED_MEMBERS = ()
 
@@ -94,4 +100,8 @@ MULTIPLE_WS_PATTERN = re.compile(r"^\s*$", re.MULTILINE | re.DOTALL)
 PHONENUM_PATTERN = re.compile(r"^\d+$", re.MULTILINE | re.DOTALL)
 REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]+)$", re.MULTILINE | re.DOTALL)
 
+RULES_DICT = {} # Dictionary containing all rules that may be imposed on a test.
 
+ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English', 'lat' : 'Latin', 'fr' : 'French', 'hndi' : 'Hindi' } # Allowed languages
+
+SKILL_QUALITY = { 'BEG' : 'Beginner', 'INT' : 'Intermediate', 'PRO' : 'Proficient' }

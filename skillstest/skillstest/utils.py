@@ -23,7 +23,7 @@ def isloggedin(request):
         if mysettings.DEBUG:
             print "Invalid session code.\n"
         return False
-    timestring = sesscode[-10:]
+    timestring = sesscode[-10:] # Last 10 digits is the timestamp value.
     current_ts = int(time.time())
     usertype = sessobj.user.usertype
     delta = current_ts - int(timestring)
@@ -53,6 +53,7 @@ to the login page if session is invalid.
 """
 def checksession(request):
     if not isloggedin(request):
+        message = error_msg('1006')
         return HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     else: # Return the request
         return request
@@ -76,6 +77,9 @@ def gethosturl(request):
 
 """
 Method to send an email to the email id of the user passed in as the argument.
+Should be done asynchronously - put the email in a queue from where the email
+handler will pick in batches of (say) 10 emails at a time and send them before
+running to pick up the next batch.
 """
 def sendemail(userobj):
     pass
@@ -95,6 +99,19 @@ def handleuploadedfile(uploaded_file, targetdir):
         destinationfile = destination + os.path.sep + mysettings.PROFILE_PHOTO_NAME
         shutil.copyfileobj(uploaded_file, destinationfile)
     return [ filepath, '' ]
+
+
+"""
+Format message (with color and font) and return it as a displayable string
+(after removing all hexcoded characters and HTML entities, if present).
+"""
+def formatmessage(msg, msg_color):
+    var, msg = msg.split("=")
+    for hexkey in mysettings.HEXCODE_CHAR_MAP.keys():
+        msg = msg.replace(hexkey, mysettings.HEXCODE_CHAR_MAP[hexkey])
+    msg = "<p style=\"color:#%s;font-size:14;font-face:'helvetica neue';font-style:bold;\">%s</p>"%(msg_color, msg)
+    return msg
+            
     
 
 """
@@ -114,11 +131,15 @@ def check_password_strength(passwd):
     for i in passwd.__len__() - 1:
         if passwd[i] >= '0' and passwd[i] <= '9':
             strength += 1
+            continue
         if passwd[i] == passwd[i].upper():
             strength += 1
+            continue
         if passwd[i] == passwd[i].lower():
             strength += 1
+            continue
         if passwd[i] in special_characters:
             strength += 1
+            continue
     return strength
 

@@ -94,9 +94,6 @@ class UserPrivilege(models.Model):
         verbose_name = "User Privileges Information"
         db_table = 'Auth_userprivilege'
 
-    
-
     def __unicode__(self):
         return "user id: %s === privilege id: %s"%(self.user.id, self.privilege.id)
-    
 
