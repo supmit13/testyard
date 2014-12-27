@@ -10,6 +10,7 @@ from django.template import Template, Context
 from skillstest.Auth.models import User, Session
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
+from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse
 
 """
 Creates and returns a session object if the request is a
@@ -142,4 +143,14 @@ def check_password_strength(passwd):
             strength += 1
             continue
     return strength
+
+
+"""
+Method to copy a given Test object and create a new (duplicate) Test
+object which is owned by the User who copied it. Returns the copied Test
+object, None on failure.
+"""
+def copy_test(testobj, userobj):
+    pass
+
 

@@ -141,3 +141,17 @@ Sat, 27 Dec 2014, 03:01 HRS (IST).
 6. skillstest/Tests/models.py
 7. skillstest/skills_settings.py
 8. skillstest/Auth/models.py
+
+====================================
+
+Sun, 28 Dec 2014, 00:06 HRS (IST).
+-----------------------------------
+1. skillstest/Tests/models.py
+2. skillstest/settings.py
+3. skillstest/errors.py
+4. skillstest/skills_settings.py
+5. db.sql
+6. skillstest/utils.py
+7. files_to_commit.txt
+
+====================================

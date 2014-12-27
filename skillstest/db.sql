@@ -62,5 +62,169 @@ insert into Auth_privilege (privname, privdesc, createdate) values ('assessor', 
 insert into Auth_privilege (privname, privdesc, createdate) values ('assessee', 'Assessees can only take tests', NOW());
 
 
-
+CREATE TABLE `Tests_topic` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `topicname` varchar(150) NOT NULL,
+    `topicshortname` varchar(50) NOT NULL,
+    `createdate` date NOT NULL,
+    `isactive` bool NOT NULL
+)
+;
+CREATE TABLE `Tests_subtopic` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `subtopicname` varchar(150) NOT NULL,
+    `subtopicshortname` varchar(50) NOT NULL,
+    `topic_id` integer NOT NULL,
+    `createdate` date NOT NULL,
+    `isactive` bool NOT NULL
+)
+;
+ALTER TABLE `Tests_subtopic` ADD CONSTRAINT `topic_id_refs_id_bf3a8054` FOREIGN KEY (`topic_id`) REFERENCES `Tests_topic` (`id`);
+CREATE TABLE `Tests_evaluator` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `evalgroupname` varchar(150) NOT NULL,
+    `groupmember1_id` integer,
+    `groupmember2_id` integer,
+    `groupmember3_id` integer,
+    `groupmember4_id` integer,
+    `groupmember5_id` integer,
+    `groupmember6_id` integer,
+    `groupmember7_id` integer,
+    `groupmember8_id` integer,
+    `groupmember9_id` integer,
+    `groupmember10_id` integer,
+    `creationdate` datetime NOT NULL
+)
+;
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember1_id_refs_id_431af34a` FOREIGN KEY (`groupmember1_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember2_id_refs_id_431af34a` FOREIGN KEY (`groupmember2_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember3_id_refs_id_431af34a` FOREIGN KEY (`groupmember3_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember4_id_refs_id_431af34a` FOREIGN KEY (`groupmember4_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember5_id_refs_id_431af34a` FOREIGN KEY (`groupmember5_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember6_id_refs_id_431af34a` FOREIGN KEY (`groupmember6_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember7_id_refs_id_431af34a` FOREIGN KEY (`groupmember7_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember8_id_refs_id_431af34a` FOREIGN KEY (`groupmember8_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember9_id_refs_id_431af34a` FOREIGN KEY (`groupmember9_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_evaluator` ADD CONSTRAINT `groupmember10_id_refs_id_431af34a` FOREIGN KEY (`groupmember10_id`) REFERENCES `Auth_user` (`id`);
+CREATE TABLE `Tests_test` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `testname` varchar(150) NOT NULL,
+    `subtopic_id` integer NOT NULL,
+    `creator_id` integer NOT NULL,
+    `creatorisevaluator` bool NOT NULL,
+    `evaluators_id` integer,
+    `testtype` varchar(4) NOT NULL,
+    `createdate` datetime NOT NULL,
+    `maxscore` integer NOT NULL,
+    `passscore` integer NOT NULL,
+    `ruleset` varchar(4) NOT NULL,
+    `duration` integer NOT NULL,
+    `allowedlanguages` varchar(4) NOT NULL,
+    `challengecount` integer NOT NULL,
+    `activationdate` datetime NOT NULL,
+    `status` bool NOT NULL,
+    `quality` varchar(4) NOT NULL
+)
+;
+ALTER TABLE `Tests_test` ADD CONSTRAINT `creator_id_refs_id_d29f6b50` FOREIGN KEY (`creator_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_test` ADD CONSTRAINT `evaluators_id_refs_id_c4cea575` FOREIGN KEY (`evaluators_id`) REFERENCES `Tests_evaluator` (`id`);
+ALTER TABLE `Tests_test` ADD CONSTRAINT `subtopic_id_refs_id_ae9af74e` FOREIGN KEY (`subtopic_id`) REFERENCES `Tests_subtopic` (`id`);
+CREATE TABLE `Tests_usertest` (
+    `user_id` integer,
+    `emailaddr` varchar(75) NOT NULL,
+    `testurl` varchar(200) NOT NULL PRIMARY KEY,
+    `test_id` integer NOT NULL,
+    `validfrom` datetime NOT NULL,
+    `validtill` datetime NOT NULL,
+    `status` integer NOT NULL,
+    `outcome` bool,
+    `score` double precision NOT NULL,
+    `starttime` datetime NOT NULL,
+    `endtime` datetime NOT NULL,
+    `ipaddress` char(39) NOT NULL,
+    `clientsware` varchar(150) NOT NULL,
+    `sessid` varchar(50) NOT NULL
+)
+;
+ALTER TABLE `Tests_usertest` ADD CONSTRAINT `user_id_refs_id_4487dbd7` FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_usertest` ADD CONSTRAINT `test_id_refs_id_68cc46a6` FOREIGN KEY (`test_id`) REFERENCES `Tests_test` (`id`);
+CREATE TABLE `Tests_challenge` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `test_id` integer NOT NULL,
+    `statement` longtext NOT NULL,
+    `challengetype` varchar(4) NOT NULL,
+    `option1` longtext,
+    `option2` longtext,
+    `option3` longtext,
+    `option4` longtext,
+    `option5` longtext,
+    `option6` longtext,
+    `challengescore` double precision NOT NULL,
+    `negativescore` double precision NOT NULL,
+    `mustrespond` bool NOT NULL,
+    `responsekey` longtext NOT NULL,
+    `imageurl` varchar(200),
+    `additionalurl` varchar(200),
+    `timeframe` integer,
+    `subtopic_id` integer NOT NULL,
+    `challengequality` varchar(3) NOT NULL
+)
+;
+ALTER TABLE `Tests_challenge` ADD CONSTRAINT `test_id_refs_id_7584e499` FOREIGN KEY (`test_id`) REFERENCES `Tests_test` (`id`);
+ALTER TABLE `Tests_challenge` ADD CONSTRAINT `subtopic_id_refs_id_5e9d0e88` FOREIGN KEY (`subtopic_id`) REFERENCES `Tests_subtopic` (`id`);
+CREATE TABLE `Tests_userresponse` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `test_id` integer NOT NULL,
+    `challenge_id` integer NOT NULL,
+    `user_id` integer NOT NULL,
+    `answer` longtext,
+    `responsedatetime` datetime,
+    `attachments` varchar(100),
+    `evaluation` double precision,
+    `evaluator_remarks` longtext,
+    `evaluated_by_id` integer NOT NULL,
+    `candidate_comment` longtext,
+    `response_quality` varchar(3) NOT NULL
+)
+;
+ALTER TABLE `Tests_userresponse` ADD CONSTRAINT `test_id_refs_id_4ce9e81f` FOREIGN KEY (`test_id`) REFERENCES `Tests_test` (`id`);
+ALTER TABLE `Tests_userresponse` ADD CONSTRAINT `user_id_refs_id_dfa3cedc` FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_userresponse` ADD CONSTRAINT `evaluated_by_id_refs_id_dfa3cedc` FOREIGN KEY (`evaluated_by_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_userresponse` ADD CONSTRAINT `challenge_id_refs_id_5cfa8871` FOREIGN KEY (`challenge_id`) REFERENCES `Tests_challenge` (`id`);
+CREATE TABLE `Tests_sharetest` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `testcreator_id` integer NOT NULL,
+    `sharedwith_id` integer NOT NULL,
+    `sharedatetime` datetime NOT NULL,
+    `test_id` integer NOT NULL
+)
+;
+ALTER TABLE `Tests_sharetest` ADD CONSTRAINT `testcreator_id_refs_id_8687dad0` FOREIGN KEY (`testcreator_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_sharetest` ADD CONSTRAINT `sharedwith_id_refs_id_8687dad0` FOREIGN KEY (`sharedwith_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Tests_sharetest` ADD CONSTRAINT `test_id_refs_id_31f72e13` FOREIGN KEY (`test_id`) REFERENCES `Tests_test` (`id`);
+CREATE INDEX `Tests_subtopic_57732028` ON `Tests_subtopic` (`topic_id`);
+CREATE INDEX `Tests_evaluator_769457e8` ON `Tests_evaluator` (`groupmember1_id`);
+CREATE INDEX `Tests_evaluator_c640b8f` ON `Tests_evaluator` (`groupmember2_id`);
+CREATE INDEX `Tests_evaluator_8f6f439a` ON `Tests_evaluator` (`groupmember3_id`);
+CREATE INDEX `Tests_evaluator_b166ba03` ON `Tests_evaluator` (`groupmember4_id`);
+CREATE INDEX `Tests_evaluator_279bd2e4` ON `Tests_evaluator` (`groupmember5_id`);
+CREATE INDEX `Tests_evaluator_7873711d` ON `Tests_evaluator` (`groupmember6_id`);
+CREATE INDEX `Tests_evaluator_3efef4da` ON `Tests_evaluator` (`groupmember7_id`);
+CREATE INDEX `Tests_evaluator_f179706f` ON `Tests_evaluator` (`groupmember8_id`);
+CREATE INDEX `Tests_evaluator_243e590` ON `Tests_evaluator` (`groupmember9_id`);
+CREATE INDEX `Tests_evaluator_b69a883b` ON `Tests_evaluator` (`groupmember10_id`);
+CREATE INDEX `Tests_test_d50c7adf` ON `Tests_test` (`subtopic_id`);
+CREATE INDEX `Tests_test_f97a5119` ON `Tests_test` (`creator_id`);
+CREATE INDEX `Tests_test_170dea88` ON `Tests_test` (`evaluators_id`);
+CREATE INDEX `Tests_usertest_fbfc09f1` ON `Tests_usertest` (`user_id`);
+CREATE INDEX `Tests_usertest_a88de8dc` ON `Tests_usertest` (`test_id`);
+CREATE INDEX `Tests_challenge_a88de8dc` ON `Tests_challenge` (`test_id`);
+CREATE INDEX `Tests_challenge_d50c7adf` ON `Tests_challenge` (`subtopic_id`);
+CREATE INDEX `Tests_userresponse_a88de8dc` ON `Tests_userresponse` (`test_id`);
+CREATE INDEX `Tests_userresponse_dd8bebce` ON `Tests_userresponse` (`challenge_id`);
+CREATE INDEX `Tests_userresponse_fbfc09f1` ON `Tests_userresponse` (`user_id`);
+CREATE INDEX `Tests_userresponse_d20e438b` ON `Tests_userresponse` (`evaluated_by_id`);
+CREATE INDEX `Tests_sharetest_c967e5f7` ON `Tests_sharetest` (`testcreator_id`);
+CREATE INDEX `Tests_sharetest_e4aa393d` ON `Tests_sharetest` (`sharedwith_id`);
+CREATE INDEX `Tests_sharetest_a88de8dc` ON `Tests_sharetest` (`test_id`);
 COMMIT;

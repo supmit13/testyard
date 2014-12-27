@@ -17,7 +17,9 @@ error_codes = { \
         '1016' : 'One or more fields have invalid values - invalid value for usertype', \
         '1017' : 'One or more fields have invalid values - firstname/middlename/lastname may contain alphabets only.', \
         '1018' : 'One or more fields have invalid values - invalid privilege value', \
-        '1019' : 'Password strength is not adequate'
+        '1019' : 'Password strength is not adequate', \
+
+        '1021' : 'Could not create directory to store attachment', \
     }
 
 def error_msg(code):
