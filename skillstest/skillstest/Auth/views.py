@@ -117,7 +117,11 @@ def login(request):
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
 
 
-
+"""
+Note: Even though we are accepting values for UserPrivilege, very limited privilege related info is being used right now.
+This is because we have 3 different class of Users and these 3 classes of Users replace the logic that privileges implement.
+The 3 classes of Users are:  creators, assessors (Evaluator) and assessees.
+"""
 @csrf_protect
 @never_cache
 def register(request):
@@ -138,7 +142,8 @@ def register(request):
             msg = ""
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/newuser.html")
-        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
+        #c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
+        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -156,7 +161,7 @@ def register(request):
         sex = request.POST['sex']
         usertype = request.POST['usertype']
         mobilenum = request.POST['mobilenum']
-        userprivilege = request.POST['userprivilege']
+        #userprivilege = request.POST['userprivilege']
         csrftoken = request.POST['csrfmiddlewaretoken']
         message = ""
         # Validate the collected data...
@@ -190,7 +195,7 @@ def register(request):
             return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
         else: # Create the user and redirect to the dashboard page with a status message.
             user = User()
-            usrpriv = UserPrivilege()
+            #usrpriv = UserPrivilege()
             user.firstname = firstname
             user.middlename = middlename
             user.lastname = lastname
@@ -204,10 +209,10 @@ def register(request):
             user.active = False # Will become active when user verifies email Id.
             user.userpic = ""
             user.save() # New user record inserted now. 'joindate' added automatically.
-            usrpriv.user = user
-            usrpriv.privilege = userprivilege
-            usrpriv.status = True
-            usrpriv.save() # Associated user privilege saved.
+            #usrpriv.user = user
+            #usrpriv.privilege = userprivilege
+            #usrpriv.status = True
+            #usrpriv.save() # Associated user privilege saved.
             skillutils.sendemail(user)
             # Print a success message and ask user to validate email. The current screen is
             # only a providential state where the user appears to be logged in but has no right

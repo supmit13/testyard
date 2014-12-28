@@ -148,7 +148,7 @@ function clear_all(){
 			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value=''><input type='text' name='middlename' value='' max_length=10><input type='text' name='lastname' value=''><br />
 			<b>*Sex: </b><select name='sex'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
 			<b>Mobile Number: </b><input type='text' name='mobilenum' value=''><br />
-			<b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select>&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value=''><br />
+			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value=''><br />
 			{% csrf_token %}
 			<input type='button' name='register' value='Register' onClick='javascript:process_register();'>
 			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();'>

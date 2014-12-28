@@ -147,10 +147,35 @@ def check_password_strength(passwd):
 
 """
 Method to copy a given Test object and create a new (duplicate) Test
-object which is owned by the User who copied it. Returns the copied Test
-object, None on failure.
+object which is owned by the User who requested the copy. Returns the copied Test
+object, None on failure. The primary owner/creator of the test has to
+transfer the rights to the new copied  test to the new user in order for
+the new user to access it. However, the 'evaluators' field will not
+be copied in the duplicate test.
 """
-def copy_test(testobj, userobj):
-    pass
+def copy_test(testobj, creatorid, userobj):
+    newtest = Test()
+    # Check if creatorobj is the creator of testobj or not. If not, return None.
+    if testobj.creator.id != creatorid:
+        return None
+    newtest.testname = testobj.testname
+    newtest.subtopic = testobj.subtopic
+    newtest.creator = userobj
+    newtest.creatorisevaluator = testobj.creatorisevaluator
+    newtest.evaluators = None
+    newtest.testtype = testobj.testtype
+    newtest.createdate = datetime.datetime.now()
+    newtest.maxscore = testobj.maxscore
+    newtest.passscore = testobj.passscore
+    newtest.ruleset = testobj.ruleset
+    newtest.duration = testobj.duration
+    newtest.allowedlanguages = testobj.allowedlanguages
+    newtest.challengecount = testobj.challengecount
+    newtest.activationdate = datetime.datetime.now()
+    newtest.status = testobj.status
+    newtest.quality = testobj.quality
+    return newtest
+
+
 
 

@@ -133,6 +133,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     'skillstest.Auth',
     'skillstest.Tests',
+    'skillstest.Subscription',
 )
 
 # A sample logging configuration. The only tangible logging

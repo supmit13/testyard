@@ -43,3 +43,10 @@ TestYard Functional Requirements
 
 21. The system should allow for a newsletter to be circulated (at no cost) amongst all members. The system should be able to allow an admin personnel to enter articles, images, files, etc in an UI and compile all that as a PDF file. Finally the system should have a means to schedule automated sending of such a pdf file to its members.
 
+22. The system should have sufficient security such that data pertaining or belonging to the users is never leaked. It should be HTTPS enabled. Passwords should only be transferred over a secure connection and should be encrypted while being passed over the wire.
+
+23. System should be able to display and search tests based on multiple criteria (like job role, free tests, beta tests, etc)
+
+24. System should be able to do keyword search on tests.
+
+25. System should support both free and paid tests.

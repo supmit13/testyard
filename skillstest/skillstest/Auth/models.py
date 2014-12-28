@@ -1,4 +1,5 @@
 from django.db import models
+from  django.core.validators import validate_email
 
 def profpicpath(instance, filename):
     return '/'.join([instance.user.displayname, 'images/profile', filename])
@@ -11,7 +12,7 @@ class User(models.Model):
     lastname = models.CharField(max_length=100)
     displayname = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=100)
-    emailid = models.EmailField(unique=True)
+    emailid = models.EmailField(unique=True, validators=[validate_email, ])
     active = models.BooleanField(default=False, help_text='Specifies whether the user is an active member or not.')
     istest = models.BooleanField(default=False, help_text='Specifies whether the user object is a result of some testing or not.')
     joindate = models.DateTimeField(auto_now_add=True) # set the field to now when the object is first created

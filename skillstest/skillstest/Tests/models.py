@@ -90,7 +90,8 @@ test taker needs to achieve in order to pass it, etc.
 class Test(models.Model):
     testname = models.CharField(max_length=150)
     subtopic = models.ForeignKey(Subtopic, null=False, blank=False)
-    creator = models.ForeignKey(User, blank=False, null=False)
+    creator = models.ForeignKey(User, blank=False, null=False) # In case the 'creator' is some board or association, one of its members
+    # will need to come forward to be accountable for the  test.
     creatorisevaluator = models.BooleanField(default=True)
     evaluators = models.ForeignKey(Evaluator, blank=True, null=True)
     testtype = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.TEST_TYPES.iteritems()), default='COMP')

@@ -227,4 +227,58 @@ CREATE INDEX `Tests_userresponse_d20e438b` ON `Tests_userresponse` (`evaluated_b
 CREATE INDEX `Tests_sharetest_c967e5f7` ON `Tests_sharetest` (`testcreator_id`);
 CREATE INDEX `Tests_sharetest_e4aa393d` ON `Tests_sharetest` (`sharedwith_id`);
 CREATE INDEX `Tests_sharetest_a88de8dc` ON `Tests_sharetest` (`test_id`);
+
+CREATE TABLE `Subscription_plan` (
+    `planname` varchar(200) NOT NULL PRIMARY KEY,
+    `tests` varchar(200) NOT NULL,
+    `price` numeric(10, 2) NOT NULL,
+    `validfor_unit` varchar(12) NOT NULL,
+    `planvalidfor` integer NOT NULL,
+    `adminuser_id` integer NOT NULL,
+    `status` bool NOT NULL,
+    `discountpercent` double precision,
+    `discountamt` double precision,
+    `createdate` datetime NOT NULL,
+    `commissiondate` datetime,
+    `decommissiondate` datetime
+)
+;
+ALTER TABLE `Subscription_plan` ADD CONSTRAINT `adminuser_id_refs_id_665322f6` FOREIGN KEY (`adminuser_id`) REFERENCES `Auth_user` (`id`);
+CREATE TABLE `Subscription_userplan` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `plan_id` varchar(200) NOT NULL,
+    `user_id` integer NOT NULL,
+    `totalcost` numeric(10, 2) NOT NULL,
+    `amountpaid` numeric(10, 2) NOT NULL,
+    `amountdue` numeric(10, 2) NOT NULL,
+    `lastpaydate` datetime NOT NULL,
+    `planstartdate` datetime NOT NULL,
+    `planenddate` datetime,
+    `planstatus` bool NOT NULL,
+    `createdon` datetime NOT NULL,
+    `discountpercentapplied` double precision,
+    `discountamountapplied` double precision
+)
+;
+ALTER TABLE `Subscription_userplan` ADD CONSTRAINT `user_id_refs_id_34f93f73` FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`);
+ALTER TABLE `Subscription_userplan` ADD CONSTRAINT `plan_id_refs_planname_47f755ee` FOREIGN KEY (`plan_id`) REFERENCES `Subscription_plan` (`planname`);
+CREATE TABLE `Subscription_transaction` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `username` varchar(100) NOT NULL,
+    `user_id` integer NOT NULL,
+    `planname` varchar(200),
+    `usersession` varchar(50) NOT NULL,
+    `payamount` numeric(10, 2) NOT NULL,
+    `transactiondate` datetime NOT NULL,
+    `comments` longtext NOT NULL,
+    `paymode` varchar(50) NOT NULL,
+    `invoice_email` varchar(75) NOT NULL,
+    `trans_status` bool NOT NULL
+)
+;
+ALTER TABLE `Subscription_transaction` ADD CONSTRAINT `user_id_refs_id_8c4721ea` FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`);
+CREATE INDEX `Subscription_plan_4e201023` ON `Subscription_plan` (`adminuser_id`);
+CREATE INDEX `Subscription_userplan_a57fd7f1` ON `Subscription_userplan` (`plan_id`);
+CREATE INDEX `Subscription_userplan_fbfc09f1` ON `Subscription_userplan` (`user_id`);
+CREATE INDEX `Subscription_transaction_fbfc09f1` ON `Subscription_transaction` (`user_id`);
 COMMIT;
