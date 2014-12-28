@@ -1,5 +1,6 @@
 import os, sys, re, time
 import tempfile, shutil
+from functools import wraps
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -58,6 +59,45 @@ def checksession(request):
         return HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     else: # Return the request
         return request
+
+
+"""
+Decorator version of checksession to check the validity of  a session. Uses the same isloggedin function above internally.
+"""
+def is_session_valid(func, request):
+    def sessioncheck(request):
+        if not isloggedin(request):
+            message = error_msg('1006')
+            response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+        else: # Return the request
+            response = func(request)
+        return response
+    return sessioncheck
+
+
+"""
+Decorator to match the session and location info stored in DB and the ones retrieved from the request
+"""
+def session_location_match(func, request):
+    def checkconsistency(request):
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        clientIP_fromheader = request.META['REMOTE_ADDR']
+        # Check to see if the values for this session stored in DB are identical to those we extracted from the headers just now.
+        try:
+            session_obj = Session.objects.get(sessioncode=sesscode)
+        except:
+            message = error_msg('1006')
+            # Create response with redirect to login page and this message as GET arg. Return that response
+            response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+        if session_obj.user.usertype != usertype or session_obj.sourceip != clientIP_fromheader:
+            message = error_msg('1007')
+            # Create response with redirect to login page and this message as GET arg. Return that response
+            response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+        else:
+            response = func(request)
+        return response
+    return checkconsistency
 
 
 
@@ -150,7 +190,7 @@ Method to copy a given Test object and create a new (duplicate) Test
 object which is owned by the User who requested the copy. Returns the copied Test
 object, None on failure. The primary owner/creator of the test has to
 transfer the rights to the new copied  test to the new user in order for
-the new user to access it. However, the 'evaluators' field will not
+the new user to access it. However, the 'evaluator' field will not
 be copied in the duplicate test.
 """
 def copy_test(testobj, creatorid, userobj):
@@ -162,7 +202,7 @@ def copy_test(testobj, creatorid, userobj):
     newtest.subtopic = testobj.subtopic
     newtest.creator = userobj
     newtest.creatorisevaluator = testobj.creatorisevaluator
-    newtest.evaluators = None
+    newtest.evaluator = None
     newtest.testtype = testobj.testtype
     newtest.createdate = datetime.datetime.now()
     newtest.maxscore = testobj.maxscore

@@ -172,3 +172,23 @@ Sun, 28 Dec 2014, 20:39 HRS (IST).
 12.files_to_commit.txt
 
 ====================================
+
+Sun, 28 Dec 2014, 20:39 HRS (IST).
+-----------------------------------
+1. skillstest/Subscription/models.py
+2. skillstest/errors.py
+3. skillstest/Auth/views.py
+4. skillstest/utils.py
+5. skillstest/views.py
+6. skillstest/Tests/models.py
+7. skillstest/Auth/models.py
+8. templates/authentication/newuser.html
+9. templates/user/dashboard.html
+10.static/javascript/pageutils.js
+11.skillstest/settings.py
+12.skillstest/skills_settings.py
+13.skillstest/Subscription/views.py
+14.skillstest/urls.py
+15.files_to_commit.txt
+ 
+====================================

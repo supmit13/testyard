@@ -32,7 +32,7 @@ class Plan(models.Model):
     planname = models.CharField(max_length=200, null=False,blank=False, primary_key=True)
     tests = models.CharField(max_length=200, null=False,blank=False) # Multiple test Ids separated by '|' character.
     price = models.DecimalField(max_digits=10, decimal_places=2) # Price per unit. Unit would be based on context, fixed by the 'admin '.
-    # The privilege of the user is determined from the UserPrivilege model. Normal users, like test creators, evaluators, assessees, etc
+    # The privilege of the user is determined from the UserPrivilege model. Normal users, like test creators, evaluator, assessees, etc
     # will NOT have an entry in the UserPrivilege table. The only entries in the UserPrivilege table will be that of site-admins.
     validfor_unit = models.CharField(max_length=12, choices=(('D', 'Days'),('M', 'Months'),('Y', 'Years')), default='M')
     planvalidfor = models.IntegerField(null=False, blank=False, default=1) # Default duration of a Plan is 1 month.
@@ -87,7 +87,7 @@ class UserPlan(models.Model):
 Validator to ensure that the user with the displayname actually exists.
 """
 def validate_user(username):
-    userobj = User.objects.filter(User.displayname=username)
+    userobj = User.objects.filter(displayname=username)
     if not userobj or userobj.__len__() == 0: # Note: userobj is a queryset object, not a User object
         raise ValidationError("No user named '%s' exists"%username)
 
@@ -96,9 +96,10 @@ def validate_user(username):
 Validator to ensure that the sessioncode actually exists and is valid.
 """
 def validate_session(sesscode):
-    sessobj = Session.objects.filter(Session.sessioncode=sesscode)
+    sessobj = Session.objects.filter(sessioncode=sesscode)
     if not sessobj or sessobj.__len__() == 0: # Note: sessobj is a queryset object, not a Session object
         raise ValidationError("No session with code '%s' exists"%sesscode)
+
 
 """
 Transaction related info of Users (who bought plans and/or tests).

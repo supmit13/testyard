@@ -107,7 +107,7 @@ def login(request):
                 sessobj.useragent = request.META['HTTP_USER_AGENT']
                 # Now save the session...
                 sessobj.save()
-                # ... and redirect to landing page.
+                # ... and redirect to landing page (which happens to be the dashboard page).
                 return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
             else:
                 message = error_msg('1003')

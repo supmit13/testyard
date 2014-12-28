@@ -68,6 +68,7 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
 DASHBOARD_URL = "skillstest/dashboard/"
+SUBSCRIPTION_URL = "skillstest/subscriptions/"
 LOGIN_REDIRECT_URL = DASHBOARD_URL
 
 TEST_RUN = False # Set this to True during testing the app.
@@ -105,3 +106,8 @@ RULES_DICT = {} # Dictionary containing all rules that may be imposed on a test.
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English', 'lat' : 'Latin', 'fr' : 'French', 'hndi' : 'Hindi' } # Allowed languages
 
 SKILL_QUALITY = { 'BEG' : 'Beginner', 'INT' : 'Intermediate', 'PRO' : 'Proficient' }
+
+PLAN_GUIDELINES = {}
+
+PAYMENT_PLATFORMS = {}
+
