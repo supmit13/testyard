@@ -13,7 +13,10 @@ import cPickle
 import decimal, math
 
 # Application specific libraries...
-from skillstest.Auth.models import User, Session
+from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
+from skillstest import settings as mysettings
+from skillstest.errors import error_msg
+import skillstest.utils as skillutils
 
 
 """
@@ -24,6 +27,12 @@ bit of information pertaining to the user, users with lesser rights will be able
 to view lesser info.
 """
 def dashboard(request):
+    message = ''
+    if request.method != "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
     return HttpResponse()
 
 
