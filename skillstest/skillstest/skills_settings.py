@@ -68,8 +68,13 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
 DASHBOARD_URL = "skillstest/dashboard/"
+PROFILE_URL = "skillstest/"
 SUBSCRIPTION_URL = "skillstest/subscriptions/"
-LOGIN_REDIRECT_URL = DASHBOARD_URL
+LOGIN_REDIRECT_URL = PROFILE_URL
+CREATE_TEST_URL = "skillstest/create/"
+EDIT_TEST_URL = "skillstest/edit/"
+MANAGE_TEST_URL = "skillstest/manage/"
+SEARCH_URL = "skillstest/search/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -107,7 +112,14 @@ ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English', 'lat' : 'Latin
 
 SKILL_QUALITY = { 'BEG' : 'Beginner', 'INT' : 'Intermediate', 'PRO' : 'Proficient' }
 
-PLAN_GUIDELINES = {}
+PLAN_GUIDELINES = {} # A map of test types, duration, and their  associated costs - used in Subscription.model
 
 PAYMENT_PLATFORMS = {}
+
+# LinkedIn OAuth Details:
+APP_NAME = 'TestYard'
+OAUTH_API_KEY = '78wxi7pqmstzbg'
+OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
+OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
+OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 

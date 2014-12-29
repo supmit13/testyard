@@ -66,11 +66,11 @@ class UserPlan(models.Model):
     amountpaid = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, default=0.00)
     amountdue = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, default=0.00)
     lastpaydate = models.DateTimeField(auto_now_add=True)
-    planstartdate = models.DateTimeField(default=datetime.datetime.now(), null=False, blank=False)
-    planenddate = models.DateTimeField(default=datetime.datetime.now(), null=True, blank=True)
+    planstartdate = models.DateTimeField(default=datetime.datetime.now(), null=False, blank=False) # Date on which this plan was started for this user.
+    planenddate = models.DateTimeField(default=datetime.datetime.now(), null=True, blank=True) # Date on which this plan ended for this user.
     planstatus = models.BooleanField(default=True) # Whether the plan is valid and in use by the user or not.
     # Status of plans that have already crossed their planenddate are automatically made False.
-    createdon = models.DateTimeField(auto_now=True) # Creation date of the record.
+    subscribedon = models.DateTimeField(auto_now=True) # Creation date of the record.
     discountpercentapplied = models.FloatField(null=True, blank=True, default=0.0)
     discountamountapplied = models.FloatField(null=True, blank=True, default=0.0)
 
