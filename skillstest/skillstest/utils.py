@@ -1,6 +1,7 @@
 import os, sys, re, time
 import tempfile, shutil
 from functools import wraps
+import datetime
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -12,6 +13,7 @@ from skillstest.Auth.models import User, Session
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse
+from skillstest.Subscription.models import Plan, UserPlan, Transaction
 
 """
 Creates and returns a session object if the request is a
@@ -64,7 +66,7 @@ def checksession(request):
 """
 Decorator version of checksession to check the validity of  a session. Uses the same isloggedin function above internally.
 """
-def is_session_valid(func, request):
+def is_session_valid(func):
     def sessioncheck(request):
         if not isloggedin(request):
             message = error_msg('1006')
@@ -78,7 +80,7 @@ def is_session_valid(func, request):
 """
 Decorator to match the session and location info stored in DB and the ones retrieved from the request
 """
-def session_location_match(func, request):
+def session_location_match(func):
     def checkconsistency(request):
         sesscode = request.COOKIES['sessioncode']
         usertype = request.COOKIES['usertype']
@@ -216,6 +218,86 @@ def copy_test(testobj, creatorid, userobj):
     newtest.quality = testobj.quality
     return newtest
 
+
+"""
+pagetitle is expected to be the title string of the page with first letter in uppercase.
+"""
+def includedtemplatevars(pagetitle):
+    curdate = datetime.datetime.now()
+    select_profile = ""
+    select_dashboard = ""
+    select_subscription = ""
+    select_tests = ""
+    select_search = ""
+    select_pronet = ""
+    select_analytics = ""
+    select_aboutus = ""
+    select_helpndoc = ""
+    select_careers = ""
+    if pagetitle == 'Profile':
+        select_profile = " class=\"highlight\""
+    elif pagetitle == 'Dashboard':
+        select_dashboard = " class=\"highlight\""
+    elif pagetitle == 'Subscription':
+        select_subscription = " class=\"highlight\""
+    elif pagetitle == 'Tests':
+        select_tests = " class=\"highlight\""
+    elif pagetitle == 'Search':
+        select_search = " class=\"highlight\""
+    elif pagetitle == 'Networking':
+        select_pronet = " class=\"highlight\""
+    elif pagetitle == 'Test Analytics':
+        select_analytics = " class=\"highlight\""
+    elif pagetitle == 'About Us':
+        select_aboutus = " class=\"highlight\""
+    elif pagetitle == 'Help/Documentation':
+        select_helpndoc = " class=\"highlight\""
+    elif pagetitle == 'Careers/Jobs':
+        select_careers = " class=\"highlight\""
+    else: # Invalid tab, control should not have come here. Skip quietly.
+        pass
+    cntxt = { 'pagetitle' : pagetitle, 'select_profile' : select_profile, 'select_dashboard' : select_dashboard, 'select_subscription' : select_subscription, \
+              'select_tests' : select_tests, 'select_search' : select_search, 'select_pronet' : select_pronet, 'select_analytics' : select_analytics, \
+              'select_aboutus' : select_aboutus, 'select_helpndoc' : select_helpndoc, 'select_careers' : select_careers, }
+    return cntxt
+
+
+
+"""
+Function to get the current plans a given user has subscribed to.
+"""
+def getcurrentplans(userobj):
+    currentplans = {}
+    userplans = UserPlan.objects.filter(user=userobj).order_by('-subscribedon') # Getting all UserPlans for the User.
+    for usrpln in userplans: # userplans is a queryset object...
+        planstart = usrpln.planstartdate
+        startdate, starttime = planstart.split(" ")
+        startyyyy, startmon, startdd = startdate.split("-")
+        starthh, startmm, startss = starttime.split(":")
+        planend = usrpln.planenddate
+        enddate, endtime = planend.split(" ")
+        endyyyy, endmon, enddd = enddate.split("-")
+        endhh, endmm, endss = endtime.split(":")
+        planstatus = usrpln.planstatus
+        subscribed = usrpln.subscribedon
+        planname = usrpln.plan.planname
+        # For this plan to be the current plan, the current datetime value should be between planstart and planend.
+        curdatetime = datetime.datetime.now()
+        if curdatetime > datetime.datetime(int(startyyyy), int(startmon), int(startdd), int(starthh), int(startmm), int(startss)) and curdatetime < datetime.datetime(int(endyyyy), int(endmon), int(enddd), int(endhh), int(endmm), int(endss)) and planstatus:
+            tests = usrpln.plan.tests
+            price = usrpln.plan.price
+            currentplans[planname] = ( planstart, planend, price, usrpln.totalcost, usrpln.amountpaid, usrpln.amountdue, usrpln.discountpercentapplied )
+            """
+            Plan data (7 element tuple) listed as follows:
+            index 0: start date and time of the user's subscription of the plan.
+            index 1: end date and time of the user's subscription of the plan.
+            index 2: officially listed price of the plan (different from the price at which user subscribed since waivers, discounts, freebies etc, may be given)
+            index 3: total cost that the user has to pay for the package. This includes all waivers, discounts, etc.
+            index 4: amount already paid by the user (may be through EMIs or part payment).
+            index 5: amount that the user still needs to pay
+            index 6: discount applied on the plan.
+            """
+    return currentplans
 
 
 

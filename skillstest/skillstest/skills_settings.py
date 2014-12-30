@@ -99,6 +99,7 @@ HTML_ENTITIES_CHAR_MAP = { \
         '&quot;' : '"', \
         '&#91;' : '[', \
         '&#93;' : ']', \
+        '&#39;' : '"',\
     }
 
 EMAIL_PATTERN = re.compile(r"[\w\.]*@[\w\.]+")

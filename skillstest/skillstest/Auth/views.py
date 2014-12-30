@@ -20,7 +20,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.models import get_current_site
 from django.contrib.sessions.backends.db import SessionStore
-from django.contrib.auth.hashers import make_password # We will use this to generate a hash from csrftoken and user Id.
+from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 # We will use that as our sessionid.
 
 # Standard libraries...
@@ -35,20 +35,25 @@ from skillstest.errors import error_msg
 import skillstest.utils as skillutils
 
 
+def make_password(password):
+    hash = pbkdf2_sha256.encrypt("password", rounds=200, salt_size=16)
+    return hash
+
 
 def authenticate(uname, passwd):
     try:
-        user = User.objects.get(displayname=uname)
-        if user.password == make_password(passwd):  # Compare the hashes of the password
-            return user
+        user = User.objects.filter(displayname=uname)
+        if pbkdf2_sha256.verify(passwd, user[0].password):  # Compare the hashes of the password
+            return user[0]
         else:
             return None
     except:
         return None
+    
 
 
 def generatesessionid(username, csrftoken, userip, ts):
-    hashstr = make_password(username + csrftoken + userip + ts)
+    hashstr = make_password(username + csrftoken + userip) + ts
     return hashstr
 
 
@@ -91,8 +96,6 @@ def login(request):
                 timestamp = int(time.time())
                 # timestamp will be a 10 digit string.
                 sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip, timestamp.__str__())
-                request.COOKIES['sessioncode'] = sesscode
-                request.COOKIES['usertype'] = userobj.usertype
                 sessobj.sessioncode = sesscode
                 sessobj.user = userobj
                 # sessobj.starttime should get populated on its own when we save this session object.
@@ -107,8 +110,11 @@ def login(request):
                 sessobj.useragent = request.META['HTTP_USER_AGENT']
                 # Now save the session...
                 sessobj.save()
-                # ... and redirect to landing page (which happens to be the dashboard page).
-                return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
+                # ... and redirect to landing page (which happens to be the profile page).
+                response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
+                response.set_cookie('sessioncode', sesscode)
+                response.set_cookie('usertype', userobj.usertype)
+                return response
             else:
                 message = error_msg('1003')
                 return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)

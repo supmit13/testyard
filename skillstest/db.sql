@@ -281,4 +281,6 @@ CREATE INDEX `Subscription_plan_4e201023` ON `Subscription_plan` (`adminuser_id`
 CREATE INDEX `Subscription_userplan_a57fd7f1` ON `Subscription_userplan` (`plan_id`);
 CREATE INDEX `Subscription_userplan_fbfc09f1` ON `Subscription_userplan` (`user_id`);
 CREATE INDEX `Subscription_transaction_fbfc09f1` ON `Subscription_transaction` (`user_id`);
+
+ALTER TABLE Subscription_userplan CHANGE createdon subscribedon datetime;
 COMMIT;
