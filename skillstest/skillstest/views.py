@@ -191,3 +191,52 @@ def logout(request):
     return response
 
 
+
+def aboutus(request):
+    aboutus_data_dict = {}
+    # fix up the variables from included templates
+    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
+    for inc_key in inc_context.keys():
+        aboutus_data_dict[inc_key] = inc_context[inc_key]
+    tmpl = get_template("aboutus.html")
+    aboutus_data_dict.update(csrf(request))
+    cxt = Context(aboutus_data_dict)
+    aboutushtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        aboutushtml = aboutushtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(aboutushtml)
+
+
+
+def helpndocs(request):
+    helpndocs_data_dict = {}
+    # fix up the variables from included templates
+    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
+    for inc_key in inc_context.keys():
+        helpndocs_data_dict[inc_key] = inc_context[inc_key]
+    tmpl = get_template("help.html")
+    helpndocs_data_dict.update(csrf(request))
+    cxt = Context(helpndocs_data_dict)
+    helphtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        helphtml = helphtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(helphtml)
+
+
+
+def careers(request):
+    careers_data_dict = {}
+    # fix up the variables from included templates
+    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
+    for inc_key in inc_context.keys():
+        careers_data_dict[inc_key] = inc_context[inc_key]
+    tmpl = get_template("careers.html")
+    careers_data_dict.update(csrf(request))
+    cxt = Context(careers_data_dict)
+    careershtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        careershtml = careershtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(careershtml)
+
+
+

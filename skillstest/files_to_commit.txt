@@ -259,3 +259,11 @@ Wed, 31 Dec 2014, 23:14 HRS (IST).
 
 ====================================
 
+Thu, 01 Jan 2015, 23:40 HRS (IST).
+----------------------------------
+1. skillstest/views.py
+2. skillstest/Tests/views.py
+3. skillstest/urls.py
+4. files_to_commit.txt
+
+====================================
