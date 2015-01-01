@@ -21,6 +21,8 @@ error_codes = { \
         '1019' : 'Password strength is not adequate', \
 
         '1021' : 'Could not create directory to store attachment', \
+
+        '1031' : 'You are logged out from the system.', \
     }
 
 def error_msg(code):

@@ -226,3 +226,36 @@ Wed, 31 Dec 2014, 02:03 HRS (IST).
 10.skillstest/skills_settings.py
 11.templates/user/subscription.html
 12.files_to_commit.txt
+
+====================================
+
+Wed, 31 Dec 2014, 23:14 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. skillstest/skills_settings.py
+3. templates/inc/html_head.html
+4. templates/authentication/login.html
+5. templates/authentication/newuser.html
+6. skillstest/urls.py
+7. templates/inc/right_panel.html
+8. skillstest/views.py
+9. skillstest/errors.py
+10.templates/user/dashboard.html
+11.db.sql
+12.skillstest/Auth/models.py
+13.skillstest/Subscription/views.py
+14.skillstest/Subscription/models.py
+15.skillstest/Tests/models.py
+16.templates/user/profile.html
+17.templates/user/subscription.html
+18.templates/tests/tests.html
+19.templates/tests/search.html
+20.templates/user/network.html
+21.templates/tests/analytics.html
+22.templates/aboutus.html
+23.templates/help.html
+24.templates/careers.html
+25.skillstest/Tests/views.py
+
+====================================
+

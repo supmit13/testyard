@@ -2,6 +2,7 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from  django.core.validators import validate_email
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import os, sys, re, time, datetime
@@ -70,7 +71,7 @@ class UserPlan(models.Model):
     planenddate = models.DateTimeField(default=datetime.datetime.now(), null=True, blank=True) # Date on which this plan ended for this user.
     planstatus = models.BooleanField(default=True) # Whether the plan is valid and in use by the user or not.
     # Status of plans that have already crossed their planenddate are automatically made False.
-    subscribedon = models.DateTimeField(auto_now=True) # Creation date of the record.
+    subscribedon = models.DateTimeField(auto_now=True) # Creation date of the record. Mostly same as 'planstartdate'
     discountpercentapplied = models.FloatField(null=True, blank=True, default=0.0)
     discountamountapplied = models.FloatField(null=True, blank=True, default=0.0)
 

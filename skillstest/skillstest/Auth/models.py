@@ -24,6 +24,7 @@ class User(models.Model):
     usertype = models.CharField(max_length=4, choices=(('CORP', 'Corporate'), ('CONS', 'Consultant'), ('ACAD', 'Academic'), ('CERT', 'Certification')))
     mobileno = models.CharField(max_length=12, blank=True)
     userpic = models.ImageField(max_length=100, upload_to=profpicpath, help_text='Path to user\'s profile image.')
+    newuser = models.BooleanField(default=False, help_text='False if user hasn\'t validated her/his email address')
     #skinpic = models.ImageField(max_length=100, upload_to=profpicpath)
 
 

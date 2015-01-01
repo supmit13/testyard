@@ -283,4 +283,6 @@ CREATE INDEX `Subscription_userplan_fbfc09f1` ON `Subscription_userplan` (`user_
 CREATE INDEX `Subscription_transaction_fbfc09f1` ON `Subscription_transaction` (`user_id`);
 
 ALTER TABLE Subscription_userplan CHANGE createdon subscribedon datetime;
+
+ALTER TABLE Auth_user add column newuser boolean default True not  null;
 COMMIT;

@@ -65,16 +65,25 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'CERT' : 86400, }
 
 
+URL_PROTOCOL = "http://"
+
+
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
 DASHBOARD_URL = "skillstest/dashboard/"
-PROFILE_URL = "skillstest/"
+PROFILE_URL = "skillstest/profile/"
 SUBSCRIPTION_URL = "skillstest/subscriptions/"
 LOGIN_REDIRECT_URL = PROFILE_URL
-CREATE_TEST_URL = "skillstest/create/"
-EDIT_TEST_URL = "skillstest/edit/"
-MANAGE_TEST_URL = "skillstest/manage/"
-SEARCH_URL = "skillstest/search/"
+CREATE_TEST_URL = "skillstest/tests/create/"
+EDIT_TEST_URL = "skillstest/tests/edit/"
+MANAGE_TEST_URL = "skillstest/tests/"
+SEARCH_URL = "skillstest/tests/search/"
+NETWORK_URL = "skillstest/network/"
+ANALYTICS_URL = "skillstest/analytics/"
+ABOUTUS_URL = "skillstest/aboutus/"
+HELP_URL = "skillstest/helpndoc/"
+CAREER_URL = "skillstest/careers/"
+LOGOUT_URL = "skillstest/logout/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

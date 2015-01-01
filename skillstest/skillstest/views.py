@@ -24,6 +24,7 @@ import decimal, math
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -50,8 +51,8 @@ def dashboard(request):
     # If request method is 'GET', then retrieve Session and User info from the DB
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj.user
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
     # Retrieve information pertaining to all Tests this user has access to.
     # *Starting with the ones in which the user is a creator...
     testlist_ascreator = Test.objects.filter(creator=userobj)
@@ -80,7 +81,10 @@ def dashboard(request):
                           test.evaluator.groupmember9, test.evaluator.groupmember10 ) # Basically we keep the creator as the first element. Rest are evaluators.
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
     # *... and finally, those tests which the user has taken (i.e, user has been a candidate).
-    testlist_ascandidate = UserTest.objects.filter(user=userobj).test
+    try:
+        testlist_ascandidate = UserTest.objects.filter(user=userobj)[0].test
+    except: # Can't say if we will find any records...
+        testlist_ascandidate = []
     user_candidate_other_creator_evaluator_dict = {}
     for test in testlist_ascandidate:
         testcreator = test.creator
@@ -88,8 +92,21 @@ def dashboard(request):
                           test.evaluator.groupmember5, test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
                           test.evaluator.groupmember9, test.evaluator.groupmember10 )
         user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
+    dashboard_user_dict = {}
+    dashboard_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
+    dashboard_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
+    dashboard_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
+    inc_context = skillutils.includedtemplatevars("Dashboard", request) # Since this is the 'Dashboard' page for the user.
+    for inc_key in inc_context.keys():
+        dashboard_user_dict[inc_key] = inc_context[inc_key]
     # Now create and render the template here
-    return HttpResponse()
+    tmpl = get_template("user/dashboard.html")
+    dashboard_user_dict.update(csrf(request))
+    cxt = Context(dashboard_user_dict)
+    dashboardhtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        dashboardhtml = dashboardhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(dashboardhtml)
 
 
 @skillutils.is_session_valid
@@ -125,13 +142,22 @@ def profile(request):
     profile_data_dict['mobilenumber'] = userobj.mobileno
     profile_data_dict['usersince'] = userobj.joindate
     profile_data_dict['status'] = "<a href='#' style='color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;'>Active: Yes</a>"
-    if not userobj.active:
+    if not userobj.active: # This might be due to the user not yet confirming the account creation (by clicking on the link sent thru email)
         profile_data_dict['status'] = "<a href='#' style='color:#FF0000;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;'>Active: No</a>"
-    profile_data_dict['lastseen'] = Session.objects.filter(user=userobj).order_by('-endtime')[0]
+    profile_data_dict['newuser'] = ""
+    if userobj.newuser:
+        profile_data_dict['newuser'] = "<br /><a href='#' style='color:#FF0000;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;'>Have\
+        you validated the email address you provided us?<br />If not, please find our message in your mailbox and click on the\
+        link we have sent you through it. You need to do that in order to access our tests and other resources.</a>"
+    profile_data_dict['lastseen'] = ""
+    try:
+        profile_data_dict['lastseen'] = Session.objects.filter(user=userobj).order_by('-endtime')[0]
+    except:
+        pass
     subscription_data = skillutils.getcurrentplans(userobj) # We just want the current plan, not all the subscription info.
     profile_data_dict['subscriptions'] = subscription_data
     # fix up the variables from included templates
-    inc_context = skillutils.includedtemplatevars("Profile") # Since this is the 'Profile' page for the user.
+    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         profile_data_dict[inc_key] = inc_context[inc_key]
     tmpl = get_template("user/profile.html")
@@ -141,65 +167,27 @@ def profile(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         profilehtml = profilehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(profilehtml)
-
-
-@skillutils.is_session_valid
-@skillutils.session_location_match
-@csrf_protect
-def subscriptions(request):
-    message = ''
-    if request.method != "GET" and request.method != 'POST': # Illegal bad request... 
-        message = error_msg('1004')
-        # A logging mechanism may be used to track how many and from where
-        # such requests come and that may, sometimes, tell a curious story.
-        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.SUBSCRIPTION_URL + "?msg=%s"%message)
-        return response
-    # If request method is 'GET', then retrieve Session and User info from the DB
-    sesscode = request.COOKIES['sessioncode']
-    usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj[0].user
-    userplans = UserPlan.objects.filter(user=userobj) # Getting all UserPlans for the User.
-    current_plans_dict = {}
-    past_plans_dict = {}
-    subscription_data_dict = {}
-    curdatetime = datetime.datetime.now()
-    for upln in userplans:
-        planname = upln.plan.planname
-        planstartdate = upln.planstartdate
-        startdate, starttime = planstartdate.split(" ")
-        startyyyy, startmon, startdd = startdate.split("-")
-        starthh, startmm, startss = starttime.split(":")
-        planenddate = upln.planenddate
-        enddate, endtime = planenddate.split(" ")
-        endyyyy, endmon, enddd = enddate.split("-")
-        endhh, endmm, endss = endtime.split(":")
-        planstatus = upln.planstatus
-        discountpercent = upln.discountpercentapplied
-        totalcost = upln.totalcost
-        amtpaid = upln.amountpaid
-        amtdue = upln.amountdue
-        lastpaydate = upln.lastpaydate
-        subscribedon = upln.subscribedon
-        discountamountapplied = upln.discountamountapplied
-        if curdatetime > datetime.datetime(int(startyyyy), int(startmon), int(startdd), int(starthh), int(startmm), int(startss)) and curdatetime < datetime.datetime(int(endyyyy), int(endmon), int(enddd), int(endhh), int(endmm), int(endss)) and planstatus:
-            current_plans_dict[planname] = ( planname, planstartdate, planenddate, discountpercent, \
-                                             discountamountapplied, totalcost, amtpaid, amtdue, \
-                                             lastpaydate, subscribedon )
-        else: # plans subscribed to in the past...
-            past_plans_dict[planname] = ( planname, planstartdate, planenddate, discountpercent, \
-                                             discountamountapplied, totalcost, amtpaid, amtdue, \
-                                             lastpaydate, subscribedon )
-    subscription_data_dict['current'] = current_plans_dict
-    subscription_data_dict['past'] = past_plans_dict
-    tmpl = get_template("user/subscription.html")
-    subscription_data_dict.update(csrf(request))
-    cxt = Context(subscription_data_dict)
-    subscriptionhtml = tmpl.render(cxt)
-    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
-        subscriptionhtml = subscriptionhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
-    return HttpResponse(subscriptionhtml)
             
 
+
+def logout(request):
+    message = ''
+    if request.method != "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    request = skillutils.checksession(request)
+    sesscode = request.COOKIES['sessioncode']
+    sessionobj = None
+    try:
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+    except:
+        response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=%s"%message)
+        return response
+    if type(request) == 'HttpRequest':
+        request = skillutils.destroysession(request, sessionobj[0])
+    message = error_msg('1031')
+    response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=%s"%message)
+    return response
 
 

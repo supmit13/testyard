@@ -34,7 +34,7 @@ def isloggedin(request):
     if delta > mysettings.SESSION_EXPIRY_LIMIT[usertype.upper()]: # Stale session
         if mysettings.DEBUG:
             print "Session has passed its maximum length of time.\n"
-        request = destroysession(request)
+        request = destroysession(request, sessobj)
         return False
     else: # Good session...
         return True
@@ -43,9 +43,11 @@ def isloggedin(request):
 """
 Function to destroy a session object and return a request object.
 """
-def destroysession(request):
+def destroysession(request, sessobj):
     if request.has_key('COOKIES'):
         del request['COOKIES']
+    sessobj.status = 0
+    sessobj.save()
     return request
 
 
@@ -104,7 +106,7 @@ def session_location_match(func):
 
 
 def gethosturl(request):
-    url = 'http://'
+    url = mysettings.URL_PROTOCOL
     host = request.get_host()
     if not host:
         if request.META.has_key('HTTP_SERVER_NAME'):
@@ -222,7 +224,7 @@ def copy_test(testobj, creatorid, userobj):
 """
 pagetitle is expected to be the title string of the page with first letter in uppercase.
 """
-def includedtemplatevars(pagetitle):
+def includedtemplatevars(pagetitle, request):
     curdate = datetime.datetime.now()
     select_profile = ""
     select_dashboard = ""
@@ -259,6 +261,18 @@ def includedtemplatevars(pagetitle):
     cntxt = { 'pagetitle' : pagetitle, 'select_profile' : select_profile, 'select_dashboard' : select_dashboard, 'select_subscription' : select_subscription, \
               'select_tests' : select_tests, 'select_search' : select_search, 'select_pronet' : select_pronet, 'select_analytics' : select_analytics, \
               'select_aboutus' : select_aboutus, 'select_helpndoc' : select_helpndoc, 'select_careers' : select_careers, }
+    # Add the page URLs from mysettings in context
+    cntxt['profile_url'] = gethosturl(request) + "/" + mysettings.PROFILE_URL
+    cntxt['dashboard_url'] = gethosturl(request) + "/" + mysettings.DASHBOARD_URL
+    cntxt['subscription_url'] = gethosturl(request) + "/" + mysettings.SUBSCRIPTION_URL
+    cntxt['tests_url'] = gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL
+    cntxt['search_url'] = gethosturl(request) + "/" + mysettings.SEARCH_URL
+    cntxt['network_url'] = gethosturl(request) + "/" + mysettings.NETWORK_URL
+    cntxt['analytics_url'] = gethosturl(request) + "/" + mysettings.ANALYTICS_URL
+    cntxt['aboutus_url'] = gethosturl(request) + "/" + mysettings.ABOUTUS_URL
+    cntxt['helpndoc_url'] = gethosturl(request) + "/" + mysettings.HELP_URL
+    cntxt['careers_url'] = gethosturl(request) + "/" + mysettings.CAREER_URL
+    cntxt['logout_url'] = gethosturl(request) + "/" + mysettings.LOGOUT_URL
     return cntxt
 
 

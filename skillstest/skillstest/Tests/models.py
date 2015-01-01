@@ -93,7 +93,7 @@ class Test(models.Model):
     creator = models.ForeignKey(User, blank=False, null=False) # In case the 'creator' is some board or association, one of its members
     # will need to come forward to be accountable for the  test.
     creatorisevaluator = models.BooleanField(default=True)
-    evaluator = models.ForeignKey(Evaluator, blank=True, null=True)
+    evaluator = models.ForeignKey(Evaluator, blank=True, null=True) # This is the evaluator group name.
     testtype = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.TEST_TYPES.iteritems()), default='COMP')
     createdate = models.DateTimeField(auto_now_add=True)
     maxscore = models.IntegerField(default=0, null=False, blank=False)
