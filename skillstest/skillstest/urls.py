@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
 from skillstest import settings as mysettings
+import skillstest.utils as skillutils
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -39,4 +40,5 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.ABOUTUS_URL, 'skillstest.views.aboutus', name='aboutus'),
     url(r'%s$'%mysettings.HELP_URL, 'skillstest.views.helpndocs', name='helpndocs'),
     url(r'%s$'%mysettings.CAREER_URL, 'skillstest.views.careers', name='careers'),
+    url(r'%s$'%mysettings.availabilityURL, 'skillutils.checkavailability', name='checkavailability'),
 )

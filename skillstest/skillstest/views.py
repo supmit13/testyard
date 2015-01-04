@@ -195,7 +195,7 @@ def logout(request):
 def aboutus(request):
     aboutus_data_dict = {}
     # fix up the variables from included templates
-    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
+    inc_context = skillutils.includedtemplatevars("About Us", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         aboutus_data_dict[inc_key] = inc_context[inc_key]
     tmpl = get_template("aboutus.html")
@@ -211,7 +211,7 @@ def aboutus(request):
 def helpndocs(request):
     helpndocs_data_dict = {}
     # fix up the variables from included templates
-    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
+    inc_context = skillutils.includedtemplatevars("Help/Documentation", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         helpndocs_data_dict[inc_key] = inc_context[inc_key]
     tmpl = get_template("help.html")
@@ -227,7 +227,7 @@ def helpndocs(request):
 def careers(request):
     careers_data_dict = {}
     # fix up the variables from included templates
-    inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
+    inc_context = skillutils.includedtemplatevars("Careers/Jobs", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         careers_data_dict[inc_key] = inc_context[inc_key]
     tmpl = get_template("careers.html")

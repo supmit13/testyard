@@ -6,6 +6,20 @@
 <link rel="stylesheet" type="text/css" href="static/css/style.css" />
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 <script language='JavaScript'>
+
+function checkavailability(){
+    var username = document.registerform.username.value.trim();
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.open("GET","{{ availabilityURL }}",false);
+    xmlhttp.send();
+}
+
 function validate_regdata(){
   if(document.registerform.username.value.trim() == ""){
     alert("Username cannot be empty.");
@@ -47,8 +61,8 @@ function validate_regdata(){
     document.registerform.middlename.focus();
     return false;
   }
-  if(document.registerform.mobilenum.value.trim() != "" && !check_name(document.registerform.mobilenum.value.trim())){
-    alert("Names may contain digits only.");
+  if(document.registerform.mobilenum.value.trim() != "" && !validate_phonenum(document.registerform.mobilenum.value.trim())){
+    alert("Mobile number may contain digits only.");
     document.registerform.mobilenum.focus();
     return false;
   }
@@ -148,13 +162,13 @@ function clear_all(){
 			<div class="entry">
 
 			<form name='registerform' method='POST' action="{{ register_url }}" enctype='multipart/form-data'>
-			<b>*Username or Display Name: </b><input type='text' name='username' value=''><br />
-			<b>*Password: </b><input type='password' name='password' value=''><br />
-			<b>*Confirm Password: </b><input type='password' name='password2' value=''><br />
-			<b>*Email: </b><input type='text' name='email' value=''><i>This will be verified before activating your account.</i><br />
-			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value=''><input type='text' name='middlename' value='' max_length=10><input type='text' name='lastname' value=''><br />
+			<b>*Username or Display Name: </b><input type='text' name='username' value='{{ username }}' onblur='javascript:checkavailability();'><br />
+			<b>*Password: </b><input type='password' name='password' value='{{ password }}'><br />
+			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}'><br />
+			<b>*Email: </b><input type='text' name='email' value='{{ email }}'><i>This will be verified before activating your account.</i><br />
+			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value='{{ firstname }}'><input type='text' name='middlename' value='{{ middlename }}' max_length=10><input type='text' name='lastname' value='{{ lastname }}'><br />
 			<b>*Sex: </b><select name='sex'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
-			<b>Mobile Number: </b><input type='text' name='mobilenum' value=''><br />
+			<b>Mobile Number: </b><input type='text' name='mobilenum' value='{{ mobilenum }}'><br />
 			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value=''><br />
 			{% csrf_token %}
 			<input type='button' name='register' value='Register' onClick='javascript:process_register();'>

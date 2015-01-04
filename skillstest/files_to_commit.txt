@@ -267,3 +267,14 @@ Thu, 01 Jan 2015, 23:40 HRS (IST).
 4. files_to_commit.txt
 
 ====================================
+
+Mon, 05 Jan 2015, 01:40 HRS (IST).
+-----------------------------------
+1. skillstest/views.py
+2. templates/authentication/newuser.html
+3. skillstest/Auth/views.py
+4. static/javascript/pageutils.js
+5. skillstest/skills_settings.py
+6. skillstest/utils.py
+7. skillstest/urls.py
+8. files_to_commit.txt

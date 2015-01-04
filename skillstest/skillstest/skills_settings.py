@@ -84,6 +84,7 @@ ABOUTUS_URL = "skillstest/aboutus/"
 HELP_URL = "skillstest/helpndoc/"
 CAREER_URL = "skillstest/careers/"
 LOGOUT_URL = "skillstest/logout/"
+availabilityURL = "skillstest/checkavail/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -111,10 +112,10 @@ HTML_ENTITIES_CHAR_MAP = { \
         '&#39;' : '"',\
     }
 
-EMAIL_PATTERN = re.compile(r"[\w\.]*@[\w\.]+")
+EMAIL_PATTERN = re.compile("[\w\.]*\@[\w\.]*", re.MULTILINE|re.DOTALL)
 MULTIPLE_WS_PATTERN = re.compile(r"^\s*$", re.MULTILINE | re.DOTALL)
 PHONENUM_PATTERN = re.compile(r"^\d+$", re.MULTILINE | re.DOTALL)
-REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]+)$", re.MULTILINE | re.DOTALL)
+REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]*)$", re.MULTILINE | re.DOTALL)
 
 RULES_DICT = {} # Dictionary containing all rules that may be imposed on a test.
 

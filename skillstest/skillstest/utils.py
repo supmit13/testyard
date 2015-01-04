@@ -44,10 +44,13 @@ def isloggedin(request):
 Function to destroy a session object and return a request object.
 """
 def destroysession(request, sessobj):
-    if request.has_key('COOKIES'):
-        del request['COOKIES']
-    sessobj.status = 0
-    sessobj.save()
+    try:
+        if request.has_key('COOKIES'):
+            del request['COOKIES']
+        sessobj.status = 0
+        sessobj.save()
+    except:
+        request = None
     return request
 
 
@@ -121,6 +124,17 @@ def gethosturl(request):
 
 
 """
+Check if a username is available or not.
+"""
+def checkavailability(username):
+    user = User.objects.filter(displayname=username)
+    if user.__len__() > 0:
+        return 0
+    else:
+        return 1
+
+
+"""
 Method to send an email to the email id of the user passed in as the argument.
 Should be done asynchronously - put the email in a queue from where the email
 handler will pick in batches of (say) 10 emails at a time and send them before
@@ -173,19 +187,25 @@ def check_password_strength(passwd):
         strength += 1
     contains_digits, contains_special_char, contains_lowercase, contains_uppercase = 0, 0, 0, 0
     special_characters = "~`!#$%^&*+=-[]\\\';,/{}|\":<>?"
-    for i in passwd.__len__() - 1:
+    i = 0
+    while i < passwd.__len__() - 1:
         if passwd[i] >= '0' and passwd[i] <= '9':
             strength += 1
+            i += 1
             continue
         if passwd[i] == passwd[i].upper():
             strength += 1
+            i += 1
             continue
         if passwd[i] == passwd[i].lower():
             strength += 1
+            i += 1
             continue
         if passwd[i] in special_characters:
             strength += 1
+            i += 1
             continue
+        i += 1
     return strength
 
 

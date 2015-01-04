@@ -30,13 +30,14 @@ import decimal, math
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
 
 
 def make_password(password):
-    hash = pbkdf2_sha256.encrypt("password", rounds=200, salt_size=16)
+    hash = pbkdf2_sha256.encrypt(password, rounds=200, salt_size=16)
     return hash
 
 
@@ -147,9 +148,14 @@ def register(request):
         else:
             msg = ""
         curdate = datetime.datetime.now()
+        (username, password, password2, email, firstname, middlename, lastname, mobilenum) = ("", "", "", "", "", "", "", "")
         tmpl = get_template("authentication/newuser.html")
         #c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
-        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
+        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL,\
+             'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL,\
+             'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
+                 'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
+             'availabilityURL' :  mysettings.availabilityURL}
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -175,30 +181,39 @@ def register(request):
             message = error_msg('1011')
         elif mysettings.MULTIPLE_WS_PATTERN.search(username):
             message =  error_msg('1012')
-        elif mysettings.EMAIL_PATTERN.search(email):
+        elif not mysettings.EMAIL_PATTERN.search(email):
             message =  error_msg('1013')
-        elif mobilenum != "" and mysettings.PHONENUM_PATTERN.search(mobilenum):
+        elif mobilenum != "" and not mysettings.PHONENUM_PATTERN.search(mobilenum):
             message = error_msg('1014')
         elif sex not in ('m', 'f', 'u'):
             message = error_msg('1015')
         elif usertype not in ('CORP', 'CONS', 'ACAD', 'CERT'):
             message = error_msg('1016')
-        elif mysettings.REALNAME_PATTERN.search(firstname) or mysettings.REALNAME_PATTERN.search(lastname) or mysettings.REALNAME_PATTERN.search(middlename):
+        elif not mysettings.REALNAME_PATTERN.search(firstname) or not mysettings.REALNAME_PATTERN.search(lastname) or not mysettings.REALNAME_PATTERN.search(middlename):
             message = error_msg('1017')
-        elif userprivilege not in privileges:
-            message = error_msg('1018')
+        #elif userprivilege not in privileges:
+        #    message = error_msg('1018')
         elif skillutils.check_password_strength(password) < mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH:
             message = error_msg('1019')
-        fpath, message = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "images")
-        # User's images will be stored in "MEDIA_ROOT/<Username>/images/".
+        if request.FILES.has_key('profpic'):
+            fpath, message = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "images")
+            # User's images will be stored in "MEDIA_ROOT/<Username>/images/".
         if message != "" and mysettings.DEBUG:
             print message + "\n"
         if message != "":
-            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
-        if message != "" and mysettings.DEBUG:
-            print message + "\n"
-        if message != "":
-            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
+            curdate = datetime.datetime.now()
+            tmpl = get_template("authentication/newuser.html")
+            c = {'curdate' : curdate, 'msg' : "<font color='#FF0000'>%s</font>"%message, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL,\
+                 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, \
+                 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
+                 'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
+                 'availabilityURL' :  mysettings.availabilityURL }
+            c.update(csrf(request))
+            cxt = Context(c)
+            registerhtml = tmpl.render(cxt)
+            for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+                registerhtml = registerhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+            return HttpResponse(registerhtml)
         else: # Create the user and redirect to the dashboard page with a status message.
             user = User()
             #usrpriv = UserPrivilege()
@@ -214,7 +229,21 @@ def register(request):
             user.istest = False
             user.active = False # Will become active when user verifies email Id.
             user.userpic = ""
-            user.save() # New user record inserted now. 'joindate' added automatically.
+            try:
+                user.save() # New user record inserted now. 'joindate' added automatically.
+            except:
+                message = sys.exc_info()[1].__str__()
+                tmpl = get_template("authentication/newuser.html")
+                curdate = datetime.datetime.now()
+                c = {'curdate' : curdate, 'msg' : "<font color='#FF0000'>%s</font>"%message, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL,\
+                 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, \
+                 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
+                 'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
+                'availabilityURL' :  mysettings.availabilityURL }
+                c.update(csrf(request))
+                cxt = Context(c)
+                reghtml = tmpl.render(cxt)
+                return HttpResponse(reghtml)
             #usrpriv.user = user
             #usrpriv.privilege = userprivilege
             #usrpriv.status = True
@@ -223,15 +252,16 @@ def register(request):
             # Print a success message and ask user to validate email. The current screen is
             # only a providential state where the user appears to be logged in but has no right
             # to perform any action.
-            message = "Hello %s, welcome on board TestYard(&#8482;). We hope you will have a smooth association with us.<br /> \
+            message = "<font color='#0000FF'>Hello %s, welcome on board TestYard(&#8482;). We hope you will have a smooth association with us.<br /> \
             In case of any issues, please feel free to drop us (support@testyard.com) an email regarding the matter. Our 24x7 <br />\
-            support center staff would only be too glad to help you out. Happy testing... "%username
-            tmpl = get_template("user/dashboard.html")
+            support center staff would only be too glad to help you out. Happy testing... </font>"%username
+            tmpl = get_template("user/profile.html")
+            curdate = datetime.datetime.now()
             c = {'curdate' : curdate, 'msg' : message, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'csrftoken' : csrftoken}
             c.update(csrf(request))
             cxt = Context(c)
-            dashboard = tmpl.render(cxt)
-            return HttpResponse(dashboard)
+            profile = tmpl.render(cxt)
+            return HttpResponse(profile)
     else: # Process this as erroneous request
         message = error_msg('1004')
         if mysettings.DEBUG:

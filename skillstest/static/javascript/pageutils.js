@@ -50,7 +50,7 @@ function check_passwd_strength(passwd){
   if(passwd.length > 6){
     strength = strength + 1;
   }
-  var charlist;
+  var charlist = [];
   for(var i=0;i < passwd.length; i++){
     charlist[i] = passwd.substring(i, 1);
   }
