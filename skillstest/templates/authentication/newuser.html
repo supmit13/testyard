@@ -16,7 +16,19 @@ function checkavailability(){
     else{
         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xmlhttp.open("GET","{{ availabilityURL }}",false);
+    // Register the handler
+    xmlhttp.onreadystatechange = function(){
+    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+       if(xmlhttp.responseText == '0'){
+	alert("The chosen username is not available");
+       }
+       //else{
+	//alert("The chosen username is available");
+       //}
+    }
+    };
+    var availabilityURL = "{{hosturl}}/{{ availabilityURL }}?username=" + username;
+    xmlhttp.open("GET",availabilityURL,false);
     xmlhttp.send();
 }
 
@@ -162,7 +174,7 @@ function clear_all(){
 			<div class="entry">
 
 			<form name='registerform' method='POST' action="{{ register_url }}" enctype='multipart/form-data'>
-			<b>*Username or Display Name: </b><input type='text' name='username' value='{{ username }}' onblur='javascript:checkavailability();'><br />
+			<b>*Username or Display Name: </b><input type='text' name='username' value='{{ username }}' onblur='javascript:checkavailability();'><span id='checkuser'></span><br />
 			<b>*Password: </b><input type='password' name='password' value='{{ password }}'><br />
 			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}'><br />
 			<b>*Email: </b><input type='text' name='email' value='{{ email }}'><i>This will be verified before activating your account.</i><br />

@@ -6,6 +6,7 @@ import datetime
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.backends.db import SessionStore
+from django.http import HttpResponse
 from django.template import Template, Context
 
 # Application specific libraries...
@@ -122,16 +123,6 @@ def gethosturl(request):
         url = url + host
     return url
 
-
-"""
-Check if a username is available or not.
-"""
-def checkavailability(username):
-    user = User.objects.filter(displayname=username)
-    if user.__len__() > 0:
-        return 0
-    else:
-        return 1
 
 
 """

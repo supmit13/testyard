@@ -93,6 +93,7 @@ def dashboard(request):
                           test.evaluator.groupmember9, test.evaluator.groupmember10 )
         user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
     dashboard_user_dict = {}
+    dashboard_user_dict['displayname'] = "%s"%userobj.displayname
     dashboard_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     dashboard_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     dashboard_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
@@ -194,6 +195,7 @@ def logout(request):
 
 def aboutus(request):
     aboutus_data_dict = {}
+    #aboutus_data_dict['displayname'] = "%s"%userobj.displayname
     # fix up the variables from included templates
     inc_context = skillutils.includedtemplatevars("About Us", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
@@ -211,6 +213,7 @@ def aboutus(request):
 def helpndocs(request):
     helpndocs_data_dict = {}
     # fix up the variables from included templates
+    #helpndocs_data_dict['displayname'] = "%s"%userobj.displayname
     inc_context = skillutils.includedtemplatevars("Help/Documentation", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         helpndocs_data_dict[inc_key] = inc_context[inc_key]
@@ -227,6 +230,7 @@ def helpndocs(request):
 def careers(request):
     careers_data_dict = {}
     # fix up the variables from included templates
+    #careers_data_dict['displayname'] = "%s"%userobj.displayname
     inc_context = skillutils.includedtemplatevars("Careers/Jobs", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         careers_data_dict[inc_key] = inc_context[inc_key]

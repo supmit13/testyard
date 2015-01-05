@@ -151,11 +151,11 @@ def register(request):
         (username, password, password2, email, firstname, middlename, lastname, mobilenum) = ("", "", "", "", "", "", "", "")
         tmpl = get_template("authentication/newuser.html")
         #c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'privileges' : privileges, 'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, }
-        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL,\
+        c = {'curdate' : curdate, 'msg' : msg, 'login_url' : skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL, 'hosturl' : skillutils.gethosturl(request),\
              'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL,\
              'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
-             'availabilityURL' :  mysettings.availabilityURL}
+             'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request) }
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -207,7 +207,7 @@ def register(request):
                  'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, \
                  'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
-                 'availabilityURL' :  mysettings.availabilityURL }
+                 'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request) }
             c.update(csrf(request))
             cxt = Context(c)
             registerhtml = tmpl.render(cxt)
@@ -239,7 +239,7 @@ def register(request):
                  'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, \
                  'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
-                'availabilityURL' :  mysettings.availabilityURL }
+                'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request) }
                 c.update(csrf(request))
                 cxt = Context(c)
                 reghtml = tmpl.render(cxt)
@@ -267,5 +267,20 @@ def register(request):
         if mysettings.DEBUG:
             print "Unhandled method call during registration.\n"
         return HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL + "?msg=%s"%message)
+
+
+
+"""
+Check if a username is available or not.
+"""
+def checkavailability(request):
+    username = ""
+    if request.GET.has_key('username'):
+        username = request.GET['username']
+    user = User.objects.filter(displayname=username)
+    if user.__len__() > 0: # Not available
+        return HttpResponse('0')
+    else: # Available
+        return HttpResponse('1')
 
 
