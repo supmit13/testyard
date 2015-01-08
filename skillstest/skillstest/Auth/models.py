@@ -99,3 +99,16 @@ class UserPrivilege(models.Model):
     def __unicode__(self):
         return "user id: %s === privilege id: %s"%(self.user.id, self.privilege.id)
 
+
+class EmailValidationKey(models.Model):
+    email = models.EmailField(unique=True, validators=[validate_email, ])
+    vkey = models.CharField(max_length=50, unique=True)
+
+    class Meta:
+        verbose_name = "Email Validation Keys"
+        verbose_name_plural = "Email Validation Keys"
+        db_table = 'Auth_emailvalidationkey'
+
+    def __unicode__(self):
+        return "%s - %s"%(self.email, self.vkey)
+

@@ -67,6 +67,15 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
 
 URL_PROTOCOL = "http://"
 
+# Email settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'codexaddict@gmail.com'
+EMAIL_HOST_PASSWORD = 'spmprx13'
+EMAIL_USE_TLS = True
+
+MAILSENDER = "test@testyard.com"
+
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
@@ -85,6 +94,7 @@ HELP_URL = "skillstest/helpndoc/"
 CAREER_URL = "skillstest/careers/"
 LOGOUT_URL = "skillstest/logout/"
 availabilityURL = "skillstest/checkavail/"
+ACCTACTIVATION_URL = "skillstest/activate/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -119,7 +129,8 @@ REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]*)$", re.MULTILINE | re.DOTALL)
 
 RULES_DICT = {} # Dictionary containing all rules that may be imposed on a test.
 
-ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English', 'lat' : 'Latin', 'fr' : 'French', 'hndi' : 'Hindi' } # Allowed languages
+ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English', 'lat' : 'Latin', 'fr' : 'French', \
+                     'hndi' : 'Hindi', 'bngw' : 'Bengali - WB', 'bnge' : 'Bengali - Bangladesh', } # Allowed languages
 
 SKILL_QUALITY = { 'BEG' : 'Beginner', 'INT' : 'Intermediate', 'PRO' : 'Proficient' }
 

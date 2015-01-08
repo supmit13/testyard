@@ -2,12 +2,14 @@ import os, sys, re, time
 import tempfile, shutil
 from functools import wraps
 import datetime
+import uuid
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.backends.db import SessionStore
 from django.http import HttpResponse
 from django.template import Template, Context
+from django.core.mail import send_mail
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session
@@ -131,8 +133,26 @@ Should be done asynchronously - put the email in a queue from where the email
 handler will pick in batches of (say) 10 emails at a time and send them before
 running to pick up the next batch.
 """
-def sendemail(userobj):
-    pass
+def sendemail(userobj, subject, message, fromaddr):
+    retval = 0
+    try:
+        retval = send_mail(subject, message, fromaddr, [userobj.emailid,], False)
+        return retval
+    except:
+        if mysettings.DEBUG:
+            print "sendemail failed for %s - %s\n"%(userobj.emailid, sys.exc_info()[1].__str__())
+        return None
+
+
+"""
+Generate a random string
+"""
+def generate_random_string():
+    random = str(uuid.uuid4())
+    random = random.replace("-","")
+    tstr = str(time.time() * 1000)
+    random = random + tstr
+    return random
 
 
 """
@@ -151,6 +171,7 @@ def handleuploadedfile(uploaded_file, targetdir):
     return [ filepath, '' ]
 
 
+
 """
 Format message (with color and font) and return it as a displayable string
 (after removing all hexcoded characters and HTML entities, if present).
@@ -161,7 +182,6 @@ def formatmessage(msg, msg_color):
         msg = msg.replace(hexkey, mysettings.HEXCODE_CHAR_MAP[hexkey])
     msg = "<p style=\"color:#%s;font-size:14;font-face:'helvetica neue';font-style:bold;\">%s</p>"%(msg_color, msg)
     return msg
-            
     
 
 """

@@ -29,7 +29,7 @@ import cPickle, urlparse
 import decimal, math
 
 # Application specific libraries...
-from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
+from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, EmailValidationKey
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
@@ -229,8 +229,12 @@ def register(request):
             user.istest = False
             user.active = False # Will become active when user verifies email Id.
             user.userpic = ""
+            emailvalidkey = EmailValidationKey()
+            emailvalidkey.email = email
+            emailvalidkey.vkey = skillutils.generate_random_string()
             try:
                 user.save() # New user record inserted now. 'joindate' added automatically.
+                emailvalidkey.save()
             except:
                 message = sys.exc_info()[1].__str__()
                 tmpl = get_template("authentication/newuser.html")
@@ -248,7 +252,24 @@ def register(request):
             #usrpriv.privilege = userprivilege
             #usrpriv.status = True
             #usrpriv.save() # Associated user privilege saved.
-            skillutils.sendemail(user)
+            subject = """ TestYard Registration - Activate your account on TestYard by verifying your email. """
+            message = """
+                Dear %s,
+
+                Thanks for creating your account on TestYard. In order to be able to login and use it, you need
+                to verify this email address (which you have entered as an input during registration). You can
+                do this by clicking on the hyperlink here: <a href='%s/%s?vkey=%s'>Verify My Account</a>. Once you have ver-
+                ified your account, you would be able to use it.
+
+                If you feel this email has been sent to you in error, please get back to us at the email address
+                mentioned here: support@testyard.com
+
+                Thanks and Regards,
+                %s, CEO, TestYard.
+                
+            """%(user.displayname, skillutils.gethosturl(request), mysettings.ACCTACTIVATION_URL, emailvalidkey.vkey, mysettings.MAILSENDER)
+            fromaddr = "register@testyard.com"
+            skillutils.sendemail(user, subject, message, fromaddr)
             # Print a success message and ask user to validate email. The current screen is
             # only a providential state where the user appears to be logged in but has no right
             # to perform any action.
@@ -284,3 +305,37 @@ def checkavailability(request):
         return HttpResponse('1')
 
 
+
+"""
+view to handle account activation. We would be getting a
+GET query string of the form "vkey=<some-uuid-string>".
+"""
+def acctactivation(request):
+    vkey = ""
+    if request.GET.has_key('vkey'):
+        vkey = request.GET['vkey']
+    else:
+        return HttpResponse("Invalid request")
+    if vkey == "":
+        return HttpResponse("Invalid request")
+    allrecs = EmailValidationKey.objects.filter(vkey=vkey)
+    # There should not be cases where we get multiple emails for same vkey.
+    # If we get that, then that is a bug in the system.
+    email = allrecs[0].email # We take the first value
+    user = User.objects.filter(emailid=email)
+    userobj = user[0]
+    userobj.newuser = True
+    try:
+        userobj.save() # Email is validated now.
+        curdate = datetime.datetime.now()
+        tmpl = get_template("authentication/activation.html")
+        msg = """
+        Your email address has been validated. Now you may use your TestYard.com account by logging into it.
+        """
+        c = {'curdate' : curdate, 'displayname' : userobj.displayname, 'msg' : msg}
+        c.update(csrf(request))
+        cxt = Context(c)
+        activehtml = tmpl.render(cxt)
+        return HttpResponse(activehtml)
+    except:
+        return HttpResponse("Email could not be validated.\n")

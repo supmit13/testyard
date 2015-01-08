@@ -285,4 +285,11 @@ CREATE INDEX `Subscription_transaction_fbfc09f1` ON `Subscription_transaction` (
 ALTER TABLE Subscription_userplan CHANGE createdon subscribedon datetime;
 
 ALTER TABLE Auth_user add column newuser boolean default True not  null;
+
+CREATE TABLE `Auth_emailvalidationkey` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `email` varchar(75) NOT NULL,
+    `vkey` varchar(50) NOT NULL UNIQUE
+);
+
 COMMIT;

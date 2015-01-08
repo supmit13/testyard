@@ -41,4 +41,5 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.HELP_URL, 'skillstest.views.helpndocs', name='helpndocs'),
     url(r'%s$'%mysettings.CAREER_URL, 'skillstest.views.careers', name='careers'),
     url(r'%s$'%mysettings.availabilityURL, 'skillstest.Auth.views.checkavailability', name='checkavailability'),
+    url(r'%s$'%mysettings.ACCTACTIVATION_URL, 'skillstest.Auth.views.acctactivation', name='acctactivation'),
 )
