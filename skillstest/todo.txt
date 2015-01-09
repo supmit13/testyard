@@ -1,0 +1,5 @@
+1. Image upload should function correctly.
+2. Create space in profile page for image.
+3. Messages are not being printed properly in HTML. Fix it. [Done]
+4. Complete the first cut versions of the lesser pages (help, careers, aboutus, etc).
+5. Email address validation link is inappropriate in yahoo mail inbox.

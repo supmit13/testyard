@@ -273,7 +273,7 @@ def register(request):
             # Print a success message and ask user to validate email. The current screen is
             # only a providential state where the user appears to be logged in but has no right
             # to perform any action.
-            message = "<font color='#0000FF'>Hello %s, welcome on board TestYard(&#8482;). We hope you will have a smooth association with us.<br /> \
+            message = "<font color='#0000FF'>Hello %s, welcome on board TestYard(&#8482;). We hope you will have a hassle-free association with us.<br /> \
             In case of any issues, please feel free to drop us (support@testyard.com) an email regarding the matter. Our 24x7 <br />\
             support center staff would only be too glad to help you out. Happy testing... </font>"%username
             tmpl = get_template("user/profile.html")
@@ -282,6 +282,8 @@ def register(request):
             c.update(csrf(request))
             cxt = Context(c)
             profile = tmpl.render(cxt)
+            for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+                profile = profile.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
             return HttpResponse(profile)
     else: # Process this as erroneous request
         message = error_msg('1004')
@@ -319,12 +321,15 @@ def acctactivation(request):
     if vkey == "":
         return HttpResponse("Invalid request")
     allrecs = EmailValidationKey.objects.filter(vkey=vkey)
+    if allrecs.__len__() == 0: # No entry found that matches the vkey.
+        return HttpResponse("Invalid Request")
     # There should not be cases where we get multiple emails for same vkey.
     # If we get that, then that is a bug in the system.
     email = allrecs[0].email # We take the first value
     user = User.objects.filter(emailid=email)
     userobj = user[0]
-    userobj.newuser = True
+    userobj.newuser = False # Should no longer be considered to be a new user.
+    userobj.active = True # Activate account
     try:
         userobj.save() # Email is validated now.
         curdate = datetime.datetime.now()

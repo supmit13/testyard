@@ -150,7 +150,7 @@ Generate a random string
 def generate_random_string():
     random = str(uuid.uuid4())
     random = random.replace("-","")
-    tstr = str(time.time() * 1000)
+    tstr = str(int(time.time() * 1000))
     random = random + tstr
     return random
 

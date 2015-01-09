@@ -20,11 +20,16 @@ function checkavailability(){
     xmlhttp.onreadystatechange = function(){
     if(xmlhttp.readyState == 4 && xmlhttp.status==200){
        if(xmlhttp.responseText == '0'){
-	alert("The chosen username is not available");
+	//alert("The chosen username is not available");
+	document.getElementById('checkuser').innerHTML = "<font color='#DD0000' size=-2>This username is already taken. Please choose another one.</font>";
+	// The next 2 lines of code do not function as expected. Needs to be checked.
+	document.registerform.username.focus();
+	document.registerform.username.selected = true;
        }
-       //else{
+       else{
 	//alert("The chosen username is available");
-       //}
+	document.getElementById('checkuser').innerHTML = "<font color='#0000DD' size=-2>Available for use.</font>";
+       }
     }
     };
     var availabilityURL = "{{hosturl}}/{{ availabilityURL }}?username=" + username;
@@ -174,7 +179,7 @@ function clear_all(){
 			<div class="entry">
 
 			<form name='registerform' method='POST' action="{{ register_url }}" enctype='multipart/form-data'>
-			<b>*Username or Display Name: </b><input type='text' name='username' value='{{ username }}' onblur='javascript:checkavailability();'><span id='checkuser'></span><br />
+			<b>*Username or Display Name: </b><input type='text' name='username' id='username' value='{{ username }}' onblur='javascript:checkavailability();'><span id='checkuser'></span><br />
 			<b>*Password: </b><input type='password' name='password' value='{{ password }}'><br />
 			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}'><br />
 			<b>*Email: </b><input type='text' name='email' value='{{ email }}'><i>This will be verified before activating your account.</i><br />

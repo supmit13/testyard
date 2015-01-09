@@ -22,7 +22,7 @@ error_codes = { \
 
         '1021' : 'Could not create directory to store attachment', \
 
-        '1031' : 'You are logged out from the system.', \
+        '1031' : 'You have been logged out from the system.', \
     }
 
 def error_msg(code):

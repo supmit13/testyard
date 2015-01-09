@@ -306,3 +306,16 @@ Fri, 09 Jan 2015, 02:45 HRS (IST).
 9. files_to_commit.txt
 
 ====================================
+
+Sat, 10 Jan 2015, 01:10 HRS (IST). 
+-----------------------------------
+1. skillstest/errors.py
+2. templates/authentication/newuser.html
+3. skillstest/Auth/views.py
+4. skillstest/utils.py
+5. templates/authentication/activation.html
+6. todo.txt
+7. skillstest/views.py
+8. files_to_commit.txt
+
+===================================
