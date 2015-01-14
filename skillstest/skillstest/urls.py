@@ -14,6 +14,12 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
+    (r'/media/(?P<path>.*)$', 'django.views.static.serve',
+        {'document_root': mysettings.MEDIA_ROOT}),
+
+)
+
+urlpatterns += patterns('',
     # Examples:
     # url(r'^$', 'skillstest.views.home', name='home'),
     # url(r'^skillstest/', include('skillstest.foo.urls')),

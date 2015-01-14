@@ -155,21 +155,38 @@ def generate_random_string():
     return random
 
 
+def mkdir_p(path):
+    if not os.access(path, os.F_OK):
+        os.makedirs(path)
+        os.chmod(path, 0666)
+
+"""
+Get the extension of a temporary file created using tempfile.mkstemp
+"""
+def get_extension(tmpfilepath):
+    fileparts = tmpfilepath.split(".")
+    if fileparts.__len__() < 2:
+        return ""
+    ext = fileparts[1][0:3]
+    return ext
+
 """
 Handle uploaded file. Create the destination path if required.
 Returns a list containing the path to the uploaded file and a message
 (which would be '' in case of success).
 """
 def handleuploadedfile(uploaded_file, targetdir):
+    mkdir_p(targetdir)
     fd, filepath = tempfile.mkstemp(prefix=uploaded_file.name, dir=targetdir)
-    if uploaded_file.size() > mysettings.MAX_FILE_SIZE_ALLOWED:
+    if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
         message = error_msg['1005']
         return [ None, message ]
     with open(filepath, 'wb') as destination:
-        destinationfile = destination + os.path.sep + mysettings.PROFILE_PHOTO_NAME
-        shutil.copyfileobj(uploaded_file, destinationfile)
-    return [ filepath, '' ]
-
+        ext = get_extension(filepath.__str__())
+        destinationfile = os.path.sep.join([ targetdir, mysettings.PROFILE_PHOTO_NAME + "." + ext, ])
+        shutil.copyfile(filepath.__str__(), destinationfile)
+        os.unlink(filepath.__str__())
+    return [ destinationfile, '' ]
 
 
 """

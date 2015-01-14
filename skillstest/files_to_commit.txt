@@ -319,3 +319,13 @@ Sat, 10 Jan 2015, 01:10 HRS (IST).
 8. files_to_commit.txt
 
 ===================================
+
+Thu, 15 Jan 2015, 00:00 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. templates/inc/mission_statement.html
+3. skillstest/urls.py
+4. files_to_commit.txt
+
+=====================================
+
