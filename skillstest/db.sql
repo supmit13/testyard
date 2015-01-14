@@ -1,4 +1,6 @@
 BEGIN;
+
+use testyard;
 CREATE TABLE `Auth_user` (
     `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
     `firstname` varchar(100) NOT NULL,
@@ -112,7 +114,7 @@ CREATE TABLE `Tests_test` (
     `subtopic_id` integer NOT NULL,
     `creator_id` integer NOT NULL,
     `creatorisevaluator` bool NOT NULL,
-    `evaluators_id` integer,
+    `evaluator_id` integer,
     `testtype` varchar(4) NOT NULL,
     `createdate` datetime NOT NULL,
     `maxscore` integer NOT NULL,
@@ -127,7 +129,7 @@ CREATE TABLE `Tests_test` (
 )
 ;
 ALTER TABLE `Tests_test` ADD CONSTRAINT `creator_id_refs_id_d29f6b50` FOREIGN KEY (`creator_id`) REFERENCES `Auth_user` (`id`);
-ALTER TABLE `Tests_test` ADD CONSTRAINT `evaluators_id_refs_id_c4cea575` FOREIGN KEY (`evaluators_id`) REFERENCES `Tests_evaluator` (`id`);
+ALTER TABLE `Tests_test` ADD CONSTRAINT `evaluator_id_refs_id_c4cea575` FOREIGN KEY (`evaluator_id`) REFERENCES `Tests_evaluator` (`id`);
 ALTER TABLE `Tests_test` ADD CONSTRAINT `subtopic_id_refs_id_ae9af74e` FOREIGN KEY (`subtopic_id`) REFERENCES `Tests_subtopic` (`id`);
 CREATE TABLE `Tests_usertest` (
     `user_id` integer,
@@ -215,7 +217,7 @@ CREATE INDEX `Tests_evaluator_243e590` ON `Tests_evaluator` (`groupmember9_id`);
 CREATE INDEX `Tests_evaluator_b69a883b` ON `Tests_evaluator` (`groupmember10_id`);
 CREATE INDEX `Tests_test_d50c7adf` ON `Tests_test` (`subtopic_id`);
 CREATE INDEX `Tests_test_f97a5119` ON `Tests_test` (`creator_id`);
-CREATE INDEX `Tests_test_170dea88` ON `Tests_test` (`evaluators_id`);
+CREATE INDEX `Tests_test_170dea88` ON `Tests_test` (`evaluator_id`);
 CREATE INDEX `Tests_usertest_fbfc09f1` ON `Tests_usertest` (`user_id`);
 CREATE INDEX `Tests_usertest_a88de8dc` ON `Tests_usertest` (`test_id`);
 CREATE INDEX `Tests_challenge_a88de8dc` ON `Tests_challenge` (`test_id`);
