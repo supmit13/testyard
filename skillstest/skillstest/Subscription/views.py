@@ -82,6 +82,7 @@ def subscriptions(request):
                                              lastpaydate, subscribedon )
     subscription_data_dict['current'] = current_plans_dict
     subscription_data_dict['past'] = past_plans_dict
+    subscription_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
     inc_context = skillutils.includedtemplatevars("Subscription", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         subscription_data_dict[inc_key] = inc_context[inc_key]

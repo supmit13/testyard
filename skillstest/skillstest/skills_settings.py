@@ -47,6 +47,8 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
 # Some application related variables:
 PROFILE_PHOTO_NAME = "profilepic"
 PROFILE_PHOTO_EXT = ( "gif", "jpg", "jpeg", "png", "tiff", "tif" )
+PROFILE_PHOTO_HEIGHT = 102 # in pixels
+PROFILE_PHOTO_WIDTH = 102 # in pixels
 
 # Max size of file that may be uploaded by user
 MAX_FILE_SIZE_ALLOWED = 10000000

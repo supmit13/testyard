@@ -2,12 +2,12 @@ import os, sys, re, time
 import tempfile, shutil
 from functools import wraps
 import datetime
-import uuid
+import uuid, glob
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.sessions.backends.db import SessionStore
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.template import Template, Context
 from django.core.mail import send_mail
 
@@ -170,6 +170,7 @@ def get_extension(tmpfilepath):
     ext = fileparts[1][0:3]
     return ext
 
+
 """
 Handle uploaded file. Create the destination path if required.
 Returns a list containing the path to the uploaded file and a message
@@ -177,16 +178,32 @@ Returns a list containing the path to the uploaded file and a message
 """
 def handleuploadedfile(uploaded_file, targetdir):
     mkdir_p(targetdir)
-    fd, filepath = tempfile.mkstemp(prefix=uploaded_file.name, dir=targetdir)
     if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
         message = error_msg['1005']
-        return [ None, message ]
-    with open(filepath, 'wb') as destination:
-        ext = get_extension(filepath.__str__())
-        destinationfile = os.path.sep.join([ targetdir, mysettings.PROFILE_PHOTO_NAME + "." + ext, ])
-        shutil.copyfile(filepath.__str__(), destinationfile)
-        os.unlink(filepath.__str__())
-    return [ destinationfile, '' ]
+        return [ None, message, '' ]
+    ext = get_extension(uploaded_file.name)
+    destinationfile = os.path.sep.join([ targetdir, mysettings.PROFILE_PHOTO_NAME + "." + ext, ])
+    with open(destinationfile, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+        destination.close()
+        os.chmod(targetdir, 0777)
+        os.chmod(destinationfile, 0777) # Is there a way to club these 'chmod' statements?
+    return [ destinationfile, '', mysettings.PROFILE_PHOTO_NAME + "." + ext ]
+
+
+"""
+Function to form the img tag for profile image based on whether
+the user has a profile image or not.
+"""
+def getprofileimgtag(userobj):
+    profimgfile = userobj.userpic.__str__()
+    profimagepath = os.path.sep.join([ mysettings.MEDIA_ROOT, userobj.displayname, "images", profimgfile ])
+    profileimgtag = "<img src='media/square.gif' height='102' width='102' alt='Profile Image'>"
+    # Read contents of profimagepath directory...
+    if os.path.exists(profimagepath):
+        profileimgtag = "<img src='media/%s/images/%s' height='102' width='102' alt='Profile Image'>"%(userobj.displayname, profimgfile)
+    return profileimgtag
 
 
 """

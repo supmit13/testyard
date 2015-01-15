@@ -329,3 +329,16 @@ Thu, 15 Jan 2015, 00:00 HRS (IST).
 
 =====================================
 
+Fri, 16 Jan 2015, 03:30 HRS (IST).
+----------------------------
+1. skillstest/Auth/views.py
+2. skillstest/utils.py
+3. skillstest/skills_settings.py
+4. templates/authentication/newuser.html
+5. templates/inc/mission_statement.html
+6. skillstest/views.py
+7. skillstest/Tests/views.py
+8. skillstest/Subscription/views.py
+9. files_to_commit.txt
+
+=====================================

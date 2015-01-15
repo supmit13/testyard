@@ -155,7 +155,7 @@ def register(request):
              'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL,\
              'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
-             'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request) }
+             'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request), 'profpicheight' : mysettings.PROFILE_PHOTO_HEIGHT, 'profpicwidth' : mysettings.PROFILE_PHOTO_WIDTH }
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -173,6 +173,7 @@ def register(request):
         sex = request.POST['sex']
         usertype = request.POST['usertype']
         mobilenum = request.POST['mobilenum']
+        profpic = ""
         #userprivilege = request.POST['userprivilege']
         csrftoken = request.POST['csrfmiddlewaretoken']
         message = ""
@@ -196,7 +197,7 @@ def register(request):
         elif skillutils.check_password_strength(password) < mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH:
             message = error_msg('1019')
         if request.FILES.has_key('profpic'):
-            fpath, message = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "images")
+            fpath, message, profpic = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "images")
             # User's images will be stored in "MEDIA_ROOT/<Username>/images/".
         if message != "" and mysettings.DEBUG:
             print message + "\n"
@@ -207,7 +208,7 @@ def register(request):
                  'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, \
                  'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
-                 'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request) }
+                 'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request), 'profpicheight' : mysettings.PROFILE_PHOTO_HEIGHT, 'profpicwidth' : mysettings.PROFILE_PHOTO_WIDTH }
             c.update(csrf(request))
             cxt = Context(c)
             registerhtml = tmpl.render(cxt)
@@ -228,7 +229,7 @@ def register(request):
             user.usertype = usertype
             user.istest = False
             user.active = False # Will become active when user verifies email Id.
-            user.userpic = ""
+            user.userpic = profpic
             emailvalidkey = EmailValidationKey()
             emailvalidkey.email = email
             emailvalidkey.vkey = skillutils.generate_random_string()
@@ -243,7 +244,7 @@ def register(request):
                  'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, \
                  'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
-                'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request) }
+                'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request), 'profpicheight' : mysettings.PROFILE_PHOTO_HEIGHT, 'profpicwidth' : mysettings.PROFILE_PHOTO_WIDTH }
                 c.update(csrf(request))
                 cxt = Context(c)
                 reghtml = tmpl.render(cxt)
@@ -337,7 +338,7 @@ def acctactivation(request):
         msg = """
         Your email address has been validated. Now you may use your TestYard.com account by logging into it.
         """
-        c = {'curdate' : curdate, 'displayname' : userobj.displayname, 'msg' : msg}
+        c = {'curdate' : curdate, 'displayname' : userobj.displayname, 'msg' : msg, 'profile_image_tag' : skillutils.getprofileimgtag(userobj) }
         c.update(csrf(request))
         cxt = Context(c)
         activehtml = tmpl.render(cxt)
