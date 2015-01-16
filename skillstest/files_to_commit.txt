@@ -342,3 +342,16 @@ Fri, 16 Jan 2015, 03:30 HRS (IST).
 9. files_to_commit.txt
 
 =====================================
+
+Sat, 17 Jan 2015, 04:00 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. templates/inc/html_head.html
+3. static/javascript/pageutils.js
+4. skillstest/urls.py
+5. skillstest/skills_settings.py
+6. skillstest/views.py
+7. skillstest/errors.py
+8. files_to_commit.txt
+
+=====================================

@@ -80,3 +80,48 @@ function check_passwd_strength(passwd){
   return strength; 
 }
 
+
+function uploader(viewurl){
+  var thediv=document.getElementById('uploadbox');
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+    return v.toString(16);
+});
+  alert(uuid);
+  if(thediv.style.display == "none"){
+    thediv.style.display = "";
+    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><center><input type='file' name='profpic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + uuid + "'></form>";
+  }
+  else{
+    thediv.style.display = "none";
+    thediv.innerHTML = '';
+  }
+  return false;
+}
+
+// This has to make a xmlhttp POST request.
+function uploadimage(){
+  var targeturl = document.profimageuploadform.action;
+  var xmlhttp;
+  if (window.XMLHttpRequest){
+    xmlhttp=new XMLHttpRequest();
+  }
+  else{
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  // Register the handler
+  xmlhttp.onreadystatechange = function(){
+  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    if(xmlhttp.responseText == 'success'){
+      alert("Image was uploaded successfully");
+    }
+    else{
+      alert(xmlhttp.responseText);
+    }
+  }
+  };
+  xmlhttp.open("POST",targeturl,false);
+  xmlhttp.send();
+}
+
+

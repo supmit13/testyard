@@ -97,6 +97,7 @@ CAREER_URL = "skillstest/careers/"
 LOGOUT_URL = "skillstest/logout/"
 availabilityURL = "skillstest/checkavail/"
 ACCTACTIVATION_URL = "skillstest/activate/"
+PROFIMG_CHANGE_URL = "/skillstest/changeimg/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

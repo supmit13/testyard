@@ -199,10 +199,9 @@ the user has a profile image or not.
 def getprofileimgtag(userobj):
     profimgfile = userobj.userpic.__str__()
     profimagepath = os.path.sep.join([ mysettings.MEDIA_ROOT, userobj.displayname, "images", profimgfile ])
-    profileimgtag = "<img src='media/square.gif' height='102' width='102' alt='Profile Image'>"
-    # Read contents of profimagepath directory...
-    if os.path.exists(profimagepath):
-        profileimgtag = "<img src='media/%s/images/%s' height='102' width='102' alt='Profile Image'>"%(userobj.displayname, profimgfile)
+    profileimgtag = "<img src='media/square.gif' height='102' width='102' alt='Profile Image'><br /><div id='uploadbox' style='display: none;'></div><a href='#' onClick='return uploader(\'" + mysettings.PROFIMG_CHANGE_URL + "\');'><font size='-1'>upload profile image</font></a>"
+    if os.path.exists(profimagepath) and profimgfile != "":
+        profileimgtag = "<img src='media/%s/images/%s' height='102' width='102' alt='Profile Image'><br /><div id='uploadbox' style='display: none;'></div><a href='#' onClick='return uploader(&quot;%s&quot;);'><font size='-1'>change profile image</font></a>"%(userobj.displayname, profimgfile, mysettings.PROFIMG_CHANGE_URL)
     return profileimgtag
 
 

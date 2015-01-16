@@ -249,4 +249,31 @@ def careers(request):
     return HttpResponse(careershtml)
 
 
+"""
+View to handle profile image change
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def profileimagechange(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    if request.FILES.has_key('profpic'):
+        fpath, message, profpic = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "images")
+        userobj.userpic = profpic
+        try:
+            userobj.save()
+            return HttpResponse("success")
+        except:
+            message = error_msg('1041')
+            response = HttpResponse(message)
+            return response
+    return HttpResponse("failed")
+
 
