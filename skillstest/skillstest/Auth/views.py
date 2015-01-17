@@ -338,10 +338,12 @@ def acctactivation(request):
         msg = """
         Your email address has been validated. Now you may use your TestYard.com account by logging into it.
         """
-        c = {'curdate' : curdate, 'displayname' : userobj.displayname, 'msg' : msg, 'profile_image_tag' : skillutils.getprofileimgtag(userobj) }
+        c = {'curdate' : curdate, 'displayname' : userobj.displayname, 'msg' : msg, 'profile_image_tag' : skillutils.getprofileimgtag(request) }
         c.update(csrf(request))
         cxt = Context(c)
         activehtml = tmpl.render(cxt)
         return HttpResponse(activehtml)
     except:
         return HttpResponse("Email could not be validated.\n")
+
+

@@ -81,16 +81,20 @@ function check_passwd_strength(passwd){
 }
 
 
-function uploader(viewurl){
-  var thediv=document.getElementById('uploadbox');
+function generateuuid(){
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
     var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
     return v.toString(16);
-});
-  alert(uuid);
+  });
+  return(uuid);
+}
+
+// Function to display the semi-transparent profile image upload form screen.
+function uploader(viewurl, csrftoken){
+  var thediv=document.getElementById('uploadbox');
   if(thediv.style.display == "none"){
     thediv.style.display = "";
-    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><center><input type='file' name='profpic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + uuid + "'></form>";
+    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><center><input type='file' name='profpic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'></form>";
   }
   else{
     thediv.style.display = "none";
@@ -99,9 +103,14 @@ function uploader(viewurl){
   return false;
 }
 
-// This has to make a xmlhttp POST request.
+
+// This has to make an xmlhttp POST request.
 function uploadimage(){
   var targeturl = document.profimageuploadform.action;
+  var profpic = document.profimageuploadform.profpic.value;
+  var csrftoken = document.profimageuploadform.csrfmiddlewaretoken.value;
+  var postdata = "profpic=" + profpic + "&csrfmiddlewaretoken=" + csrftoken;
+  //alert(postdata);
   var xmlhttp;
   if (window.XMLHttpRequest){
     xmlhttp=new XMLHttpRequest();
@@ -116,12 +125,18 @@ function uploadimage(){
       alert("Image was uploaded successfully");
     }
     else{
-      alert(xmlhttp.responseText);
+      alert("Error uploading image: " + xmlhttp.responseText);
     }
+    document.getElementById('uploadbox').style.display = 'none';
+    document.getElementById('uploadbox').innerHTML = '';
   }
   };
-  xmlhttp.open("POST",targeturl,false);
-  xmlhttp.send();
+  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
+  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  xmlhttp.send(postdata);
+  // Display the rotating activity small icon
+  document.getElementById('uploadbox').style.display = '';
+  document.getElementById('uploadbox').innerHTML += "<br /><img src='static/images/loading_small.gif'>";
 }
 
 

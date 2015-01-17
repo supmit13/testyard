@@ -74,7 +74,8 @@ def get_user_tests(request):
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     tests_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     tests_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
-    tests_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
+    tests_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
+    tests_user_dict['displayname'] = userobj.displayname
     return  tests_user_dict
 
 

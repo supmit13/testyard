@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.context_processors import csrf
+from django.views.decorators.cache import never_cache
 from django.views.generic import View
 from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -94,7 +95,7 @@ def dashboard(request):
         user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
     dashboard_user_dict = {}
     dashboard_user_dict['displayname'] = "%s"%userobj.displayname
-    dashboard_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
+    dashboard_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     dashboard_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     dashboard_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     dashboard_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
@@ -152,7 +153,7 @@ def profile(request):
         you validated the email address you provided us?<br />If not, please find our message in your mailbox and click on the\
         link we have sent you through it. You need to do that in order to access our tests and other resources.</a>"
     profile_data_dict['lastseen'] = ""
-    profile_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
+    profile_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     try:
         profile_data_dict['lastseen'] = Session.objects.filter(user=userobj).order_by('-endtime')[0]
     except:
@@ -199,7 +200,7 @@ def aboutus(request):
     aboutus_data_dict = {}
     # Need check to see if user is logged in.
     #aboutus_data_dict['displayname'] = "%s"%userobj.displayname
-    #aboutus_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
+    #aboutus_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     # fix up the variables from included templates
     inc_context = skillutils.includedtemplatevars("About Us", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
@@ -218,7 +219,7 @@ def helpndocs(request):
     helpndocs_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
     #helpndocs_data_dict['displayname'] = "%s"%userobj.displayname
-    #helpndocs_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
+    #helpndocs_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     inc_context = skillutils.includedtemplatevars("Help/Documentation", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         helpndocs_data_dict[inc_key] = inc_context[inc_key]
@@ -236,7 +237,7 @@ def careers(request):
     careers_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
     #careers_data_dict['displayname'] = "%s"%userobj.displayname
-    #careers_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(userobj)
+    #careers_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     inc_context = skillutils.includedtemplatevars("Careers/Jobs", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         careers_data_dict[inc_key] = inc_context[inc_key]
@@ -264,16 +265,20 @@ def profileimagechange(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
+    resp_dict = {}
+    resp_dict.update(csrf(request))
+    cxt = RequestContext(resp_dict)
     if request.FILES.has_key('profpic'):
         fpath, message, profpic = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "images")
         userobj.userpic = profpic
         try:
             userobj.save()
-            return HttpResponse("success")
+            tmpl = get_template("success")
         except:
             message = error_msg('1041')
-            response = HttpResponse(message)
-            return response
-    return HttpResponse("failed")
+            tmpl = get_template(message)
+    else:
+        tmpl = get_template("failed")
+    return HttpResponse(tmpl.render(cxt))
 
 

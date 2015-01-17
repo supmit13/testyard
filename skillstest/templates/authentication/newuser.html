@@ -22,7 +22,6 @@ function checkavailability(){
        if(xmlhttp.responseText == '0'){
 	//alert("The chosen username is not available");
 	document.getElementById('checkuser').innerHTML = "<font color='#DD0000' size=-2>This username is already taken. Please choose another one.</font>";
-	// The next 2 lines of code do not function as expected. Needs to be checked.
 	document.registerform.username.focus();
 	document.registerform.username.selected = true;
        }
@@ -33,7 +32,7 @@ function checkavailability(){
     }
     };
     var availabilityURL = "{{hosturl}}/{{ availabilityURL }}?username=" + username;
-    xmlhttp.open("GET",availabilityURL,false);
+    xmlhttp.open("GET",availabilityURL,true); // Make it an ajax call.
     xmlhttp.send();
 }
 
