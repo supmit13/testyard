@@ -371,3 +371,13 @@ Sat, 17 Jan 2015, 23:50 HRS (IST).
 11.files_to_commit.txt
 
 ======================================
+
+Thu, 22 Jan 2015, 20:23 HRS (IST).
+----------------------------------
+1. static/javascript/pageutils.js
+2. skillstest/views.py
+3. skillstest/utils.py
+4. static/images/*
+5. files_to_commit.txt
+
+=====================================

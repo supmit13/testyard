@@ -89,6 +89,7 @@ function generateuuid(){
   return(uuid);
 }
 
+
 // Function to display the semi-transparent profile image upload form screen.
 function uploader(viewurl, csrftoken){
   var thediv=document.getElementById('uploadbox');
@@ -107,9 +108,7 @@ function uploader(viewurl, csrftoken){
 // This has to make an xmlhttp POST request.
 function uploadimage(){
   var targeturl = document.profimageuploadform.action;
-  var profpic = document.profimageuploadform.profpic.value;
-  var csrftoken = document.profimageuploadform.csrfmiddlewaretoken.value;
-  var postdata = "profpic=" + profpic + "&csrfmiddlewaretoken=" + csrftoken;
+  var postdata = new FormData(document.forms.namedItem("profimageuploadform"));
   //alert(postdata);
   var xmlhttp;
   if (window.XMLHttpRequest){
@@ -123,6 +122,7 @@ function uploadimage(){
   if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     if(xmlhttp.responseText == 'success'){
       alert("Image was uploaded successfully");
+      window.location.href = window.location.href; // refresh the window.
     }
     else{
       alert("Error uploading image: " + xmlhttp.responseText);
@@ -132,7 +132,6 @@ function uploadimage(){
   }
   };
   xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
-  xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
   xmlhttp.send(postdata);
   // Display the rotating activity small icon
   document.getElementById('uploadbox').style.display = '';

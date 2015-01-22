@@ -265,20 +265,16 @@ def profileimagechange(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
-    resp_dict = {}
-    resp_dict.update(csrf(request))
-    cxt = RequestContext(resp_dict)
     if request.FILES.has_key('profpic'):
         fpath, message, profpic = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "images")
         userobj.userpic = profpic
         try:
             userobj.save()
-            tmpl = get_template("success")
+            message = "success"
         except:
             message = error_msg('1041')
-            tmpl = get_template(message)
     else:
-        tmpl = get_template("failed")
-    return HttpResponse(tmpl.render(cxt))
+        message = "failed"
+    return HttpResponse(message)
 
 
