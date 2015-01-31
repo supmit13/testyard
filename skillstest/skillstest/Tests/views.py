@@ -38,9 +38,9 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv = "", "", "", "", "", "", "", ""
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "<li id=&quot;drag_eval_groups&quot; title=&quot;drag,eval,groups&quot;>drag eval groups</li>"
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
-        createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);'>Create New Test</a>"%userobj.id
+        createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
             if ttcode == 'MULT':
                 testtypes += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcode, mysettings.TEST_TYPES[ttcode])
@@ -50,6 +50,10 @@ def get_user_tests(request):
             testrules += "<option value=&quot;%s&quot;>%s</option>"%(trule, mysettings.RULES_DICT[trule])
         for ttopics in mysettings.TEST_TOPICS:
             testtopics += "<option value=&quot;%s&quot;>%s</option>"%(ttopics, ttopics)
+        # Get topics created in the past by this user
+        usertopics = Topic.objects.filter(user=userobj, isactive=True)
+        for topic in usertopics:
+            testtopics += "<option value='%s'>%s</option>"%(topic.topicname, topic.topicname)
         for skillcode in mysettings.SKILL_QUALITY.keys():
             skilltarget += "<option value=&quot;%s&quot;>%s</option>"%(skillcode, mysettings.SKILL_QUALITY[skillcode])
         for tscope in mysettings.TEST_SCOPES:
@@ -65,6 +69,7 @@ def get_user_tests(request):
         progenv += "<option value=&quot;0&quot; selected>None</option>"
         for proglang in mysettings.COMPILER_LOCATIONS.keys():
             progenv += "<option value=&quot;%s&quot;>Yes - %s</option>"%(proglang, proglang)
+    
     evaluator_groups = Evaluator.objects.filter(Q(groupmember1=userobj)|Q(groupmember2=userobj)|Q(groupmember3=userobj)| \
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
@@ -76,6 +81,11 @@ def get_user_tests(request):
                                                               test.evaluator.groupmember3, test.evaluator.groupmember4, test.evaluator.groupmember5, \
                                                               test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
                                                               test.evaluator.groupmember9, test.evaluator.groupmember10 )
+        evalgrpemails = ",".join(test.evaluator.groupmember1.emailid, test.evaluator.groupmember2.emailid, test.evaluator.groupmember3.emailid, test.evaluator.groupmember4.emailid, test.evaluator.groupmember5.emailid, test.evaluator.groupmember6.emailid, test.evaluator.groupmember7.emailid, test.evaluator.groupmember8.emailid, test.evaluator.groupmember9.emailid, test.evaluator.groupmember10.emailid)
+        evalgrpemails = re.sub(skillutils.multiplecommapattern, ",", evalgrpemails)
+        evalgrpemails = re.sub(skillutils.endcommapattern, "",evalgrpemails)
+        assocevalgrps += "evalgrpsdict.%s = %s;"%(test.evaluator.evalgroupname, evalgrpemails)
+        evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, test.evaluator.evalgroupname)
 
     user_evaluator_creator_other_evaluators_dict = {}
     test = None
@@ -113,6 +123,10 @@ def get_user_tests(request):
     tests_user_dict['testscope'] = testscope
     tests_user_dict['progenv'] = progenv
     tests_user_dict['creatoremail'] = userobj.emailid
+    tests_user_dict['existingtestnames'] = ",".join(user_creator_other_evaluators_dict.keys())
+    tests_user_dict['assocevalgrps'] = assocevalgrps
+    tests_user_dict['evalgroupslitags'] = evalgroupslitags
+    tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     return  tests_user_dict
 
 

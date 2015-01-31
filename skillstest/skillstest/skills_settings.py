@@ -3,7 +3,7 @@ import os, sys, re, time
 TEST_TOPICS = ("Programming", "Project Management", "Database Management", "Quality Assurance", \
                "Software Testing", "Business Development", "Product Development", "Customer Service",\
                "Software Architecture", "Delivery Management", "System Administration", "System Analyst",\
-               "UI Design", "Web Design", "Application Development")
+               "UI Design", "Web Design", "Application Development", "Other")
 
 TEST_TYPES = { 'MULT' : "Multiple Choice", 'FILB' : "Fill up the Blanks", 'SUBJ' :  "Subjective", 'CODN' : "Coding", 'ALGO' : "Algorithm", 'COMP' : "Composite"}
 
@@ -45,7 +45,7 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Ada95' : '', \
                          'Delphi' : '', \
                          'ColdFusion' : '',}
- 
+
 # Some application related variables:
 PROFILE_PHOTO_NAME = "profilepic"
 PROFILE_PHOTO_EXT = ( "gif", "jpg", "jpeg", "png", "tiff", "tif" )
@@ -136,7 +136,7 @@ REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]*)$", re.MULTILINE | re.DOTALL)
 RULES_DICT = { \
         'breakallowed' : 'Breaks are allowed while taking the test', \
         'responsenoreturn' : 'Responded challenges may not be revisited', \
-        'unidirectional' : 'Previous challenges may not be revisited', \
+        'norevisit' : 'Attempted challenges may not be revisited', \
         }
 
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \

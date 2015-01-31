@@ -1,35 +1,140 @@
-	{% include "inc/html_head.html" %}
+	<!-- Code pertaining to drag and drop functionality of evaluator groups --> 	
+	<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' type='text/javascript'></script> 
+	<script src='http://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script> 
+	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
+	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script> 
+	<script language='javascript'>
+	{{ assocevalgrps }}
+	var draggableevalgrps = function () {
+            $('#grpnames li').draggable({ 
+                appendTo: 'body', 
+                helper: 'clone', 
+                cursor: 'select', 
+                revert: 'invalid' 
+            }); 
+            initDroppable($('#evaluators')); 
+            function initDroppable($elements) { 
+                $elements.droppable({ 
+                    hoverClass: 'textarea', 
+                    accept: ':not(.ui-sortable-helper)', 
+                    drop: function(event, ui) { 
+                        var $this = $(this); 
+                        var tempid = ui.draggable.text(); 
+                        var dropText; 
+                        dropText = ',' + tempid; 
+                        var droparea = document.getElementById('evaluators'); 
+                        var val = droparea.value; 
+			droparea.value = val + dropText;
+                    } 
+                }); 
+            } 
+        }	
+	</script> 
+	<style>
+	.textarea{background: #fff;}
+	.dragitems{width: 20%; float: left; background: #f1f1f1;color:#000000; padding-left:10px;} 
+        .dropitems{width: 25%;float: left;background: #f1f1f1;margin-left: 20px;padding:5px 5px 5px 5px;} 
+        .dragitems ul{list-style-type: none;padding-left: 5px;display: block;} 
+        #content{height: 400px;width: 650px;}
+	</style> 
+	<!-- Code pertaining to drag/drop evaluator group names ends here -->
 	
+	{% include "inc/html_head.html" %}	
+
 	{% include "inc/mission_statement.html" %}
-		<link rel='stylesheet' type='text/css' media='all' href='static/datepick/jsDatePick_ltr.min.css' />
-		<link rel='stylesheet' type='text/css' media='all' href='static/datepick/jsDatePick_ltr.css' />
-		<script type='text/javascript' src='static/datepick/jsDatePick.min.1.3.js'></script>
-		<script type='text/javascript' src='static/datepick/jsDatePick.jquery.min.1.3.js'></script>
-
-		<script language='javascript'>
-
-		window.onload = function(){
+		
+		<link rel="stylesheet" type="text/css" media="all" href="static/datepick/jsDatePick_ltr.min.css" />
+		<script type="text/javascript" src="static/datepick/jsDatePick.min.1.3.js"></script>
+		<script type='text/javascript'>
+		function loaddatepicker(){
 		  new JsDatePick({
 		    useMode:2,
-		    target: 'publishdate',
-		    dateFormat:'%d-%M-%Y'
+		    target:"publishdate",
+		    dateFormat:"%d-%M-%Y"
 		  });
-		};
-
-		function createtest(){
+		  new JsDatePick({
+		    useMode:2,
+		    target:"activedate",
+		    dateFormat:"%d-%M-%Y"
+		  });
 		}
 
-		function autosuggestevaluators(){
+		// Javascript todo's:
+		// 1. input validation function (validate())
+		// 2. evaluator groups drag and drop
+		// 3. evaluator groups expansion (containing email ids) in textarea.
+		// 4. add text input to allow user to enter a evaluator group name. Default name will be same as the username part of the first email id in the group. Add a number (1,2,3... etc.) to it if a group with the same name already exists for the user (i.e., this user created a group with the same name before).
+		// 5. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form.
+		// 6. submit data when user clicks on 'Continue' button and pass value of 'testlinkid' to the next screen.
+
+
+		function validate(){
+		  // Need to validate input - 1. publishdate < activedate,
+		  // 2. Publishdate and activedate cannot be set as past date.
+		  // 3. Number of evaluators cannot be greater than 11 (incl. creator).
+		  // 4. Check if any evaluator emails have been repeated.
+		  // 5. Ensure that test duration >= challenge duration.
+		  // 6. If each challenge has same score, then number of challenges x per challenge score = total score.
+		  // 7. Check email id sanity (shd contain @.)
+		  // 8. Enforce limit on email id length (75 characters as set in DB).
+		  // 9. Check if all required fields have sane values.
+		  // 10.Group names ('grpname') should be single word strings containing alphanumeric characters only.
+		  // 11.Evaluators field ('evaluators') should contain email ids only, separated by commas'. Evaluator group names should be expanded on drop using 'expandevaluatorgroup()' function.
+		}
+
+		function createtest(usrid){
+		  if(!validate()){
+		    return false;
+		  }
+		}
+
+		function expandevaluatorgroup(){
+		  {{ assocevalgrps  }}
+		}
+
+		function autosuggestgrpname(){
+		}
+
+		function othertopicfield(){
+		  if(document.getElementById('testtopic').value=='&quot;Other&quot;'){ // this is ugly, needs to be sanitized.
+		    othertopicdiv = document.getElementById('othertopic')
+		    othertopicdiv.style.display = "";
+		    othertopicdiv.innerHTML = "<input type='text' name='othertopicname' value='if other, please specify here' onfocus=this.value='';>"
+		  }
+		  else{
+		    othertopicdiv = document.getElementById('othertopic')
+		    othertopicdiv.style.display = "none";
+		    othertopicdiv.innerHTML = ""
+		  }
 		}
 
 		function checktestnameavailability(value){
+		  var existingtestnames = Array({{ existingtestnames }});
+		  warnspan = document.getElementById('testnamewarning');
+		  for(var i=0;i<existingtestnames.length;i++){
+		    if(value == existingtestnames[i]){
+		      warnspan.style.display = "";
+		      warnspan.innerHTML = "<font color='#AA0000'>You already have a test with the same name. Please enter a different name.</font>";
+		      return true; // Doesn't matter what you return.
+		    }
+		  }
+		  if(value.trim() != ""){
+		    warnspan.style.display = "";
+		    warnspan.innerHTML = "<img src='static/images/greendot2.jpg' height='20' width='20' style='dislay:none;'><font color='#00AA00'>Available</font>";
+		    return true;
+		  }
+		  else{
+		    warnspan.style.display = "none";
+		    warnspan.innerHTML = "";
+		    return true;
+		  }
 		}
 
 		function displayattemptparams(){
 		  var attemptparamsdiv=document.getElementById('attemptparams');
 		  if(document.createtestform.multipleattemptsallowed.checked == true){
 		    attemptparamsdiv.style.display = "";
-		    attemptparamsdiv.innerHTML = "<b>Maximum attempts allowed: </b><input type='text' name='maxattemptscount' value='10' maxlength='4' size='4' onblur='javascript:checknumeric(this);'><br /><b>Interval between 2 consecutive attempts: </b><input type='text' name='attemptsinterval' value='1' maxlength='4' size='4' onblur='javascript:checknumeric(this);'><select name='attemptsintervalunit'><option value='m'>Minutes</option><option value='h'>Hours</option><option value='d' selected>Days</option><option value='M'>Months</option><option value='y'>Years</option></select><br />";
+		    attemptparamsdiv.innerHTML = "<b>Maximum attempts allowed: </b><input type='text' name='maxattemptscount' value='10' maxlength='4' size='4' onblur='javascript:checknumeric(this);' title='Enter -1 if unlimited'><br /><b>Interval between 2 consecutive attempts: </b><input type='text' name='attemptsinterval' value='1' maxlength='4' size='4' onblur='javascript:checknumeric(this);'><select name='attemptsintervalunit'><option value='m'>Minutes</option><option value='h'>Hours</option><option value='d' selected>Days</option><option value='M'>Months</option><option value='y'>Years</option></select><br />";
 		  }
 		  else{
 		    attemptparamsdiv.style.display = "none";

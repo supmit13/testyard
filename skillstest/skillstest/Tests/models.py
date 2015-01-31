@@ -17,7 +17,7 @@ objects
 """
 class Topic(models.Model):
     topicname = models.CharField(max_length=150)
-    topicshortname = models.CharField(max_length=50)
+    user = models.ForeignKey(User, null=False)
     createdate = models.DateField(auto_now=True)
     isactive = models.BooleanField(default=True)
 
@@ -42,8 +42,6 @@ class Subtopic(models.Model):
 
     def __unicode__(self):
         return "%s (child of %s)"%(self.subtopicname, self.topic.topicname)
-
-
 
 
 """
@@ -213,7 +211,7 @@ class UserResponse(models.Model):
     attachments = models.FileField(upload_to="DUMMY", blank=True, null=True, default=None) # The path will be in the format MEDIA_ROOT/<useremail>/<Test Id>/<Challenge Id>/filename.
     # This path will be stored in the DB. There needs to be a mechanism to upload a file for each Challenges. The mechanism to store the attachment in the
     # specified path will be imposed in code.
-    evaluation = models.FloatField(null=True, blank=True, default=-1) # How much the candidate score in this Challenge (of which this UserResponse is).
+    evaluation = models.FloatField(null=True, blank=True, default=-1) # How much the candidate scored in this Challenge (of which this UserResponse is).
     # -1 means that the response hasn't been evaluated yet.
     evaluator_remarks = models.TextField(null=True, blank=True, default="") # It may contain the remarks of more than one User of the Evaluator Group.
     # In such cases, the comments/remarks will be separated by '|'. Not imposed by DB, but rather by code.

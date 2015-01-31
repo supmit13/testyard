@@ -18,6 +18,9 @@ from skillstest.errors import error_msg
 from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 
+multiplecommapattern = re.compile("\,+")
+endcommapattern = re.compile("\,$")
+
 """
 Creates and returns a session object if the request is a
 valid and authenticated session. Returns None otherwise.

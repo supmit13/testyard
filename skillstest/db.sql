@@ -294,4 +294,7 @@ CREATE TABLE `Auth_emailvalidationkey` (
     `vkey` varchar(50) NOT NULL UNIQUE
 );
 
+ALTER TABLE Tests_topic drop column topicshortname;
+ALTER TABLE Test_topic add column user_id int not NULL references Auth_user(id);
+
 COMMIT;
