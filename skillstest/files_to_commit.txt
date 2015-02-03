@@ -403,3 +403,10 @@ Sun, 01 Feb 2015, 01:52 HRS (IST).
 17.files_to_commit.txt
 
 =====================================
+
+Sun, 01 Feb 2015, 11:23 HRS (IST).
+----------------------------------
+1. templates/tests/create_test_form.html
+2. templates/tests/tests.html
+3. skillstest/Tests/views.py
+4. 

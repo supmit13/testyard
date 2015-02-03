@@ -2,7 +2,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.context_processors import csrf
 from django.views.generic import View
-from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -38,7 +38,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "<li id=&quot;drag_eval_groups&quot; title=&quot;drag,eval,groups&quot;>drag eval groups</li>"
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "<li id=&quot;drag_eval_groups&quot; title=&quot;drag,eval,groups&quot;>drag eval groups</li>", mysettings.CREATE_TEST_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -126,6 +126,7 @@ def get_user_tests(request):
     tests_user_dict['existingtestnames'] = ",".join(user_creator_other_evaluators_dict.keys())
     tests_user_dict['assocevalgrps'] = assocevalgrps
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
+    tests_user_dict['createtesturl'] = createtesturl
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     return  tests_user_dict
 
@@ -183,9 +184,21 @@ def manage(request):
     return HttpResponse(managetestshtml)
 
 
-
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def create(request):
+    message = ''
+    if request.method == "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
     return HttpResponse(createtestshtml)
 
 

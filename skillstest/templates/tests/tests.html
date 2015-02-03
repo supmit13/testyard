@@ -12,7 +12,7 @@
                 cursor: 'select', 
                 revert: 'invalid' 
             }); 
-            initDroppable($('#evaluators')); 
+            initDroppable($('evaluators')); 
             function initDroppable($elements) { 
                 $elements.droppable({ 
                     hoverClass: 'textarea', 
@@ -28,7 +28,7 @@
                     } 
                 }); 
             } 
-        }	
+        }
 	</script> 
 	<style>
 	.textarea{background: #fff;}
@@ -63,37 +63,175 @@
 		// 1. input validation function (validate())
 		// 2. evaluator groups drag and drop
 		// 3. evaluator groups expansion (containing email ids) in textarea.
-		// 4. add text input to allow user to enter a evaluator group name. Default name will be same as the username part of the first email id in the group. Add a number (1,2,3... etc.) to it if a group with the same name already exists for the user (i.e., this user created a group with the same name before).
-		// 5. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form.
+		// 4. add text input to allow user to enter a evaluator group name. Default name will be same as the username part of the first email id in the group. Add a number (1,2,3... etc.) to it if a group with the same name already exists for the user (i.e., this user created a group with the same name before). [Done]
+		// 5. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form. [Done]
 		// 6. submit data when user clicks on 'Continue' button and pass value of 'testlinkid' to the next screen.
 
 
 		function validate(){
-		  // Need to validate input - 1. publishdate < activedate,
+		  // Need to validate input - 
+		  // 1. publishdate < activedate.
 		  // 2. Publishdate and activedate cannot be set as past date.
+		  var months = {'JAN':'01', 'FEB': '02', 'MAR':'03', 'APR':'04', 'MAY':'05', 'JUN':'06', 'JUL':'07', 'AUG':'08', 'SEP': '09', 'OCT':'10', 'NOV':'11', 'DEC':'12'};
+		  alphanumericpattern = new RegExp("^([\\w\\d]+)$");
+		  publishdate = document.createtestform.publishdate.value;
+		  activedate = document.createtestform.activedate.value;
+		  publishdateparts = publishdate.split("-");
+		  pubdd = publishdateparts[0];
+		  pubmm = months[publishdateparts[1]];
+		  pubyyyy = publishdateparts[2];
+		  pubdateobj = Date.parse(pubyyyy + "-" + pubmm + "-" + pubdd);
+		  activedateparts = activedate.split("-");
+		  activedd = activedateparts[0];
+		  activemm = months[activedateparts[1]];
+		  activeyyyy = activedateparts[2];
+		  activedateobj = Date.parse(activeyyyy + "-" + activemm + "-" + activedd);
+		  today = new Date();
+		  if(pubdateobj < today || activedateobj < today){
+		    alert("Publish date and activation date cannot be historical");
+		    return(false);
+		  }
+		  if(pubdateobj > activedateobj){
+		    alert("Publish date must be before activation date");
+		    document.createtestform.publishdate.focus();
+		    return (false);
+		  }
 		  // 3. Number of evaluators cannot be greater than 11 (incl. creator).
 		  // 4. Check if any evaluator emails have been repeated.
-		  // 5. Ensure that test duration >= challenge duration.
-		  // 6. If each challenge has same score, then number of challenges x per challenge score = total score.
+		  // 5. Evaluators field ('evaluators') should contain email ids only, separated by commas'. Evaluator group names should be expanded on drop using 'expandevaluatorgroup()' function.
+		  // 6. Enforce limit on email id length (75 characters as set in DB).
 		  // 7. Check email id sanity (shd contain @.)
-		  // 8. Enforce limit on email id length (75 characters as set in DB).
-		  // 9. Check if all required fields have sane values.
-		  // 10.Group names ('grpname') should be single word strings containing alphanumeric characters only.
-		  // 11.Evaluators field ('evaluators') should contain email ids only, separated by commas'. Evaluator group names should be expanded on drop using 'expandevaluatorgroup()' function.
+		  evaluators = document.createtestform.evaluators.value;
+		  evaluatoremails = evaluators.split(",");
+		  if(evaluatoremails.length > 11){
+		    alert("You may enter a maximum of 11 evaluators - (10 evaluators + 1 creator)");
+		    document.createtestform.evaluators.focus();
+		    return(false);
+		  }
+		  var emailpattern = new RegExp("[@\.]+");
+		  var uniqevals = {};
+		  for(var i=0;i < evaluatoremails.length;i++){
+		    email = evaluatoremails[i].trim();
+		    //alert(email);
+		    if(email == ""){ // Ignore empty emails.
+		      continue;
+		    }
+		    if(!emailpattern.test(email)){
+		      alert("Only email ids are permitted in evaluators field.");
+		      document.createtestform.evaluators.focus();
+		      return(false);
+		    }
+		    if(email in uniqevals){
+		      alert("Email id '" + email + "' has been repeated. Please remove duplicated emails before submitting.");
+		      return(false);
+		    }
+		    else{
+		      uniqevals[email] = '1';
+		    }
+		    if(email.length > 75){
+		      alert("Max length of an email Id can be 75 characters.");
+		      document.createtestform.evaluators.focus();
+		      return(false);
+		    }
+		  }
+		  // 8. Ensure that test duration >= challenge duration.
+		  // 9. If each challenge has same score, then number of challenges x per challenge score = total score.
+		  testdur = document.createtestform.testduration.value;
+		  durunit = document.getElementById('testdurationunit').value;
+		  testdur_sec = testdur;
+		  if(durunit == 'h'){
+		    testdur_sec = testdur * 3600;
+		  }
+		  else if(durunit == 'm'){
+		    testdur_sec = testdur * 60;
+		  }
+		  challdur = document.createtestform.challengeduration.value;
+		  durunit = document.getElementById('challengedurationunit').value;
+		  challdur_sec = challdur;
+		  if(durunit == 'h'){
+		    challdur_sec = challdur * 3600;
+		  }
+		  else if(durunit == 'm'){
+		    challdur_sec = challdur * 60;
+		  }
+		  if(challdur_sec > testdur_sec){
+		    alert("Time taken to solve a single challenge cannot be greater than the duration of the entire test.");
+		    document.createtestform.testduration.focus();
+		    return(false);
+		  }
+		  // 10.Check if all required fields have sane values. List of required fields and their data constraints are as follows:
+		  // testname (alphanumeric)
+		  // testrules (check not necessary as items are selected from dropdown)
+		  // testtopic (check not necessary as items are selected from dropdown)
+		  // totalscore (should be numeric)
+		  // testduration (should be numeric).
+		  // That should be all. Rest are checked in various field specific tests.
+		  alphanumericspacepattern = new RegExp("^[\\w\\d\\s]+$");
+		  numericpattern = new RegExp("^\\d+$");
+		  if(!alphanumericspacepattern.test(document.createtestform.testname.value)){
+		    alert("Test name may contain alphanumeric characters and white space.");
+		    document.createtestform.testname.focus();
+		    return(false);
+		  }
+		  if(!numericpattern.test(document.createtestform.totalscore.value.trim())){
+		    alert("Total score should be numeric");
+		    document.createtestform.totalscore.focus();
+		    return(false);
+		  }
+		  if(!numericpattern.test(document.createtestform.testduration.value.trim())){
+		    alert("Test duration should be numeric");
+		    document.createtestform.testduration.focus();
+		    return(false);
+		  }
+		  // 11.Group names ('grpname') should be single word strings containing alphanumeric characters only.
+		  grpname = document.createtestform.grpname.value.trim();
+		  // alert(grpname);
+		  if(!alphanumericpattern.test(grpname)){
+		    alert("Evaluator group names may contain alphanumeric characters only.");
+		    document.createtestform.grpname.focus();
+		    return(false);
+		  }
+		  return(true);
 		}
+
 
 		function createtest(usrid){
 		  if(!validate()){
 		    return false;
 		  }
+		  document.createtestform.method = 'POST';
+		  document.createtestform.action = '{{ createtesturl }}';
+		  document.createtestform.submit();
 		}
+
 
 		function expandevaluatorgroup(){
 		  {{ assocevalgrps  }}
 		}
 
+
 		function autosuggestgrpname(){
+		  // Suggest a name for the group only if the group name is empty.
+		  // That would mean the  user has not yet decided upon a name, so a suggestion is in order.
+		  if(document.createtestform.grpname.value == ""){
+		    evalemail1 = document.createtestform.evaluators.value;
+		    emailparts = evalemail1.split("@");
+		    // check if the group name assigned in emailparts[0] already exists in 'evalgrpsdict'. If so, add a digit to it to make it unique.
+		    digit = 1;
+		    if(!(emailparts[0] in evalgrpsdict)){
+		      document.createtestform.grpname.value = emailparts[0];
+		    }
+		    else{
+		      tmpgrpname = emailparts[0] + str(digit);
+		      while(tmpgrpname in evalgrpsdict){
+			digit = digit + 1;
+			tmpgrpname = emailparts[0] + str(digit);
+		      }
+		      document.createtestform.grpname.value = tmpgrpname;
+		    }
+		  }
 		}
+
 
 		function othertopicfield(){
 		  if(document.getElementById('testtopic').value=='&quot;Other&quot;'){ // this is ugly, needs to be sanitized.

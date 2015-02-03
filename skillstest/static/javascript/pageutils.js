@@ -141,7 +141,7 @@ function uploadimage(){
 function checknumeric(field){
   fieldval = field.value.trim();
   if(isNaN(+fieldval) || !isFinite(fieldval)){
-    alert("This field cannot be non-numeric");
+    alert(field.name + " field cannot be non-numeric");
     field.value = "";
     field.focus();
     return false;
