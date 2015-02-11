@@ -206,8 +206,8 @@
 		}
 
 
-		function createtest(usrid){
-		  if(!validate()){
+		function createtest(usrid, createtesturl, editflag=0){
+		  if(!editflag && !validate()){
 		    return false;
 		  }
 		  // We make an ajax call to the correct view and after we are
@@ -255,16 +255,47 @@
 		  xmlhttp.onreadystatechange = function(){
 		    // alert(xmlhttp.responseText);
 		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		      // Data has been posted successfully, so show the challenge insertion form.
+		      // Data has been posted successfully, so show the first or next challenge insertion form.
 		      var thediv=document.getElementById('createtestdiv');
 		      thediv.style.display = "";
-		      thediv.innerHTML = "{% include 'tests/edit_challenge.html' %}";
+		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
 		      return(false);
 		    }
 		  };
-		  xmlhttp.open('POST','{{ createtesturl }}', true);
+		  xmlhttp.open('POST',createtesturl, true);
 		  xmlhttp.send(postdata);
 		  showworking();
+		}
+
+		function displayoptions(){
+		  var ansoptsdiv=document.getElementById('ansopts');
+		  // alert(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value);
+		  if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'MULT'){
+		    ansoptsdiv.style.display = "";
+		    ansoptsdiv.innerHTML = "<p><b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'>No<br><b>Please enter the choices you want to be made available for this challenge/question.(max 8 choices) </b><br><input type='text' name='choice1' value=''><br><input type='text' name='choice2' value=''><br><input type='text' name='choice3' value=''><br><input type='text' name='choice4' value=''><br><input type='text' name='choice5' value=''><br><input type='text' name='choice6' value=''><br><input type='text' name='choice7' value=''><br><input type='text' name='choice8' value=''></p>";
+		  }
+		  else{
+		    ansoptsdiv.style.display = "";
+		    ansoptsdiv.innerHTML = "<input type='hidden' name='oneormore' value='no'>";
+		    if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN' || document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'ALGO'){
+		      ansoptsdiv.innerHTML += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> lines. </b>(leave empty for no limit.)</p>";
+		    }
+		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'SUBJ'){
+		      ansoptsdiv.innerHTML += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> words</b>(leave empty for no limit)</p>";
+		    }
+		  }
+		}
+
+		function editchallenge(){
+		}
+
+		function saveandcontinue(usrid){
+		  createtest(usrid, '{{ addeditchallengeurl }}', 1); // Calling the same test creator function but with the challenge add/edit URL.
+		}
+
+		function saveandclose(usrid){
+		  createtest(usrid, '{{ addeditchallengeurl }}', 1); // Calling the same test creator function but with the challenge add/edit URL.
+		  closediv();
 		}
 
 		function expandevaluatorgroup(){
@@ -283,10 +314,10 @@
 		      document.createtestform.grpname.value = emailparts[0];
 		    }
 		    else{
-		      tmpgrpname = emailparts[0] + str(digit);
+		      tmpgrpname = emailparts[0] + digit.toString();
 		      while(tmpgrpname in evalgrpsdict){
 			digit = digit + 1;
-			tmpgrpname = emailparts[0] + str(digit);
+			tmpgrpname = emailparts[0] + digit.toString();
 		      }
 		      document.createtestform.grpname.value = tmpgrpname;
 		    }

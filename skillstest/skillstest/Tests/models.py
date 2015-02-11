@@ -179,6 +179,8 @@ class Challenge(models.Model):
     option4 = models.TextField(blank=True, null=True, default='')
     option5 = models.TextField(blank=True, null=True, default='')
     option6 = models.TextField(blank=True, null=True, default='')
+    option7 = models.TextField(blank=True, null=True, default='')
+    option8 = models.TextField(blank=True, null=True, default='')
     challengescore = models.FloatField(default=0) # Score or points of the particular Challenge.
     negativescore = models.FloatField(default=0) # 0 means no negative marks if the User's response is wrong.
     # Otherwise, any positive floating point value specifies the negative score if the user's response is wrong.

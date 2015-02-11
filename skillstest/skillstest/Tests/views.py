@@ -38,7 +38,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -151,6 +151,7 @@ def get_user_tests(request):
     tests_user_dict['assocevalgrps'] = assocevalgrps
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
+    tests_user_dict['addeditchallengeurl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_TEST_URL
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     return  tests_user_dict
 
@@ -351,6 +352,12 @@ def create(request):
         testobj.duration = int(testduration) * 60 # Seconds from minutes.
     else:
         testobj.duration = int(testduration)
+    if challengedurationunit == 'h':
+        challengeduration = int(challengeduration) * 3600
+    elif challengedurationunit == 'm':
+        challengeduration = int(challengeduration) * 60
+    else:
+        challengeduration = int(challengeduration)
     activedateparts = activedate.split('-')
     publishdateparts = publishdate.split('-')
     # Verify whether the date formats received are in 'dd-MON-yyyy' format.
@@ -521,10 +528,75 @@ def create(request):
         lastchallengectr = request.POST['lastchallengectr']
     if request.POST.has_key('challengenumbersstr'):
         challengenumbersstr = request.POST['challengenumbersstr']
-    message = error_msg('1050')
+    message = error_msg('1050') # Posted test meta data successfully.
+    # So we create the challenge insertion form and send it as message.
+    message += _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeduration, int(negativescoring))
     return HttpResponse(message)
 
 
+# Note: The 'challengedurationseconds' value being passed into this function is in seconds.
+def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, challengedurationseconds, negativescoring=0):
+    totalchallenges = testobj.challengecount
+    testobj.status = False # Set this to false since we are editing a challenge
+    testlinkid = testobj.testlinkid
+    testtype = testobj.testtype
+    multimediareqd = testobj.multimediareqd
+    totalscore = testobj.maxscore
+    edit_challenge_dict = { 'lastchallengectr' : lastchallengectr, 'testlinkid' : testlinkid, 'multimediareqd' : multimediareqd, 'totalscore' : totalscore, 'challengedurationseconds' : challengedurationseconds }
+    edit_challenge_dict['answeringoptions'] = ""
+    if testtype == 'COMP':
+        challengetypeslist = "<b>Select Challenge Type</b><select name='challengetype' onchange='javascript:displayoptions();'>"
+        for ttcode in mysettings.TEST_TYPES.keys():
+            ttcodeval = ttcode.replace(" ", "__")
+            if ttcode == 'MULT':
+                challengetypeslist += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+            else:
+                challengetypeslist += "<option value=&quot;%s&quot;>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+        challengetypeslist += "</select><br /><div id='ansopts'></div>"
+        edit_challenge_dict['challengetypeslist'] = challengetypeslist
+    elif testtype == 'MULT' or testtype == 'FILB': # For 'CODN', 'ALGO' and 'SUBJ' type challenges, we need not provide any answering options.
+        edit_challenge_dict['answeringoptions'] = "<p>"
+        if testtype == 'MULT':
+            edit_challenge_dict['answeringoptions'] += "<b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'>No<br />"
+        else:
+            edit_challenge_dict['answeringoptions'] += "<input type='hidden' name='oneormore' value='no'>"
+        edit_challenge_dict['answeringoptions'] += "<b>Please enter the choices you want to be made available for this challenge/question.(max 8 choices) </b><br />"
+        edit_challenge_dict['answeringoptions'] += "<input type='text' name='choice1' value=''><br /><input type='text' name='choice2' value=''><br /><input type='text' name='choice3' value=''><br /><input type='text' name='choice4' value=''><br /><input type='text' name='choice5' value=''><br /><input type='text' name='choice6' value=''><br /><input type='text' name='choice7' value=''><br /><input type='text' name='choice8' value=''></p>"
+    elif testtype == 'CODN' or testtype == 'ALGO': # For these testtypes user may want some constraints on the size of the response.
+        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> lines. </b>(leave empty for no limit.)</p>"
+    elif testtype == 'SUBJ':
+        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> words</b>(leave empty for no limit)</p>"
+    lastchallengectr = int(lastchallengectr) + 1
+    edit_challenge_dict['testlinkid'] = testlinkid
+    edit_challenge_dict['test_id'] = testobj.id
+    edit_challenge_dict['lastchallengectr'] = lastchallengectr.__str__()
+    edit_challenge_dict['challengenumbersstr'] = lastchallengectr.__str__()
+    edit_challenge_dict['evendistribution'] = evendistribution # This will be '1' or '0'.
+    edit_challenge_dict['challengescore'] = -1
+    if evendistribution:
+        edit_challenge_dict['challengescore'] = str(float(totalscore)/float(totalchallenges))
+    edit_challenge_dict['negativescoring'] = negativescoring
+    # Populate the existing challenges list
+    challengesqset = Challenge.objects.filter(test=testobj).order_by('id')
+    edit_challenge_dict['testname'] = testobj.testname
+    edit_challenge_dict['challenge_links_list'] = []
+    edit_challenge_dict.update(csrf(request))
+    for challenge in challengesqset:
+        challengestmt = challenge.statement[:20] + " ..."
+        edit_challenge_dict['challenge_links_list'].append((challenge.id, challengestmt, testobj.id, testlinkid)) # So 'challenge_links_list' is a list of tuples whose elements (in order) are challenge Id (0), abbreviated challenge statement (1) (first 20 characters), test Id (2) and the testlinkid (3).
+    # Create and render the template
+    edit_challenge_dict['usrid'] = testobj.creator.id
+    tmpl = get_template("tests/edit_challenge.html")
+    cxt = Context(edit_challenge_dict)
+    editchallengehtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        editchallengehtml = editchallengehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return editchallengehtml
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def search(request):
     tests_user_dict = get_user_tests(request)
     inc_context = skillutils.includedtemplatevars("Search", request) # Since this is the 'Dashboard' page for the user.
@@ -540,15 +612,36 @@ def search(request):
     return HttpResponse(searchtestshtml)
 
 
+"""
+Function to add or edit a challenge
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def edit(request):
-    get_user_dict = get_user_tests(request)
-    inc_context = skillutils.includedtemplatevars("Search", request) # Since this is the 'Dashboard' page for the user.
+    message = ''
+    if request.method == "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    # Retrieve challenge data and create challenge object...
+    challengeobj = Challenge()
+    if request.POST.has_key('testlinkid'):
+        challengeobj.testlinkid = request.POST['testlinkid']
+    # ... and finally save the challenge object.
+    challengeobj.save()
+    tests_user_dict = get_user_tests(request)
+    inc_context = skillutils.includedtemplatevars("Tests", request)
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
     # Now create and render the template here
-    tmpl = get_template("tests/search.html")
-    tests_user_dict.update(csrf(request))
-    cxt = Context(tests_user_dict)
+    tmpl = get_template("tests/edit_challenge.html")
+    #tests_user_dict.update(csrf(request))
+    cxt = RequestContext(tests_user_dict)
     searchtestshtml = tmpl.render(cxt)
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         searchtestshtml = searchtestshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])

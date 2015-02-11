@@ -325,4 +325,7 @@ alter table Tests_test add column scope varchar(50) default 'public' not null;
 alter table Tests_test modify column allowedlanguages varchar(200) default 'enus' not null;
 alter table Tests_test modify column ruleset varchar(200) default '' not null;
 
+alter table Tests_challenge add column option7 longtext  default NULL;
+alter table Tests_challenge add column option8 longtext  default NULL;
+
 COMMIT;
