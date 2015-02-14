@@ -267,35 +267,195 @@
 		  showworking();
 		}
 
+		function getresponseoptionswithcheckboxes(){
+		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		  if(document.challengeform.choice1.value.trim() != ""){
+		    html += "<i>Option #a: <input type='checkbox' name='responsekey[]' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice2.value.trim() != ""){
+		    html += "<i>Option #b: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice3.value.trim() != ""){
+		    html += "<i>Option #c: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice4.value.trim() != ""){
+		    html += "<i>Option #d: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice5.value.trim() != ""){
+		    html += "<i>Option #e: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice6.value.trim() != ""){
+		    html += "<i>Option #f: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice7.value.trim() != ""){
+		    html += "<i>Option #g: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice8.value.trim() != ""){
+		    html += "<i>Option #h: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
+		  }
+		  return(html);
+		}
+
+
+		function getresponseoptionswithradios(){
+		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		  if(document.challengeform.choice1.value.trim() != ""){
+		    html += "<i>Option #a: <input type='radio' name='responsekey' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice2.value.trim() != ""){
+		    html += "<i>Option #b: <input type='radio' name='responsekey' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice3.value.trim() != ""){
+		    html += "<i>Option #c: <input type='radio' name='responsekey' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice4.value.trim() != ""){
+		    html += "<i>Option #d: <input type='radio' name='responsekey' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice5.value.trim() != ""){
+		    html += "<i>Option #e: <input type='radio' name='responsekey' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice6.value.trim() != ""){
+		    html += "<i>Option #f: <input type='radio' name='responsekey' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice7.value.trim() != ""){
+		    html += "<i>Option #g: <input type='radio' name='responsekey' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice8.value.trim() != ""){
+		    html += "<i>Option #h: <input type='radio' name='responsekey' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
+		  }
+		  return(html);
+		}
+
 		function displayoptions(){
 		  var ansoptsdiv=document.getElementById('ansopts');
+		  var responsekeydiv = document.getElementById('responsekeydiv'); 
 		  // alert(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value);
 		  if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'MULT'){
 		    ansoptsdiv.style.display = "";
-		    ansoptsdiv.innerHTML = "<p><b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'>No<br><b>Please enter the choices you want to be made available for this challenge/question.(max 8 choices) </b><br><input type='text' name='choice1' value=''><br><input type='text' name='choice2' value=''><br><input type='text' name='choice3' value=''><br><input type='text' name='choice4' value=''><br><input type='text' name='choice5' value=''><br><input type='text' name='choice6' value=''><br><input type='text' name='choice7' value=''><br><input type='text' name='choice8' value=''></p>";
+		    ansoptsdiv.innerHTML = "<div id='ansopts' style=''><p><b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();'>No<br><b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();'><br><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p></div>";
+		    responsekeydiv.style.display = "";
+		    responsekeydiv.innerHTML = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		    // check if 'oneormore' is 'yes' or 'no', and accordingly display the checkboxes or radio buttons.
+		    for (var i=0; i < document.getElementsByName('oneormore').length; i++){
+		      if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'yes'){
+		        responsekeydiv.innerHTML += getresponseoptionswithcheckboxes();
+		      }
+		      else if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'no'){
+		      responsekeydiv.innerHTML += getresponseoptionswithradios();
+		      }
+		    }
 		  }
 		  else{
 		    ansoptsdiv.style.display = "";
 		    ansoptsdiv.innerHTML = "<input type='hidden' name='oneormore' value='no'>";
 		    if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN' || document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'ALGO'){
-		      ansoptsdiv.innerHTML += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> lines. </b>(leave empty for no limit.)</p>";
+		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p></div>";
+		      responsekeydiv.style.display = "none";
+		      responsekeydiv.innerHTML = "";
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'SUBJ'){
-		      ansoptsdiv.innerHTML += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> words</b>(leave empty for no limit)</p>";
+		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</b>(leave empty for no limit)</p></div>";
+		      responsekeydiv.style.display = "none";
+		      responsekeydiv.innerHTML = "";
+		    }
+		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'FILB'){
+		      responsekeydiv.style.display = "";
+		      responsekeydiv.innerHTML = "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='' size='10' maxlength='250'></br>";
 		    }
 		  }
 		}
 
+		// Display the help text for the rationale behind entering the correct response(s).
+		function showwhyresponsekey(atag){
+		  var txtmsg = "p<>This feature allows you to create a test that can be automatically assessed by the system after a candidate has taken it. In order to make the test automatically assessable, you will need to enter the correct response keys for each of the challenges/questions in the test. Failing to specify the response key for even a single challenge will stop the system from automatically assessing the answer scripts of candidates. </p><p><i>Also, please note that this feature is available for 'Multiple Choice' type tests, 'Fill up the Blanks' type tests, and 'Composite' type tests that contain only 'Multiple Choice' or 'Fill up the Blanks' type challenges. Other types of tests/challenges  do not lend themselves to this feature.</i></p><p>Please also note that the existence of this feature does not constrain the evaluators from manually assessing the answer scripts of candidates.</p>";
+		  // Create a floating 'wiki' type window and print this message in it in blue text (#0000DD).
+		  atag.helptext = txtmsg;
+		}
+
+		// This function will be called on the 'blur' event of
+		// 'choice<uint>' (where uint ranges from 1 to 8 at present)
+		// 'text' input fields (shown in case of multiple choice tests)
+		// and the 'change' event of 'oneormore' radio buttons.
+		function displayresponsekeycontrols(){
+		  var responsekeydiv = document.getElementById('responsekeydiv');
+		  // check if 'oneormore' is 'yes' or 'no', and accordingly display the checkboxes or radio buttons.
+		  responsekeydiv.style.display = "";
+		  for (var i=0; i < document.getElementsByName('oneormore').length; i++){
+		    if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'yes'){
+		      responsekeydiv.innerHTML = getresponseoptionswithcheckboxes();
+		    }
+		    else if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'no'){
+		      responsekeydiv.innerHTML = getresponseoptionswithradios();
+		    }
+		  }
+		}
+
+		
 		function editchallenge(){
 		}
 
+		// Validate the data entered by the user in the challenge
+		// creation form.
+		function validatechallengedata(){
+		  numericpattern = new RegExp("^\\d+$");
+		  // Challenge statement can't be empty.
+		  if(document.challengeform.statement.value.trim() == ""){
+		    alert("Challenge statement can't be empty.");
+		    document.challengeform.statement.value = "";
+		    document.challengeform.statement.focus();
+		    return false;
+		  }
+		  if(document.challengeform.challengescore.type == 'text' && document.challengeform.evendistribution.value != 1){
+		    if(!numericpattern.test(document.challengeform.challengescore.value.trim())){
+		      alert("Since the total is not evenly distributed over all the challenges, you must enter a valid score for this challenge");
+		      document.challengeform.challengescore.value = "";
+		      document.challengeform.challengescore.focus();
+		      return false;
+		    }
+		    // Just check sanity of the score field.
+		    if(parseInt(document.challengeform.challengescore.value.trim()) > parseInt(document.challengeform.totalscore.value)){
+		      alert("Challenge score can't be greater than test score.");
+		      document.challengeform.challengescore.value = "";
+		      document.challengeform.challengescore.focus();
+		      return false;
+		    }
+		  }
+		  // 'maxsizewords' and 'maxsizelines' should contain either
+		  // positive integral values or they should be empty.
+		  if(document.challengeform.maxsizewords && document.challengeform.maxsizewords.value.trim() != "" && !numericpattern.test(document.challengeform.maxsizewords.value.trim())){
+		    alert("Max words count should either be a positive integer or it should be empty");
+		    document.challengeform.maxsizewords.value = "";
+		    document.challengeform.maxsizewords.focus();
+		    return false;
+		  }
+		  if(document.challengeform.maxsizelines && document.challengeform.maxsizelines.value.trim() != "" && !numericpattern.test(document.challengeform.maxsizelines.value.trim())){
+		    alert("Max lines count should either be a positive integer or it should be empty");
+		    document.challengeform.maxsizelines.value = "";
+		    document.challengeform.maxsizelines.focus();
+		    return false;
+		  }
+		  // Max time limit for a challenge should have a value less
+		  // than max time available for the entire test. Skipping
+		  // implementation now. Will be done after whole test creation
+		  // process starts running smoothly.
+		  return true;
+		}
+
 		function saveandcontinue(usrid){
+		  if(!validatechallengedata()){
+		    return false;
+		  }
 		  createtest(usrid, '{{ addeditchallengeurl }}', 1); // Calling the same test creator function but with the challenge add/edit URL.
+		  return true;
 		}
 
 		function saveandclose(usrid){
+		  if(!validatechallengedata()){
+		    return false;
+		  }
 		  createtest(usrid, '{{ addeditchallengeurl }}', 1); // Calling the same test creator function but with the challenge add/edit URL.
 		  closediv();
+		  return true;
 		}
 
 		function expandevaluatorgroup(){

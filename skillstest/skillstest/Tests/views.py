@@ -542,30 +542,36 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     testtype = testobj.testtype
     multimediareqd = testobj.multimediareqd
     totalscore = testobj.maxscore
-    edit_challenge_dict = { 'lastchallengectr' : lastchallengectr, 'testlinkid' : testlinkid, 'multimediareqd' : multimediareqd, 'totalscore' : totalscore, 'challengedurationseconds' : challengedurationseconds }
+    edit_challenge_dict = { 'lastchallengectr' : lastchallengectr, 'testlinkid' : testlinkid, 'multimediareqd' : multimediareqd, 'totalscore' : totalscore, 'challengedurationseconds' : challengedurationseconds, 'testtype' : testtype }
     edit_challenge_dict['answeringoptions'] = ""
     if testtype == 'COMP':
         challengetypeslist = "<b>Select Challenge Type</b><select name='challengetype' onchange='javascript:displayoptions();'>"
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
-            if ttcode == 'MULT':
-                challengetypeslist += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+            if ttcode == 'SUBJ':
+                challengetypeslist += "<option value=%s selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+            elif ttcode == 'COMP':
+                continue # A challenge cannot be composite
             else:
-                challengetypeslist += "<option value=&quot;%s&quot;>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
-        challengetypeslist += "</select><br /><div id='ansopts'></div>"
+                challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+        challengetypeslist += "</select><br /><div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</b>(leave empty for no limit)</p></div>"
         edit_challenge_dict['challengetypeslist'] = challengetypeslist
     elif testtype == 'MULT' or testtype == 'FILB': # For 'CODN', 'ALGO' and 'SUBJ' type challenges, we need not provide any answering options.
         edit_challenge_dict['answeringoptions'] = "<p>"
         if testtype == 'MULT':
-            edit_challenge_dict['answeringoptions'] += "<b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'>No<br />"
+            edit_challenge_dict['answeringoptions'] += "<b>Can there be more than one correct option:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' onchange='javascript:displayresponsekeycontrols();'>No<br />"
+            edit_challenge_dict['answeringoptions'] += "<b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br />"
+            edit_challenge_dict['answeringoptions'] += "<i>Option #a:</i> <input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #b</i>: <input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #c:</i> <input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #d:</i> <input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #e:</i> <input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #f:</i> <input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #g:</i> <input type='text' name='choice7' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #h:</i> <input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p>"
+            edit_challenge_dict['responsekeyscontrolslist'] = "<b>Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br />"
+            # Since the default value for 'oneormore' is yes, we will initialize the 'responsekeyscontrolslist' with checkbox controls.
+            edit_challenge_dict['responsekeyscontrolslist'] += "<i>Option #a: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #b: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #c: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #d: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #e: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #f: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #g: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #h: <input type='checkbox' name='responsekey[]' value=''></i><br />"
         else:
             edit_challenge_dict['answeringoptions'] += "<input type='hidden' name='oneormore' value='no'>"
-        edit_challenge_dict['answeringoptions'] += "<b>Please enter the choices you want to be made available for this challenge/question.(max 8 choices) </b><br />"
-        edit_challenge_dict['answeringoptions'] += "<input type='text' name='choice1' value=''><br /><input type='text' name='choice2' value=''><br /><input type='text' name='choice3' value=''><br /><input type='text' name='choice4' value=''><br /><input type='text' name='choice5' value=''><br /><input type='text' name='choice6' value=''><br /><input type='text' name='choice7' value=''><br /><input type='text' name='choice8' value=''></p>"
+            edit_challenge_dict['responsekeyscontrolslist'] = "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='' size='10' maxlength='250'><br />"
     elif testtype == 'CODN' or testtype == 'ALGO': # For these testtypes user may want some constraints on the size of the response.
-        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> lines. </b>(leave empty for no limit.)</p>"
+        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p>"
     elif testtype == 'SUBJ':
-        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsize' value=''> words</b>(leave empty for no limit)</p>"
+        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</b>(leave empty for no limit)</p>"
     lastchallengectr = int(lastchallengectr) + 1
     edit_challenge_dict['testlinkid'] = testlinkid
     edit_challenge_dict['test_id'] = testobj.id
@@ -576,6 +582,12 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     if evendistribution:
         edit_challenge_dict['challengescore'] = str(float(totalscore)/float(totalchallenges))
     edit_challenge_dict['negativescoring'] = negativescoring
+    edit_challenge_dict['skillqualitylist'] = ""
+    for skillqual in mysettings.SKILL_QUALITY.keys():
+        if testobj.quality == skillqual:
+            edit_challenge_dict['skillqualitylist'] += "<option value=%s selected>%s</option>"%(skillqual, mysettings.SKILL_QUALITY[skillqual])
+        else:
+            edit_challenge_dict['skillqualitylist'] += "<option value=%s>%s</option>"%(skillqual, mysettings.SKILL_QUALITY[skillqual])
     # Populate the existing challenges list
     challengesqset = Challenge.objects.filter(test=testobj).order_by('id')
     edit_challenge_dict['testname'] = testobj.testname
@@ -628,10 +640,102 @@ def edit(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
+    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore) = ("", False, False, 0, "", "", False, "", False)
     # Retrieve challenge data and create challenge object...
     challengeobj = Challenge()
+    testobj = None
     if request.POST.has_key('testlinkid'):
         challengeobj.testlinkid = request.POST['testlinkid']
+    if request.POST.has_key('statement'):
+        challengeobj.statement = request.POST['statement']
+    if request.POST.has_key('challengetype'):
+        challengeobj.challengetype = request.POST['challengetype']
+    else:
+        if not request.POST.has_key('testtype'):
+            errmsg = error_msg('1053')
+            return HttpResponse(errmsg)
+        challengeobj.challengetype = request.POST['testtype']
+    # Sanity check for challenge type:
+    if challengeobj.challengetype not in mysettings.TEST_TYPES.keys():
+        message = "Challenge type '%s':"%(challengeobj.challengetype) + error_msg('1054')
+        return HttpResponse(message)
+    if request.POST.has_key('test_id'):
+        testobj = Test.objects.filter(id=request.POST['test_id'])[0]
+        challengeobj.test = testobj
+        challengeobj.testlinkid = testobj.testlinkid
+    elif request.POST.has_key('testlinkid'):
+        testobj = Test.objects.filter(testlinkid=request.POST['testlinkid'])[0]
+        challengeobj.test = testobj
+        challengeobj.testlinkid = request.POST['testlinkid']
+    if not request.POST.has_key('test_id') and not request.POST.has_key('testlinkid'): # This should never happen if the user is logged in.
+        challengeobj.test = None
+        challengeobj.testlinkid = None
+        errmsg = error_msg('1051') + error_msg('1111')
+        return HttpResponse(errmsg)
+    if request.POST.has_key('challengedurationseconds'):
+        challengeobj.timeframe = request.POST['challengedurationseconds']
+    if request.POST.has_key('mustrespond'):
+        challengeobj.mustrespond = request.POST['mustrespond']
+    if request.POST.has_key('lastchallengectr'):
+        lastchallengectr = request.POST['lastchallengectr']
+    if request.POST.has_key('evendistribution'):
+        evendistribution = request.POST['evendistribution']
+    if request.POST.has_key('multimediareqd'):
+        multimediareqd = request.POST['multimediareqd']
+    if request.POST.has_key('totalscore'):
+        totalscore = request.POST['totalscore']
+    if request.POST.has_key('challengenumbersstr'):
+        challengenumbersstr = request.POST['challengenumbersstr']
+    if request.POST.has_key('csrfmiddlewaretoken'):
+        csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
+    if request.POST.has_key('negativescoring'):
+        negativescoring = request.POST['negativescoring']
+    if request.POST.has_key('challengescore'):
+        challengeobj.challengescore = request.POST['challengescore']
+    if request.POST.has_key('negativescore'):
+        challengeobj.negativescore = request.POST['negativescore']
+    if request.POST.has_key('mediafile'):
+        mediafile = request.POST['mediafile']
+    challengeobj.maxresponsesizeallowable = -1
+    if request.POST.has_key('maxsizewords'):
+        challengeobj.maxresponsesizeallowable = request.POST['maxsizewords']
+    elif request.POST.has_key('maxsizelines'):
+        challengeobj.maxresponsesizeallowable = request.POST['maxsizelines']
+    if request.POST.has_key('oneormore'):
+        oneormore = request.POST['oneormore']
+    if request.POST.has_key('skillquality'):
+        challengeobj.challengequality = request.POST['skillquality']
+    if request.POST.has_key('extresourceurl'):
+        challengeobj.additionalurls = request.POST['extresourceurl']
+    # Now let us get the available options for 'MULT' type test
+    if challengeobj.challengetype == 'MULT':
+        fchoices = lambda(x):re.search(re.compile("^choice(\d+)$", re.IGNORECASE), x)
+        allmatches = map(fchoices, request.POST)
+        for fld in allmatches:
+            if fld is None: # This is a different control, not one of the 'choice' controls
+                continue
+            controlname = fld.string
+            ctrlcounter = fld.groups()[0]
+            if not request.POST[controlname] or request.POST[controlname].strip() == "":
+                continue
+            challengeobj.__dict__['option%s'%ctrlcounter] = request.POST[controlname].strip()
+    # Store the responsekey if challengetype value is 'FILB' or 'MULT'
+    # A note on the format used to store responsekey(s): For challengetype
+    # value of 'FILB', the responsekey will be a single entry and will be
+    # stored as is. For challengetype value of 'MULT' and 'oneormore' value of
+    # 'no', we can store the value similarly. However, for challengetype 
+    # value of 'MULT' and 'oneormore' value of 'yes', there may be multiple
+    # entries, so we will store the entries as a single string joined together
+    # using the string '#||#'.
+    challengeobj.responsekey = None
+    if challengeobj.challengetype == 'FILB' and request.POST.has_key('responsekey'):
+        challengeobj.responsekey = request.POST['responsekey']
+    elif challengeobj.challengetype == 'MULT' and request.POST.has_key('responsekey') or request.POST.has_key('responsekey[]'):
+        if oneormore == "no": # Only a single option will be correct
+            challengeobj.responsekey = request.POST['responsekey']
+        elif oneormore == "yes": # Multiple options may be checked
+            responses = request.POST.getlist('responsekey[]')
+            challengeobj.responsekey = '#||#'.join(responses)
     # ... and finally save the challenge object.
     challengeobj.save()
     tests_user_dict = get_user_tests(request)
@@ -640,11 +744,11 @@ def edit(request):
         tests_user_dict[inc_key] = inc_context[inc_key]
     # Now create and render the template here
     tmpl = get_template("tests/edit_challenge.html")
-    #tests_user_dict.update(csrf(request))
-    cxt = RequestContext(tests_user_dict)
-    searchtestshtml = tmpl.render(cxt)
+    tests_user_dict.update(csrf(request))
+    cxt = Context(tests_user_dict)
+    editchallengehtml = tmpl.render(cxt)
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
-        searchtestshtml = searchtestshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
-    return HttpResponse(searchtestshtml)
+        editchallengehtml = editchallengehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(editchallengehtml)
 
 

@@ -172,6 +172,7 @@ class Challenge(models.Model):
     statement = models.TextField(blank=False, null=False) # The statement or question
     # The following field will be useful in case of 'composite' tests.
     challengetype = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.TEST_TYPES.iteritems()), default='COMP')
+    maxresponsesizeallowable = models.IntegerField(default=-1, null=True, blank=True) # The default value of -1 means no limit.
     # The following 6 fields will be used only if the challengetype is MULT. Will be empty otherwise.
     option1 = models.TextField(blank=True, null=True, default='')
     option2 = models.TextField(blank=True, null=True, default='')
@@ -187,14 +188,14 @@ class Challenge(models.Model):
     mustrespond = models.BooleanField(default=False) # Specifies if the 'User' must respond to  the challenge.
     # If this is True and the User doesn't  respond to the Challenge, it is considered as wrong response, and
     # hence open to negative marking (if negative marking is allowed for that Challenge).
-    responsekey = models.TextField(blank=False, null=False) # The correct answer statement. (Note: This is the statement, not the index associated with it).
-    imageurl = models.URLField(null=True, blank=True, help_text='URL of any image associated with the challenge')
+    responsekey = models.TextField(blank=False, null=True, default=None) # The correct answer statement. (Note: This is the statement, not the index associated with it).
+    mediafile = models.CharField(max_length=100, null=True, blank=True, help_text='File name of the image/audio/other multimedia file associated with the challenge')
     additionalurl = models.URLField(null=True, blank=True, help_text='URL of any other material associated with the challenge')
     timeframe = models.IntegerField(default=-1, null=True, blank=True) # A value of -1 (or any other negative integer) denotes no limit.
     # Most often, a Test will have a duration specified but a Challenge in it won't have any limit. But there can be some cases where
     # the assessor wants to limit the timeframe for a specific Challenge (question). This field will be used in such cases.
     #dependency = models.ForeignKey(Challenge, null=True, default=None) # Dependency to any other Challenge object.
-    subtopic = models.ForeignKey(Subtopic, null=False, blank=False) # Specifies the subtopic to which this Challenge belongs.
+    subtopic = models.ForeignKey(Subtopic, null=True, blank=False) # Specifies the subtopic to which this Challenge belongs.
     challengequality = models.CharField(max_length=3, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()))
     testlinkid = models.CharField(max_length=200, null=False, blank=False)
 

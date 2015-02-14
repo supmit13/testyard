@@ -2,6 +2,8 @@ import os, sys, re, time
 import inspect
 
 error_codes = { \
+        '1111' : 'Please contact our support team at \'support@testyard.com\' for any issues. Please remember to send them a screenshot of your problem and the steps you performed that resulted in the issue. We will help you out at the earliest.', \
+
         '1001' : 'Unsupported request method', \
         '1002' : 'Authentication Failed - username or password didn\'t match', \
         '1003' : 'User is not active', \
@@ -41,6 +43,10 @@ error_codes = { \
         '1048' : 'Error in evaluator group name: An evaluator group with the same name but with a different set of email ids already exist', \
 
         '1050' : 'Entered test metadata successfully', \
+        '1051' : 'This challenge/question could not be associated with any test created by you. This may mean that your session has become corrupt due to some transient problem. Please login into your account once more and retry. We regret the inconvenience caused due to this condition.', \
+        '1052' : 'Challenge/Question has been successfully saved.', \
+        '1053' : 'No test type was specified with the request.', \
+        '1054' : 'The specified challenge type is not recognized.', \
     }
 
 def error_msg(code):
