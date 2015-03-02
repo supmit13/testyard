@@ -314,6 +314,7 @@ alter table Tests_test modify passscore int(11) default NULL;
 alter table Tests_test add column allowmultiattempts tinyint(1) default False;
 alter table Tests_test add column maxattemptscount int(11) default 1 not NULL;
 alter table Tests_test add column attemptsinterval int(11) default NULL;
+alter table Tests_test add column attemptsintervalunit char(1) default NULL;
 
 alter table Tests_test add column randomsequencing tinyint(1) default True not null;
 
@@ -335,5 +336,10 @@ alter table Tests_challenge add column maxresponsesizeallowable int (11) default
 
 alter table Tests_challenge modify column responsekey longtext default NULL;
 alter table Tests_challenge modify column subtopic_id int(11) default NULL;
+
+alter table Tests_test add column negativescoreallowed boolean default false;
+alter table Tests_test modify column activationdate datetime default NULL;
+
+alter  table Tests_challenge add column oneormore boolean default true;
 
 COMMIT;

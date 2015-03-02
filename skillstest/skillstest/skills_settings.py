@@ -94,6 +94,9 @@ EDIT_TEST_URL = "skillstest/tests/edit/"
 MANAGE_TEST_URL = "skillstest/tests/"
 TEST_SUMMARY_URL = "skillstest/tests/summary/"
 DELETE_CHALLENGE_URL = "skillstest/tests/challenges/delete/"
+SAVE_CHANGES_URL = "skillstest/tests/challenges/savechanges/"
+ADD_MORE_URL = "skillstest/tests/challenges/addmore/"
+EDIT_EXISTING_TEST_URL = "skillstest/tests/editexistingtest/"
 SEARCH_URL = "skillstest/tests/search/"
 NETWORK_URL = "skillstest/network/"
 ANALYTICS_URL = "skillstest/analytics/"
@@ -104,6 +107,9 @@ LOGOUT_URL = "skillstest/logout/"
 availabilityURL = "skillstest/checkavail/"
 ACCTACTIVATION_URL = "skillstest/activate/"
 PROFIMG_CHANGE_URL = "/skillstest/changeimg/"
+CLEAR_NEGATIVE_SCORE_URL = "skillstest/tests/clearnegscore/"
+DELETE_TEST_URL = "skillstest/tests/deletetest/"
+SHOW_USER_VIEW_URL = "skillstest/tests/challenge/showuserview/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -165,4 +171,5 @@ NEW_USER_FREE_TESTS_COUNT = 5
 NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 
 MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '05', 'JUN' : '06', 'JUL' : '07', 'AUG' : '08', 'SEP' : '09', 'OCT' : '10', 'NOV' : '11', 'DEC' : '12'}
+REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 

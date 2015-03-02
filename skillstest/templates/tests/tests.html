@@ -73,10 +73,18 @@
 		  var months = {'JAN':'01', 'FEB': '02', 'MAR':'03', 'APR':'04', 'MAY':'05', 'JUN':'06', 'JUL':'07', 'AUG':'08', 'SEP': '09', 'OCT':'10', 'NOV':'11', 'DEC':'12'};
 		  alphanumericpattern = new RegExp("^([\\w\\d]+)$");
 		  publishdate = document.createtestform.publishdate.value;
+		  if(publishdate.trim() == ''){
+		    alert("Publish date cannot be empty. Please enter a date in dd-Mon-yyyy format");
+		    document.createtestform.publishdate.focus();
+		    return false;
+		  }
 		  activedate = document.createtestform.activedate.value;
 		  if(activedate.trim() == ''){
-		    activedate = publishdate;
+		    alert("Activation date cannot be left empty. Please enter a date after the publish date in 'dd-MON-yyyy' format");
+		    document.createtestform.activedate.focus();
+		    return false;
 		  }
+		  //alert(activedate);
 		  publishdateparts = publishdate.split("-");
 		  pubdd = publishdateparts[0];
 		  pubmm = months[publishdateparts[1]];
@@ -171,16 +179,31 @@
 		  // testduration (should be numeric).
 		  // That should be all. Rest are checked in various field specific tests.
 		  alphanumericspacepattern = new RegExp("^[\\w\\d\\s]+$");
-		  numericpattern = new RegExp("^\\d+$");
+		  numericpattern = new RegExp("^[\\d\.]*$");
 		  if(!alphanumericspacepattern.test(document.createtestform.testname.value)){
 		    alert("Test name may contain alphanumeric characters and white space.");
 		    document.createtestform.testname.focus();
 		    return(false);
 		  }
+		  if(document.createtestform.totalscore.value.trim() == ""){
+		    alert("Total score field cannot be left empty.");
+		    document.createtestform.totalscore.focus();
+		    return false;
+		  }
 		  if(!numericpattern.test(document.createtestform.totalscore.value.trim())){
 		    alert("Total score should be numeric");
 		    document.createtestform.totalscore.focus();
 		    return(false);
+		  }
+		  if(document.createtestform.testduration.value.trim() == ""){
+		    alert("Total Duration field cannot be left empty");
+		    document.createtestform.testduration.focus();
+		    return (false);
+		  }
+		  if(document.createtestform.challengeduration.value.trim() == ""){
+		    alert("Challenge Duration field cannot be left empty");
+		    document.createtestform.challengeduration.focus();
+		    return (false);
 		  }
 		  if(!numericpattern.test(document.createtestform.testduration.value.trim())){
 		    alert("Test duration should be numeric");
@@ -205,7 +228,6 @@
 		  return(true);
 		}
 
-
 		function createtest(usrid, createtesturl, editflag=0){
 		  if(!editflag && !validate()){
 		    return false;
@@ -220,6 +242,7 @@
 		  else{
 		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		  }
+		  //alert(document.forms[0].exist_test_id.value);
 		  postdata = "";
 		  for(var i=0; i < document.forms[0].elements.length; i++){
 		    elementname = document.forms[0].elements[i].name;
@@ -251,11 +274,20 @@
 		  }
 		  // Remove quote marks from values
 		  postdata = postdata.replace(/\"/g,'');
-		  // alert(postdata);
+		  //alert(postdata);
 		  xmlhttp.onreadystatechange = function(){
-		    // alert(xmlhttp.responseText);
+		    //alert(xmlhttp.responseText);
 		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      // Data has been posted successfully, so show the first or next challenge insertion form.
+		      var errormsgpattern = new RegExp("[eE]rror");
+		      if(errormsgpattern.test(xmlhttp.responseText)){
+			opresdiv = document.getElementById('opres');
+			if(opresdiv){
+			  opresdiv.style = "";
+			  opresdiv.innerHTML = "<font color='#FF0000'>" + xmlhttp.responseText  + "</font>";
+			  return (false);
+			}
+		      }
 		      var thediv=document.getElementById('createtestdiv');
 		      thediv.style.display = "";
 		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
@@ -395,6 +427,61 @@
 		  
 		}
 
+
+		function showuserview(challengeid, testid, testlinkid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  try{
+		    postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  }
+		  catch(err){
+		    try{
+		      postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.createtestform.csrfmiddlewaretoken.value;
+		    }
+		    catch(err1){
+		      try{
+			postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value;
+		      }
+		      catch(err2){
+			try{
+			  postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.challengeform.csrfmiddlewaretoken.value;
+			}
+			catch(err3){
+			  postata = postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=";
+			}
+		      }
+		    }
+		  }
+		  //alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+		    alert(xmlhttp.responseText);
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      var themaindiv = null;
+		      try{
+		        themaindiv = document.getElementById('maincontainer');
+		      }
+		      catch(err1){
+			try{
+			  themaindiv = document.getElementById('createtestdiv');
+			}
+			catch(err2){
+			  // Write an error message to inform the user that the page hasn't loaded entirely.
+			}
+		      }
+		      themaindiv.style = "";
+    		      themaindiv.innerHTML = xmlhttp.responseText;
+		      return (true);
+  		    }
+  		  };
+  		  xmlhttp.open("POST", '{{ showuserviewurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
 		// Function to delete a challenge from the challenges 
 		// list screen
 		function deletechallenge(challengeid, challengestatement, test_id){
@@ -442,6 +529,9 @@
 		    var numchallenges = 0;
 		    var chkchallengepattern = new RegExp("^chk_(\\d+)$");
 		    var challengeids = "";
+		    delworkstat = document.getElementById('delworkstatus');
+		    delworkstat.style = "";
+		    delworkstat.innerHTML = "<img src='static/images/loading_small.gif'>";
 		    for(var ctr=0; ctr < document.frmedittest.elements.length; ctr++){
 		      frmelement = document.frmedittest.elements[ctr];
 		      if(!chkchallengepattern.test(frmelement.name)){ // not a checkbox
@@ -466,9 +556,11 @@
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		        alert(xmlhttp.responseText);
+			delworkstat.style = "display:none";
+		        delworkstat.innerHTML = "";
   		      }
   		    };
-  		    xmlhttp.open("POST", '{{ deletechallengesurl }}', true); // Not an ajax call since we want to ensure that the  action has been successfully completed before taking any further steps.
+  		    xmlhttp.open("POST", '{{ deletechallengesurl }}', true);
   		    xmlhttp.send(postdata); // There! data POSTed.
 		  }
 		  showtestsummary(test_id);
@@ -479,17 +571,82 @@
 		// multiple challenges of a test. Available from a button
 		// ("Save Changes") on challenges list screen.
 		function savechanges(){
+		  var postdata = "";
+		  savworkstat = document.getElementById('savworkstatus');
+		  savworkstat.style = "";
+		  savworkstat.innerHTML = "<img src='static/images/loading_small.gif'>";
+		  challengescorepattern = new RegExp("^challengescore_(\\d+)$");
+		  challengedurationpattern = new RegExp("^challengeduration_(\\d+)$");
+		  for(var ctr=0; ctr < document.frmedittest.elements.length; ctr++){
+		      frmelement = document.frmedittest.elements[ctr];
+		      if(!challengescorepattern.test(frmelement.name) && !challengedurationpattern.test(frmelement.name)){
+		        continue;
+		      }
+		      if(challengescorepattern.test(frmelement.name) && frmelement.value.trim() == ""){
+			alert("Challenge score fields may not be empty. Please add a numeric score to the challenge before proceeding.");
+			frmelement.focus();
+			return (false);
+		      }
+		    postdata = postdata + frmelement.name + "=" +  frmelement.value + "&";
+		  } // for loop ends here
+		  postdata = postdata + "csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      opresdiv = document.getElementById('opres');
+		      opresdiv.style.display = "";
+		      opresdiv.innerHTML = "<font color='#0000BB' size=-1>" + xmlhttp.responseText + "</font>";
+		      savworkstat.style = "display:none";
+		      savworkstat.innerHTML = "";
+		      //showtestsummary(test_id);
+  		    }
+  		  };
+  		  xmlhttp.open("POST", '{{ savechangesurl }}', true);
+  		  xmlhttp.send(postdata);
+		  return true;
 		}
 
 		// Function to initiate addition of challenge from the
 		// challenges list screen.
 		function addchallenges(testid){
+		  // Create a POST request with the testId as the only param and send it to 'addmoreurl'.
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      var publishedregex = new RegExp("published");
+		      if(publishedregex.test(xmlhttp.responseText)){
+		        opresdiv = document.getElementById('opres');
+		        opresdiv.style.display = "";
+		        opresdiv.innerHTML = xmlhttp.responseText;
+		        return (false);
+		      }
+		      var thediv=document.getElementById('createtestdiv');
+		      thediv.style.display = "";
+		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      return(false);
+  		    }
+  		  };
+		  postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  xmlhttp.open("POST", '{{ addmoreurl }}', true);
+  		  xmlhttp.send(postdata);
 		}
 
 		// Validate the data entered by the user in the challenge
 		// creation form.
 		function validatechallengedata(){
-		  numericpattern = new RegExp("^\\d+$");
+		  numericpattern = new RegExp("^[\\d\.]*$");
 		  // Challenge statement can't be empty.
 		  if(document.challengeform.statement.value.trim() == ""){
 		    alert("Challenge statement can't be empty.");
@@ -503,6 +660,11 @@
 		      document.challengeform.challengescore.value = "";
 		      document.challengeform.challengescore.focus();
 		      return false;
+		    }
+		    if(document.challengeform.challengescore.value == ""){
+		      alert("Challenge score cannot  be empty. Please put in a numeric value. You will be able to change it later if you wish.");
+		      document.challengeform.challengescore.focus();
+		      return (false);
 		    }
 		    // Just check sanity of the score field.
 		    if(parseInt(document.challengeform.challengescore.value.trim()) > parseInt(document.challengeform.totalscore.value)){
@@ -525,6 +687,11 @@
 		    document.challengeform.maxsizelines.value = "";
 		    document.challengeform.maxsizelines.focus();
 		    return false;
+		  }
+		  // If 'challengedurationseconds' doesn't contain any numeric
+		  // entity, then put 0 in it. Saves some trouble...
+		  if(document.challengeform.challengedurationseconds.value.trim() == ""){
+		    document.challengeform.challengedurationseconds.value = "0";
 		  }
 		  // Max time limit for a challenge should have a value less
 		  // than max time available for the entire test. Skipping
@@ -692,8 +859,110 @@
 		  return true;
 		}
 
-		// Opens the test metadata edit screen.
-		function edittest(testid){
+		// Opens the test metadata edit screen for the test whose ID
+		// is passed  in as argument.
+		function edittest(testid, userid){
+		  var xmlhttp;
+		  postdata = 'testid=' + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+  		  // Register the handler
+  		  xmlhttp.onreadystatechange = function(){
+		  //alert(xmlhttp.responseText);
+  		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    var publishedregex = new RegExp("published");
+		    if(publishedregex.test(xmlhttp.responseText)){
+		      opresdiv = document.getElementById('opres');
+		      opresdiv.style.display = "";
+		      opresdiv.innerHTML = xmlhttp.responseText;
+		      return (false);
+		    }
+		    else{
+		      var thediv=document.getElementById('maincontainer');
+		      thediv.style.display = "";
+		      uid = userid;
+		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      return (false);
+		    }
+  		  }
+  		  };
+		  xmlhttp.open("POST", '{{ edittesturl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		function showeffectsprompt(firingelement){
+		  var exist_test_id = document.createtestform.exist_test_id.value;
+		  var csrfmiddlewaretoken = document.createtestform.csrfmiddlewaretoken.value;
+		  if(!exist_test_id || exist_test_id.trim() == ""){ // This is the test creation process, not test editing.
+		    return(false);
+		  }
+		  firedvalue = firingelement.value;
+		  if(firedvalue == '0'){ // checked on 'No'
+		    resp = confirm("You are trying to drop negative scoring from this test. This will automatically update the negative scores alloted to the challenges/questions (if any) of this test to 0. Are you sure you would like to continue?");
+		    if(!resp){
+		      firingelement.checked = false;
+		      negscoreradios = document.getElementsByName('negativescoring');
+		      for(var i=0;i < negscoreradios.length; i++){
+			if(negscoreradios[i].value == '1'){
+			  negscoreradios[i].checked = true;
+			}
+		      }
+		      return (false);
+		    }
+		    else{
+		      var xmlhttp;
+		      if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		      }
+  		      else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		      }
+		      postdata = "exist_test_id=" + exist_test_id + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+		      //alert(postdata);
+		      xmlhttp.onreadystatechange = function(){
+		        //alert(xmlhttp.responseText);
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		          alert(xmlhttp.responseText);
+			  return (true);
+  		        }
+  		      };
+		      xmlhttp.open("POST", '{{ clearnegativescoreurl }}', true);
+  		      xmlhttp.send(postdata);
+		    }
+		  }
+		}
+
+
+		function deletetest(test_id){
+		  resp = confirm("You are about to delete the entire test. This will remove the test along with all the challenges in it from our records permanently. You will not be able to access this test or its challenges in future. Do you want to continue?");
+		  if(resp){
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		      xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+		    postdata = "test_id=" + test_id + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			resdiv = document.getElementById('createtestdiv');
+			resdiv.style = "";
+			resdiv.innerHTML = xmlhttp.responseText;
+			return (true);
+  		      }
+  		      };
+		      xmlhttp.open("POST", '{{ deletetesturl }}', true);
+  		      xmlhttp.send(postdata);
+		  }
+		  else{
+		    return (false);
+		  }
 		}
 		</script>
 

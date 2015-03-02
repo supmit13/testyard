@@ -38,7 +38,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -152,8 +152,14 @@ def get_user_tests(request):
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
     tests_user_dict['addeditchallengeurl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_TEST_URL
+    tests_user_dict['edittesturl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_EXISTING_TEST_URL
     tests_user_dict['testsummaryurl'] = mysettings.TEST_SUMMARY_URL
     tests_user_dict['deletechallengesurl'] = skillutils.gethosturl(request) + "/" + mysettings.DELETE_CHALLENGE_URL
+    tests_user_dict['savechangesurl'] = skillutils.gethosturl(request) + "/" + mysettings.SAVE_CHANGES_URL
+    tests_user_dict['addmoreurl'] = skillutils.gethosturl(request) + "/" + addmoreurl
+    tests_user_dict['clearnegativescoreurl'] = skillutils.gethosturl(request) + "/" + clearnegativescoreurl
+    tests_user_dict['deletetesturl'] = skillutils.gethosturl(request) + "/" + deletetesturl
+    tests_user_dict['showuserviewurl'] = skillutils.gethosturl(request) + "/" + showuserviewurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     return  tests_user_dict
@@ -241,7 +247,7 @@ def create(request):
     # challenge counters separated by '#||#'.
     challengectr, challengestatement, challengetype, responsekey, imageurl, \
     additionalurl, timeframe, challengequality, mustrespond, challengescore, \
-    challengeoptions = "", "", "", "", "", "", "", "", "", "", []
+    challengeoptions, exist_test_id = "", "", "", "", "", "", "", "", "", "", [], None
     message, activedatemysql, publishdatemysql = "", "", ""
     # First get the testlinkid. If its value doesn't exist in DB, then create 
     # a new test. Otherwise, simply display the challenges of the existing test
@@ -308,6 +314,8 @@ def create(request):
         testlinkid = request.POST['testlinkid']
     if request.POST.has_key('csrfmiddlewaretoken'):
         csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
+    if request.POST.has_key('exist_test_id'):
+        exist_test_id = request.POST['exist_test_id']
     testqueryset = Test.objects.filter(testlinkid=testlinkid, creator=userobj) # Returns a Queryset object
     testobj = None
     if testqueryset.__len__() == 0: # This is a new test being created.
@@ -315,6 +323,8 @@ def create(request):
         testobj.createdate = datetime.datetime.now()
     else:
         testobj = testqueryset[0]
+        if exist_test_id and exist_test_id != "":
+            testobj = Test.objects.filter(id=exist_test_id)[0]
     testobj.testname = testname
     if testtopic == "Other": # Topic is custom, so testobj.topicname will be "".
         topic = Topic()
@@ -499,6 +509,8 @@ def create(request):
                     matchedgrpemails[matchedevalobj.groupmember10.emailid] = 1
                 break
             ctr += 1
+        #print matchedgrpemails.keys().__len__()
+        #print evalemailsdict.keys().__len__()
         if matchedgrpemails.keys().__len__() == evalemailsdict.keys().__len__():
             for matchemail in matchedgrpemails.keys():
                 if not evalemailsdict.has_key(matchemail):
@@ -512,13 +524,11 @@ def create(request):
     if multipleattemptsallowed:
         testobj.maxattemptscount = maxattemptscount
         testobj.attemptsinterval = attemptsinterval
-        if attemptsintervalunit == 'h':
-            testobj.attemptsinterval = int(attemptsinterval) * 3600
-        elif attemptsintervalunit == 'm':
-            testobj.attemptsinterval = int(attemptsinterval) * 60
+        testobj.attemptsintervalunit = attemptsintervalunit
     else:
         testobj.maxattemptscount = 1
         testobj.attemptsinterval = None
+        testobj.attemptsintervalunit = None
     testobj.randomsequencing = randomsequencing
     testobj.multimediareqd = multimediareqd
     testobj.progenv = None
@@ -528,6 +538,10 @@ def create(request):
         testobj.scope = 'private' # The default value
     else:
         testobj.scope = testscope
+    if negativescoring and negativescoring != '0':
+        testobj.negativescoreallowed = True
+    else:
+        testobj.negativescoreallowed = False
     testobj.save()
     if request.POST.has_key('lastchallengectr'):
         lastchallengectr = request.POST['lastchallengectr']
@@ -540,7 +554,7 @@ def create(request):
 
 
 # Note: The 'challengedurationseconds' value being passed into this function is in seconds.
-def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, challengedurationseconds, negativescoring=0):
+def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, challengedurationseconds, negativescoring=False):
     totalchallenges = testobj.challengecount
     testobj.status = False # Set this to false since we are editing a challenge
     testlinkid = testobj.testlinkid
@@ -648,7 +662,7 @@ def edit(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore) = ("", False, False, 0, "", "", False, "", False)
+    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore) = ("", False, False, 0, "", "", 0, "", False)
     # Retrieve challenge data and create challenge object...
     challengeobj = Challenge()
     testobj = None
@@ -696,12 +710,15 @@ def edit(request):
         challengenumbersstr = request.POST['challengenumbersstr']
     if request.POST.has_key('csrfmiddlewaretoken'):
         csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
-    if request.POST.has_key('negativescoring'):
-        negativescoring = request.POST['negativescoring']
+    if request.POST.has_key('negativescore'):
+        negativescoring = request.POST['negativescore']
+        if negativescoring == "":
+            negativescoring = 0
+        challengeobj.negativescore = negativescoring
     if request.POST.has_key('challengescore'):
         challengeobj.challengescore = request.POST['challengescore']
-    if request.POST.has_key('negativescore'):
-        challengeobj.negativescore = request.POST['negativescore']
+    if not challengeobj.challengescore or challengeobj.challengescore == "":
+        challengeobj.challengescore = 0
     if request.FILES.has_key('mediafile'):
         mediafilename = request.FILES['mediafile'].name.split(".")[0]
         username = userobj.displayname
@@ -750,8 +767,10 @@ def edit(request):
     elif challengeobj.challengetype == 'MULT' and request.POST.has_key('responsekey') or request.POST.has_key('responsekey[]'):
         if oneormore == "no": # Only a single option will be correct
             challengeobj.responsekey = request.POST['responsekey']
+            challengeobj.oneormore = False
         elif oneormore == "yes": # Multiple options may be checked
             responses = request.POST.getlist('responsekey[]')
+            challengeobj.oneormore = True
             challengeobj.responsekey = '#||#'.join(responses)
     # ... and finally save the challenge object.
     challengeobj.save()
@@ -766,7 +785,7 @@ def edit(request):
     for chlng in savedchallengesqset:
         savedchallengesscore += chlng.challengescore
     statusmessage = "<font color='#0000AA'>Number of Challenges framed:<b>%s</b><br>Total Number of Challenges in the test: <b>%s</b><br>Score accounted for: <b>%s</b><br>Total Score: <b>%s</b></font><br>"%(savedchallengescount.__str__(), totalchallengescount.__str__(), savedchallengesscore.__str__(), testobj.maxscore.__str__())
-    editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(negativescoring))
+    editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(testobj.negativescoreallowed))
     return HttpResponse(statusmessage + editchallengehtml)
     
 
@@ -846,6 +865,7 @@ def testsummary(request):
         tests_summary_dict['challenges'].append(challenge)
     tests_summary_dict['testname'] = testobj.testname
     tests_summary_dict['test_id'] = testobj.id
+    tests_summary_dict['usrid'] = userobj.id
     tmpl = get_template("tests/test_summary.html")
     tests_summary_dict.update(csrf(request))
     cxt = Context(tests_summary_dict)
@@ -855,11 +875,33 @@ def testsummary(request):
     return HttpResponse(testsummaryhtml)
 
 
+# Function to determine if a test is editable or not.
+def iseditable(testobj):
+    curdatetime = datetime.datetime.now()
+    publishdate = testobj.publishdate.__str__()
+    pubdateparts = publishdate.split(" ")
+    pubdate = pubdateparts[0]
+    pubtime = pubdateparts[1]
+    pubyyyy, pubmon, pubdd = pubdate.split("-")
+    pubhhmmss = pubtime.split(":")
+    pubhh = int(pubhhmmss[0])
+    pubmm = int(pubhhmmss[1])
+    #pubss = int(pubhhmmss[2])
+    publishdatetime = datetime.datetime(int(pubyyyy), int(pubmon), int(pubdd), pubhh, pubmm, 0)
+    if publishdatetime < curdatetime:
+        return None
+    else:
+        return 1
+
+
 """
 This view is responsible for handling all delete challenge requests.
 Delete challenge requests come from one of 2 javascript functions in
 test.html - 'deletechallenge()' to delete a single challenge and
 'deleteselected()' to delete multiple challenges at a single sweep.
+NOTE: To be implemented - Challenges may be deleted only before 
+publishdate of the test and only when the test is not active (activedate
+is in future).
 """
 @skillutils.is_session_valid
 @skillutils.session_location_match
@@ -868,8 +910,6 @@ def deletechallenges(request):
     message = ''
     if request.method != "POST": # Illegal bad request... 
         message = error_msg('1004')
-        # A logging mechanism may be used to track how many and from where
-        # such requests come and that may, sometimes, tell a curious story.
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
     sesscode = request.COOKIES['sessioncode']
@@ -889,8 +929,20 @@ def deletechallenges(request):
     challengeidlist = challenge_id.split("#||#")
     if numchallenges == 1:
         challengeidlist = [challengeidlist[0], ]
-    #elif numchallenges > 1:
-    #    challengeidlist.pop() # pop the last element as it is bound to be empty.
+    # Find the testobj that contains this challenge
+    testobj = None
+    try:
+        testobj = Challenge.objects.filter(id=challengeidlist[0])[0].test
+    except:
+        message = error_msg('1061')
+        return HttpResponse(message)
+    # Find if this test (or the challenges of the test) are editable...
+    # If the current  date is past the publishdate or the status of the test
+    # is active, then the test should not be made editable.
+    res = iseditable(testobj) and not testobj.status
+    if not res:
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
     challengesdeleted = []
     missingchidlist = []
     for chid in challengeidlist:
@@ -909,3 +961,465 @@ def deletechallenges(request):
     return response
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def savechanges(request):
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    challengeduration = {}
+    challengescore = {}
+    durationpattern = re.compile(r"^challengeduration_(\d+)$")
+    scorepattern = re.compile(r"^challengescore_(\d+)$")
+    challengeids = []
+    for ekey in request.POST.keys():
+        durationmatch = durationpattern.search(ekey)
+        scorematch = scorepattern.search(ekey)
+        if durationmatch:
+            challengeduration[durationmatch.groups()[0]] = request.POST[ekey]
+            challengeids.append(durationmatch.groups()[0])
+        elif scorematch:
+            challengescore[scorematch.groups()[0]] = request.POST[ekey]
+        else:
+            pass
+    nonexistentchallenges = []
+    #updatedchallenges = 0
+    testobj = None
+    try:
+        testobj = Challenge.objects.filter(id=challengeids[0])[0].test
+    except:
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1061')
+        return HttpResponse(message)
+    if not iseditable(testobj) or testobj.status:
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
+    for chid in challengeids:
+        try:
+            challenge = Challenge.objects.filter(id=chid)[0]
+        except:
+            nonexistentchallenges.append(chid)
+        challenge.challengescore = challengescore[chid]
+        if challenge.challengescore.strip() == "":
+            challenge.challengescore = 0
+        challenge.timeframe = challengeduration[chid]
+        if challenge.timeframe.strip() == "":
+            challenge.timeframe = testobj.duration
+        challenge.save()
+        #updatedchallenges += 1
+    message = "challenges were successfully updated. "
+    if nonexistentchallenges.__len__() > 0:
+        message += "The following challenges could not be found: "
+        message += ", ".join(nonexistentchallenges)
+    return HttpResponse(message)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def addmorechallenges(request):
+    testobj = None
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    # Create the test object from the test Id passed.
+    if not request.POST.has_key('testid'):
+        message = "<font color='#FF0000'>No Test Id found in request</font>";
+        return HttpResponse(message)
+    testid = request.POST['testid']
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    if not iseditable(testobj) or testobj.status:
+        message = "<font color='#FF0000' size=-1>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
+    # Get all challenges from the challenge table
+    challengeqset = Challenge.objects.filter(test=testobj)
+    lastchallengectr = 1
+    evendistribution = False
+    challengeduration = testobj.duration
+    negativescoring = 1 # We make it True by default  as we do not store what the user specified during test creation. Not storing it doesn't make any difference to the user.
+    if challengeqset.__len__() == 0:
+        message += _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeduration, int(negativescoring))
+        return HttpResponse(message)
+    else:
+        lastchallengectr = challengeqset.__len__()
+        evendistribution = False
+        challengeduration = challengeqset[0].timeframe
+        # We will set negativescoring to 1 as we can't be sure if the user wants to use it or not.
+        #negativescoring = challengeqset[0].negativescore
+        negativescoring = testobj.negativescoreallowed
+    message = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeduration, int(testobj.negativescoreallowed))
+    return HttpResponse(message)
+
+"""
+The following view handles the requests for editing existing tests.
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def editexistingtest(request):
+    testobj = None
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    # Create the test object from the test Id passed.
+    if not request.POST.has_key('testid'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1059');
+        return HttpResponse(message)
+    testid = request.POST['testid']
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    if not testobj: #  If we still have a null object (for whatever reason), inform the user that the operation has failed.
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1058')
+        return HttpResponse(message)
+    if not iseditable(testobj) or testobj.status:
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
+    create_test_dict = {}
+    create_test_dict['testname'] = testobj.testname
+    testtype = testobj.testtype
+    """
+    create_test_dict['testtypes'] = ""
+    for ttcode in mysettings.TEST_TYPES.keys():
+        ttcodeval = ttcode.replace(" ", "__")
+        if ttcode == testtype:
+            create_test_dict['testtypes'] += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+        else:
+            create_test_dict['testtypes'] += "<option value=&quot;%s&quot;>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+    """
+    create_test_dict['testtypesvalue'] = testtype
+    ruleset = testobj.ruleset
+    rules = ruleset.split("#||#")
+    create_test_dict['testrules'] = ""
+    for trule in mysettings.RULES_DICT.keys():
+        if trule in rules:
+            create_test_dict['testrules'] += "<option value=&quot;%s&quot; selected>%s</option>"%(trule, mysettings.RULES_DICT[trule])
+        else:
+            create_test_dict['testrules'] += "<option value=&quot;%s&quot;>%s</option>"%(trule, mysettings.RULES_DICT[trule])
+    create_test_dict['topic'] = testobj.topic
+    testtopicname = testobj.topicname
+    create_test_dict['testtopics'] = ""
+    for ttopics in mysettings.TEST_TOPICS:
+        ttopicsval = ttopics.replace(" ", "__")
+        if testtopicname == ttopics:
+            create_test_dict['testtopics'] += "<option value=&quot;%s&quot; selected>%s</option>"%(ttopicsval, ttopics)
+        else:
+            create_test_dict['testtopics'] += "<option value=&quot;%s&quot;>%s</option>"%(ttopicsval, ttopics)
+        # Get topics created in the past by this user
+    usertopics = Topic.objects.filter(user=userobj, isactive=True)
+    for topic in usertopics:
+        topicname = topic.topicname.replace(" ", "__")
+        if testtopicname == topic.topicname:
+            create_test_dict['testtopics'] += "<option value=&quot;%s&quot; selected>%s</option>"%(topicname, topic.topicname)
+        else:
+            create_test_dict['testtopics'] += "<option value=&quot;%s&quot;>%s</option>"%(topicname, topic.topicname)
+    create_test_dict['totalscore'] = testobj.maxscore
+    create_test_dict['evendistribution'] = 1 # Need to find from the existing challenges as to what its value should be.
+    challengeqset = Challenge.objects.filter(test=testobj)
+    prevchalscore = -1
+    for challenge in challengeqset:
+        if challenge.challengescore != prevchalscore and  prevchalscore != -1:
+            create_test_dict['evendistribution'] = 0
+            break
+        prevchalscore = challenge.challengescore
+    create_test_dict['negativescoring'] = testobj.negativescoreallowed
+    create_test_dict['passscore'] = testobj.passscore
+    if not create_test_dict['passscore']:
+        create_test_dict['passscore'] = ""
+    create_test_dict['testduration'] = testobj.duration
+    create_test_dict['testdurationunit'] = "s"
+    testduration_minute = int(testobj.duration)/60
+    if testduration_minute > 0:
+        create_test_dict['testduration'] = testduration_minute
+        create_test_dict['testdurationunit'] = "m"
+    # Randomly pick up a Challenge object for this test
+    challengeobjectqset = Challenge.objects.filter(test=testobj)
+    if challengeobjectqset.__len__() == 0: #there are no challenge objects for this test
+        create_test_dict['challengeduration'] = create_test_dict['testduration']  # so set the time duration of the entire test for this challenge - a bit of arbitrary decision.
+        create_test_dict['challengedurationunit'] = create_test_dict['testdurationunit']
+    challengeobject = challengeobjectqset[0]
+    create_test_dict['challengeduration'] = challengeobject.timeframe
+    create_test_dict['challengedurationunit'] = 's'
+    # Done with duration calculations...
+    create_test_dict['grpname'] = testobj.evaluator
+    evalobj = Evaluator.objects.filter(evalgroupname=testobj.evaluator)[0]
+    create_test_dict['evaluators'] = ""
+    if evalobj.groupmember1 and evalobj.groupmember1.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember1.emailid + ","
+    if evalobj.groupmember2 and evalobj.groupmember2.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember2.emailid + ","
+    if evalobj.groupmember3 and evalobj.groupmember3.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember3.emailid + ","
+    if evalobj.groupmember4 and evalobj.groupmember4.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember4.emailid + ","
+    if evalobj.groupmember5 and evalobj.groupmember5.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember5.emailid + ","
+    if evalobj.groupmember6 and evalobj.groupmember6.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember6.emailid + ","
+    if evalobj.groupmember7 and evalobj.groupmember7.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember7.emailid + ","
+    if evalobj.groupmember8 and evalobj.groupmember8.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember8.emailid + ","
+    if evalobj.groupmember9 and evalobj.groupmember9.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember9.emailid + ","
+    if evalobj.groupmember10 and evalobj.groupmember10.emailid != "":
+        create_test_dict['evaluators'] += evalobj.groupmember10.emailid + ","
+    create_test_dict['creatoremail'] = User.objects.filter(id=testobj.creator_id)[0].emailid + "," + create_test_dict['evaluators'] 
+    # The variable name 'creatoremail' (above) is very misleading, but since I 
+    # had been using it since earlier and don't want to disturb the stable
+    # code, I am continuing with its usage. Note that the 'creatoremail'
+    # actually holds the comma separated email ids of all evaluators as 
+    # well as the email id of the creator.
+    create_test_dict['creatoremail'] = re.sub(re.compile(r",\s*$"), "", create_test_dict['creatoremail']) # Removes all trailing comma's
+    publishdatetime = testobj.publishdate.__str__()
+    publishdateparts = publishdatetime.split(" ")
+    publishdate, publishtime = publishdateparts[0], publishdateparts[1]
+    publishyyyy, publishmon, publishday = publishdate.split("-")
+    publishmon = mysettings.REV_MONTHS_DICT[publishmon]
+    create_test_dict['publishdate'] = publishday + "-" + publishmon + "-" + publishyyyy
+    activationdate = testobj.activationdate.__str__()
+    activationdatetime = activationdate.split(" ")
+    activationdatepart, activationtimepart = activationdatetime[0], activationdatetime[1]
+    activationdateyyyy, activationdatemon, activationdateday = activationdatepart.split("-")
+    activationdatemon = mysettings.REV_MONTHS_DICT[activationdatemon]
+    create_test_dict['activedate'] = activationdateday + "-" + activationdatemon + "-" + activationdateyyyy
+    skilltarget = testobj.quality
+    create_test_dict['skilltarget'] = ""
+    for skillcode in mysettings.SKILL_QUALITY.keys():
+        if skillcode == skilltarget:
+            create_test_dict['skilltarget'] += "<option value=&quot;%s&quot; selected>%s</option>"%(skillcode, mysettings.SKILL_QUALITY[skillcode])
+        else:
+            create_test_dict['skilltarget'] += "<option value=&quot;%s&quot;>%s</option>"%(skillcode, mysettings.SKILL_QUALITY[skillcode])
+    testscope = testobj.scope
+    create_test_dict['testscope'] = ""
+    for tscope in mysettings.TEST_SCOPES:
+        if tscope == testscope:
+            create_test_dict['testscope'] += "<option value=&quot;%s&quot; selected>%s</option>"%(tscope, tscope)
+        else:
+            create_test_dict['testscope'] += "<option value=&quot;%s&quot;>%s</option>"%(tscope, tscope)
+    answeringlanguages = testobj.allowedlanguages
+    chosenlanguages = answeringlanguages.split('#||#')
+    create_test_dict['answeringlanguage'] = ""
+    for alang in mysettings.ANSWER_LANG_DICT.keys():
+        if alang in chosenlanguages:
+            create_test_dict['answeringlanguage'] += "<option value=&quot;%s&quot; selected>%s</option>"%(alang, mysettings.ANSWER_LANG_DICT[alang])
+        else:
+            create_test_dict['answeringlanguage'] += "<option value=&quot;%s&quot;>%s</option>"%(alang, mysettings.ANSWER_LANG_DICT[alang])
+    testprogenv = testobj.progenv
+    create_test_dict['progenv'] = ""
+    if not testprogenv:
+        create_test_dict['progenv'] += "<option value=&quot;0&quot; selected>None</option>"
+        for proglang in mysettings.COMPILER_LOCATIONS.keys():
+            create_test_dict['progenv'] += "<option value=&quot;%s&quot;>Yes - %s</option>"%(proglang, proglang)
+    else:
+        create_test_dict['progenv'] += "<option value=&quot;0&quot;>None</option>"
+        for proglang in mysettings.COMPILER_LOCATIONS.keys():
+            if testprogenv == proglang:
+                create_test_dict['progenv'] += "<option value=&quot;%s&quot; selected>Yes - %s</option>"%(proglang, proglang)
+            else:
+                create_test_dict['progenv'] += "<option value=&quot;%s&quot;>Yes - %s</option>"%(proglang, proglang)
+    create_test_dict['multimediareqd'] = testobj.multimediareqd
+    create_test_dict['randomsequencing'] = testobj.randomsequencing
+    create_test_dict['multipleattemptsallowed'] = testobj.allowmultiattempts
+    create_test_dict['testlinkid'] = testobj.testlinkid
+    create_test_dict['maxattemptscount'] = testobj.maxattemptscount
+    create_test_dict['attemptsinterval'] = testobj.attemptsinterval
+    create_test_dict['attemptsintervalunit'] = testobj.attemptsintervalunit
+    create_test_dict['exist_test_id'] = testid
+    create_test_dict['numchallenges'] = testobj.challengecount
+    create_test_dict['createtesturl'] = skillutils.gethosturl(request) + '/' + mysettings.CREATE_TEST_URL
+    tmpl = get_template("tests/create_test_form.html")
+    create_test_dict.update(csrf(request))
+    cxt = Context(create_test_dict)
+    createtesthtml = tmpl.render(cxt)
+    createtesthtml = re.sub(re.compile(r'\\"'), "&quot;", createtesthtml)
+    #createtesthtml = re.sub(re.compile(r'"\s+\+\s+uid\s+\+\s+"'), userobj.id.__str__(), createtesthtml)
+    #createtesthtml = "var uid='" + userobj.id + "';" + createtesthtml
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        createtesthtml = createtesthtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(createtesthtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def clearnegativescoreurl(request):
+    testobj = None
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    # Create the test object from the test Id passed.
+    if not request.POST.has_key('exist_test_id'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1059');
+        return HttpResponse(message)
+    testid = request.POST['exist_test_id']
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    if not testobj: #  If we still have a null object (for whatever reason), inform the user that the operation has failed.
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1058')
+        return HttpResponse(message)
+    if not iseditable(testobj) or testobj.status:
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
+    # Now we are sure we have a valid Test object. Find all Challenges. But first, set 'negativescoreallowed' for the test object to False.
+    testobj.negativescoreallowed = False
+    allchallenges = Challenge.objects.filter(test=testobj)
+    if allchallenges.__len__() == 0: # There are no challenges in this test.
+        resp = "<font color='#0000BB' size=-1>Negative scoring has been disabled for this test.</font>"
+        return HttpResponse(resp)
+    for challenge in allchallenges:
+        challenge.negativescore = 0
+        challenge.save()
+    testobj.save()
+    resp = "<font color='#0000BB' size=-1>Negative scoring has been disabled for this test.</font>"
+    return HttpResponse(resp)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def deletetest(request):
+    testobj = None
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    # Create the test object from the test Id passed.
+    if not request.POST.has_key('test_id'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1059');
+        return HttpResponse(message)
+    testid = request.POST['test_id']
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    testname = testobj.testname
+    # Now we have the test_id of the test that we need to delete. So we fetch 
+    # all the challenges belonging to that test and delete them first. The we 
+    # delete the test and return a HttpResponse.
+    allchallenges = Challenge.objects.filter(test=testobj)
+    chcount = 0
+    for challenge in allchallenges:
+        challenge.delete() # Deleted challenge...
+        chcount += 1
+    # Now delete the test object
+    testobj.delete()
+    message = "<font color='#0000BB' size=-1>The test named '%s' containing %s challenges was successfully deleted.</font>"%(testname, chcount.__str__())
+    return HttpResponse(message)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showuserview(request):
+    testobj = None
+    challengeobj = None
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    # Create the test object from the test Id passed.
+    if not request.POST.has_key('testid'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1059');
+        return HttpResponse(message)
+    testid = request.POST['testid']
+    if not request.POST.has_key('challengeid'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1061');
+        return HttpResponse(message)
+    challengeid = request.POST['challengeid']
+    """
+    if not request.POST.has_key('testlinkid'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1062');
+        return HttpResponse(message)
+    testlinkid = request.POST['testlinkid']
+    """
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    try:
+        challengeobj = Challenge.objects.filter(id=challengeid)[0]
+    except:
+        message = "<font color='#FF0000'>Challenge with the specified Challenge Id (%s) was not found.</font>"%challengeid
+        return HttpResponse(message)
+    challenge_dict = {}
+    challengetype = challengeobj.challengetype
+    challengemedia = challengeobj.mediafile
+    challenge_dict['challengestatement'] = challengeobj.statement
+    challenge_dict['challengetype'] = challengetype
+    challenge_dict['challengemedia'] = challengemedia
+    if challengemedia:
+        username = userobj.displayname
+        challenge_dict['challengemedia'] = "media" + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + challengemedia
+    challenge_dict['oneormore'] = challengeobj.oneormore
+    challengeoptions = []	
+    if challengetype == 'MULT': # multiple choice type test
+        for ctr in range(8):
+            option = "option" + ctr.__str__()
+            if challengeobj.__dict__.has_key(option) and challengeobj.__dict__[option] is not None:
+                challengeoptions.append(challengeobj.__dict__[option])
+    else:
+        challengeoptions = None # Except for 'MULT' type tests,
+                                # challengeoptions do not have any significance.
+    challenge_dict['challengeoptions'] = challengeoptions
+    challengescore = challengeobj.challengescore
+    challengenegativescore = None
+    if testobj.negativescoreallowed:
+        challengenegativescore = challengeobj.negativescore
+    maxtimeallowed = challengeobj.timeframe
+    usermustrespond = challengeobj.mustrespond
+    challenge_dict['challengescore'] = challengescore
+    challenge_dict['challengenegativescore'] = challengenegativescore
+    challenge_dict['maxtimeallowed'] = maxtimeallowed
+    challenge_dict['usermustrespond'] = usermustrespond
+    tmpl = get_template("tests/challenge_user_view.html")
+    challenge_dict.update(csrf(request))
+    cxt = Context(challenge_dict)
+    challengehtml = tmpl.render(cxt)
+    return HttpResponse(challengehtml)
+    

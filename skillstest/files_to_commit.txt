@@ -421,7 +421,8 @@ Thu, 05 Feb 2015, 23:50 HRS (IST). * [Not Pushed Yet]
 13.skillstest/urls.py
 14.templates/tests/left_panel.html
 15.templates/tests/test_summary.html
-16.files_to_commit.txt																																										
+16.templates/tests/challenge_user_view.html
+17.files_to_commit.txt																																										
 							
 =====================================
 

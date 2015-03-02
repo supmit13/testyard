@@ -99,13 +99,14 @@ class Test(models.Model):
     duration = models.IntegerField(default=0, null=False, blank=False)
     allowedlanguages = models.CharField(max_length=200, default='enus') # see mysettings.ANSWER_LANG_DICT. If more than one language is allowed, then the language keys should be separated from each other by '#||#'
     challengecount = models.IntegerField(default=-1, null=False, blank=False)
-    activationdate = models.DateTimeField(auto_now=True)
+    activationdate = models.DateTimeField(null=False, blank=True)
     publishdate = models.DateTimeField(null=False, blank=True)
     status = models.BooleanField(default=True) # Determines if the 'Test' is being edited (or created).
     # 'User's may create a 'Test' over a period of time, adding questions every now and then.
     allowmultiattempts = models.BooleanField(default=False)
     maxattemptscount = models.IntegerField(default=1, blank=False) # If allowmultiattempts is False, then maxattemptscount = 1
-    attemptsinterval = models.IntegerField(default=None, null=True, blank=False);
+    attemptsinterval = models.IntegerField(default=None, null=True, blank=False)
+    attemptsintervalunit = models.CharField(max_length=1, choices=(('h', 'hour'), ('m', 'minute'), ('d', 'day'), ('M', 'month'), ('Y', 'year')), default=None)
     randomsequencing = models.BooleanField(default=True, null=False, blank=False)
     multimediareqd = models.BooleanField(default=False, null=False, blank=False)
     testlinkid = models.CharField(max_length=200, null=False, blank=False)
@@ -113,6 +114,7 @@ class Test(models.Model):
     scope = models.CharField(max_length=50, null=False, default='public')
     quality = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()), default='INT') # Determines the class of users the 'Test' is for.
     # Proficient/Beginner/Intermediate etc. Refer to mysettings.SKILL_QUALITY
+    negativescoreallowed = models.NullBooleanField(default=False, null=True, blank=False)
 
     class Meta:
         verbose_name = "Tests Table"
@@ -187,7 +189,7 @@ class Challenge(models.Model):
     # Otherwise, any positive floating point value specifies the negative score if the user's response is wrong.
     mustrespond = models.BooleanField(default=False) # Specifies if the 'User' must respond to  the challenge.
     # If this is True and the User doesn't  respond to the Challenge, it is considered as wrong response, and
-    # hence open to negative marking (if negative marking is allowed for that Challenge).
+    # hence open to negative marking (if negative marking is enforced for that Challenge).
     responsekey = models.TextField(blank=False, null=True, default=None) # The correct answer statement. (Note: This is the statement, not the index associated with it).
     mediafile = models.CharField(max_length=100, null=True, blank=True, help_text='File name of the image/audio/other multimedia file associated with the challenge')
     additionalurl = models.URLField(null=True, blank=True, help_text='URL of any other material associated with the challenge')
@@ -198,6 +200,7 @@ class Challenge(models.Model):
     subtopic = models.ForeignKey(Subtopic, null=True, blank=False) # Specifies the subtopic to which this Challenge belongs.
     challengequality = models.CharField(max_length=3, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()))
     testlinkid = models.CharField(max_length=200, null=False, blank=False)
+    oneormore = models.NullBooleanField(default=True)
 
     class Meta:
         verbose_name = "Challenge Table"
