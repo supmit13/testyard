@@ -1388,6 +1388,8 @@ def showuserview(request):
         message = "<font color='#FF0000'>Challenge with the specified Challenge Id (%s) was not found.</font>"%challengeid
         return HttpResponse(message)
     challenge_dict = {}
+    challenge_dict['testid'] = testid
+    challenge_dict['challengeid'] = challengeid
     challengetype = challengeobj.challengetype
     challengemedia = challengeobj.mediafile
     challenge_dict['challengestatement'] = challengeobj.statement
@@ -1402,7 +1404,8 @@ def showuserview(request):
         for ctr in range(8):
             option = "option" + ctr.__str__()
             if challengeobj.__dict__.has_key(option) and challengeobj.__dict__[option] is not None:
-                challengeoptions.append(challengeobj.__dict__[option])
+                if challengeobj.__dict__[option] != "":
+                    challengeoptions.append(challengeobj.__dict__[option])
     else:
         challengeoptions = None # Except for 'MULT' type tests,
                                 # challengeoptions do not have any significance.
