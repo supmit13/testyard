@@ -110,6 +110,7 @@ PROFIMG_CHANGE_URL = "/skillstest/changeimg/"
 CLEAR_NEGATIVE_SCORE_URL = "skillstest/tests/clearnegscore/"
 DELETE_TEST_URL = "skillstest/tests/deletetest/"
 SHOW_USER_VIEW_URL = "skillstest/tests/challenge/showuserview/"
+EDIT_CHALLENGE_URL = "skillstest/tests/challenge/edit/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -135,6 +136,29 @@ HTML_ENTITIES_CHAR_MAP = { \
         '&#91;' : '[', \
         '&#93;' : ']', \
         '&#39;' : '"',\
+    }
+
+INV_HEXCODE_CHAR_MAP = { \
+        " " : '%20', \
+        "'" : '%27', \
+	'"' : '%22', \
+	'$' : '%24', \
+	'&' : '%26', \
+	'*' : '%2A', \
+	'+' : '%2B', \
+	'.' : '%2E', \
+	'/' : '%2F', \
+    }
+
+INV_HTML_ENTITIES_CHAR_MAP = { \
+	'<' : '&lt;', \
+	'>' : '&gt;', \
+	'&' : '&amp;', \
+	' ' : '&nbsp;', \
+	'"' : '&quot;', \
+	'[' : '&#91;', \
+	']' : '&#93;', \
+	'"' : '&#39;', \
     }
 
 EMAIL_PATTERN = re.compile("[\w\.]*\@[\w\.]*", re.MULTILINE|re.DOTALL)
@@ -172,4 +196,6 @@ NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 
 MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '05', 'JUN' : '06', 'JUL' : '07', 'AUG' : '08', 'SEP' : '09', 'OCT' : '10', 'NOV' : '11', 'DEC' : '12'}
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
+
+SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
 

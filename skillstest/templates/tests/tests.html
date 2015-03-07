@@ -3,6 +3,7 @@
 	<script src='http://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script> 
+	<script src="static/tinymce/tinymce.min.js"></script>
 	<script language='javascript'>
 	{{ assocevalgrps }}
 	var draggableevalgrps = function () {
@@ -423,13 +424,14 @@
 		}
 
 		// Javascript to update challenges
-		function editchallenge(challengeid){
-		  
+		function editchallenge(testid, challengeid){
+		  addchallenges(testid, challengeid);
 		}
 
 
 		function showuserview(challengeid, testid, testlinkid){
 		  var xmlhttp;
+		  var themaindiv;
 		  if (window.XMLHttpRequest){
 		    xmlhttp=new XMLHttpRequest();
 		  }
@@ -459,9 +461,8 @@
 		  }
 		  //alert(postdata);
 		  xmlhttp.onreadystatechange = function(){
-		    alert(xmlhttp.responseText);
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		      var themaindiv = null;
+		      //alert(xmlhttp.responseText);
 		      try{
 		        themaindiv = document.getElementById('maincontainer');
 		      }
@@ -469,8 +470,8 @@
 			try{
 			  themaindiv = document.getElementById('createtestdiv');
 			}
-			catch(err2){
-			  // Write an error message to inform the user that the page hasn't loaded entirely.
+			catch(err2){ 
+			// Write an error message to inform the user that the page hasn't loaded entirely.
 			}
 		      }
 		      themaindiv.style = "";
@@ -485,6 +486,7 @@
 		// Function to delete a challenge from the challenges 
 		// list screen
 		function deletechallenge(challengeid, challengestatement, test_id){
+		  challengestatement = challengestatement.replace(/%27/g, "'").replace(/%22/g, '"').replace(/%20/g, " ").replace(/%23/g, "#").replace(/%24/g, "$").replace(/%2A/g, "*").replace(/%2B/g, "+").replace(/%28/g, "(").replace(/%29/g,")");
 		  var resp = confirm("This action will permanently delete the challenge '" + challengestatement + "'. Do you want to continue?");
 		  if(!resp){
 		    return false;
@@ -614,8 +616,9 @@
 
 		// Function to initiate addition of challenge from the
 		// challenges list screen.
-		function addchallenges(testid){
+		function addchallenges(testid, challengeid){
 		  // Create a POST request with the testId as the only param and send it to 'addmoreurl'.
+		  challengeid = challengeid || null;
 		  var xmlhttp;
 		  if (window.XMLHttpRequest){
 		    xmlhttp=new XMLHttpRequest();
@@ -638,9 +641,28 @@
 		      return(false);
   		    }
   		  };
-		  postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
-		  xmlhttp.open("POST", '{{ addmoreurl }}', true);
-  		  xmlhttp.send(postdata);
+		  postdata = '';
+		  try{
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  }
+		  catch(err1){
+		    try{
+		      postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value;
+		    }
+		    catch(err2){
+		      alert("Operation failed: Probably the page did not load correctly.");
+		      return (false);
+		    }
+		  }
+		  if(challengeid){
+		    postdata += "&challengeid=" + challengeid;
+		    xmlhttp.open("POST", '{{ editchallengeurl }}', true);
+  		    xmlhttp.send(postdata);
+		  }
+		  else{
+		    xmlhttp.open("POST", '{{ addmoreurl }}', true);
+  		    xmlhttp.send(postdata);
+		  }
 		}
 
 		// Validate the data entered by the user in the challenge
@@ -863,7 +885,19 @@
 		// is passed  in as argument.
 		function edittest(testid, userid){
 		  var xmlhttp;
-		  postdata = 'testid=' + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  postdata = '';
+		  try{
+		    postdata = 'testid=' + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  }
+		  catch(err1){
+		    try{
+		      postdata = 'testid=' + testid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value;
+		    }
+		    catch(err2){
+		      alert("The correct form could not be found");
+		      return(false);
+		    }
+		  }
 		  if (window.XMLHttpRequest){
     		    xmlhttp=new XMLHttpRequest();
   		  }
@@ -937,7 +971,7 @@
 		  }
 		}
 
-
+		// I am freakin' mad to allow users to do this.
 		function deletetest(test_id){
 		  resp = confirm("You are about to delete the entire test. This will remove the test along with all the challenges in it from our records permanently. You will not be able to access this test or its challenges in future. Do you want to continue?");
 		  if(resp){
@@ -964,6 +998,69 @@
 		    return (false);
 		  }
 		}
+		
+		// Save changes mae to a challenge
+		function savechallengechanges(userid){
+		  savechallenge(userid);
+		}
+
+		// Function to display the previous challenge on the 'user view'
+		// screen. The sequence in which the challenges are inserted
+		// determine the sequence in which they are shown.
+		function showpreviouschallenge(testid, challengeid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid + "&challengeid=" + challengeid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value + "&trav=prev&testlinkid=" + document.frmuserview.testlinkid.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      resdiv = document.getElementById('maincontainer');
+		      resdiv.style = "";
+		      resdiv.innerHTML = xmlhttp.responseText;
+		      return (true);
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ showuserviewurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Function to display the next challenge on the 'user view'
+		// screen. The sequence in which the challenges are inserted
+		// determine the sequence in which they are shown.
+		function shownextchallenge(testid, challengeid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid + "&challengeid=" + challengeid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value + "&trav=next&testlinkid=" + document.frmuserview.testlinkid.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      resdiv = document.getElementById('maincontainer');
+		      resdiv.style = "";
+		      resdiv.innerHTML = xmlhttp.responseText;
+		      return (true);
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ showuserviewurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Function to initiate the process of copying a test. The
+		// actual process happens in the backend by a python function.
+		// This function just makes a XMLHTTP POST request to initiate
+		// the process. The response received by this function is
+		// the newly created test (copied) and it is populated in a
+		// div.
+		function copytest(testid){
+		}
+
 		</script>
 
 		<div class="post">

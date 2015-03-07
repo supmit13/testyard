@@ -38,7 +38,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj)
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -135,6 +135,8 @@ def get_user_tests(request):
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     tests_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     tests_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
+    tests_user_dict['testlist_asevaluator'] = testlist_asevaluator
+    tests_user_dict['testlist_ascandidate'] = testlist_ascandidate
     tests_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     tests_user_dict['displayname'] = userobj.displayname
     tests_user_dict['createlink'] = createlink
@@ -160,6 +162,7 @@ def get_user_tests(request):
     tests_user_dict['clearnegativescoreurl'] = skillutils.gethosturl(request) + "/" + clearnegativescoreurl
     tests_user_dict['deletetesturl'] = skillutils.gethosturl(request) + "/" + deletetesturl
     tests_user_dict['showuserviewurl'] = skillutils.gethosturl(request) + "/" + showuserviewurl
+    tests_user_dict['editchallengeurl'] = skillutils.gethosturl(request) + "/" + editchallengeurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     return  tests_user_dict
@@ -168,7 +171,7 @@ def get_user_tests(request):
 """
 This view will provide the following functionalities:
 Display a table of tests with latest first... These are all tests the user has created. This page will give the user
-# all access to all those tests in which she/he is a creator, evaluator or candidate. For tests in which  user is
+# access to all those tests in which she/he is a creator, evaluator or candidate. For tests in which  user is
 # creator or evaluator, she/he will be able to access the answer scripts of candidates who took those tests. We get
 all this data in dashboard too, but from here the user will be able to go into deeper details like exact questions
 attempted by a certain candidate, the exact choices/answers the candidate made and how much points/grades the user
@@ -204,10 +207,114 @@ def manage(request):
         # such requests come and that may, sometimes, tell a curious story.
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
     tests_user_dict = get_user_tests(request)
     inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Dashboard' page for the user.
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
+    testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()
+    testnames_created_list = testnames_created_list.sort()
+    testnames_created_dict = {}
+    for test_name in testnames_created_list:
+        try:
+            tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
+            test_topic = tobj.topicname
+            fullmarks = tobj.maxscore
+            passscore = tobj.passscore
+            publishdate = tobj.publishdate
+            tid = tobj.id
+            duration = tobj.duration
+            ruleset = tobj.ruleset
+            testtype = tobj.testtype
+            testquality = tobj.quality
+            teststandard = mysettings.SKILL_QUALITY[testquality]
+            status = tobj.status
+            progenv = tobj.progenv
+            negativescoring = tobj.negativescoreallowed
+            multipleattempts = tobj.allowmultiattempts
+            maxattemptscount = tobj.maxattemptscount
+            attemptsinterval = tobj.attemptsinterval
+            attemptsintervalunit = tobj.attemptsinterval
+            scope = tobj.scope
+            activationdate = tobj.activationdate
+            testurl = generatetesturl(tobj, userobj)
+            evalprofileurlsdict = {}
+            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evalprofileurlsdict]
+        except:
+            response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
+            return HttpResponse(response)
+    tests_user_dict['creator_tests_info'] = testnames_created_dict
+    testnames_evaluated_list = tests_user_dict['user_evaluator_creator_other_evaluators_dict'].keys()
+    testnames_evaluated_list = testnames_evaluated_list.sort()
+    testnames_evaluated_dict = {}
+    testlist_asevaluator = tests_user_dict['testlist_asevaluator']
+    for tobj in testlist_asevaluator:
+        try:
+            test_name = tobj.testname
+            test_topic = tobj.topicname
+            creatorname = tobj.creator.displayname
+            fullmarks = tobj.maxscore
+            passscore = tobj.passscore
+            publishdate = tobj.publishdate
+            tid = tobj.id
+            duration = tobj.duration
+            ruleset = tobj.ruleset
+            testtype = tobj.testtype
+            testquality = tobj.quality
+            teststandard = mysettings.SKILL_QUALITY[testquality]
+            status = tobj.status
+            progenv = tobj.progenv
+            negativescoring = tobj.negativescoreallowed
+            multipleattempts = tobj.allowmultiattempts
+            maxattemptscount = tobj.maxattemptscount
+            attemptsinterval = tobj.attemptsinterval
+            attemptsintervalunit = tobj.attemptsinterval
+            scope = tobj.scope
+            activationdate = tobj.activationdate
+            testurl = generatetesturl(tobj, userobj)
+            evalprofileurlsdict = {}
+            testnames_evaluated_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evalprofileurlsdict]
+        except:
+            response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
+            return HttpResponse(response)
+    tests_user_dict['evaluator_tests_info'] = testnames_evaluated_dict
+    testnames_candidature_list = tests_user_dict['user_candidate_other_creator_evaluator_dict'].keys()
+    testnames_candidature_list = testnames_candidature_list.sort()
+    testnames_candidature_dict = {}
+    testlist_ascandidate = tests_user_dict['testlist_ascandidate']
+    for tobj in testlist_ascandidate:
+        try:
+            test_name = tobj.testname
+            test_topic = tobj.topicname
+            creatorname = tobj.creator.displayname
+            fullmarks = tobj.maxscore
+            passscore = tobj.passscore
+            publishdate = tobj.publishdate
+            tid = tobj.id
+            duration = tobj.duration
+            ruleset = tobj.ruleset
+            testtype = tobj.testtype
+            testquality = tobj.quality
+            teststandard = mysettings.SKILL_QUALITY[testquality]
+            status = tobj.status
+            progenv = tobj.progenv
+            negativescoring = tobj.negativescoreallowed
+            multipleattempts = tobj.allowmultiattempts
+            maxattemptscount = tobj.maxattemptscount
+            attemptsinterval = tobj.attemptsinterval
+            attemptsintervalunit = tobj.attemptsinterval
+            scope = tobj.scope
+            activationdate = tobj.activationdate
+            testurl = generatetesturl(tobj, userobj)
+            evalprofileurlsdict = {}
+            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evalprofileurlsdict]
+        except:
+            response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
+            return HttpResponse(response)
+    tests_user_dict['candidate_tests_info'] = testnames_candidature_dict
     # Now create and render the template here
     tmpl = get_template("tests/tests.html")
     tests_user_dict.update(csrf(request))
@@ -664,7 +771,11 @@ def edit(request):
     userobj = sessionobj[0].user
     (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore) = ("", False, False, 0, "", "", 0, "", False)
     # Retrieve challenge data and create challenge object...
+    editoperationflag = False
     challengeobj = Challenge()
+    if request.POST.has_key('challengeid'):
+        challengeobj = Challenge.objects.filter(id=request.POST['challengeid'])[0]
+        editoperationflag = True
     testobj = None
     if request.POST.has_key('testlinkid'):
         challengeobj.testlinkid = request.POST['testlinkid']
@@ -740,7 +851,7 @@ def edit(request):
     if request.POST.has_key('skillquality'):
         challengeobj.challengequality = request.POST['skillquality']
     if request.POST.has_key('extresourceurl'):
-        challengeobj.additionalurls = request.POST['extresourceurl']
+        challengeobj.additionalurl = request.POST['extresourceurl']
     # Now let us get the available options for 'MULT' type test
     if challengeobj.challengetype == 'MULT':
         fchoices = lambda(x):re.search(re.compile("^choice(\d+)$", re.IGNORECASE), x)
@@ -785,6 +896,8 @@ def edit(request):
     for chlng in savedchallengesqset:
         savedchallengesscore += chlng.challengescore
     statusmessage = "<font color='#0000AA'>Number of Challenges framed:<b>%s</b><br>Total Number of Challenges in the test: <b>%s</b><br>Score accounted for: <b>%s</b><br>Total Score: <b>%s</b></font><br>"%(savedchallengescount.__str__(), totalchallengescount.__str__(), savedchallengesscore.__str__(), testobj.maxscore.__str__())
+    if editoperationflag == True:
+        statusmessage = "<font color='#0000BB'><b><i>The changes were saved successfully</i></b></font>"
     editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(testobj.negativescoreallowed))
     return HttpResponse(statusmessage + editchallengehtml)
     
@@ -861,6 +974,10 @@ def testsummary(request):
         else:
             challenge['mediafileshortname'] = chlng.mediafile[:8] + " ..."
         challenge['statement'] = chlng.statement
+        for hexkey in mysettings.INV_HEXCODE_CHAR_MAP.keys():
+            if hexkey == ' ':
+                continue
+            challenge['statement'] = challenge['statement'].replace(hexkey, mysettings.INV_HEXCODE_CHAR_MAP[hexkey])
         tests_summary_dict['challenge_links_list'].append((chlng.id, chlng.statement[:20] + " ...", testobj.id, testlinkid))
         tests_summary_dict['challenges'].append(challenge)
     tests_summary_dict['testname'] = testobj.testname
@@ -953,6 +1070,8 @@ def deletechallenges(request):
         except:
             missingchidlist.append(chid)
     message = "The challenges/questions identified by the following Ids have been deleted: " + ", ".join(challengesdeleted) + ". "
+    testobj.challengecount = testobj.challengecount - challengesdeleted.__len__()
+    testobj.save()
     if missingchidlist.__len__() > 0:
         message += "The following challenge Ids could not be found: " + ", ".join(missingchidlist) + ". "
     if challengesdeleted.__len__() == numchallenges:
@@ -1157,13 +1276,16 @@ def editexistingtest(request):
         create_test_dict['testduration'] = testduration_minute
         create_test_dict['testdurationunit'] = "m"
     # Randomly pick up a Challenge object for this test
+    challengeobject = None
     challengeobjectqset = Challenge.objects.filter(test=testobj)
     if challengeobjectqset.__len__() == 0: #there are no challenge objects for this test
         create_test_dict['challengeduration'] = create_test_dict['testduration']  # so set the time duration of the entire test for this challenge - a bit of arbitrary decision.
         create_test_dict['challengedurationunit'] = create_test_dict['testdurationunit']
-    challengeobject = challengeobjectqset[0]
-    create_test_dict['challengeduration'] = challengeobject.timeframe
-    create_test_dict['challengedurationunit'] = 's'
+    else:
+        challengeobject = challengeobjectqset[0]
+    if challengeobject:
+        create_test_dict['challengeduration'] = challengeobject.timeframe
+        create_test_dict['challengedurationunit'] = 's'
     # Done with duration calculations...
     create_test_dict['grpname'] = testobj.evaluator
     evalobj = Evaluator.objects.filter(evalgroupname=testobj.evaluator)[0]
@@ -1332,6 +1454,9 @@ def deletetest(request):
     except:
         message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
         return HttpResponse(message)
+    if testobj and (not iseditable(testobj) or testobj.status):
+        message = "<font color='#FF0000' size=-1>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
     testname = testobj.testname
     # Now we have the test_id of the test that we need to delete. So we fetch 
     # all the challenges belonging to that test and delete them first. The we 
@@ -1388,13 +1513,76 @@ def showuserview(request):
         message = "<font color='#FF0000'>Challenge with the specified Challenge Id (%s) was not found.</font>"%challengeid
         return HttpResponse(message)
     challenge_dict = {}
+    # Is the test editable?
+    challenge_dict['editable'] = 1
+    if not iseditable(testobj) or testobj.status:
+        challenge_dict['editable'] = 0;
+    # We need to find whether we can have both 'previous' and 'next' buttons or
+    # only one of them
+    allchallenges = Challenge.objects.filter(test=testobj).order_by('id')
+    # But before doing that we need to see if we got a 'trav' argument. If so
+    # we need to alter the challenge Id accordingly.
+    if request.POST.has_key('trav'):
+        direction = request.POST['trav']
+        if direction.lower() == 'prev': # Find the challenge which was added
+            #just prior to the challenge identified by the current challenge Id.
+            previd = -1
+            for chlng in allchallenges:
+                if str(chlng.id) == challengeid:
+                    if previd == -1: # The challengeid we have is the first one. So do nothing.
+                        break
+                    else:
+                        challengeid = previd
+                        challengeobj = Challenge.objects.filter(id=challengeid)[0]
+                        break
+                previd = chlng.id
+        elif direction.lower() == 'next': # Find the next challenge
+            nextctr = 0
+            for chlng in allchallenges:
+                if str(chlng.id) == challengeid:
+                    if nextctr == allchallenges.__len__() - 1: # This is the last challenge, no next one. So just break out.
+                        break
+                    else:
+                        challengeid = allchallenges[nextctr + 1].id
+                        challengeobj = Challenge.objects.filter(id=challengeid)[0]
+                        break
+                nextctr += 1
+        else: # Unrecognized 'trav' value, so no action need be taken.
+            pass
+    # By default we have both of them.
+    challenge_dict['previous'] = 1
+    challenge_dict['next'] = 1
+    chctr = 0
+    for chlng in allchallenges:
+        if chlng.id == challengeobj.id:
+            break
+        chctr += 1
+    if chctr == 0: # This is the first challenge, so no 'previous' button.
+        challenge_dict['previous'] = 0
+    if chctr == allchallenges.__len__() - 1: # Last challenge, so no 'next' button.
+        challenge_dict['next'] = 0
     challenge_dict['testid'] = testid
     challenge_dict['challengeid'] = challengeid
     challengetype = challengeobj.challengetype
     challengemedia = challengeobj.mediafile
     challenge_dict['challengestatement'] = challengeobj.statement
+    challenge_dict['challengetypedesc'] = ''
+    if challengetype == 'MULT':
+        challenge_dict['challengetypedesc'] = 'Multiple Choice'
+    elif challengetype == 'FILB':
+        challenge_dict['challengetypedesc'] = 'Fill up the Blanks'
+    elif challengetype == 'SUBJ':
+        challenge_dict['challengetypedesc'] = 'Subjective Type'
+    elif challengetype == 'CODN':
+        challenge_dict['challengetypedesc'] = 'Code writing/Programming'
+    elif challengetype == 'ALGO':
+        challenge_dict['challengetypedesc'] = 'Algorithms'
+    else:
+        challenge_dict['challengetypedesc'] = 'Unsupported Type'
     challenge_dict['challengetype'] = challengetype
+    challenge_dict['responsekey'] = challengeobj.responsekey
     challenge_dict['challengemedia'] = challengemedia
+    challenge_dict['testlinkid'] = testobj.testlinkid
     if challengemedia:
         username = userobj.displayname
         challenge_dict['challengemedia'] = "media" + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + challengemedia
@@ -1406,6 +1594,10 @@ def showuserview(request):
             if challengeobj.__dict__.has_key(option) and challengeobj.__dict__[option] is not None:
                 if challengeobj.__dict__[option] != "":
                     challengeoptions.append(challengeobj.__dict__[option])
+        if challengeobj.oneormore:
+            responsekeyslist = challengeobj.responsekey.split('#||#')
+            challenge_dict['responsekey'] = "', '".join(responsekeyslist)
+            challenge_dict['responsekey'] = "'" + challenge_dict['responsekey'] + "'"
     else:
         challengeoptions = None # Except for 'MULT' type tests,
                                 # challengeoptions do not have any significance.
@@ -1419,10 +1611,225 @@ def showuserview(request):
     challenge_dict['challengescore'] = challengescore
     challenge_dict['challengenegativescore'] = challengenegativescore
     challenge_dict['maxtimeallowed'] = maxtimeallowed
-    challenge_dict['usermustrespond'] = usermustrespond
+    challenge_dict['usermustrespondresp'] = 'No'
+    if usermustrespond:
+        challenge_dict['usermustrespondresp'] = 'Yes'
+    challenge_dict['additionalurl'] = challengeobj.additionalurl
+    challenge_dict['challengequality'] = challengeobj.challengequality
+    challenge_dict['oneormoreresp'] = 'Yes'
+    if not challengeobj.oneormore:
+        challenge_dict['oneormoreresp'] = 'No'
     tmpl = get_template("tests/challenge_user_view.html")
     challenge_dict.update(csrf(request))
     cxt = Context(challenge_dict)
     challengehtml = tmpl.render(cxt)
     return HttpResponse(challengehtml)
     
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def editchallenge(request):
+    testobj = None
+    challengeobj = None
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    # Need the test id to create the test object so we that can find the number of challenges it has.
+    if not request.POST.has_key('testid'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1059');
+        return HttpResponse(message)
+    testid = request.POST['testid']
+    if not request.POST.has_key('challengeid'):
+        message = "<font color='#FF0000'>%s</font>"%error_msg('1061');
+        return HttpResponse(message)
+    challengeid = request.POST['challengeid']
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    if not iseditable(testobj) or testobj.status:
+        message = "<font color='#FF0000' size=-1>%s</font>"%error_msg('1060')
+        return HttpResponse(message)
+    try:
+        challengeobj = Challenge.objects.filter(id=challengeid)[0]
+    except:
+        message = "<font color='#FF0000'>Challenge with the specified Challenge Id (%s) was not found.</font>"%challengeid
+        return HttpResponse(message)
+    # So now we have the entire challenge object, so we create the dict for the template.
+    challenge_dict = {}
+    testchallenges = Challenge.objects.filter(test=testobj).order_by('id')
+    challengenumbersstr = 1
+    totalscore = 0
+    evendistrib = True
+    prevscore = 0
+    for chlng in testchallenges:
+        if chlng.id == challengeobj.id:
+            challenge_dict['challengenumbersstr'] = challengenumbersstr
+        challengenumbersstr += 1
+        totalscore += chlng.challengescore
+        if chlng.challengescore != prevscore and prevscore > 0:
+            evendistrib = False
+        prevscore = chlng.challengescore
+    challenge_dict['challengeid'] = challengeid
+    challenge_dict['statement'] = challengeobj.statement
+    challenge_dict['multimediareqd'] = testobj.multimediareqd
+    challenge_dict['negativescoring'] = testobj.negativescoreallowed
+    challenge_dict['testtype'] = testobj.testtype
+    challenge_dict['testname'] = testobj.testname
+    challenge_dict['mediafile'] = challengeobj.mediafile
+    challenge_dict['extresourceurl'] = challengeobj.additionalurl
+    if challenge_dict['extresourceurl'] is None:
+        challenge_dict['extresourceurl'] = ""
+    challenge_dict['challengescore'] = challengeobj.challengescore
+    challenge_dict['existingchallengescore'] = challengeobj.challengescore
+    challenge_dict['negativescore'] = challengeobj.negativescore
+    challenge_dict['mustrespond'] = challengeobj.mustrespond
+    challenge_dict['challengedurationseconds'] = challengeobj.timeframe
+    challenge_dict['maxsizeallowable'] = challengeobj.maxresponsesizeallowable
+    if challengeobj.maxresponsesizeallowable == -1: # no limit on response size
+        challenge_dict['maxsizeallowable'] = ''
+    respkeys = challengeobj.responsekey
+    challenge_dict['responsekey'] = []
+    challenge_dict['options'] = [] # This will be populated in case of 'MULT' type
+    if challengeobj.challengetype == 'MULT':
+        for ctr in range(8):
+            option = "option" + ctr.__str__()
+            if challengeobj.__dict__.has_key(option) and challengeobj.__dict__[option] is not None:
+                if challengeobj.__dict__[option] != "":
+                    challenge_dict['options'].append(challengeobj.__dict__[option])
+    if challengeobj.responsekey and re.search(mysettings.SEPARATOR_PATTERN, challengeobj.responsekey):
+        challenge_dict['responsekey'] = challengeobj.responsekey.split('#||#')
+    else:
+        challenge_dict['responsekey'] = [respkeys, ]
+    challenge_dict['challengequality'] = challengeobj.challengequality
+    challenge_dict['oneormore'] = challengeobj.oneormore
+    challenge_dict['testlinkid'] = challengeobj.testlinkid
+    
+    challenge_dict['skillqualitylist'] = ''
+    for skillqual in mysettings.SKILL_QUALITY.keys():
+        if challenge_dict['challengequality'] == skillqual:
+            challenge_dict['skillqualitylist'] += "<option value='%s' selected>%s</option>"%(skillqual, mysettings.SKILL_QUALITY[skillqual])
+        else:
+            challenge_dict['skillqualitylist'] += "<option value='%s'>%s</option>"%(skillqual, mysettings.SKILL_QUALITY[skillqual])
+    challengetypeslist = ''
+    if challenge_dict['testtype'] == 'COMP':
+        challengetypeslist += "<b>Select Challenge Type</b><select name='challengetype' onchange='javascript:displayoptions();'>"
+        for ttcode in mysettings.TEST_TYPES.keys():
+            ttcodeval = ttcode.replace(" ", "__")
+            if ttcode == challengeobj.challengetype:
+                challengetypeslist += "<option value=%s selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+            elif ttcode == 'COMP':
+                continue # A challenge cannot be composite
+            else:
+                challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
+        challengetypeslist += "</select><br />"
+        if challengeobj.challengetype == 'SUBJ':
+            challengetypeslist += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> words</b>(leave empty for no limit)</p></div>"%(challenge_dict['maxsizeallowable'].__str__())
+        elif challengeobj.challengetype == 'CODN' or challengeobj.challengetype == 'ALGO':
+            challengetypeslist += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6'> lines</b>(leave empty for no limit)</p></div>"%(challenge_dict['maxsizeallowable'].__str__())
+        else:
+            pass
+    challenge_dict['challengetypeslist'] = challengetypeslist
+    challenge_dict['responsekeyscontrolslist'] = ''
+    challenge_dict['answeringoptions'] = ''
+    if challengeobj.challengetype == 'MULT':
+        challenge_dict['responsekeyscontrolslist'] += "<b>Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>"
+        if challenge_dict['oneormore']:
+            challenge_dict['answeringoptions'] += "<p><b>Can there be more than one correct option:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' onchange='javascript:displayresponsekeycontrols();'>No<br />"
+        else:
+            challenge_dict['answeringoptions'] += "<p><b>Can there be more than one correct option:</b>&nbsp;<input type='radio' name='oneormore' value='yes' onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' checked=true onchange='javascript:displayresponsekeycontrols();'>No<br />"
+        challenge_dict['answeringoptions'] += "<b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br />"
+        #print challenge_dict['options'][4]
+        if challenge_dict['options'].__len__() > 0 and challenge_dict['options'][0]:
+            challenge_dict['answeringoptions'] += "<i>Option #a:</i> <input type='text' name='choice1' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][0])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #a:</i> <input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 1 and challenge_dict['options'][1]:
+            challenge_dict['answeringoptions'] += "<i>Option #b</i>: <input type='text' name='choice2' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][1])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #b</i>: <input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 2 and challenge_dict['options'][2]:
+            challenge_dict['answeringoptions'] += "<i>Option #c:</i> <input type='text' name='choice3' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][2])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #c:</i> <input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 3 and challenge_dict['options'][3]:
+            challenge_dict['answeringoptions'] += "<i>Option #d:</i> <input type='text' name='choice4' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][3])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #d:</i> <input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 4 and challenge_dict['options'][4]:
+            challenge_dict['answeringoptions'] += "<i>Option #e:</i> <input type='text' name='choice5' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][4])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #e:</i> <input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 5 and challenge_dict['options'][5]:
+            challenge_dict['answeringoptions'] += "<i>Option #f:</i> <input type='text' name='choice6' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][5])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #f:</i> <input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 6 and challenge_dict['options'][6]:
+            challenge_dict['answeringoptions'] += "<i>Option #g:</i> <input type='text' name='choice7' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][6])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #g:</i> <input type='text' name='choice7' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+        if challenge_dict['options'].__len__() > 7 and challenge_dict['options'][7]:
+            challenge_dict['answeringoptions'] += "<i>Option #h:</i> <input type='text' name='choice8' value='%s' onblur='javascript:displayresponsekeycontrols();'></p>"%(challenge_dict['options'][7])
+        else:
+            challenge_dict['answeringoptions'] += "<i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p>"
+        if challenge_dict['oneormore']:
+            for option in challenge_dict['options']:
+                if option  in challenge_dict['responsekey']:
+                    challenge_dict['responsekeyscontrolslist'] += "<i><input type='checkbox' name='responsekey[]' value='" + option  + "' checked>" + option + "</i><br>"
+                else:
+                    challenge_dict['responsekeyscontrolslist'] += "<i><input type='checkbox' name='responsekey[]' value='" + option + "'>" + option + "</i><br>"
+        else: # Only one option is correct
+            for option in challenge_dict['options']:
+                if option  in challenge_dict['responsekey']:
+                    challenge_dict['responsekeyscontrolslist'] += "<i><input type='radio' name='responsekey' value='" + option  + "' checked=true>" + option + "</i><br>"
+                else:
+                    challenge_dict['responsekeyscontrolslist'] += "<i><input type='radio' name='responsekey' value='" + option + "'>" + option + "</i><br>"
+    elif challengeobj.challengetype == 'FILB':
+         challenge_dict['responsekeyscontrolslist'] += "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='%s' size='10' maxlength='250'><br>"%(challenge_dict['responsekey'][0])
+         challenge_dict['answeringoptions'] += "<input type='hidden' name='oneormore' value='no'>"
+    elif challengeobj.challengetype == 'CODN' or challengeobj.challengetype == 'ALGO':
+        pass
+        #challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p>"%(challenge_dict['maxsizeallowable'].__str__())
+    elif challengeobj.challengetype == 'SUBJ':
+        pass
+        #challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> words</b>(leave empty for no limit)</p>"%(challenge_dict['maxsizeallowable'].__str__())
+    else:
+        pass
+    challenge_dict['evendistribution'] = evendistrib
+    challenge_dict['test_id'] = testid # or challengeobj.test.id
+    challenge_dict['lastchallengectr'] = testchallenges.__len__()
+    challenge_dict['totalscore'] = totalscore
+    challenge_dict['usrid'] = userobj.id
+    challenge_dict['challenge_links_list'] = []
+    for challenge in testchallenges:
+        challengestmt = challenge.statement[:20] + " ..."
+        challenge_dict['challenge_links_list'].append((challenge.id, challengestmt, testobj.id, testobj.testlinkid))
+    tmpl = get_template("tests/edit_challenge.html")
+    challenge_dict.update(csrf(request))
+    cxt = Context(challenge_dict)
+    challengehtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        challengehtml = challengehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(challengehtml)
+
+"""
+The function below generates a test URL at realtime. For a given test,
+it generates the URL every time. But before generating it checks the 
+privileges of the user it is servicing, and handles the generation of the
+test URL accordingly. The view pointed to by this URL is the same as what
+the candidate sees while taking the test. The only difference will be
+the controls for entering the response would be readonly and/or disabled.
+"""
+def generatetesturl(testobj, userobj):
+    pass
+
+
+

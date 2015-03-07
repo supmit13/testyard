@@ -433,3 +433,22 @@ Thu, 03 Mar 2015, 02:15 HRS (IST).
 3. files_to_commit.txt	
 
 =====================================
+
+Thu, 05 Mar 2015, 10:48 HRS (IST).
+----------------------------------
+1. templates/tests/challenge_user_view.html
+2. templates/tests/edit_challenge.html
+3. skillstest/Tests/models.py
+4. templates/tests/tests.html
+5. skillstest/Tests/views.py
+6. skillstest/skills_settings.py
+7. skillstest/urls.py
+8. templates/tests/left_panel.html
+9. templates/tests/test_summary.html
+10.templates/tests/create_test_form.html
+11.db.sql
+12.db_02_02_2015.sql
+13.skillstest/utils.py
+14.skillstest/errors.py
+15.files_to_commit.txt
+
