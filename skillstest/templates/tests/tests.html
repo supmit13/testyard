@@ -1072,7 +1072,76 @@
 			<div id='createtestdiv' style='display: none;'></div>
 			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
 			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
-			{{ test_tables }}
+			<div id='testsascreator' style="">
+			<h3>Tests as Creator</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<th>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>
+			</th>
+			</table>
+			</div>
+			<br /><br />
+			<div id='testsasevaluator' style="">
+			<h3>Tests as Evaluator</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<th>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
+			</th>
+			</table>
+			</div>
+			<br /><br />
+			<div id='testsascandidate' style="">
+			<h3>Tests as Candidate</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<th>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Percentile Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Taken On</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>
+			</th>
+			</table>
+			</div>
+			<!-- {{ test_tables }} -->
 			
 			</div>
 			</span>

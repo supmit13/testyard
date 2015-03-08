@@ -216,7 +216,8 @@ def manage(request):
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
     testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()
-    testnames_created_list = testnames_created_list.sort()
+    testnames_created_list.sort()
+    #print type(testnames_created_list)
     testnames_created_dict = {}
     for test_name in testnames_created_list:
         try:
@@ -248,7 +249,7 @@ def manage(request):
             return HttpResponse(response)
     tests_user_dict['creator_tests_info'] = testnames_created_dict
     testnames_evaluated_list = tests_user_dict['user_evaluator_creator_other_evaluators_dict'].keys()
-    testnames_evaluated_list = testnames_evaluated_list.sort()
+    testnames_evaluated_list.sort()
     testnames_evaluated_dict = {}
     testlist_asevaluator = tests_user_dict['testlist_asevaluator']
     for tobj in testlist_asevaluator:
@@ -282,7 +283,7 @@ def manage(request):
             return HttpResponse(response)
     tests_user_dict['evaluator_tests_info'] = testnames_evaluated_dict
     testnames_candidature_list = tests_user_dict['user_candidate_other_creator_evaluator_dict'].keys()
-    testnames_candidature_list = testnames_candidature_list.sort()
+    testnames_candidature_list.sort()
     testnames_candidature_dict = {}
     testlist_ascandidate = tests_user_dict['testlist_ascandidate']
     for tobj in testlist_ascandidate:
