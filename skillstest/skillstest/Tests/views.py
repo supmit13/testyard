@@ -20,6 +20,9 @@ from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 import os, sys, re, time, datetime
 import cPickle
 import decimal, math
+from Crypto.Cipher import AES
+import base64
+import simplejson as json
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -36,9 +39,9 @@ def get_user_tests(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    testlist_ascreator = Test.objects.filter(creator=userobj)
+    testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -77,9 +80,11 @@ def get_user_tests(request):
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
                                                 Q(groupmember10=userobj))
-    testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups)
+    testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')
     user_creator_other_evaluators_dict = {}
+    tests_creator_ordered_createdate = []
     for test in testlist_ascreator:
+        tests_creator_ordered_createdate.append(test.testname)
         user_creator_other_evaluators_dict[test.testname] = ( test.evaluator.groupmember1, test.evaluator.groupmember2, \
                                                               test.evaluator.groupmember3, test.evaluator.groupmember4, test.evaluator.groupmember5, \
                                                               test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
@@ -111,6 +116,7 @@ def get_user_tests(request):
         evalgroupslitags = evalgroupslitags.replace('&quot;', '\\"')
 
     user_evaluator_creator_other_evaluators_dict = {}
+    tests_evaluator_ordered_createdate = []
     test = None
     for test in testlist_asevaluator:
         testcreator = test.creator
@@ -118,6 +124,7 @@ def get_user_tests(request):
         creator_evaluators = ( testcreator, test.evaluator.groupmember1, test.evaluator.groupmember2, test.evaluator.groupmember3, test.evaluator.groupmember4, \
                           test.evaluator.groupmember5, test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
                           test.evaluator.groupmember9, test.evaluator.groupmember10 ) # Basically we keep the creator as the first element. Rest are evaluators.
+        tests_evaluator_ordered_createdate.append(testname)
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
 
     try:
@@ -163,10 +170,61 @@ def get_user_tests(request):
     tests_user_dict['deletetesturl'] = skillutils.gethosturl(request) + "/" + deletetesturl
     tests_user_dict['showuserviewurl'] = skillutils.gethosturl(request) + "/" + showuserviewurl
     tests_user_dict['editchallengeurl'] = skillutils.gethosturl(request) + "/" + editchallengeurl
+    tests_user_dict['showtestcandidatemode'] = skillutils.gethosturl(request) + "/" + showtestcandidatemode
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
+    tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
+    tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     return  tests_user_dict
 
+
+"""
+Function to check if a given user is allowed to access 
+the details of a test or a challenge in edit mode. At present,
+only the creator of a test is allowed to access the test
+in edit mode. Returns True if the user is permitted and
+False otherwise.
+"""
+def ispermittedtoedit(userobj, testobj):
+    if testobj.creator.id == userobj.id and testobj.creator.displayname == userobj.displayname:
+        return True
+    return False
+
+"""
+Function to check if a given user is allowed to view 
+the details of a test or a challenge. At present, the
+creator of a test and its evaluators are allowed to 
+view the test. Candidates can also view a test, but they
+may do so only during taking the test. This function 
+allows only creator and evaluator(s) associated with
+the test. Returns True if the user is permitted and False
+otherwise.
+"""
+def ispermittedtoview(userobj, testobj, tests_user_dict):
+    evalslist = tests_user_dict['user_evaluator_creator_other_evaluators_dict'][testobj.testname]
+    evalemailslist = []
+    evaldisplaynames = []
+    for evalobj in evalslist:
+        if not evalobj:
+            continue
+        evalemailslist.append(str(evalobj.emailid))
+        evaldisplaynames.append(str(evalobj.displayname))
+    if testobj.creator.id == userobj.id and testobj.creator.displayname == userobj.displayname:
+        return True
+    else:
+        foundemail = False
+        founddispname = False
+        for evalemail in evalemailslist:
+            if userobj.emailid == evalemail:
+                foundemail = True
+                break
+        for evaldispname in evaldisplaynames:
+            if userobj.displayname == evaldispname:
+                founddispname = True
+                break
+        if founddispname  and  foundemail:
+           return True  
+    return False
 
 """
 This view will provide the following functionalities:
@@ -218,6 +276,11 @@ def manage(request):
     testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()
     testnames_created_list.sort()
     #print type(testnames_created_list)
+    tests_user_dict['baseURL'] = skillutils.gethosturl(request)
+    ruleexplanataions = {}
+    for ruleshort in mysettings.RULES_DICT.keys():
+        ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+    tests_user_dict['rulenotes'] = ruleexplanataions
     testnames_created_dict = {}
     for test_name in testnames_created_list:
         try:
@@ -229,6 +292,7 @@ def manage(request):
             tid = tobj.id
             duration = tobj.duration
             ruleset = tobj.ruleset
+            ruleset = re.sub(re.compile("\#\|\|\#", re.DOTALL), ", ", ruleset)
             testtype = tobj.testtype
             testquality = tobj.quality
             teststandard = mysettings.SKILL_QUALITY[testquality]
@@ -241,9 +305,16 @@ def manage(request):
             attemptsintervalunit = tobj.attemptsinterval
             scope = tobj.scope
             activationdate = tobj.activationdate
-            testurl = generatetesturl(tobj, userobj)
-            evalprofileurlsdict = {}
-            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evalprofileurlsdict]
+            testurl = generatetesturl(tobj, userobj, tests_user_dict)
+            evaluatoruserobjs = tests_user_dict['user_creator_other_evaluators_dict'][test_name]
+            evaluatorlinkslist = []
+            for evaluserobj in evaluatoruserobjs:
+                if not evaluserobj:
+                    continue
+                evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
+                evaluatorlinkslist.append(evallink)
+            evaluatorlinks = ", ".join(evaluatorlinkslist)
+            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks]
         except:
             response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -256,13 +327,14 @@ def manage(request):
         try:
             test_name = tobj.testname
             test_topic = tobj.topicname
+            tid = tobj.id
             creatorname = tobj.creator.displayname
             fullmarks = tobj.maxscore
             passscore = tobj.passscore
             publishdate = tobj.publishdate
-            tid = tobj.id
             duration = tobj.duration
             ruleset = tobj.ruleset
+            ruleset = re.sub(re.compile("\#\|\|\#", re.DOTALL), ", ", ruleset)
             testtype = tobj.testtype
             testquality = tobj.quality
             teststandard = mysettings.SKILL_QUALITY[testquality]
@@ -275,9 +347,16 @@ def manage(request):
             attemptsintervalunit = tobj.attemptsinterval
             scope = tobj.scope
             activationdate = tobj.activationdate
-            testurl = generatetesturl(tobj, userobj)
-            evalprofileurlsdict = {}
-            testnames_evaluated_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evalprofileurlsdict]
+            testurl = generatetesturl(tobj, userobj, tests_user_dict)
+            evaluatoruserobjs = tests_user_dict['user_evaluator_creator_other_evaluators_dict'][test_name]
+            evaluatorlinkslist = []
+            for evaluserobj in evaluatoruserobjs:
+                if not evaluserobj:
+                    continue
+                evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
+                evaluatorlinkslist.append(evallink)
+            evaluatorlinks = ", ".join(evaluatorlinkslist)
+            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname ]
         except:
             response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -309,9 +388,16 @@ def manage(request):
             attemptsintervalunit = tobj.attemptsinterval
             scope = tobj.scope
             activationdate = tobj.activationdate
-            testurl = generatetesturl(tobj, userobj)
-            evalprofileurlsdict = {}
-            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evalprofileurlsdict]
+            testurl = generatetesturl(tobj, userobj, tests_user_dict)
+            evaluatoruserobj = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
+            evaluatorlinkslist = []
+            for evaluserobj in evaluatoruserobjs:
+                if not evaluserobj:
+                    continue
+                evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
+                evaluatorlinkslist.append(evallink)
+            evaluatorlinks = ", ".join(evaluatorlinkslist)
+            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks]
         except:
             response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -663,6 +749,13 @@ def create(request):
 
 # Note: The 'challengedurationseconds' value being passed into this function is in seconds.
 def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, challengedurationseconds, negativescoring=False):
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     totalchallenges = testobj.challengecount
     testobj.status = False # Set this to false since we are editing a challenge
     testlinkid = testobj.testlinkid
@@ -806,6 +899,9 @@ def edit(request):
         challengeobj.testlinkid = None
         errmsg = error_msg('1051') + error_msg('1111')
         return HttpResponse(errmsg)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     if request.POST.has_key('challengedurationseconds'):
         challengeobj.timeframe = request.POST['challengedurationseconds']
     if request.POST.has_key('mustrespond'):
@@ -957,6 +1053,9 @@ def testsummary(request):
         return response
     else:
         testobj = testqset[0]
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     challengesqset = Challenge.objects.filter(test=testobj) # This should yield one or more challenges
     tests_summary_dict['challenge_links_list'] = []
     tests_summary_dict['challenges'] = []
@@ -1054,6 +1153,9 @@ def deletechallenges(request):
     except:
         message = error_msg('1061')
         return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     # Find if this test (or the challenges of the test) are editable...
     # If the current  date is past the publishdate or the status of the test
     # is active, then the test should not be made editable.
@@ -1117,6 +1219,9 @@ def savechanges(request):
     except:
         message = "<font color='#FF0000'>%s</font>"%error_msg('1061')
         return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     if not iseditable(testobj) or testobj.status:
         message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
         return HttpResponse(message)
@@ -1163,6 +1268,9 @@ def addmorechallenges(request):
         testobj = Test.objects.filter(id=testid)[0]
     except:
         message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
         return HttpResponse(message)
     if not iseditable(testobj) or testobj.status:
         message = "<font color='#FF0000' size=-1>%s</font>"%error_msg('1060')
@@ -1215,6 +1323,9 @@ def editexistingtest(request):
         return HttpResponse(message)
     if not testobj: #  If we still have a null object (for whatever reason), inform the user that the operation has failed.
         message = "<font color='#FF0000'>%s</font>"%error_msg('1058')
+        return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
         return HttpResponse(message)
     if not iseditable(testobj) or testobj.status:
         message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
@@ -1417,6 +1528,9 @@ def clearnegativescoreurl(request):
     if not iseditable(testobj) or testobj.status:
         message = "<font color='#FF0000'>%s</font>"%error_msg('1060')
         return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     # Now we are sure we have a valid Test object. Find all Challenges. But first, set 'negativescoreallowed' for the test object to False.
     testobj.negativescoreallowed = False
     allchallenges = Challenge.objects.filter(test=testobj)
@@ -1454,6 +1568,9 @@ def deletetest(request):
         testobj = Test.objects.filter(id=testid)[0]
     except:
         message = "<font color='#FF0000'>Test with the specified Test Id (%s) was not found.</font>"%testid
+        return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
         return HttpResponse(message)
     if testobj and (not iseditable(testobj) or testobj.status):
         message = "<font color='#FF0000' size=-1>%s</font>"%error_msg('1060')
@@ -1659,6 +1776,9 @@ def editchallenge(request):
     if not iseditable(testobj) or testobj.status:
         message = "<font color='#FF0000' size=-1>%s</font>"%error_msg('1060')
         return HttpResponse(message)
+    if not ispermittedtoedit(userobj, testobj):
+        message = error_msg('1063')
+        return HttpResponse(message)
     try:
         challengeobj = Challenge.objects.filter(id=challengeid)[0]
     except:
@@ -1821,16 +1941,228 @@ def editchallenge(request):
         challengehtml = challengehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(challengehtml)
 
+
 """
-The function below generates a test URL at realtime. For a given test,
-it generates the URL every time. But before generating it checks the 
-privileges of the user it is servicing, and handles the generation of the
-test URL accordingly. The view pointed to by this URL is the same as what
-the candidate sees while taking the test. The only difference will be
-the controls for entering the response would be readonly and/or disabled.
+The function below gets the shortened form of the test URL from the DB
+if it has already been created  or generates the shortened URL from bit.ly
+and stores it as an attribute of the Test model (i.e., as a field in the
+Tests_test table in the 'testyard' database). To access the test using
+this URL, we use the bit.ly API every time to expand the short URL, get
+the parameters from this URL (in order to identify the test to display),
+and then display the test to the user.
 """
-def generatetesturl(testobj, userobj):
+def gettesturlforuser(targetuseremail, testid):
     pass
 
 
+"""
+The function below generates a test URL at realtime. For a given test,
+it creates the URL every time. But before creating it checks the 
+privileges of the user it is servicing, and handles the generation of the
+test URL accordingly. The view pointed to by this URL is similar to what
+the candidate sees while taking the test. The only difference will be
+the controls for entering the response would be readonly and/or disabled.
+The user would also be able to view the correct answers (if any) prov-
+ided by the creator.
+"""
+def generatetesturl(testobj, userobj, tests_user_dict):
+    if not ispermittedtoview(userobj, testobj, tests_user_dict):
+        return ""
+    else:
+        testurl = tests_user_dict['baseURL'] + "/" + mysettings.VIEW_TEST_URL + "?tlinkid=" + testobj.testlinkid + "&testid=" + str(testobj.id)
+        return testurl
+
+
+"""
+This is the main function that is triggered when a user takes a test
+or the test is displayed to the user as it would appear to a user who
+is taking the test. Now, there are 2 ways to handle this, and both 
+have some advantages and disadvantages over the other. 1. Send the 
+entire test (the challenges, the rules, etc.) as a json string to the
+user, and 2. Send each challenge at a time, as the user presses the
+'Next' button. We will be handling the test using the option #1 above
+and in order to tackle cases of mischief, we will encrypt the json 
+string that we send. On the client side, we will place javascript code
+that will decrypt the json, and do the needful to allow the user to 
+take the test, and for every challenge/question answered, it will send
+the user's response to the server along with the challenge Id and the
+test Id (among other variables like the userId. A view on the server 
+will accept the response and do the needful (that is, it will enter 
+the response in the name of the user to the database).
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showtestcandidatemode(request):
+    if request.method != "POST": # If it is not a POST request, shoot it down.
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    if not request.POST.has_key('testid'):
+        message = error_msg('1059')
+        response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    testid = request.POST['testid']
+    testdict = {} # This will be our json object...
+    testobj = None
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = error_msg('1056')
+        response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    # Check the status and publish date and activation date
+    if not testobj.status: # Test is being edited or modified
+        message = error_msg('1064')
+        response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    currentdatetime = datetime.datetime.now()
+    activationdate = skillutils.mysqltopythondatetime(testobj.activationdate.__str__()) # It is the activation date that matters to the user taking the test. A test that has been activated has definitely been published.
+    if currentdatetime < activationdate: # This test is not active yet.
+        message = error_msg('1065')
+        response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    # Now, check if this user is the creator or evaluator of this test.
+    # If so, set a flag in the json while sending the test. Tests with
+    # this flag set will not be sending back responses (to be implemented
+    # in the javascript). By the way, this implies that a creator or an
+    # evaluator would never be allowed to take the test, which is not
+    # an insane assumption.
+    testcreator = testobj.creator
+    testevaluator = testobj.evaluator
+    testevalemailidlist = []
+    if testevaluator.groupmember1:
+        testevalemailidlist.append(testevaluator.groupmember1.emailid)
+    if testevaluator.groupmember2:
+        testevalemailidlist.append(testevaluator.groupmember2.emailid)
+    if testevaluator.groupmember3:
+        testevalemailidlist.append(testevaluator.groupmember3.emailid)
+    if testevaluator.groupmember4:
+        testevalemailidlist.append(testevaluator.groupmember4.emailid)
+    if testevaluator.groupmember5:
+        testevalemailidlist.append(testevaluator.groupmember5.emailid)
+    if testevaluator.groupmember6:
+        testevalemailidlist.append(testevaluator.groupmember6.emailid)
+    if testevaluator.groupmember7:
+        testevalemailidlist.append(testevaluator.groupmember7.emailid)
+    if testevaluator.groupmember8:
+        testevalemailidlist.append(testevaluator.groupmember8.emailid)
+    if testevaluator.groupmember9:
+        testevalemailidlist.append(testevaluator.groupmember9.emailid)
+    if testevaluator.groupmember10:
+        testevalemailidlist.append(testevaluator.groupmember10.emailid)
+    testdict['usercreatorevaluatorflag'] = 0
+    if userobj.emailid == testcreator.emailid:
+        testdict['usercreatorevaluatorflag'] = 1
+    elif userobj.emailid in testevalemailidlist:
+        testdict['usercreatorevaluatorflag'] = 1
+    else:
+        pass
+    testdict['testname'] = testobj.testname
+    testdict['topicname'] = testobj.topicname # for built-in topic
+    if testobj.topic != "": # topic is not one of the built-in topics
+        testdict['topicname'] = testobj.topic.topicname
+    testdict['creator'] = testobj.creator.displayname # Not sure if this should be shown to the test taker.
+    testdict['maxscore'] = testobj.maxscore
+    testdict['passscore'] = testobj.passscore
+    testdict['rules'] = testobj.ruleset.split("#||#")
+    testdict['duration'] = testobj.duration
+    testdict['allowedlanguages'] = testobj.allowedlanguages.split("#||#")
+    testdict['randomsequencing'] = testobj.randomsequencing
+    testdict['multimediareqd'] = testobj.multimediareqd
+    testdict['progenv'] = testobj.progenv
+    testdict['quality'] = testobj.quality
+    testdict['negativescoreallowed'] = testobj.negativescoreallowed
+    testdict['scope'] = testobj.scope
+    # If the test taker is a candidate, we need to check for multiple attempts...
+    if not testdict['usercreatorevaluatorflag']: 
+        allowmultiattempts = testobj.allowmultiattempts
+        usertest = UserTest.objects.filter(user=userobj, test=testobj).order_by('-starttime')
+        if allowmultiattempts:
+            maxattemptscount = testobj.maxattemptscount
+            if usertest.__len__() >= int(maxattemptscount):
+                message = error_msg('1067')
+                response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+                return response
+            attemptsinterval = testobj.attemptsinterval
+            attemptsintervalunit = testobj.attemptsintervalunit
+            if attemptsintervalunit == 'h':
+                attemptsintervalseconds = int(attemptsinterval) * 3600
+            elif attemptsintervalunit == 'm':
+                attemptsintervalseconds = int(attemptsinterval) * 60
+            elif attemptsintervalunit == 'd':
+                attemptsintervalseconds = int(attemptsinterval) * 86400
+            elif attemptsintervalunit == 'M':
+                attemptsintervalseconds = int(attemptsinterval) * 86400 * 30 # Taking 30 days as month.
+            elif attemptsintervalunit == 'Y':
+                attemptsintervalseconds = int(attemptsinterval) * 86400 * 30*12
+            else:
+                attemptsintervalseconds = int(attemptsinterval) # take the interval at face value.
+            lasttimetesttaken = skillutils.mysqltopythondatetime(usertest[0].starttime)
+            testtakentimedelta = currentdatetime - lasttimetesttaken
+            if testtakentimedelta.total_seconds() < attemptsintervalseconds:
+                secondsremaining = attemptsintervalseconds - testtakentimedelta.total_seconds()
+                message = error_msg('1068') + " Please wait for %s seconds before attempting this test."%secondsremaining
+                response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+                return response
+        else: # multiple attempts not allowed ...
+            if usertest and usertest.__len__() > 0: # ... and user has taken the test already
+                message = error_msg('1066')
+                response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+                return response
+    # If the control comes here, the user can take this test.
+    challengesqset = Challenge.objects.filter(test=testobj)
+    challengesdict = {}
+    testdict['challenges'] = challengesdict
+    for challenge in challengesqset:
+        statement = challenge.statement
+        challengetype = challenge.challengetype
+        maxresponsesizeallowable = challenge.maxresponsesizeallowable
+        challengesdict[statement] = {'challengetype' : challengetype, 'maxresponsesizeallowable' : maxresponsesizeallowable}
+        if challengetype == 'MULT' or challengetype == 'FILB':
+            if challenge.option1 and challenge.option1 != "":
+                challengesdict[statement]['option1'] = challenge.option1
+            if challenge.option2 and challenge.option2 != "":
+                challengesdict[statement]['option2'] = challenge.option2
+            if challenge.option3 and challenge.option3 != "":
+                challengesdict[statement]['option3'] = challenge.option3
+            if challenge.option4 and challenge.option4 != "":
+                challengesdict[statement]['option4'] = challenge.option4
+            if challenge.option5 and challenge.option5 != "":
+                challengesdict[statement]['option5'] = challenge.option5
+            if challenge.option6 and challenge.option6 != "":
+                challengesdict[statement]['option6'] = challenge.option6
+            if challenge.option7 and challenge.option7 != "":
+                challengesdict[statement]['option7'] = challenge.option7
+            if challenge.option8 and challenge.option8 != "":
+                challengesdict[statement]['option8'] = challenge.option8
+        challengesdict[statement]['challengescore'] = challenge.challengescore
+        challengesdict[statement]['negativescore'] = challenge.negativescore
+        challengesdict[statement]['mustrespond'] = challenge.mustrespond
+        challengesdict[statement]['mediafile'] = challenge.mediafile
+        challengesdict[statement]['additionalurl'] = challenge.additionalurl
+        challengesdict[statement]['timeframe'] = challenge.timeframe
+        challengesdict[statement]['challengequality'] = challenge.challengequality
+        challengesdict[statement]['oneormore'] = challenge.oneormore
+    testdict['challenges'] = challengesdict
+    jsonstr = json.dumps(testdict)
+    # Now, encrypt jsonstr...
+    encjsonstr = encryptstring(jsonstr)
+    # ... and send it.
+    return HttpResponse(encjsonstr)
+
+
+def encryptstring(mystr):
+    cipher = AES.new(mysettings.SECRET_KEY, AES.MODE_ECB)
+    # mystr.__len__() has to be a multiple of 16
+    mystrlen = mystr.__len__()
+    remlen = mystrlen % 16
+    mystr = mystr + ' '*remlen
+    encodedstr = base64.b64encode(cipher.encrypt(mystr))
+    # decoded = cipher.decrypt(base64.b64decode(msg_text)) # This operation has to be implemented in javascript.
+    return encodedstr
 

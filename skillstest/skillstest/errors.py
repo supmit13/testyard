@@ -56,6 +56,12 @@ error_codes = { \
         '1060' : 'The challenges could not be edited as the test has either been published already or is in active state.', \
         '1061' : 'Couldn\'t find the test object associated with the given challenge.',\
         '1062' : 'Couldn\'t find the challenge associated with the given testlinkid',\
+        '1063' : 'User is NOT permitted to view this test or any of its challenges in edit mode.',\
+        '1064' : 'The selected test is being edited at the present moment. Please come back later to take this test.', \
+        '1065' : 'The selected test is not active as yet. Please contact the entity that is conducting this test.', \
+        '1066' : 'You cannot attempt this test more than once. You have already used up your chance.', \
+        '1067' : 'You have already attempted this test the maximum number of times allowed for this test.',\
+        '1068' : 'The time interval between 2 successive attempts to this test has not yet elapsed.', \
     }
 
 def error_msg(code):

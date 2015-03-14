@@ -43,6 +43,8 @@
 	{% include "inc/html_head.html" %}	
 
 	{% include "inc/mission_statement.html" %}
+
+	{% load extratemptags %}
 		
 		<link rel="stylesheet" type="text/css" media="all" href="static/datepick/jsDatePick_ltr.min.css" />
 		<script type="text/javascript" src="static/datepick/jsDatePick.min.1.3.js"></script>
@@ -1061,6 +1063,32 @@
 		function copytest(testid){
 		}
 
+		// Show the test to the user as it would appear to the candidate.
+		function showtestcandidatemode(testid){
+		  var thediv = document.getElementById('createtestdiv');
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      thediv.style = "";
+		      // xmlhttp.responseText is an encrypted test.
+		      // We need to decrypt it and provide the user with
+		      // the challenges appropriately. The decoded 
+		      // content will be json.
+		      var testencjson = xmlhttp.responseText;
+		      thediv.innerHTML = '';
+		      return (true);
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ showtestcandidatemode }}', true);
+  		  xmlhttp.send(postdata);
+		}
 		</script>
 
 		<div class="post">
@@ -1072,10 +1100,12 @@
 			<div id='createtestdiv' style='display: none;'></div>
 			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
 			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
+			<form name='frmmaintests' id='frmmaintests' method='POST' action=''>
+			{% csrf_token %}
 			<div id='testsascreator' style="">
 			<h3>Tests as Creator</h3>
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
-			<th>
+			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
@@ -1093,19 +1123,48 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>
-			</th>
+			</tr>
+			<tr>
+			  <td colspan="17">&nbsp;</td>
+			</tr>
+			{% autoescape on %}
+			{% for testnm in tests_creator_ordered_createdate reversed %}
+			<tr>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:1 %}<td nowrap><font size=-1 color='#0000AA'>&nbsp;</font></td>{% else %}<td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:1 }}</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:4 %}<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> {% else %} <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:4 }}</font></td> {% endif %}
+			  {% if not creator_tests_info|dictlookup:testnm|getval:13 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
+			</tr>
+			{% endfor %}
+			{% endautoescape %}
 			</table>
+			<br />
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<br /><br />
 			<div id='testsasevaluator' style="">
 			<h3>Tests as Evaluator</h3>
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
-			<th>
+			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
@@ -1117,14 +1176,40 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
-			</th>
+			</tr>
+			<tr>
+			  <td colspan="17">&nbsp;</td>
+			</tr>
+			{% for testnm in tests_evaluator_ordered_createdate reversed %}
+			<tr>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:1 %}<td nowrap><font size=-1 color='#0000AA'>&nbsp;</font></td>{% else %}<td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:1 }}</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}'>{{ evaluator_tests_info|dictlookup:testnm|getval:20 }} (username={{ evaluator_tests_info|dictlookup:testnm|getval:21 }})</a></font></td>
+			  <td align='left'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:4 %}<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> {% else %} <td nowrap align='right'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:4 }}</font></td> {% endif %}
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:13 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			</tr>
+			{% endfor %}
 			</table>
+			<br />
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<br /><br />
 			<div id='testsascandidate' style="">
 			<h3>Tests as Candidate</h3>
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
-			<th>
+			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
@@ -1138,17 +1223,22 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>
-			</th>
+			</tr>
+			<tr>
+			  <td colspan="13">&nbsp;</td>
+			</tr>
 			</table>
+			<br />
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<!-- {{ test_tables }} -->
-			
+			</form>
 			</div>
 			</span>
 		</div>
 		
 		<!-- ### Post Entry End ###  -->
 
-	{% include "inc/right_panel.html" %}
+	{% include "inc/right_panel.html" %} 
 		
 	{% include "inc/html_foot.html" %}

@@ -452,3 +452,17 @@ Thu, 05 Mar 2015, 10:48 HRS (IST).
 14.skillstest/errors.py
 15.files_to_commit.txt
 
+=====================================
+
+Sat, 14 Mar 2015, 05:30 HRS (IST).
+----------------------------------
+1. skillstest/Tests/models.py
+2. templates/tests/tests.html
+3. skillstest/Tests/views.py
+4. skillstest/skills_settings.py
+5. skillstest/utils.py
+6. skillstest/errors.py
+7. skillstest/urls.py
+8. files._to_commit.txt
+
+=====================================
