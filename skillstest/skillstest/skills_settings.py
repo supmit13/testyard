@@ -97,6 +97,7 @@ DELETE_CHALLENGE_URL = "skillstest/tests/challenges/delete/"
 SAVE_CHANGES_URL = "skillstest/tests/challenges/savechanges/"
 ADD_MORE_URL = "skillstest/tests/challenges/addmore/"
 EDIT_EXISTING_TEST_URL = "skillstest/tests/editexistingtest/"
+VIEW_TEST_URL = "skillstest/tests/viewtest/"
 SEARCH_URL = "skillstest/tests/search/"
 NETWORK_URL = "skillstest/network/"
 ANALYTICS_URL = "skillstest/analytics/"
@@ -111,6 +112,7 @@ CLEAR_NEGATIVE_SCORE_URL = "skillstest/tests/clearnegscore/"
 DELETE_TEST_URL = "skillstest/tests/deletetest/"
 SHOW_USER_VIEW_URL = "skillstest/tests/challenge/showuserview/"
 EDIT_CHALLENGE_URL = "skillstest/tests/challenge/edit/"
+SHOW_TEST_CANDIDATE_MODE_URL = "skillstest/test/showtestcandidatemode/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -198,4 +200,5 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
+SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
 
