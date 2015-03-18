@@ -289,8 +289,28 @@ class ShareTest(models.Model):
 
     def __unicode__(self):
         return "%s"%(self.test.testname)
+"""
+
+
 
 """
+This table will store data for candidates who do not have an account on 
+testyard as yet, but have been invited to take a test on it.
+"""
+class WouldbeUsers(models.Model):
+    emailaddr = models.EmailField(null=False, blank=False) # Email address to which the link to the 'Test' was sent.
+    test = models.ForeignKey(Test, related_name="+", null=True, blank=True)
+    testurl = models.URLField(null=True, blank=True, help_text='URL to access the test by the user')
+    validfrom = models.DateTimeField(null=True, blank=True)
+    validtill = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "wouldbeusers Table"
+        db_table = 'Tests_wouldbeusers'
+
+    def __unicode__(self):
+        return "%s ==>> %s"%(self.test.testname, self.emailaddr)
+
 
 
 

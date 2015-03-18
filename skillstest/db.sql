@@ -342,4 +342,20 @@ alter table Tests_test modify column activationdate datetime default NULL;
 
 alter  table Tests_challenge add column oneormore boolean default true;
 
+create table Tests_wouldbeusers (
+	emailaddr varchar(150) DEFAULT NULL,
+	test_id int DEFAULT NULL,
+	testurl varchar(200) DEFAULT NULL,
+	validfrom datetime DEFAULT NULL,
+	validtill datetime DEFAULT NULL
+);
+alter table Tests_wouldbeusers add column id int auto_increment primary key NOT NULL;
+
+alter table Tests_usertest modify starttime datetime default 0;
+alter table Tests_usertest modify endtime datetime default NULL;
+alter table Tests_usertest modify ipaddress char(39) default '';
+alter table Tests_usertest modify clientsware char(150) default '';
+alter table Tests_usertest modify sessid char(50) default '';
+alter table Tests_usertest modify score double default NULL;
+
 COMMIT;

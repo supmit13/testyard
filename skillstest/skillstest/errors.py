@@ -11,6 +11,7 @@ error_codes = { \
         '1005' : 'Uploaded file exceeds max file size limit', \
         '1006' : 'Session is corrupt or it has expired', \
         '1007' : 'Mismatch in your session and location information',\
+        '1008' : 'Session doesn\'t exist. Please login into testyard to perform the requested action.', \
         
         '1011' : 'One or more fields have invalid values - the 2 password fields do not match.', \
         '1012' : 'One or more fields have invalid values - username cannot be empty.', \
@@ -62,6 +63,8 @@ error_codes = { \
         '1066' : 'You cannot attempt this test more than once. You have already used up your chance.', \
         '1067' : 'You have already attempted this test the maximum number of times allowed for this test.',\
         '1068' : 'The time interval between 2 successive attempts to this test has not yet elapsed.', \
+        '1069' : 'The requested operation could not be performed due to insufficient parameters.', \
+        '1070' : 'You are not authorised to send out invitations for this test. If you want someone to take this test, you may send a request to the owner/creator of this test to let you copy it by either making it public for a while or by allowing you an exclusive privilege to copy it within a certain period of time. Once you make a copy of this test, the copied test will be your property and you would be able to send out invitations to candidates/users to take the test.', \
     }
 
 def error_msg(code):

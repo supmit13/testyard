@@ -113,6 +113,7 @@ DELETE_TEST_URL = "skillstest/tests/deletetest/"
 SHOW_USER_VIEW_URL = "skillstest/tests/challenge/showuserview/"
 EDIT_CHALLENGE_URL = "skillstest/tests/challenge/edit/"
 SHOW_TEST_CANDIDATE_MODE_URL = "skillstest/test/showtestcandidatemode/"
+SEND_TEST_INVITATION_URL = "skillstest/test/sendtestinvitations/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -200,5 +201,5 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
 

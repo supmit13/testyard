@@ -393,7 +393,11 @@ def getcurrentplans(userobj):
 def mysqltopythondatetime(mysqldatetime):
     mysqldate, mysqltime = mysqldatetime.split(" ")
     mysqlyyyy, mysqlmon, mysqldd = mysqldate.split("-")
-    mysqlhh, mysqlmm, mysqlss = mysqltime.split(":")
+    hms = mysqltime.split(":")
+    if hms.__len__() < 3:
+        mysqlhh, mysqlmm, mysqlss = '00', '00', '00'
+    else:
+        mysqlhh, mysqlmm, mysqlss = hms[0], hms[1], '00'
     pythondatetime = datetime.datetime(int(mysqlyyyy), int(mysqlmon), int(mysqldd), int(mysqlhh), int(mysqlmm), int(mysqlss))
     return pythondatetime
 

@@ -4,6 +4,10 @@
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script> 
 	<script src="static/tinymce/tinymce.min.js"></script>
+
+	<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
+	<script language='JavaScript' type="text/javascript" src='static/javascript/aes.js'></script>
+
 	<script language='javascript'>
 	{{ assocevalgrps }}
 	var draggableevalgrps = function () {
@@ -37,6 +41,9 @@
         .dropitems{width: 25%;float: left;background: #f1f1f1;margin-left: 20px;padding:5px 5px 5px 5px;} 
         .dragitems ul{list-style-type: none;padding-left: 5px;display: block;} 
         #content{height: 400px;width: 650px;}
+
+        
+}
 	</style> 
 	<!-- Code pertaining to drag/drop evaluator group names ends here -->
 	
@@ -840,6 +847,9 @@
 
 		function closediv(){
 		  var thediv=document.getElementById('createtestdiv');
+		  if(!thediv){
+		    thediv=document.getElementById('maincontainer');
+		  }
 		  thediv.style.display = "none";
 		  thediv.innerHTML = '';
 		}
@@ -1063,6 +1073,12 @@
 		function copytest(testid){
 		}
 
+		// Decrypt a string encrypted with triple DES
+		function tripledesdecrypt(encstr){
+		 decstr = CryptoJS.TripleDES.decrypt(encstr, '{{ secret_key }}');
+		  return(decstr);
+		}
+
 		// Show the test to the user as it would appear to the candidate.
 		function showtestcandidatemode(testid){
 		  var thediv = document.getElementById('createtestdiv');
@@ -1082,11 +1098,133 @@
 		      // the challenges appropriately. The decoded 
 		      // content will be json.
 		      var testencjson = xmlhttp.responseText;
-		      thediv.innerHTML = '';
+		      // alert(testencjson);
+		      var testplainjson = tripledesdecrypt(testencjson);
+		      alert(testplainjson);
+		      thediv.innerHTML = testplainjson;
 		      return (true);
   		    }
   		  };
-		  xmlhttp.open("POST", '{{ showtestcandidatemode }}', true);
+		  // Avoiding ajax call on purpose as the decryption function may take some time to render the result.
+		  xmlhttp.open("POST", '{{ showtestcandidatemode }}', false);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		function invitecandidates(testid){ // Only test creator can invite candidates. So the user will be the user object.
+		  // Form to be open in 'createtestdiv'
+		  var thediv = document.getElementById('invitationdiv' + testid);
+		  thediv.style.display = "";
+		  var divinnerhtml = "{% include 'tests/invitecandidatesform.html' %}";
+		  divinnerhtml = divinnerhtml.replace(/####TESTID####/g, testid);
+		  thediv.innerHTML = divinnerhtml;
+		}
+
+
+		function closedivbyid(divid){
+		  thediv = document.getElementById(divid);
+		  if(thediv){
+		    thediv.style.display = "none";
+		    thediv.innerHTML = "";
+		  }
+		}
+
+		function validateinvitationdata(testid){
+		  var processedformname = 'frminvitecandidates' + testid.toString();
+		  var processform =  null;
+		  for (var i=0; i < document.forms.length; i++){
+		    if(document.forms[i].name == processedformname){
+		      processform = document.forms[i];
+		      break;
+		    }
+		  }
+		  if(!processform){
+		    alert("Could not identify the form.");
+		  }
+		  var emailsfield = processform.txtemailslist;
+		  var newlinewspattern = new RegExp("[\\n\\s]+");
+		  var emailpattern = new RegExp("[\@\.]+");
+		  if(newlinewspattern.test(emailsfield.value)){
+		    emailslist = "";
+		    emailvalues = emailsfield.value.split("\n");
+		    for(var i=0; i < emailvalues.length; i++){
+		      emailslist = emailslist + emailvalues[i]
+		    }
+		    emailsfield.value = emailslist;
+		  }
+		  emailslist = "";
+		  var listofemails = emailsfield.value.split(",");
+		  for(var i=0; i < listofemails.length; i++){
+		    if(!emailpattern.test(listofemails[i])){
+		      alert("Invalid email detected. Please rectify and try again");
+		      emailsfield.focus();
+		      return(false);
+		    }
+		  }
+		  var monthdict = {};
+		  monthdict['Jan'] = '01';monthdict['Feb'] = '02';monthdict['Mar'] = '03';monthdict['Apr'] = '04';monthdict['May'] = '05';monthdict['Jun'] = '06';monthdict['Jul'] = '07';monthdict['Aug'] = '08';monthdict['Sep'] = '09';monthdict['Oct'] = '10';monthdict['Nov'] = '11';monthdict['Dec'] = '12';
+		  var validfromfield = processform.validfrom;
+		  var validtillfield = processform.validtill;
+		  var datepattern = new RegExp("\\d{2}\\-\\d{2}\\-\\d{4}(\s+\\d{2}\\:\\d{2}\\:\\d{2})?");
+		  var validtillmonth = '';
+		  var defaultvalidtillvalue = '';
+		  if(validfromfield.value.trim() == "" || validfromfield.value == "dd-mm-yyyy hh:mm:ss"){
+		    var now = new Date();
+		    dateparts = now.toString().split(" ");
+		    validfromfieldstr = dateparts[2] + "-" + monthdict[dateparts[1]] + "-" + dateparts[3] + " " + dateparts[4];
+		    validtillmonth = Number(monthdict[dateparts[1]]) + 3; // By default, a test will be valid till 3 months only.
+		    if(validtillmonth.toString().length < 2){
+		      validtillmonth = '0' + validtillmonth.toString();
+		    }
+		    validfromfield.value = validfromfieldstr;
+		    defaultvalidtillvalue = dateparts[2] + "-" + validtillmonth.toString() + "-" + dateparts[3] + " " + dateparts[4];
+		  }
+		  if(validtillfield.value.trim() == "dd-mm-yyyy hh:mm:ss" || validtillfield.value.trim() == ""){
+		    validtillfield.value = defaultvalidtillvalue;
+		  }
+		  if(!validfromfield.value.match(datepattern)){
+		    alert("The valid from field has inappropriate format. Please correct it and try again.");
+		    validfromfield.focus();
+		    return(false);
+		  }
+		  if(validtillfield.value != "" && !datepattern.test(validtillfield.value)){
+		    alert("The valid till field has inappropriate format. Please correct it and try again.");
+		    validtillfield.focus();
+		    return(false);
+		  }
+		  return true;
+		}
+
+		// Send an invitation to all email ids in the textarea
+		// for the test identified by testid.
+		function sendinvitation(testid){
+		  if(!validateinvitationdata(testid)){
+		    return (false);
+		  }
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid;
+		  var processedformname = 'frminvitecandidates' + testid.toString();
+		  for (var i=0; i < document.forms.length; i++){
+		    if(document.forms[i].name == processedformname){
+		      postdata = postdata + "&csrfmiddlewaretoken=" + document.forms[i].csrfmiddlewaretoken.value + "&txtemailslist=" + document.forms[i].txtemailslist.value + "&validfrom=" + document.forms[i].validfrom.value + "&validtill=" + document.forms[i].validtill.value;
+		      break;
+		    }
+		  }
+		  //alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+		    //alert(xmlhttp.responseText);
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert("The candidates have been invited for the test " + testid.toString() + xmlhttp.responseText);
+		      return (true);
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ sendtestinvitationurl }}', true);
   		  xmlhttp.send(postdata);
 		}
 		</script>
@@ -1107,7 +1245,7 @@
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
@@ -1131,7 +1269,7 @@
 			{% for testnm in tests_creator_ordered_createdate reversed %}
 			<tr>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
-			  {% if not creator_tests_info|dictlookup:testnm|getval:1 %}<td nowrap><font size=-1 color='#0000AA'>&nbsp;</font></td>{% else %}<td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:1 }}</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
@@ -1160,7 +1298,6 @@
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>
@@ -1178,12 +1315,11 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
 			</tr>
 			<tr>
-			  <td colspan="17">&nbsp;</td>
+			  <td colspan="16">&nbsp;</td>
 			</tr>
 			{% for testnm in tests_evaluator_ordered_createdate reversed %}
 			<tr>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
-			  {% if not evaluator_tests_info|dictlookup:testnm|getval:1 %}<td nowrap><font size=-1 color='#0000AA'>&nbsp;</font></td>{% else %}<td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:1 }}</font></td> {% endif %}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}'>{{ evaluator_tests_info|dictlookup:testnm|getval:20 }} (username={{ evaluator_tests_info|dictlookup:testnm|getval:21 }})</a></font></td>
@@ -1211,7 +1347,6 @@
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test URL</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
@@ -1225,7 +1360,7 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>
 			</tr>
 			<tr>
-			  <td colspan="13">&nbsp;</td>
+			  <td colspan="12">&nbsp;</td>
 			</tr>
 			</table>
 			<br />

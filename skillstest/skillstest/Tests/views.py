@@ -14,20 +14,22 @@ from django.template import Template, Context
 from django.template.loader import get_template
 from django.contrib.sites.models import get_current_site
 from django.contrib.sessions.backends.db import SessionStore
+from django.core.mail import send_mail
 from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 
 # Standard libraries...
 import os, sys, re, time, datetime
 import cPickle
 import decimal, math
-from Crypto.Cipher import AES
+from Crypto.Cipher import AES, DES3
+from Crypto import Random
 import base64
 import simplejson as json
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -41,7 +43,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -171,10 +173,12 @@ def get_user_tests(request):
     tests_user_dict['showuserviewurl'] = skillutils.gethosturl(request) + "/" + showuserviewurl
     tests_user_dict['editchallengeurl'] = skillutils.gethosturl(request) + "/" + editchallengeurl
     tests_user_dict['showtestcandidatemode'] = skillutils.gethosturl(request) + "/" + showtestcandidatemode
+    tests_user_dict['sendtestinvitationurl'] = skillutils.gethosturl(request) + "/" + sendtestinvitationurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
+    tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
     return  tests_user_dict
 
 
@@ -2157,12 +2161,206 @@ def showtestcandidatemode(request):
 
 
 def encryptstring(mystr):
-    cipher = AES.new(mysettings.SECRET_KEY, AES.MODE_ECB)
+    iv = Random.get_random_bytes(8)
+    des = DES3.new(mysettings.DES3_SECRET_KEY, DES3.MODE_CBC, iv)
+    if mystr.__len__() < 16:
+        remlen = 16 % mystr.__len__()
+        mystr = mystr + ' '*(remlen - 16) # padding with whitespace
+    else:
+        remlen = mystr.__len__() % 16
+        mystr = mystr + ' '*(16 - remlen) # padding with whitespace
+    encryptedstr = des.encrypt(mystr)
+    return encryptedstr
+
+
+"""
+An alternate implementation of encryptstring()
+"""
+"""
+def encryptstring(mystr):
+    cipher = AES.new(mysettings.DES3_SECRET_KEY, AES.MODE_ECB)
     # mystr.__len__() has to be a multiple of 16
     mystrlen = mystr.__len__()
     remlen = mystrlen % 16
-    mystr = mystr + ' '*remlen
+    mystr = mystr + ' '*(16 - remlen)
     encodedstr = base64.b64encode(cipher.encrypt(mystr))
     # decoded = cipher.decrypt(base64.b64decode(msg_text)) # This operation has to be implemented in javascript.
     return encodedstr
+"""
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def sendtestinvitations(request):
+    message = ''
+    if request.method != "POST":
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    if not request.POST.has_key('testid') or not request.POST.has_key('txtemailslist'):
+        message = error_msg('1069')
+        response = HttpResponse(message)
+        return response
+    testid = request.POST['testid']
+    emailsliststr = request.POST['txtemailslist']
+    emailsliststr = re.sub(re.compile(r"%20", re.MULTILINE|re.DOTALL), mysettings.HEXCODE_CHAR_MAP['%20'], emailsliststr) # replace for whitespace
+    emailsliststr = re.sub(re.compile(r"%2C", re.MULTILINE|re.DOTALL), ",", emailsliststr) # replace for comma
+    emailslist = emailsliststr.split(",")
+    # We might have a few email Ids repeated, even though there is a
+    # javascript check to avoid this. So we create a dict with the 
+    # email Ids as keys so that we can access an unique list.
+    emailsdict = {}
+    for email in emailslist:
+        emailsdict[email] = 1
+    emailslist = emailsdict.keys() # So now emailslist contains unique emails
+    testobj = None
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = error_msg('1056')
+        response = HttpResponse(message)
+        return response
+    # Check if the user is the creator of this test. Only creators of a test 
+    # are allowed to send invitations to candidates.
+    if testobj.creator.id != userobj.id:
+        message = error_msg('1070')
+        response = HttpResponse(message)
+        return response
+    validfrom = ""
+    if request.POST.has_key('validfrom') and request.POST['validfrom'] != "":
+        validfromdt = request.POST['validfrom']
+    else:
+        validfromdt = str(datetime.datetime.now())
+    validfromdatetimeparts = validfromdt.split(' ')
+    message = ""
+    if validfromdatetimeparts.__len__() == 1:
+        validfromdatetimeparts.append('00:00:00')
+    if validfromdatetimeparts.__len__() == 2:
+        validfromdate, validfromtime = validfromdatetimeparts[0], validfromdatetimeparts[1]
+        validfromdateparts = validfromdate.split("-")
+        if validfromdateparts.__len__() == 3:
+            validfromdate = validfromdateparts[2] + "-" + validfromdateparts[1] + "-" + validfromdateparts[0]
+        else:
+            message = "It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+            response = HttpResponse(message)
+            return response
+        validfrom = validfromdate + " " + validfromtime
+    else:
+        message = "It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+        response = HttpResponse(message)
+        return response
+    validtill = ""
+    if request.POST.has_key('validtill') and request.POST['validtill'] != "":
+        validtilldt = request.POST['validtill']
+        validtilldatetimeparts = validtilldt.split(' ')
+        message = ""
+        if validtilldatetimeparts.__len__() == 1:
+            validtilldatetimeparts.append('00:00:00')
+        if validtilldatetimeparts.__len__() == 2:
+            validtilldate, validtilltime = validtilldatetimeparts[0], validtilldatetimeparts[1]
+            validtilldateparts = validtilldate.split("-")
+            if validtilldateparts.__len__() == 3:
+                validtilldate = validtilldateparts[2] + "-" + validtilldateparts[1] + "-" + validtilldateparts[0]
+            else:
+                message = "It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+                response = HttpResponse(message)
+                return response
+            validtill = validtilldate + " " + validtilltime
+        else:
+            message = "It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+            response = HttpResponse(message)
+            return response
+    else:
+        validtill = "onwards"
+    # Now we need to start sending out the invitations. In the process, we
+    # will be creating a 'bit.ly' link that will be unique for each 
+    # candidate. In order to take the test, the candidate will need to click
+    # on that link. Also, since there may be cases where a email Id of
+    # a candidate is not in our records, we will store the bitly link, the
+    # email Id, the test Id, date of test, etc in a table 'Tests_wouldbeuser'.
+    # Once such a user accesses the test link, the system will request the
+    # user to sign up in order to take the test. Once the user signs up, a
+    # record pertaining to the user and test will be entered in Tests_usertest
+    # and the record in 'wouldbeuser' will be deleted.
+    for email in emailslist:
+        uobjqset = User.objects.filter(emailid=email)
+        uobj = None
+        candidatename = ""
+        testlink = ""
+        if uobjqset and uobjqset.__len__() > 0: # User exists
+            uobj = uobjqset[0]
+            usertestobj = UserTest()
+            usertestobj.user = uobj
+            usertestobj.emailaddr = uobj.emailid # or = email
+            usertestobj.test = testobj
+            usertestobj.status = 0 # The test hasn't been taken as yet.
+            usertestobj.testurl = ''
+            testlink = usertestobj.testurl
+            usertestobj.validfrom = validfrom
+            usertestobj.validtill = validtill
+            if validtill == 'onwards':
+                usertestobj.validtill = '2025-12-31 00:00:00'
+            candidatename = uobj.displayname
+        else: # user doesn't exist. So populate the wouldbeusers table.
+            usertestobj = None # Make this None as we check for this after sending email.
+            wouldbeuserobj = WouldbeUsers()
+            wouldbeuserobj.emailaddr = email
+            wouldbeuserobj.test = testobj
+            wouldbeuserobj.testurl = ''
+            testlink = wouldbeuserobj.testurl
+            wouldbeuserobj.validfrom = validfrom
+            wouldbeuserobj.validtill = validtill
+            if wouldbeuserobj.validtill == "onwards":
+                wouldbeuserobj.validtill = "2025-12-31 00:00:00"
+            candidatename = "candidate"
+        # Now send the email... save the above records only when email has been sent successfully
+        emailsubject = "A test has been scheduled for you on testyard"
+        emailmessage = """Dear %s,
+
+	A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+        """%(candidatename, testobj.testname, userobj.displayname)
+        if validtill == 'onwards':
+            emailmessage += """ This test will remain valid from %s %s, """%(validfrom, validtill)
+        else:
+            emailmessage += """ This test will remain valid from %s and %s, """%(validfrom, validtill)
+        emailmessage += """and hence you are kindly requested to take the test
+        within that interval. You would be able to access the test by clicking
+        on the following link: <a href='%s' target=_blank>%s</a>.
+
+        If clicking on the above link doesn't work for you, please copy it and 
+        paste it in your browser's address bar and hit enter. Do please feel
+        free to let us know in case of any issues. We would do our best to
+        resolve it at the earliest.
+
+        We wish you all the best for the test.
+
+        Regards,
+        The TestYard Team.
+        """%(testlink, testlink)
+        fromaddr = "testyardteam@testyard.com"
+        retval = 0
+        try:
+            retval = send_mail(emailsubject, emailmessage, fromaddr, [email,], False)
+            if usertestobj:
+                usertestobj.save()
+            else:
+                wouldbeuserobj.save()
+        except:
+            if mysettings.DEBUG:
+                print "sendemail failed for %s - %s\n"%(userobj.emailid, sys.exc_info()[1].__str__())
+            message = "sendemail failed for %s - %s\n"%(userobj.emailid, sys.exc_info()[1].__str__())
+            response = HttpResponse(message)
+            return response
+    message = "Done! All candidates have been emailed with the link."
+    response = HttpResponse(message)
+    return(response)
 
