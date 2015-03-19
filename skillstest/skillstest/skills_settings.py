@@ -77,7 +77,7 @@ URL_PROTOCOL = "http://"
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = 'spmprx13'
+EMAIL_HOST_PASSWORD = 'xtmt365i'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "test@testyard.com"

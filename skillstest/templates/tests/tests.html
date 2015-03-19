@@ -1143,7 +1143,7 @@
 		  }
 		  var emailsfield = processform.txtemailslist;
 		  var newlinewspattern = new RegExp("[\\n\\s]+");
-		  var emailpattern = new RegExp("[\@\.]+");
+		  var emailpattern = new RegExp("^\\s*\\w+[\.\\w\_]*\@[\\w\.\-\_]+\\s*$");
 		  if(newlinewspattern.test(emailsfield.value)){
 		    emailslist = "";
 		    emailvalues = emailsfield.value.split("\n");
@@ -1201,6 +1201,7 @@
 		  if(!validateinvitationdata(testid)){
 		    return (false);
 		  }
+		  var sendinvitestatusdiv = document.getElementById('sendinvitestatus');
 		  var xmlhttp;
 		  if (window.XMLHttpRequest){
     		    xmlhttp=new XMLHttpRequest();
@@ -1216,16 +1217,33 @@
 		      break;
 		    }
 		  }
-		  //alert(postdata);
 		  xmlhttp.onreadystatechange = function(){
 		    //alert(xmlhttp.responseText);
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		      alert("The candidates have been invited for the test " + testid.toString() + xmlhttp.responseText);
-		      return (true);
+		      sendinvitestatusdiv.innerHTML = "";
+		      sendinvitestatusdiv.style = "display:none";
+		      errorpattern = new RegExp("Error:\\s*");
+		      successpattern = new RegExp("Success:\\s*");
+		      if(errorpattern.test(xmlhttp.responseText)){
+			alert("Could not send the invitations to the candidates - " + xmlhttp.responseText);
+			return (false);
+		      }
+		      else if(successpattern.test(xmlhttp.responseText)){
+		        alert("The candidates have been invited for the test " + testid.toString());
+			closedivbyid('invitationdiv' + testid.toString());
+		        return (true);
+		      }
+		      else{
+			alert(xmlhttp.responseText);
+			closedivbyid('invitationdiv' + testid.toString());
+			return (true);
+		      }
   		    }
   		  };
 		  xmlhttp.open("POST", '{{ sendtestinvitationurl }}', true);
   		  xmlhttp.send(postdata);
+		  sendinvitestatusdiv.style = "";
+		  sendinvitestatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>&nbsp;<font size=-2 color='#00FF00'>Sending emails... Please wait.</font>";
 		}
 		</script>
 

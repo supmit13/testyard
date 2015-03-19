@@ -2194,20 +2194,20 @@ def encryptstring(mystr):
 def sendtestinvitations(request):
     message = ''
     if request.method != "POST":
-        message = error_msg('1004')
+        message = "Error: " + error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionqset = Session.objects.filter(sessioncode=sesscode)
     if not sessionqset or sessionqset.__len__() == 0:
-        message = error_msg('1008')
+        message = "Error: " + error_msg('1008')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
     if not request.POST.has_key('testid') or not request.POST.has_key('txtemailslist'):
-        message = error_msg('1069')
+        message = "Error: " +error_msg('1069')
         response = HttpResponse(message)
         return response
     testid = request.POST['testid']
@@ -2226,13 +2226,13 @@ def sendtestinvitations(request):
     try:
         testobj = Test.objects.filter(id=testid)[0]
     except:
-        message = error_msg('1056')
+        message = "Error: " + error_msg('1056')
         response = HttpResponse(message)
         return response
     # Check if the user is the creator of this test. Only creators of a test 
     # are allowed to send invitations to candidates.
     if testobj.creator.id != userobj.id:
-        message = error_msg('1070')
+        message = "Error: " + error_msg('1070')
         response = HttpResponse(message)
         return response
     validfrom = ""
@@ -2250,12 +2250,12 @@ def sendtestinvitations(request):
         if validfromdateparts.__len__() == 3:
             validfromdate = validfromdateparts[2] + "-" + validfromdateparts[1] + "-" + validfromdateparts[0]
         else:
-            message = "It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+            message = "Error: It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
             response = HttpResponse(message)
             return response
         validfrom = validfromdate + " " + validfromtime
     else:
-        message = "It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+        message = "Error: It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
         response = HttpResponse(message)
         return response
     validtill = ""
@@ -2271,16 +2271,39 @@ def sendtestinvitations(request):
             if validtilldateparts.__len__() == 3:
                 validtilldate = validtilldateparts[2] + "-" + validtilldateparts[1] + "-" + validtilldateparts[0]
             else:
-                message = "It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+                message = "Error: It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
                 response = HttpResponse(message)
                 return response
             validtill = validtilldate + " " + validtilltime
         else:
-            message = "It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+            message = "Error: It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
             response = HttpResponse(message)
             return response
     else:
         validtill = "onwards"
+    # Find the list of all evaluator's emails.
+    testevaluator = testobj.evaluator
+    testevalemailidlist = []
+    if testevaluator.groupmember1:
+        testevalemailidlist.append(testevaluator.groupmember1.emailid)
+    if testevaluator.groupmember2:
+        testevalemailidlist.append(testevaluator.groupmember2.emailid)
+    if testevaluator.groupmember3:
+        testevalemailidlist.append(testevaluator.groupmember3.emailid)
+    if testevaluator.groupmember4:
+        testevalemailidlist.append(testevaluator.groupmember4.emailid)
+    if testevaluator.groupmember5:
+        testevalemailidlist.append(testevaluator.groupmember5.emailid)
+    if testevaluator.groupmember6:
+        testevalemailidlist.append(testevaluator.groupmember6.emailid)
+    if testevaluator.groupmember7:
+        testevalemailidlist.append(testevaluator.groupmember7.emailid)
+    if testevaluator.groupmember8:
+        testevalemailidlist.append(testevaluator.groupmember8.emailid)
+    if testevaluator.groupmember9:
+        testevalemailidlist.append(testevaluator.groupmember9.emailid)
+    if testevaluator.groupmember10:
+        testevalemailidlist.append(testevaluator.groupmember10.emailid)
     # Now we need to start sending out the invitations. In the process, we
     # will be creating a 'bit.ly' link that will be unique for each 
     # candidate. In order to take the test, the candidate will need to click
@@ -2292,6 +2315,9 @@ def sendtestinvitations(request):
     # record pertaining to the user and test will be entered in Tests_usertest
     # and the record in 'wouldbeuser' will be deleted.
     for email in emailslist:
+        """ This email should not be the test creator's or one of the evaluators emails."""
+        if email == testobj.creator.emailid or email in testevalemailidlist:
+            continue
         uobjqset = User.objects.filter(emailid=email)
         uobj = None
         candidatename = ""
@@ -2356,11 +2382,11 @@ def sendtestinvitations(request):
                 wouldbeuserobj.save()
         except:
             if mysettings.DEBUG:
-                print "sendemail failed for %s - %s\n"%(userobj.emailid, sys.exc_info()[1].__str__())
-            message = "sendemail failed for %s - %s\n"%(userobj.emailid, sys.exc_info()[1].__str__())
+                print "Error: sendemail failed for %s - %s\n"%(email, sys.exc_info()[1].__str__())
+            message = "Error: sendemail failed for %s - %s\n"%(email, sys.exc_info()[1].__str__())
             response = HttpResponse(message)
             return response
-    message = "Done! All candidates have been emailed with the link."
+    message = "Success! All candidates have been emailed with the link."
     response = HttpResponse(message)
     return(response)
 

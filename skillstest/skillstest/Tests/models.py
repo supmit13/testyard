@@ -139,7 +139,7 @@ to which the link was sent.
 """
 class UserTest(models.Model):
     user = models.ForeignKey(User, blank=True, null=True) # May be null
-    emailaddr = models.EmailField(null=False, blank=False) # Email address to which the link to the 'Test' was sent.
+    emailaddr = models.EmailField(null=True, blank=False) # Email address to which the link to the 'Test' was sent.
     testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user', primary_key=True)
     test = models.ForeignKey(Test, blank=False, null=False)
     validfrom = models.DateTimeField(null=False, blank=False, default=datetime.datetime.now())
@@ -300,7 +300,7 @@ testyard as yet, but have been invited to take a test on it.
 class WouldbeUsers(models.Model):
     emailaddr = models.EmailField(null=False, blank=False) # Email address to which the link to the 'Test' was sent.
     test = models.ForeignKey(Test, related_name="+", null=True, blank=True)
-    testurl = models.URLField(null=True, blank=True, help_text='URL to access the test by the user')
+    testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user', primary_key=True)
     validfrom = models.DateTimeField(null=True, blank=True)
     validtill = models.DateTimeField(null=True, blank=True)
 
