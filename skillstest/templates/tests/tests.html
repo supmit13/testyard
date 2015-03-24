@@ -7,6 +7,18 @@
 
 	<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
 	<script language='JavaScript' type="text/javascript" src='static/javascript/aes.js'></script>
+	<style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:0px; width:275%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+	</style>
 
 	<script language='javascript'>
 	{{ assocevalgrps }}
@@ -1120,6 +1132,39 @@
 		  thediv.innerHTML = divinnerhtml;
 		}
 
+		// Display and enable the user to manage existing
+		// invitations to the test.
+		function existinginvitations(testid){
+		  var thediv = document.getElementById('existinginvitationdiv' + testid.toString());
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  var postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      thediv.style.display = "";
+		      thediv.innerHTML = xmlhttp.responseText;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ manageinvitationsurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Called from manageinvitations 
+		function activateinvitation(inviteid, tabref){
+		}
+
+		function deactivateinvitation(inviteid, tabref){
+		}
+
+		// Initiator for evaluating the test identified by the
+		// test Id passed in as the argument.
+		function evaluatetest(testid){
+		}
 
 		function closedivbyid(divid){
 		  thediv = document.getElementById(divid);
@@ -1142,8 +1187,13 @@
 		    alert("Could not identify the form.");
 		  }
 		  var emailsfield = processform.txtemailslist;
+		  if(emailsfield.value.trim() == ""){
+		    alert("Please enter email addresses of the users who are to be invited to take the test");
+		    return(false);
+		  }
 		  var newlinewspattern = new RegExp("[\\n\\s]+");
 		  var emailpattern = new RegExp("^\\s*\\w+[\.\\w\_]*\@[\\w\.\-\_]+\\s*$");
+		  var datepattern = new RegExp("\\d{2}\\-\\d{2}\\-\\d{4}(\s+\\d{2}\\:\\d{2}\\:\\d{2})?");
 		  if(newlinewspattern.test(emailsfield.value)){
 		    emailslist = "";
 		    emailvalues = emailsfield.value.split("\n");
@@ -1165,10 +1215,9 @@
 		  monthdict['Jan'] = '01';monthdict['Feb'] = '02';monthdict['Mar'] = '03';monthdict['Apr'] = '04';monthdict['May'] = '05';monthdict['Jun'] = '06';monthdict['Jul'] = '07';monthdict['Aug'] = '08';monthdict['Sep'] = '09';monthdict['Oct'] = '10';monthdict['Nov'] = '11';monthdict['Dec'] = '12';
 		  var validfromfield = processform.validfrom;
 		  var validtillfield = processform.validtill;
-		  var datepattern = new RegExp("\\d{2}\\-\\d{2}\\-\\d{4}(\s+\\d{2}\\:\\d{2}\\:\\d{2})?");
 		  var validtillmonth = '';
 		  var defaultvalidtillvalue = '';
-		  if(validfromfield.value.trim() == "" || validfromfield.value == "dd-mm-yyyy hh:mm:ss"){
+		  if(validfromfield.value.trim() == "" || validfromfield.value == "dd-mm-yyyy hh:mm:ss"){ // user did not enter a value
 		    var now = new Date();
 		    dateparts = now.toString().split(" ");
 		    validfromfieldstr = dateparts[2] + "-" + monthdict[dateparts[1]] + "-" + dateparts[3] + " " + dateparts[4];
@@ -1179,6 +1228,7 @@
 		    validfromfield.value = validfromfieldstr;
 		    defaultvalidtillvalue = dateparts[2] + "-" + validtillmonth.toString() + "-" + dateparts[3] + " " + dateparts[4];
 		  }
+		  
 		  if(validtillfield.value.trim() == "dd-mm-yyyy hh:mm:ss" || validtillfield.value.trim() == ""){
 		    validtillfield.value = defaultvalidtillvalue;
 		  }
@@ -1187,10 +1237,148 @@
 		    validfromfield.focus();
 		    return(false);
 		  }
+		  else{ // user has entered a value
+		    validfromstr = validfromfield.value;
+		    validfromparts = validfromstr.split(" ");
+		    if(validfromparts.length == 2){
+		      validfromdate = validfromparts[0];
+		      validfromtime = validfromparts[1];
+		    }
+		    else if(validfromparts.length == 1){
+		      validfromdate = validfromparts[0];
+		      validfromtime = "";
+		    }
+		    validfromdateparts = validfromdate.split("-");
+		    if(validfromdateparts.length < 3){
+		      alert("Incorrect date format in valid from field. Please rectify and try again.");
+		      validfromfield.focus();
+		      return(false);
+		    }
+		    validfromdd = validfromdateparts[0];
+		    validfrommm = validfromdateparts[1];
+		    validfromyyyy = validfromdateparts[2];
+		    if(parseInt(validfrommm) > 12){
+		      alert("Incorrect Valid From field month value");
+		      validfromfield.focus();
+		      return(false);
+		    }
+		    if(validfrommm == '01' || validfrommm == '03' || validfrommm == '05' || validfrommm == '07' || validfrommm == '08' || validfrommm == '10' || validfrommm == '12'){
+		      if(parseInt(validfromdd) > 31){
+		        alert("Invalid day value in Valid From field");
+		      	validfromfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else if(validfrommm == '04' || validfrommm == '06' || validfrommm == '09' || validfrommm == '11'){
+		      if(parseInt(validfromdd) > 30){
+			alert("Invalid day value in Valid From field");
+		      	validfromfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else{
+		      if((validfromyyyy % 4 == 0 && validfromyyyy % 100 != 0) || (validfromyyyy % 100 == 0 && validfromyyyy % 400 == 0)){ // leap year
+			if(parseInt(validfromdd) > 29){
+			  alert("Invalid day value in Valid From field");
+		      	  validfromfield.focus();
+		      	  return(false);
+			}
+		      }
+		      else{
+			if(parseInt(validfromdd) > 28){
+			  alert("Invalid day value in Valid From field");
+		      	  validfromfield.focus();
+		      	  return(false);
+			}
+		      }
+		    }
+		    if(validfromtime != ""){
+		      validfromtimeparts = validfromtime.split(":");
+		      if(validfromtimeparts.length > 3){
+			alert("Invalid time value in Valid From field");
+			validfromfield.focus();
+		      	return(false);
+		      }
+		      if(validfromtimeparts[0] >= 24 || validfromtimeparts[0] < 0 || validfromtimeparts[1] > 59 || validfromtimeparts[1] < 0 || validfromtimeparts[2] > 59 || validfromtimeparts[2] < 0){
+			alert("Invalid time value in Valid From field");
+			validfromfield.focus();
+		      	return(false);
+		      }
+		    }
+		  }
 		  if(validtillfield.value != "" && !datepattern.test(validtillfield.value)){
 		    alert("The valid till field has inappropriate format. Please correct it and try again.");
 		    validtillfield.focus();
 		    return(false);
+		  }
+		  if(validtillfield.value != "" && datepattern.test(validtillfield.value)){ // user has entered a value
+		    validtillstr = validtillfield.value;
+		    validtillparts = validtillstr.split(" ");
+		    if(validtillparts.length == 2){
+		      validtilldate = validtillparts[0];
+		      validtilltime = validtillparts[1];
+		    }
+		    else if(validtillparts.length == 1){
+		      validtilldate = validtillparts[0];
+		      validtilltime = "";
+		    }
+		    validtilldateparts = validtilldate.split("-");
+		    if(validtilldateparts.length < 3){
+		      alert("Incorrect date format in Valid Till field. Please rectify and try again.");
+		      validtillfield.focus();
+		      return(false);
+		    }
+		    validtilldd = validtilldateparts[0];
+		    validtillmm = validtilldateparts[1];
+		    validtillyyyy = validtilldateparts[2];
+		    if(parseInt(validtillmm) > 12){
+		      alert("Incorrect Valid Till field month value");
+		      validtillfield.focus();
+		      return(false);
+		    }
+		    if(validtillmm == '01' || validtillmm == '03' || validtillmm == '05' || validtillmm == '07' || validtillmm == '08' || validtillmm == '10' || validtillmm == '12'){
+		      if(parseInt(validtilldd) > 31){
+		        alert("Invalid day value in Valid Till field");
+		      	validtillfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else if(validtillmm == '04' || validtillmm == '06' || validtillmm == '09' || validtillmm == '11'){
+		      if(parseInt(validtilldd) > 30){
+			alert("Invalid day value in Valid Till field");
+		      	validtillfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else{
+		      if((validtillyyyy % 4 == 0 && validtillyyyy % 100 != 0) || (validtillyyyy % 100 == 0 && validtillyyyy % 400 == 0)){ // leap year
+			if(parseInt(validtilldd) > 29){
+			  alert("Invalid day value in Valid Till field");
+		      	  validtillfield.focus();
+		      	  return(false);
+			}
+		      }
+		      else{
+			if(parseInt(validtilldd) > 28){
+			  alert("Invalid day value in Valid Till field");
+		      	  validtillfield.focus();
+		      	  return(false);
+			}
+		      }
+		    }
+		    if(validtilltime != ""){
+		      validtilltimeparts = validtilltime.split(":");
+		      if(validtilltimeparts.length > 3){
+			alert("Invalid time value in Valid Till field");
+			validtillfield.focus();
+		      	return(false);
+		      }
+		      if(validtilltimeparts[0] >= 24 || validtilltimeparts[0] < 0 || validtilltimeparts[1] > 59 || validtilltimeparts[1] < 0 || validtilltimeparts[2] > 59 || validtilltimeparts[2] < 0){
+			alert("Invalid time value in Valid Till field");
+			validtillfield.focus();
+		      	return(false);
+		      }
+		    }
 		  }
 		  return true;
 		}
@@ -1213,7 +1401,7 @@
 		  var processedformname = 'frminvitecandidates' + testid.toString();
 		  for (var i=0; i < document.forms.length; i++){
 		    if(document.forms[i].name == processedformname){
-		      postdata = postdata + "&csrfmiddlewaretoken=" + document.forms[i].csrfmiddlewaretoken.value + "&txtemailslist=" + document.forms[i].txtemailslist.value + "&validfrom=" + document.forms[i].validfrom.value + "&validtill=" + document.forms[i].validtill.value;
+		      postdata = postdata + "&csrfmiddlewaretoken=" + document.forms[i].csrfmiddlewaretoken.value + "&txtemailslist=" + document.forms[i].txtemailslist.value + "&validfrom=" + document.forms[i].validfrom.value + "&validtill=" + document.forms[i].validtill.value + "&baseurl=" + document.forms[i].baseurl.value;
 		      break;
 		    }
 		  }
@@ -1264,6 +1452,7 @@
 			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
@@ -1288,6 +1477,7 @@
 			<tr>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none' class='semitrans'></div></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
@@ -1337,7 +1527,7 @@
 			</tr>
 			{% for testnm in tests_evaluator_ordered_createdate reversed %}
 			<tr>
-			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}'>{{ evaluator_tests_info|dictlookup:testnm|getval:20 }} (username={{ evaluator_tests_info|dictlookup:testnm|getval:21 }})</a></font></td>

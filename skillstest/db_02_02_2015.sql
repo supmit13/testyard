@@ -499,6 +499,11 @@ alter table Tests_usertest modify clientsware char(150) default '';
 alter table Tests_usertest modify sessid char(50) default '';
 alter table Tests_usertest modify score double default NULL;
 
+alter table Tests_usertest add column active boolean default true;
+alter table Tests_wouldbeusers add column active boolean default true;
+
+alter table Tests_usertest drop primary key;
+alter table Tests_usertest add column id int auto_increment primary key;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

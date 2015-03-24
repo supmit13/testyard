@@ -98,6 +98,7 @@ SAVE_CHANGES_URL = "skillstest/tests/challenges/savechanges/"
 ADD_MORE_URL = "skillstest/tests/challenges/addmore/"
 EDIT_EXISTING_TEST_URL = "skillstest/tests/editexistingtest/"
 VIEW_TEST_URL = "skillstest/tests/viewtest/"
+MANAGE_INVITATIONS_URL = "skillstest/tests/invitations/manage/"
 SEARCH_URL = "skillstest/tests/search/"
 NETWORK_URL = "skillstest/network/"
 ANALYTICS_URL = "skillstest/analytics/"
@@ -202,4 +203,8 @@ REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' 
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
 DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
+
+# Bitly Details:
+BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
+BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 

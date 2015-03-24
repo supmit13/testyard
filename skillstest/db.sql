@@ -358,4 +358,10 @@ alter table Tests_usertest modify clientsware char(150) default '';
 alter table Tests_usertest modify sessid char(50) default '';
 alter table Tests_usertest modify score double default NULL;
 
+alter table Tests_usertest add column active boolean default true;
+alter table Tests_wouldbeusers add column active boolean default true;
+
+alter table Tests_usertest drop primary key;
+alter table Tests_usertest add column id int auto_increment primary key;
+
 COMMIT;

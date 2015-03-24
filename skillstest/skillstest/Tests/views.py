@@ -43,7 +43,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -130,9 +130,12 @@ def get_user_tests(request):
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
 
     try:
-        testlist_ascandidate = UserTest.objects.filter(user=userobj)[0].test
+        usertestqset = UserTest.objects.filter(user=userobj)
     except: # Can't say if we will find any records...
-        testlist_ascandidate = []
+        usertestqset = []
+    testlist_ascandidate = []
+    for usertest in usertestqset:
+        testlist_ascandidate.append(usertest.test)
     user_candidate_other_creator_evaluator_dict = {}
     for test in testlist_ascandidate:
         testcreator = test.creator
@@ -174,6 +177,7 @@ def get_user_tests(request):
     tests_user_dict['editchallengeurl'] = skillutils.gethosturl(request) + "/" + editchallengeurl
     tests_user_dict['showtestcandidatemode'] = skillutils.gethosturl(request) + "/" + showtestcandidatemode
     tests_user_dict['sendtestinvitationurl'] = skillutils.gethosturl(request) + "/" + sendtestinvitationurl
+    tests_user_dict['manageinvitationsurl'] = skillutils.gethosturl(request) + "/" + manageinvitationsurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
@@ -392,18 +396,19 @@ def manage(request):
             attemptsintervalunit = tobj.attemptsinterval
             scope = tobj.scope
             activationdate = tobj.activationdate
-            testurl = generatetesturl(tobj, userobj, tests_user_dict)
-            evaluatoruserobj = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
+            #testurl = generatetesturl(tobj, userobj, tests_user_dict)
+            # The above line is causing some strange issues - Needs investigation with a fresh mind
+            evaluatoruserobjs = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
             evaluatorlinkslist = []
             for evaluserobj in evaluatoruserobjs:
-                if not evaluserobj:
+                if evaluserobj is None:
                     continue
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
             testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks]
         except:
-            response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
+            response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
             return HttpResponse(response)
     tests_user_dict['candidate_tests_info'] = testnames_candidature_dict
     # Now create and render the template here
@@ -1955,8 +1960,34 @@ this URL, we use the bit.ly API every time to expand the short URL, get
 the parameters from this URL (in order to identify the test to display),
 and then display the test to the user.
 """
-def gettesturlforuser(targetuseremail, testid):
-    pass
+def gettesturlforuser(targetuseremail, testid, baseurl):
+    testobj = None
+    targetuserid = targetuseremail # If we can't find the targetuserid, then we will use the targetuseremail.
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "Error: " + error_msg('1056')
+        response = HttpResponse(message)
+        return response
+    try:
+        targetuserobj = User.objects.filter(emailid=targetuseremail)[0]
+        targetuserid = targetuserobj.id
+    except:
+        pass
+    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test"
+    # Now bitlyfy the testurl
+    import urllib, urllib2
+    bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS + "/v3/shorten?access_token=" + mysettings.BITLY_OAUTH_ACCESS_TOKEN + "&longUrl=" + skillutils.urlencodestring(testurl)
+    try:
+        httpresponsejson = urllib2.urlopen(bitlyapiurl)
+        jsonstringcontent = httpresponsejson.read()
+    except:
+        message = "Error: %s"%(sys.exc_info()[1].__str__())
+        response = HttpResponse(message)
+        return response
+    jsonobj = json.loads(jsonstringcontent)
+    shorttesturl = jsonobj['data']['url']
+    return shorttesturl
 
 
 """
@@ -1974,7 +2005,7 @@ def generatetesturl(testobj, userobj, tests_user_dict):
         return ""
     else:
         testurl = tests_user_dict['baseURL'] + "/" + mysettings.VIEW_TEST_URL + "?tlinkid=" + testobj.testlinkid + "&testid=" + str(testobj.id)
-        return testurl
+    return testurl
 
 
 """
@@ -1998,7 +2029,10 @@ the response in the name of the user to the database).
 @skillutils.session_location_match
 @csrf_protect
 def showtestcandidatemode(request):
-    if request.method != "POST": # If it is not a POST request, shoot it down.
+    if request.method != "POST" and request.method != 'GET': # If it is not a
+        # POST or GET request, shoot it down. POST request comes when an
+        # evaluator or creator tries to view the test as shown to the
+        # candidates. GET comes when the user clicks on the bitly test link.
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
@@ -2006,11 +2040,15 @@ def showtestcandidatemode(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
-    if not request.POST.has_key('testid'):
+    if not request.POST.has_key('testid') and not request.GET.has_key('testid'):
         message = error_msg('1059')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
-    testid = request.POST['testid']
+    testid = -1
+    if request.method == 'POST':
+        testid = request.POST['testid']
+    else:
+        testid = request.GET['testid']
     testdict = {} # This will be our json object...
     testobj = None
     try:
@@ -2211,6 +2249,7 @@ def sendtestinvitations(request):
         response = HttpResponse(message)
         return response
     testid = request.POST['testid']
+    baseurl = request.POST['baseurl']
     emailsliststr = request.POST['txtemailslist']
     emailsliststr = re.sub(re.compile(r"%20", re.MULTILINE|re.DOTALL), mysettings.HEXCODE_CHAR_MAP['%20'], emailsliststr) # replace for whitespace
     emailsliststr = re.sub(re.compile(r"%2C", re.MULTILINE|re.DOTALL), ",", emailsliststr) # replace for comma
@@ -2329,7 +2368,7 @@ def sendtestinvitations(request):
             usertestobj.emailaddr = uobj.emailid # or = email
             usertestobj.test = testobj
             usertestobj.status = 0 # The test hasn't been taken as yet.
-            usertestobj.testurl = ''
+            usertestobj.testurl = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
             testlink = usertestobj.testurl
             usertestobj.validfrom = validfrom
             usertestobj.validtill = validtill
@@ -2341,7 +2380,7 @@ def sendtestinvitations(request):
             wouldbeuserobj = WouldbeUsers()
             wouldbeuserobj.emailaddr = email
             wouldbeuserobj.test = testobj
-            wouldbeuserobj.testurl = ''
+            wouldbeuserobj.testurl = gettesturlforuser(wouldbeuserobj.emailaddr, testid, baseurl)
             testlink = wouldbeuserobj.testurl
             wouldbeuserobj.validfrom = validfrom
             wouldbeuserobj.validtill = validtill
@@ -2389,4 +2428,90 @@ def sendtestinvitations(request):
     message = "Success! All candidates have been emailed with the link."
     response = HttpResponse(message)
     return(response)
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def manageinvitations(request):
+    message = ''
+    if request.method != "POST":
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = None
+    if not request.POST.has_key('testid'):
+        message = "Error: %s."%(error_msg('1059'))
+        response = HttpResponse(message)
+        return response
+    testid = request.POST['testid'] # Got the test. Now extract data and populate the manageinvitation.html template
+    testobj = None
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "Error: %s"%(error_msg('1056'))
+        response = HttpResponse(message)
+        return responses
+    usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")
+    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active") # The status of these will always be 'Not Taken', since if the user tries to take the test, she/he will be asked to logon.
+    if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
+        message = "Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\">Close</a>"%testid
+        response = HttpResponse(message)
+        return response
+    invitations_dict = {'usertest' : {}, 'wouldbeusers' : {}, 'testname' : testobj.testname, 'testid' : testid }
+    usertest_dict = invitations_dict['usertest']
+    wouldbeusers_dict = invitations_dict['wouldbeusers']
+    usertest_dict['LENGTH'] = usertestqset.__len__()
+    wouldbeusers_dict['LENGTH'] = wouldbeuserqset.__len__()
+    ctr = 100
+    for usertest in usertestqset:
+        status = usertest.status
+        if usertest.status == 0:
+            status = "Test not yet taken"
+        elif usertest.status == 1:
+            status = "Test is being taken"
+        elif usertest.status == 2:
+            status = "Test  has been taken"
+        else:
+            status = "Unknown status"
+        outcome = usertest.outcome
+        if not usertest.outcome:
+            outcome = "NA"
+        score = usertest.score
+        if not usertest.score:
+            score = "NA"
+        starttime, endttime = skillutils.readabledatetime(usertest.starttime), skillutils.readabledatetime(usertest.endtime)
+        if not usertest.starttime and  not usertest.endtime:
+            starttime, endtime = "NA", "NA"
+        ipaddress = usertest.ipaddress
+        if not usertest.ipaddress:
+            ipaddress = "NA"
+        clientsware = usertest.clientsware
+        if not usertest.clientsware:
+            clientsware = "NA"
+        usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active ]
+        ctr += 1
+    invitations_dict['usertest'] = usertest_dict
+    status = "Test not yet taken"
+    ctr = 100
+    for wouldbeuser in wouldbeuserqset:
+        wouldbeuserid = ctr
+        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, wouldbeuser.active ]
+        ctr += 1
+    invitations_dict['wouldbeusers'] = wouldbeusers_dict
+    tmpl = get_template("tests/manageinvitations.html")
+    invitations_dict.update(csrf(request))
+    cxt = Context(invitations_dict)
+    invitationshtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        invitationshtml = invitationshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(invitationshtml)
 

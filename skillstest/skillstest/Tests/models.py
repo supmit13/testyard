@@ -138,9 +138,9 @@ system will store the test link by associating it with the email address
 to which the link was sent.
 """
 class UserTest(models.Model):
-    user = models.ForeignKey(User, blank=True, null=True) # May be null
+    user = models.ForeignKey(User, blank=True, null=True) # May be null (?)
     emailaddr = models.EmailField(null=True, blank=False) # Email address to which the link to the 'Test' was sent.
-    testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user', primary_key=True)
+    testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user')
     test = models.ForeignKey(Test, blank=False, null=False)
     validfrom = models.DateTimeField(null=False, blank=False, default=datetime.datetime.now())
     #validtill = models.DateTimeField(default=validfrom + datetime.timedelta(hours=Test.objects.get('id'=Test().id).duration))
@@ -155,6 +155,7 @@ class UserTest(models.Model):
     ipaddress = models.GenericIPAddressField(default='') # IP address from which the user logged in to take the test.
     clientsware = models.CharField(max_length=150, default='') # User-agent (browser signature) of the user.
     sessid = models.CharField(max_length=50, default='')
+    active = models.BooleanField(default=True)
 
 
     class Meta:
@@ -303,6 +304,7 @@ class WouldbeUsers(models.Model):
     testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user', primary_key=True)
     validfrom = models.DateTimeField(null=True, blank=True)
     validtill = models.DateTimeField(null=True, blank=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "wouldbeusers Table"

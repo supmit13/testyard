@@ -3,6 +3,7 @@ import tempfile, shutil
 from functools import wraps
 import datetime
 import uuid, glob
+import urllib, urllib2
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -400,4 +401,41 @@ def mysqltopythondatetime(mysqldatetime):
         mysqlhh, mysqlmm, mysqlss = hms[0], hms[1], '00'
     pythondatetime = datetime.datetime(int(mysqlyyyy), int(mysqlmon), int(mysqldd), int(mysqlhh), int(mysqlmm), int(mysqlss))
     return pythondatetime
+
+"""
+This will receive a date formatted like: 2015-03-24 16:59:34+00:00
+The return value would be '24 Mar 2015, 16:59:34'. If the date comes
+in any other format, the returned value would in the format 
+YYYY-MM-DD hh:mm:ss.
+"""
+def readabledatetime(mysqldatefmt):
+    if not mysqldatefmt:
+        return ""
+    datepart, timepart = mysqldatefmt.split(" ")
+    dateelements = datepart.split("-")
+    cleantimeparts = timepart.split("+")
+    if dateelements.__len__() != 3:
+        print "Received date is not in expected format: YYYY-MM-DD hh:mm:ss: %s\n"%mysqldatefmt
+        return datepart + " " + cleantimeparts[0]
+    YYYY = dateelements[0]
+    MM = dateelements[1]
+    DD = dateelements[2]
+    mon = mysettings.REV_MONTHS_DICT[str(MM)]
+    readabledatetimestr = "%s %s %s, %s"%(DD, mon, YYYY, cleantimeparts[0])
+    return readabledatetimestr
+
+
+    
+
+
+def urlencodestring(s):
+    tmphash = {'str' : s }
+    encodedStr = urllib.urlencode(tmphash)
+    encodedPattern = re.compile(r"^str=(.*)$")
+    encodedSearch = encodedPattern.search(encodedStr)
+    encodedStr = encodedSearch.groups()[0]
+    encodedStr = encodedStr.replace('.', '%2E')
+    encodedStr = encodedStr.replace('-', '%2D')
+    encodedStr = encodedStr.replace(',', '%2C')
+    return (encodedStr)
 
