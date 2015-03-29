@@ -364,4 +364,7 @@ alter table Tests_wouldbeusers add column active boolean default true;
 alter table Tests_usertest drop primary key;
 alter table Tests_usertest add column id int auto_increment primary key;
 
+alter table Tests_usertest add column cancelled boolean default false;
+alter table Tests_wouldbeusers add column cancelled boolean default false;
+
 COMMIT;

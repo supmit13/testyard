@@ -43,7 +43,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -178,6 +178,7 @@ def get_user_tests(request):
     tests_user_dict['showtestcandidatemode'] = skillutils.gethosturl(request) + "/" + showtestcandidatemode
     tests_user_dict['sendtestinvitationurl'] = skillutils.gethosturl(request) + "/" + sendtestinvitationurl
     tests_user_dict['manageinvitationsurl'] = skillutils.gethosturl(request) + "/" + manageinvitationsurl
+    tests_user_dict['invitationactivationurl'] = skillutils.gethosturl(request) + "/" + invitationactivationurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
@@ -2514,4 +2515,57 @@ def manageinvitations(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         invitationshtml = invitationshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(invitationshtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def invitationactivation(request):
+    message = ''
+    if request.method != "POST":
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    invitationurl, tablename, action = "", "", 1
+    if request.POST.has_key('inviteid'):
+        invitationurl = request.POST['inviteid']
+    if request.POST.has_key('table'):
+        tablename = request.POST['table']
+    if request.POST.has_key('action'):
+        action = request.POST['action']
+    inviteobj = None
+    message = ''
+    try:
+        if tablename == 'usertest':
+            inviteobj =UserTest.objects.filter(testurl=invitationurl)[0]
+        elif tablename == 'wouldbeusers':
+            inviteobj =WouldbeUsers.objects.filter(testurl=invitationurl)[0]
+        else:
+            pass
+    except:
+        message = 'Could not create any invitation object (possibly due to Id mismatch - %s)'%invitationid
+        response = HttpResponse(message)
+        return response
+    if int(action) == 1: # Set active to True
+        inviteobj.active = True
+        inviteobj.save()
+        message = "Invitation URL '%s' has been activated as per your request."%inviteobj.testurl
+    else:
+        inviteobj.active = False
+        inviteobj.save()
+        message = "Invitation URL '%s' has been deactivated as per your request."%inviteobj.testurl
+    response = HttpResponse(message)
+    return response
+    
+    
+
 

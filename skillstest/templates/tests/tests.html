@@ -1132,9 +1132,32 @@
 		  thediv.innerHTML = divinnerhtml;
 		}
 
+
+		function disableLink(linkname){
+        	  var mylinks = document.getElementsByName(linkname);
+		  for(var i =0; i < mylinks.length; i++){
+		    mylinks[i].disabled=true;
+		    mylinks[i].removeAttribute('href');
+		    mylinks[i].style.textDecoration = 'none';
+		    mylinks[i].style.cursor = 'default';
+		  }
+        	}
+
+		function enableLink(linkname){
+		  var mylinks = document.getElementsByName(linkname);
+		  for(var i=0; i < mylinks.length; i++){
+		    mylinks[i].disabled=false;
+		    mylinks[i].href = '#/';
+		    mylinks[i].style.textDecoration = "underline";
+		    mylinks[i].style.cursor = "hand";
+		  }  
+        	}
+		
+
 		// Display and enable the user to manage existing
 		// invitations to the test.
 		function existinginvitations(testid){
+		  //disableLink('manageexistinginvitations');
 		  var thediv = document.getElementById('existinginvitationdiv' + testid.toString());
 		  var xmlhttp;
 		  if (window.XMLHttpRequest){
@@ -1154,11 +1177,50 @@
   		  xmlhttp.send(postdata);
 		}
 
-		// Called from manageinvitations 
+		// Called from manageinvitations. Deactivation is
+  		// a temporary state and it can be revoked using 
+		// activateinvitation.
 		function activateinvitation(inviteid, tabref){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  var postdata = "inviteid=" + inviteid +  "&table=" + tabref + "&csrfmiddlewaretoken=" + document.manageinvites.csrfmiddlewaretoken.value + "&action=1"; //  action = 1 for activation
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert(xmlhttp.responseText);
+		      window.location.href = window.location.href;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ invitationactivationurl }}', true);
+  		  xmlhttp.send(postdata);
 		}
 
 		function deactivateinvitation(inviteid, tabref){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  var postdata = "inviteid=" + inviteid +  "&table=" + tabref + "&csrfmiddlewaretoken=" + document.manageinvites.csrfmiddlewaretoken.value + "&action=0"; //  action = 1 for activation
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert(xmlhttp.responseText);
+		      window.location.href = window.location.href;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ invitationactivationurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Cancel is a permanent state from which the invitation
+		// cannot be made available to user
+		function cancelinvitation(inviteid, tabref){
 		}
 
 		// Initiator for evaluating the test identified by the
@@ -1433,8 +1495,8 @@
 		  sendinvitestatusdiv.style = "";
 		  sendinvitestatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>&nbsp;<font size=-2 color='#00FF00'>Sending emails... Please wait.</font>";
 		}
-		</script>
 
+		</script>
 		<div class="post">
 			<span class="meta">
 			<h3>Dear {{ displayname }},</h3>
@@ -1477,7 +1539,7 @@
 			<tr>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
-			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none' class='semitrans'></div></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#/' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none' class='semitrans'></div></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>

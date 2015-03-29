@@ -92,6 +92,7 @@ LOGIN_REDIRECT_URL = PROFILE_URL
 CREATE_TEST_URL = "skillstest/tests/create/"
 EDIT_TEST_URL = "skillstest/tests/edit/"
 MANAGE_TEST_URL = "skillstest/tests/"
+INVITATION_ACTIVATION_URL = "skilltest/test/invitation/activation/"
 TEST_SUMMARY_URL = "skillstest/tests/summary/"
 DELETE_CHALLENGE_URL = "skillstest/tests/challenges/delete/"
 SAVE_CHANGES_URL = "skillstest/tests/challenges/savechanges/"

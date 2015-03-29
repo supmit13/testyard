@@ -156,6 +156,7 @@ class UserTest(models.Model):
     clientsware = models.CharField(max_length=150, default='') # User-agent (browser signature) of the user.
     sessid = models.CharField(max_length=50, default='')
     active = models.BooleanField(default=True)
+    cancelled = models.BooleanField(default=False)
 
 
     class Meta:
@@ -305,6 +306,7 @@ class WouldbeUsers(models.Model):
     validfrom = models.DateTimeField(null=True, blank=True)
     validtill = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
+    cancelled = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "wouldbeusers Table"
