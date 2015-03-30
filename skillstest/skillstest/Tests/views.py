@@ -43,7 +43,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
@@ -179,6 +179,7 @@ def get_user_tests(request):
     tests_user_dict['sendtestinvitationurl'] = skillutils.gethosturl(request) + "/" + sendtestinvitationurl
     tests_user_dict['manageinvitationsurl'] = skillutils.gethosturl(request) + "/" + manageinvitationsurl
     tests_user_dict['invitationactivationurl'] = skillutils.gethosturl(request) + "/" + invitationactivationurl
+    tests_user_dict['invitationcancelurl'] = skillutils.gethosturl(request) + "/" + invitationcancelurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
@@ -2462,7 +2463,7 @@ def manageinvitations(request):
         response = HttpResponse(message)
         return responses
     usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")
-    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active") # The status of these will always be 'Not Taken', since if the user tries to take the test, she/he will be asked to logon.
+    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active") # The status of these will always be 'Not Taken', since if the user tries to take the test, she/he will be asked 																		to logon.
     if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
         message = "Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\">Close</a>"%testid
         response = HttpResponse(message)
@@ -2498,14 +2499,14 @@ def manageinvitations(request):
         clientsware = usertest.clientsware
         if not usertest.clientsware:
             clientsware = "NA"
-        usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active ]
+        usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled ]
         ctr += 1
     invitations_dict['usertest'] = usertest_dict
     status = "Test not yet taken"
     ctr = 100
     for wouldbeuser in wouldbeuserqset:
         wouldbeuserid = ctr
-        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, wouldbeuser.active ]
+        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, wouldbeuser.active, wouldbeuser.cancelled ]
         ctr += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict
     tmpl = get_template("tests/manageinvitations.html")
@@ -2558,14 +2559,55 @@ def invitationactivation(request):
     if int(action) == 1: # Set active to True
         inviteobj.active = True
         inviteobj.save()
-        message = "Invitation URL '%s' has been activated as per your request."%inviteobj.testurl
+        message = "Invitation URL '%s' has been activated as per your request. Please reopen the invitations view to observe the changes."%inviteobj.testurl
     else:
         inviteobj.active = False
         inviteobj.save()
-        message = "Invitation URL '%s' has been deactivated as per your request."%inviteobj.testurl
+        message = "Invitation URL '%s' has been deactivated as per your request. Please reopen the invitations view to observe the changes."%inviteobj.testurl
     response = HttpResponse(message)
     return response
     
-    
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def invitationcancellation(request):
+    message = ''
+    if request.method != "POST":
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    invitationurl, tablename = "", ""
+    if request.POST.has_key('inviteurl'):
+        invitationurl = request.POST['inviteurl']
+    if request.POST.has_key('table'):
+        tablename = request.POST['table']
+    inviteobj = None
+    message = ''
+    try:
+        if tablename == 'usertest':
+            inviteobj = UserTest.objects.filter(testurl=invitationurl)[0]
+        elif tablename == 'wouldbeusers':
+            inviteobj =WouldbeUsers.objects.filter(testurl=invitationurl)[0]
+        else:
+            pass
+    except:
+        message = 'Could not create any invitation object (possibly due to Id mismatch - %s)'%invitationid
+        response = HttpResponse(message)
+        return response
+    inviteobj.cancelled = True
+    inviteobj.save()
+    message = "Invitation URL '%s' has been cancelled as per your request. Please reopen the invitations view to observe the changes."%inviteobj.testurl
+    response = HttpResponse(message)
+    return response
 
 

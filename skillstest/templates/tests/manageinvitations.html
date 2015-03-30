@@ -1,5 +1,5 @@
 <form name='manageinvites' id='manageinvites' method='' action=''>
-<h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
+<h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
 {% if usertest.LENGTH > 0 %}
 <br /><br />
 <div id='utinfo' style=''>
@@ -33,11 +33,15 @@
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.10 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.11 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.12 }}</font></td>
-        {% if utvalue.13 == 1 %}
-        <td nowrap align='center'><font color='#0508E3' size=-1>Active<a href='#/' onClick='javascript:deactivateinvitation("{{ utvalue.2 }}", "usertest");'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utkey }}", "usertest")'>Cancel invitation</a></font></td>
+	{% if utvalue.14 == 1 %}
+	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
         {% else %}
-        <td nowrap align='center'><font color='#0508E3' size=-1>Inactive<a href='#/' onClick='javascript:activateinvitation("{{ utvalue.2 }}", "usertest");'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utkey }}", "usertest")'>Cancel invitation</a></font></td>
+	{%if utvalue.13 == 1 %}
+        <td nowrap align='center'><font color='#0508E3' size=-1>Active<a href='#/' onClick='javascript:deactivateinvitation("{{ utvalue.2 }}", "usertest");'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utvalue.2 }}", "usertest")'>Cancel invitation</a></font></td>
+        {% else %}
+        <td nowrap align='center'><font color='#0508E3' size=-1>Inactive<a href='#/' onClick='javascript:activateinvitation("{{ utvalue.2 }}", "usertest");'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utvalue.2 }}", "usertest")'>Cancel invitation</a></font></td>
         {% endif %}
+	{% endif %}
     </tr>
     {% endif %}
 {% endfor %}
@@ -65,11 +69,15 @@
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.2 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.3 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.4 }}</font></td>
+	{% if wbuvalue.6 == 1 %}
+	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
+	{%else %}
         {% if wbuvalue.5 == 1 %}
-        <td nowrap align='center'><font color='#0508E3' size=-1>Active <a href='#/' onClick='javascript:deactivateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utkey }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>Active <a href='#/' onClick='javascript:deactivateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
         {% else %}
-        <td nowrap align='center'><font color='#0508E3' size=-1>Inctive <a href='#/' onClick='javascript:activateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utkey }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>Inctive <a href='#/' onClick='javascript:activateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
         {% endif %}
+	{% endif %}
     </tr>
     {% endif %}
 {% endfor %}

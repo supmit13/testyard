@@ -1220,7 +1220,27 @@
 
 		// Cancel is a permanent state from which the invitation
 		// cannot be made available to user
-		function cancelinvitation(inviteid, tabref){
+		function cancelinvitation(inviteurl, tabref){
+		  var resp = confirm("This action will permanently cancel the invitation Do you want to continue?");
+    		  if(!resp){
+		    return(false);
+		  }
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  var postdata = "inviteurl=" + inviteurl +  "&table=" + tabref + "&csrfmiddlewaretoken=" + document.manageinvites.csrfmiddlewaretoken.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert(xmlhttp.responseText);
+		      window.location.href = window.location.href;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ invitationcancelurl }}', true);
+  		  xmlhttp.send(postdata);
 		}
 
 		// Initiator for evaluating the test identified by the

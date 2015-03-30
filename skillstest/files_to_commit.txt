@@ -499,3 +499,14 @@ Thu, 24 Mar 2015, 02:15 HRS (IST).
 11.db_02_02_2015.sql
 12.files_to_commit.txt
 
+=====================================
+
+Mon, 30 Mar 2015, 07:25 HRS (IST).
+----------------------------------
+1. templates/tests/tests.html
+2. skillstest/Tests/views.py
+3. skillstest/skills_settings.py
+4. skillstest/urls.py
+5. templates/tests/manageinvitations.html
+6. files_to_commit.txt
+
