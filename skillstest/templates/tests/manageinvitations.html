@@ -75,7 +75,7 @@
         {% if wbuvalue.5 == 1 %}
         <td nowrap align='center'><font color='#0508E3' size=-1>Active <a href='#/' onClick='javascript:deactivateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
         {% else %}
-        <td nowrap align='center'><font color='#0508E3' size=-1>Inctive <a href='#/' onClick='javascript:activateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>Inactive <a href='#/' onClick='javascript:activateinvitation("{{ wbuvalue.2 }}", "wouldbeusers");'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers")'>Cancel Invitation</a></font></td>
         {% endif %}
 	{% endif %}
     </tr>

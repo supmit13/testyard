@@ -117,6 +117,7 @@ SHOW_USER_VIEW_URL = "skillstest/tests/challenge/showuserview/"
 EDIT_CHALLENGE_URL = "skillstest/tests/challenge/edit/"
 SHOW_TEST_CANDIDATE_MODE_URL = "skillstest/test/showtestcandidatemode/"
 SEND_TEST_INVITATION_URL = "skillstest/test/sendtestinvitations/"
+SEND_TEST_DATA_URL = "skillstest/test/sendtestdata/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -174,7 +175,7 @@ REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]*)$", re.MULTILINE | re.DOTALL)
 
 # Dictionary containing all rules that may be imposed on a test.
 RULES_DICT = { \
-        'breakallowed' : 'Breaks are allowed while taking the test', \
+        'breaknotallowed' : 'Breaks are NOT allowed while taking the test', \
         'responsenoreturn' : 'Responded challenges may not be revisited', \
         'norevisit' : 'Attempted challenges may not be revisited', \
         }
@@ -209,4 +210,7 @@ DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 byte
 # Bitly Details:
 BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
+
+LOG_PATH = "/home/supriyo/work/testyard/logs"
+
 

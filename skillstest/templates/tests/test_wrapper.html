@@ -1,0 +1,313 @@
+<html>
+<head>
+<title>TestYard Test Taker</title>
+{% autoescape on %}
+<style>
+	.semitranstesttaker {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:50px; left:0px; width:100%; height:100%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+</style>
+
+<!-- Scroll Clock Style -->
+<style type='text/css'>
+div.dig, div.hour, div.min, div.sec {
+    position:absolute;
+}
+div.hour, div.min, div.sec {
+    width:2px;
+    height:2px;
+    font-size:2px;
+}
+div.dig {
+    width:30px;
+    height:30px;
+    font-family:arial,verdana,sans-serif;
+    font-size:10px;
+    color:#000000;
+    text-align:center;
+    padding-top:10px
+}
+div.min {
+    background:#0000FF;
+}
+div.hour {
+    background:#000000;
+}
+div.sec {
+    background:#FF0000;
+}
+</style>
+<!-- Scroll Clock Style ends -->
+
+<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
+<script language='JavaScript' type="text/javascript" src='static/javascript/scrollclock.js'></script>
+<script language='JavaScript'>
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+
+var months = {};
+months = { 'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05', 'Jun' : '06', 'Jul' : '07', 'Aug' : '08', 'Sep' : '09', 'Oct' : '10', 'Nov' : '11', 'Dec' : '12' };
+
+function jsdatetomysqldatetime(jsdate){
+    jsdateparts = jsdate.split(" ");
+    mon = jsdateparts[1];
+    mm = months[mon];
+    dd = jsdateparts[2];
+    yyyy = jsdateparts[3];
+    timepart = jsdateparts[4];
+    mysqldate = yyyy + "-" + mm + "-" + dd + " " + timepart;
+    return(mysqldate);
+}
+
+function decryptwrapper(encjson){
+    //decrypteddata = tripledesdecrypt(Base64.decode(encjson));
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
+    handletest(encjson, jsonobj);
+}
+
+function closetest(){
+    resp = confirm("This will take you away from this page by closing the window. However, you may come back to take this test later. Do you want to continue?");
+    if(resp){
+        testtakerdiv = document.getElementById('testtaker');
+        testtakerdiv.innerHTML = "";
+        window.close();
+    }
+}
+
+function endtest(testname, testid){
+    resp = confirm("This will take you away from this page by closing the window. The test will be considered as completed by you. Do you want to continue?");
+    if(resp){
+        testtakerdiv = document.getElementById('testtaker');
+        testtakerdiv.innerHTML = "";
+        window.close();
+    }
+}
+
+
+function sendtoserver(postdata){
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        // alert(xmlhttp.responseText);
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    message = xmlhttp.responseText;
+	    // alert(message);
+        }
+    };
+    xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
+    xmlhttp.send(postdata);
+}
+
+
+function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages, topicname, challengescount, testname, encjson){
+    var allowedlanguagesjson = '{{ answering_languages }}';
+    var rulesjson = '{{ rules }}';
+    var skillqualityjson = '{{ skill_quality }}';
+    allowedlanguagesdict = JSON.parse(allowedlanguagesjson);
+    rulesdict = JSON.parse(rulesjson);
+    skillqualitydict = JSON.parse(skillqualityjson);
+    testtakerdiv = document.getElementById('testtaker');
+    testtakerdiv.innerHTML = "";
+    testtakerdiv.innerHTML += "<center>" + scrollclockhtml() + "</center><br />";
+    testtakerdiv.innerHTML += "<br /><center><h2>" + jsonobj.testname + "</h2></center><br /><br />";
+    testtakerdiv.innerHTML += "<h3>Rules:</h3><br />";
+    ruleslist = rules.split(",");
+    for (var rulectr = 0; rulectr < ruleslist.length; rulectr++){
+        testtakerdiv.innerHTML += "<b>" + (rulectr + 1) + ". " + rulesdict[ruleslist[rulectr]] + "</b><br />";
+    }
+    testtakerdiv.innerHTML += "<br /><br /><b>Please note the following: </b><br />";
+    if(progenv != ""){
+        testtakerdiv.innerHTML += "You will be using a '" + progenv + "' programming environment while taking this test.<br />";
+    }
+    testtakerdiv.innerHTML += "This test is intended for " + skillqualitydict[quality] + " quality candidates.<br />";
+    testtakerdiv.innerHTML += "The total marks is " + maxscore + ".<br />";
+    durationinmins = (duration/60);
+    if (durationinmins < 60){
+        testtakerdiv.innerHTML += "The duration of this test is " + durationinmins + " minutes.<br />";
+    }
+    else{
+        durationinhours = (durationinmins/60) + " hours";
+        if(durationinmins % 60 > 0){
+            durationinhours += " and " + durationinmins % 60 + " minutes";
+        }
+        testtakerdiv.innerHTML += "The duration of this test is " + durationinhours + ".<br />";
+    }
+    testtakerdiv.innerHTML += "There are " + challengescount + " questions in this test.<br />";
+    testtakerdiv.innerHTML += "You may answer this test in any of the following languages: ";
+    allowedlanguageslist = allowedlanguages.split(",");
+    var langctr = 0;
+    for (langctr = 0; langctr < allowedlanguageslist.length - 1; langctr++){
+        testtakerdiv.innerHTML += allowedlanguagesdict[allowedlanguageslist[langctr]] + ", ";
+    }
+    if(allowedlanguageslist.length > 1){
+        testtakerdiv.innerHTML += " and " + allowedlanguagesdict[allowedlanguageslist[allowedlanguageslist.length - 1]] + ".<br />";
+    }
+    else{
+        testtakerdiv.innerHTML += allowedlanguagesdict[allowedlanguageslist[allowedlanguageslist.length - 1]] + ".<br />";
+    }
+    testtakerdiv.innerHTML += "This test falls in the '" + topicname + "' category.<br /><br />";
+    testtakerdiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\");'>&nbsp;&nbsp;<input type='button' name='endtest' value='End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }});'></center>";
+    clock();
+    starttime = new Date();
+    starttime = jsdatetomysqldatetime(String(starttime));
+    postdata = encodeURI("starttest=1&starttime=" + starttime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}'));
+    //alert(postdata);
+    sendtoserver(postdata);
+}
+
+
+var sendresponse = function (){
+    var testtakerdiv = document.getElementById('testtaker');
+    testtakerdiv.innerHTML = "";
+};
+
+// Random List generation code -- The next 3 functions generate a random list
+// of numbers between a minimum and a maximum value.
+function random_number(min,max){
+    return (Math.round((max-min) * Math.random() + min));
+}
+
+function create_unique_random_array(num_elements,min,max){
+    var temp, nums = new Array();
+    for (var element=0; element<num_elements; element++){
+        while((temp=number_found(random_number(min,max),nums))==-1);
+        nums[element] = temp;
+    }
+    return (nums);
+}
+
+function number_found (random_number,number_array) {
+    for (var element=0; element<number_array.length; element++) {
+        if (random_number==number_array[element]) {
+            return (-1);
+	}
+   }
+    return (random_number);
+}
+// Random list generation code ends here.
+
+function facethemusic(encjson){
+    testpages = getchallenges(encjson);
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
+    randomsequencing = jsonobj.randomsequencing;
+    countchallenges = testpages.length;
+    minimum = 0;
+    maximum = (countchallenges - 1);
+    var randomlist = create_unique_random_array(countchallenges, minimum, maximum);
+    testtakerdiv = document.getElementById('testtaker');
+    testtakerdiv.innerHTML += "<center>" + scrollclockhtml() + "</center><br />";
+    clock();
+    for (index in randomlist){
+        elem = randomlist[index];
+        testtakerdiv.innerHTML += testpages[elem][0];
+        interval = testpages[elem][1];
+        mytime = window.setTimeout(sendresponse, (interval * 1000));
+        window.clearTimeout(mytime);
+    }
+}
+
+
+function nextchallenge(){
+}
+
+function getchallenges(encjson){
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
+    testtakerdiv = document.getElementById('testtaker');
+    testtakerdiv.innerHTML = "";
+    challengeslist = Object.keys(jsonobj.challenges);
+    randomsequencing = jsonobj.randomsequencing;
+    pages = Array();
+    optionpattern = new RegExp("^option\\d");
+    pagectr = 0;
+    for (challenge in jsonobj.challenges){
+        pages[pagectr] = Array();
+        pages[pagectr][0] = "<b>" + challenge + "</b><br />";
+        if(jsonobj.challenges[challenge].mediafile != 'null'){
+            var imgpath = "";
+            pages[pagectr][0] += "<img src='" + imgpath + "'><br />";
+        }
+        if(jsonobj.challenges[challenge].additionalurl != ''){
+            pages[pagectr][0] += "Please also refer <a href='" + jsonobj.challenges[challenge].additionalurl + "'>here</a> for some relevant information.<br />";
+        }
+        if(jsonobj.challenges[challenge].challengetype == 'SUBJ' || jsonobj.challenges[challenge].challengetype == 'ALGO'){
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10'></textarea><br /><br />";
+        }
+        else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get editor from cloud9
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10'></textarea><br /><br />";
+        }
+        else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
+            pages[pagectr][0] += "<b>Select from below:</b><br />";
+            optionctr = 1;
+            if(jsonobj.challenges[challenge].oneormore){
+                for (key in jsonobj.challenges[challenge]){
+                    if(optionpattern.test(key)){
+                        pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + jsonobj.challenges[challenge][key] + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        optionctr++;
+                    }
+                }
+            }
+            else{
+                for (key in jsonobj.challenges[challenge]){
+                    if(optionpattern.test(key)){
+                        pages[pagectr][0] += "<input type='radio' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + jsonobj.challenges[challenge][key] + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        optionctr++;
+                    }
+                }
+            }
+        }
+        else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
+            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='id_" + jsonobj.challenges[challenge].chid + "'><br />";
+        }
+        pages[pagectr][0] += "<font size=-1>Time Allocated for this challenge: " + jsonobj.challenges[challenge].timeframe + "</font><br />";
+        pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
+        pages[pagectr][0] += "<input type='button' name='nextchallenge' id='nextchallenge' onClick='javascript:nextchallenge();'>";
+        pages[pagectr][1] = challenge.timeframe;
+        pagectr++;
+    }
+    return(pages);
+}
+
+
+function handletest(encjson, jsonobj){
+    testtakerdiv = document.getElementById('testtaker');
+    testtakerdiv.style = '';
+    testtakerdiv.innerHTML = "<center><h2>" + jsonobj.testname + "</h2></center><br /><center><h3> - " + jsonobj.creator + "</h3></center>";
+    testtakerdiv.innerHTML += "<span><b>You may start taking this test by clicking on the 'Start Test' button below. Alternatively,<br />you may come back to take this test later.</b></span>";
+    numchallenges = Object.keys(jsonobj.challenges).length;
+    testtakerdiv.innerHTML += "<br /><center><input type='button' name='starttest' value='Start Test' onClick='javascript:starttest(\"" + jsonobj.rules + "\", \"" + jsonobj.progenv + "\", \"" + jsonobj.quality+ "\", \"" + jsonobj.maxscore + "\", \"" + jsonobj.duration + "\", \"" + jsonobj.allowedlanguages + "\", \"" + jsonobj.topicname + "\", \"" + numchallenges + "\", \"" + jsonobj.testname + "\", \"" + encjson + "\");'>&nbsp;&nbsp;<input type='button' name='notnow' value='No, not now' onClick='javascript:closetest();'></center>";
+}
+
+
+function scrollclockhtml(){
+    scrollclockdivs = "<div style='width:120px;height:100px;position:relative;left:58px;top:50px;'><div id='dig1' class='dig'>1</div><div id='dig2' class='dig'>2</div><div id='dig3' class='dig'>3</div><div id='dig4' class='dig'>4</div><div id='dig5' class='dig'>5</div><div id='dig6' class='dig'>6</div><div id='dig7' class='dig'>7</div><div id='dig8' class='dig'>8</div><div id='dig9' class='dig'>9</div><div id='dig10' class='dig'>10</div><div id='dig11' class='dig'>11</div><div id='dig12' class='dig'>12</div><div id='hour1' class='hour'></div><div id='hour2' class='hour'></div><div id='hour3' class='hour'></div><div id='hour4' class='hour'></div><div id='min1' class='min'></div><div id='min2' class='min'></div><div id='min3' class='min'></div><div id='min4' class='min'></div><div id='min5' class='min'></div><div id='sec1' class='sec'></div><div id='sec2' class='sec'></div><div id='sec3' class='sec'></div><div id='sec4' class='sec'></div><div id='sec5' class='sec'></div><div id='sec6' class='sec'></div></div>";
+    return(scrollclockdivs);
+}
+
+
+// Decrypt a string encrypted with triple DES
+function tripledesdecrypt(encstr){
+ decstr = CryptoJS.TripleDES.decrypt(encstr, Base64.decode('{{ secret_key }}'), '{{ ivec }}');
+ return(decstr);
+}
+</script>
+</head>
+<body onload="javascript:decryptwrapper('####ENCJSON####');">
+<div id='testtaker' style='display:none' class='semitranstesttaker'></div>
+</body>
+</html>
+{% endautoescape %}

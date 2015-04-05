@@ -23,7 +23,7 @@ import cPickle
 import decimal, math
 from Crypto.Cipher import AES, DES3
 from Crypto import Random
-import base64
+import base64,urllib, urllib2
 import simplejson as json
 
 # Application specific libraries...
@@ -298,6 +298,11 @@ def manage(request):
             test_topic = tobj.topicname
             fullmarks = tobj.maxscore
             passscore = tobj.passscore
+            challenges = Challenge.objects.filter(test=tobj)
+            createdscore = 0
+            for chlng in challenges:
+                createdscore += chlng.challengescore
+            completeness = createdscore/fullmarks
             publishdate = tobj.publishdate
             tid = tobj.id
             duration = tobj.duration
@@ -324,7 +329,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks]
+            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness]
         except:
             response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -341,6 +346,11 @@ def manage(request):
             creatorname = tobj.creator.displayname
             fullmarks = tobj.maxscore
             passscore = tobj.passscore
+            challenges = Challenge.objects.filter(test=tobj)
+            createdscore = 0
+            for chlng in challenges:
+                createdscore += chlng.challengescore
+            completeness = createdscore/fullmarks
             publishdate = tobj.publishdate
             duration = tobj.duration
             ruleset = tobj.ruleset
@@ -366,7 +376,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname ]
+            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness ]
         except:
             response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -382,6 +392,11 @@ def manage(request):
             creatorname = tobj.creator.displayname
             fullmarks = tobj.maxscore
             passscore = tobj.passscore
+            challenges = Challenge.objects.filter(test=tobj)
+            createdscore = 0
+            for chlng in challenges:
+                createdscore += chlng.challengescore
+            completeness = createdscore/fullmarks
             publishdate = tobj.publishdate
             tid = tobj.id
             duration = tobj.duration
@@ -408,7 +423,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks]
+            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness]
         except:
             response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
             return HttpResponse(response)
@@ -1116,7 +1131,7 @@ def iseditable(testobj):
     pubmm = int(pubhhmmss[1])
     #pubss = int(pubhhmmss[2])
     publishdatetime = datetime.datetime(int(pubyyyy), int(pubmon), int(pubdd), pubhh, pubmm, 0)
-    if publishdatetime < curdatetime:
+    if publishdatetime < curdatetime and testobj.status:
         return None
     else:
         return 1
@@ -1976,9 +1991,8 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
         targetuserid = targetuserobj.id
     except:
         pass
-    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test"
+    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test&targetemail=" + base64.b64encode(targetuseremail)
     # Now bitlyfy the testurl
-    import urllib, urllib2
     bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS + "/v3/shorten?access_token=" + mysettings.BITLY_OAUTH_ACCESS_TOKEN + "&longUrl=" + skillutils.urlencodestring(testurl)
     try:
         httpresponsejson = urllib2.urlopen(bitlyapiurl)
@@ -2027,9 +2041,7 @@ test Id (among other variables like the userId. A view on the server
 will accept the response and do the needful (that is, it will enter 
 the response in the name of the user to the database).
 """
-@skillutils.is_session_valid
-@skillutils.session_location_match
-@csrf_protect
+
 def showtestcandidatemode(request):
     if request.method != "POST" and request.method != 'GET': # If it is not a
         # POST or GET request, shoot it down. POST request comes when an
@@ -2051,6 +2063,11 @@ def showtestcandidatemode(request):
         testid = request.POST['testid']
     else:
         testid = request.GET['testid']
+    targetemail = ""
+    if request.POST.has_key('targetemail'):
+        targetemail = base64.b64decode(request.POST['targetemail'])
+    elif request.GET.has_key('targetemail'):
+        targetemail = base64.b64decode(request.GET['targetemail'])
     testdict = {} # This will be our json object...
     testobj = None
     try:
@@ -2107,6 +2124,7 @@ def showtestcandidatemode(request):
     else:
         pass
     testdict['testname'] = testobj.testname
+    testdict['testid'] = testobj.id
     testdict['topicname'] = testobj.topicname # for built-in topic
     if testobj.topic != "": # topic is not one of the built-in topics
         testdict['topicname'] = testobj.topic.topicname
@@ -2122,10 +2140,13 @@ def showtestcandidatemode(request):
     testdict['quality'] = testobj.quality
     testdict['negativescoreallowed'] = testobj.negativescoreallowed
     testdict['scope'] = testobj.scope
+    testdict['sendtestdataurl'] = mysettings.SEND_TEST_DATA_URL
+    testdict['targetemail'] = targetemail
+    #testdict['testlink'] = request.META['HTTP_REFERER']
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
         allowmultiattempts = testobj.allowmultiattempts
-        usertest = UserTest.objects.filter(user=userobj, test=testobj).order_by('-starttime')
+        usertest = UserTest.objects.filter(user=userobj, test=testobj).order_by('-starttime')[0]
         if allowmultiattempts:
             maxattemptscount = testobj.maxattemptscount
             if usertest.__len__() >= int(maxattemptscount):
@@ -2158,6 +2179,16 @@ def showtestcandidatemode(request):
                 message = error_msg('1066')
                 response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
                 return response
+        # Now check if the test is valid now.
+        if skillutils.mysqltopythondatetime(usertest.validtill) < currentdatetime:
+            message = "Error: %s\n"%error_msg('1074')
+            response = HttpResponse(message)
+            return response
+        # Check if the user has already taken the test.
+        if usertest.status == 2:
+            message = "Error: %s\n"%error_msg('1075')
+            response = HttpResponse(message)
+            return response
     # If the control comes here, the user can take this test.
     challengesqset = Challenge.objects.filter(test=testobj)
     challengesdict = {}
@@ -2192,12 +2223,26 @@ def showtestcandidatemode(request):
         challengesdict[statement]['timeframe'] = challenge.timeframe
         challengesdict[statement]['challengequality'] = challenge.challengequality
         challengesdict[statement]['oneormore'] = challenge.oneormore
+        challengesdict[statement]['chid'] = challenge.id
     testdict['challenges'] = challengesdict
     jsonstr = json.dumps(testdict)
     # Now, encrypt jsonstr...
-    encjsonstr = encryptstring(jsonstr)
-    # ... and send it.
-    return HttpResponse(encjsonstr)
+    #(encjsonstr, iv) = encryptstring(jsonstr)
+    testdict['secret_key'] = base64.b64encode(mysettings.DES3_SECRET_KEY)
+    #testdict['ivec'] = iv
+    testdict['ivec'] = ''
+    testdict['answering_languages'] = json.dumps(mysettings.ANSWER_LANG_DICT)
+    testdict['rules'] = json.dumps(mysettings.RULES_DICT)
+    testdict['skill_quality'] = mysettings.SKILL_QUALITY
+    tmpl = get_template("tests/test_wrapper.html")
+    testdict.update(csrf(request))
+    cxt = Context(testdict)
+    testhtml = tmpl.render(cxt)
+    #testhtml = testhtml.replace("####ENCJSON####", base64.b64encode(encjsonstr))
+    testhtml = testhtml.replace("####ENCJSON####", base64.b64encode(jsonstr))
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        testhtml = testhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(testhtml)
 
 
 def encryptstring(mystr):
@@ -2210,7 +2255,7 @@ def encryptstring(mystr):
         remlen = mystr.__len__() % 16
         mystr = mystr + ' '*(16 - remlen) # padding with whitespace
     encryptedstr = des.encrypt(mystr)
-    return encryptedstr
+    return (encryptedstr, iv)
 
 
 """
@@ -2227,6 +2272,61 @@ def encryptstring(mystr):
     # decoded = cipher.decrypt(base64.b64decode(msg_text)) # This operation has to be implemented in javascript.
     return encodedstr
 """
+
+
+"""
+Method to communicate information while user is taking test.
+"""
+@csrf_exempt
+def sendtestdata(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1071')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    starttest, starttime, testid, useremail, testlink = 0, '', -1, '', ''
+    if request.POST.has_key('starttest'):
+        starttest = request.POST['starttest']
+    if request.POST.has_key('starttime'):
+        starttime = request.POST['starttime']
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    if request.POST.has_key('useremail'):
+        useremail = base64.b64decode(request.POST['useremail'])
+    if starttest != '1': # Not necessary to add any of the gathered info to DB
+        message = "Warning: Received a bogus message for test from %s\n"%request.META['REMOTE_ADDR']
+        response = HttpResponse(message)
+        return response
+    clientsware = request.META['HTTP_USER_AGENT']
+    ipaddress = request.META['REMOTE_ADDR']
+    status = 1 # 'Taking' the test.
+    testobj = None
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "Error: %s"%error_msg('1072')
+        response = HttpResponse(message)
+        return response
+    usertestobj = None
+    try:
+        usertestobj = UserTest.objects.filter(test=testobj).filter(emailaddr=useremail).filter(cancelled=False, active=True)[0]
+    except:
+        message = "Error: %s"%error_msg('1073')
+        response = HttpResponse(message)
+        return response
+    curdatetime = datetime.datetime.now()
+    if curdatetime > skillutils.mysqltopythondatetime(usertestobj.validtill.__str__()):
+        message = "Error: %s\n"%error_msg('1074')
+        response = HttpRequest(message)
+        return response
+    usertestobj.status = status
+    usertestobj.clientsware = clientsware
+    usertestobj.ipaddress = ipaddress
+    usertestobj.starttime = urllib.unquote(starttime)
+    usertestobj.save()
+    message = "Success: Test started."
+    return HttpResponse(message)
+
 
 @skillutils.is_session_valid
 @skillutils.session_location_match
@@ -2559,11 +2659,11 @@ def invitationactivation(request):
     if int(action) == 1: # Set active to True
         inviteobj.active = True
         inviteobj.save()
-        message = "Invitation URL '%s' has been activated as per your request. Please reopen the invitations view to observe the changes."%inviteobj.testurl
+        message = "Invitation URL '%s' has been activated as per your request. Please close and reopen the invitations view to observe the changes."%inviteobj.testurl
     else:
         inviteobj.active = False
         inviteobj.save()
-        message = "Invitation URL '%s' has been deactivated as per your request. Please reopen the invitations view to observe the changes."%inviteobj.testurl
+        message = "Invitation URL '%s' has been deactivated as per your request. Please close and reopen the invitations view to observe the changes."%inviteobj.testurl
     response = HttpResponse(message)
     return response
     
@@ -2606,7 +2706,7 @@ def invitationcancellation(request):
         return response
     inviteobj.cancelled = True
     inviteobj.save()
-    message = "Invitation URL '%s' has been cancelled as per your request. Please reopen the invitations view to observe the changes."%inviteobj.testurl
+    message = "Invitation URL '%s' has been cancelled as per your request. Please close and reopen the invitations view to observe the changes."%inviteobj.testurl
     response = HttpResponse(message)
     return response
 

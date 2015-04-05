@@ -411,7 +411,7 @@ YYYY-MM-DD hh:mm:ss.
 def readabledatetime(mysqldatefmt):
     if not mysqldatefmt:
         return ""
-    datepart, timepart = mysqldatefmt.split(" ")
+    datepart, timepart = mysqldatefmt.__str__().split(" ")
     dateelements = datepart.split("-")
     cleantimeparts = timepart.split("+")
     if dateelements.__len__() != 3:
@@ -425,8 +425,6 @@ def readabledatetime(mysqldatefmt):
     return readabledatetimestr
 
 
-    
-
 
 def urlencodestring(s):
     tmphash = {'str' : s }
@@ -438,4 +436,22 @@ def urlencodestring(s):
     encodedStr = encodedStr.replace('-', '%2D')
     encodedStr = encodedStr.replace(',', '%2C')
     return (encodedStr)
+
+
+class Logger(object):
+
+    def __init__(self, logfilewithpath):
+        if not os.path.exists(logfilewithpath):
+            parentdir = os.path.dirname(logfilewithpath)
+            if not os.path.exists(parentdir):
+                os.makedirs(parentdir)
+        self.logfile = os.pathsep.join([parentdir, os.path.basename(logfilewithpath)])
+        self.logfilehandle = open(self.logfile, 'w')
+
+    def logmessage(self, msg):
+        self.logfilehandle.write(msg)
+
+
+    def close(self):
+        self.logfilehandle.close()
 

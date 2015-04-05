@@ -6,7 +6,7 @@
 	<script src="static/tinymce/tinymce.min.js"></script>
 
 	<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
-	<script language='JavaScript' type="text/javascript" src='static/javascript/aes.js'></script>
+	
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -1088,7 +1088,7 @@
 		// Decrypt a string encrypted with triple DES
 		function tripledesdecrypt(encstr){
 		 decstr = CryptoJS.TripleDES.decrypt(encstr, '{{ secret_key }}');
-		  return(decstr);
+		 return(decstr);
 		}
 
 		// Show the test to the user as it would appear to the candidate.
@@ -1537,6 +1537,7 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness *</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
@@ -1562,6 +1563,11 @@
 			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#/' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none' class='semitrans'></div></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  {% if creator_tests_info|dictlookup:testnm|getval:21 < 1 %}
+			  <td nowrap align='center'><font size=-1 color='#AA0000'>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% else %}
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% endif %}
 			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
@@ -1590,6 +1596,7 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
@@ -1611,7 +1618,12 @@
 			<tr>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
-			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  {% if evaluator_tests_info|dictlookup:testnm|getval:23 < 1 %}
+			  <td nowrap align='center'><font size=-1 color='#AA0000'>{{ evaluator_tests_info|dictlookup:testnm|getval:23 }} ({{ evaluator_tests_info|dictlookup:testnm|getval:22 }} out of {{ evaluator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% else %}
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:23 }} ({{ evaluator_tests_info|dictlookup:testnm|getval:22 }} out of {{ evaluator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% endif %}
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}'>{{ evaluator_tests_info|dictlookup:testnm|getval:20 }} (username={{ evaluator_tests_info|dictlookup:testnm|getval:21 }})</a></font></td>
 			  <td align='left'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
@@ -1639,6 +1651,7 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>

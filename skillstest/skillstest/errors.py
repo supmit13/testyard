@@ -65,6 +65,11 @@ error_codes = { \
         '1068' : 'The time interval between 2 successive attempts to this test has not yet elapsed.', \
         '1069' : 'The requested operation could not be performed due to insufficient parameters.', \
         '1070' : 'You are not authorised to send out invitations for this test. If you want someone to take this test, you may send a request to the owner/creator of this test to let you copy it by either making it public for a while or by allowing you an exclusive privilege to copy it within a certain period of time. Once you make a copy of this test, the copied test will be your property and you would be able to send out invitations to candidates/users to take the test.', \
+        '1071' : 'Incorrect method of request.', \
+        '1072' : 'Bogus test response received.', \
+        '1073' : 'No test invitation was sent to the user or the invitation was cancelled or inactive.', \
+        '1074' : 'The test link you clicked is no longer valid.', \
+        '1075' : 'You have already taken this test. ', \
     }
 
 def error_msg(code):
