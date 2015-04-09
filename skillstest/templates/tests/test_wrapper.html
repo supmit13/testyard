@@ -209,16 +209,21 @@ function number_found (random_number,number_array) {
 
 
 var mytime;
+var index = 0;
+var randomlist = new Array();
+var testpages;
 
-function showChallenge(index, randomlist, testpages){
+function showchallenge(index, randomlist, testpages){
     elem = randomlist[index];
     testtakerdiv = document.getElementById('testtaker');
     testtakerdiv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
+    nextbutton = document.getElementById('btnnextchallenge');
     clock();
     testtakerdiv.innerHTML += testpages[elem][0];
     index = index + 1
     nextduration = (testpages[randomlist[index]][1] * 1000);
-    mytime = window.setTimeout(showChallenge, nextduration, index, randomlist, testpages);
+    mytime = window.setTimeout(showchallenge, nextduration, index, randomlist, testpages);
+    // nextbutton.onClick = "javascript:showchallenge(" + index + ", " + randomlist + ", " + testpages + ");"
 }
 
 
@@ -230,20 +235,23 @@ function facethemusic(encjson){
     countchallenges = testpages.length;
     minimum = 0;
     maximum = (countchallenges - 1);
-    var randomlist = create_unique_random_array(countchallenges, minimum, maximum);
+    randomlist = create_unique_random_array(countchallenges, minimum, maximum);
     testtakerdiv = document.getElementById('testtaker');
 
     // Start the main test counter now
     stopid = setTimeout(stoptest, (jsonobj.duration * 1000));
     index = 0;
     interval1 = testpages[randomlist[index]][1]
-    mytime = setTimeout(showChallenge, interval1, index, randomlist, testpages);
+    mytime = setTimeout(showchallenge, interval1, index, randomlist, testpages);
 }
 
 
 function nextchallenge(){
     window.clearTimeout(mytime);
+    index = index + 1;
+    mytime = showchallenge(index, randomlist, testpages);
 }
+
 
 function getchallenges(encjson){
     decrypteddata = Base64.decode(encjson);
@@ -294,9 +302,9 @@ function getchallenges(encjson){
         else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
             pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='id_" + jsonobj.challenges[challenge].chid + "'><br />";
         }
-        pages[pagectr][0] += "<font size=-1>Time Allocated for this challenge: " + jsonobj.challenges[challenge].timeframe + "</font><br />";
+        pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + "</font><br />";
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
-        pages[pagectr][0] += "<input type='button' name='nextchallenge' id='nextchallenge' value='Next Challenge' onClick='javascript:nextchallenge();'>";
+        pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge();'>";
         pages[pagectr][1] = jsonobj.challenges[challenge].timeframe;
         pagectr++;
     }

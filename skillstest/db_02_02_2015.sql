@@ -508,6 +508,14 @@ alter table Tests_usertest add column id int auto_increment primary key;
 alter table Tests_usertest add column cancelled boolean default false;
 alter table Tests_wouldbeusers add column cancelled boolean default false;
 
+alter table Tests_wouldbeusers add column status int(11) NOT NULL;
+alter table Tests_wouldbeusers add column outcome tinyint(1) DEFAULT NULL;
+alter table Tests_wouldbeusers add column score double DEFAULT NULL;
+alter table Tests_wouldbeusers add column starttime datetime DEFAULT NULL;
+alter table Tests_wouldbeusers add column endtime datetime DEFAULT NULL;
+alter table Tests_wouldbeusers add column ipaddress char(39) DEFAULT '';
+alter table Tests_wouldbeusers add column clientsware char(150) DEFAULT '';
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

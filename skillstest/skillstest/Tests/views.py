@@ -2050,10 +2050,6 @@ def showtestcandidatemode(request):
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
-    sesscode = request.COOKIES['sessioncode']
-    usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj[0].user
     if not request.POST.has_key('testid') and not request.GET.has_key('testid'):
         message = error_msg('1059')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
@@ -2076,6 +2072,20 @@ def showtestcandidatemode(request):
         message = error_msg('1056')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
+    testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail, test=testobj)
+    testtakeruserobj = None
+    if testtakeruserqset.__len__() == 0:
+        testtakeruserqset = WouldbeUsers.objects.filter(emailaddr=targetemail, test=testobj)
+        if testtakeruserqset.__len__() == 0:
+            message = error_msg('1077')
+            response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+            return response
+    testtakeruserobj = testtakeruserqset[0]
+    userobj = None
+    try:
+        userobj = User.objects.filter(emailid=testtakeruserobj.emailaddr)[0]
+    except:
+        pass
     # Check the status and publish date and activation date
     if not testobj.status: # Test is being edited or modified
         message = error_msg('1064')
@@ -2117,9 +2127,9 @@ def showtestcandidatemode(request):
     if testevaluator.groupmember10:
         testevalemailidlist.append(testevaluator.groupmember10.emailid)
     testdict['usercreatorevaluatorflag'] = 0
-    if userobj.emailid == testcreator.emailid:
+    if testtakeruserobj.emailaddr == testcreator.emailid:
         testdict['usercreatorevaluatorflag'] = 1
-    elif userobj.emailid in testevalemailidlist:
+    elif testtakeruserobj.emailaddr in testevalemailidlist:
         testdict['usercreatorevaluatorflag'] = 1
     else:
         pass
@@ -2146,10 +2156,11 @@ def showtestcandidatemode(request):
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
         allowmultiattempts = testobj.allowmultiattempts
-        usertest = UserTest.objects.filter(user=userobj, test=testobj).order_by('-starttime')[0]
+        usertest = testtakeruserobj
+        usertestqset = testtakeruserqset
         if allowmultiattempts:
             maxattemptscount = testobj.maxattemptscount
-            if usertest.__len__() >= int(maxattemptscount):
+            if usertestqset.__len__() >= int(maxattemptscount):
                 message = error_msg('1067')
                 response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
                 return response
@@ -2167,28 +2178,35 @@ def showtestcandidatemode(request):
                 attemptsintervalseconds = int(attemptsinterval) * 86400 * 30*12
             else:
                 attemptsintervalseconds = int(attemptsinterval) # take the interval at face value.
-            lasttimetesttaken = skillutils.mysqltopythondatetime(usertest[0].starttime)
-            testtakentimedelta = currentdatetime - lasttimetesttaken
-            if testtakentimedelta.total_seconds() < attemptsintervalseconds:
-                secondsremaining = attemptsintervalseconds - testtakentimedelta.total_seconds()
-                message = error_msg('1068') + " Please wait for %s seconds before attempting this test."%secondsremaining
-                response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
-                return response
+            if usertest.starttime is not None: # User has taken the test previously
+                lasttimetesttaken = skillutils.mysqltopythondatetime(str(usertest.starttime))
+                testtakentimedelta = currentdatetime - lasttimetesttaken
+                if testtakentimedelta.total_seconds() < attemptsintervalseconds:
+                    secondsremaining = attemptsintervalseconds - testtakentimedelta.total_seconds()
+                    message = error_msg('1068') + " Please wait for %s seconds before attempting this test."%secondsremaining
+                    response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+                    return response
+            else: # User has never taken this test before.
+                pass
         else: # multiple attempts not allowed ...
             if usertest and usertest.__len__() > 0: # ... and user has taken the test already
                 message = error_msg('1066')
                 response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
                 return response
         # Now check if the test is valid now.
-        if skillutils.mysqltopythondatetime(usertest.validtill) < currentdatetime:
+        if skillutils.mysqltopythondatetime(str(usertest.validtill)) < currentdatetime:
             message = "Error: %s\n"%error_msg('1074')
             response = HttpResponse(message)
             return response
-        # Check if the user has already taken the test.
+        # Check if the user has already taken the test or if the test is being taken now.
         if usertest.status == 2:
             message = "Error: %s\n"%error_msg('1075')
             response = HttpResponse(message)
             return response
+    else: # User is creator or evaluator, so can't take the test.
+        message = "Error: %s\n"%error_msg('1076')
+        response = HttpResponse(message)
+        return response
     # If the control comes here, the user can take this test.
     challengesqset = Challenge.objects.filter(test=testobj)
     challengesdict = {}
@@ -2311,9 +2329,12 @@ def sendtestdata(request):
     try:
         usertestobj = UserTest.objects.filter(test=testobj).filter(emailaddr=useremail).filter(cancelled=False, active=True)[0]
     except:
-        message = "Error: %s"%error_msg('1073')
-        response = HttpResponse(message)
-        return response
+        try:
+            usertestobj = WouldbeUsers.objects.filter(test=testobj).filter(emailaddr=useremail).filter(cancelled=False, active=True)[0]
+        except:
+            message = "Error: %s"%error_msg('1073')
+            response = HttpResponse(message)
+            return response
     curdatetime = datetime.datetime.now()
     if curdatetime > skillutils.mysqltopythondatetime(usertestobj.validtill.__str__()):
         message = "Error: %s\n"%error_msg('1074')
@@ -2463,31 +2484,53 @@ def sendtestinvitations(request):
         uobj = None
         candidatename = ""
         testlink = ""
+        usertestobj = None
+        wouldbeuserobj = None
         if uobjqset and uobjqset.__len__() > 0: # User exists
             uobj = uobjqset[0]
-            usertestobj = UserTest()
-            usertestobj.user = uobj
-            usertestobj.emailaddr = uobj.emailid # or = email
+            # Check if we had sent a URL to this user for this test already.
+            # If so, we will use the URL created that time. A new record
+            # will be inserted in the appropriate table.
+            checkexistsusrtestobj = UserTest.objects.filter(test = testobj).filter(emailaddr = uobj.emailid)
+            if checkexistsusrtestobj and checkexistsusrtestobj.__len__() > 0:
+                usertestobj = UserTest()
+                testlink = checkexistsusrtestobj[0].testurl
+                usertestobj.testurl = testlink
+                usertestobj.user = uobj
+                usertestobj.emailaddr = uobj.emailid # or = email
+            else:
+                usertestobj = UserTest()
+                usertestobj.user = uobj
+                usertestobj.emailaddr = uobj.emailid # or = email
+                usertestobj.testurl = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
+                testlink = usertestobj.testurl
             usertestobj.test = testobj
             usertestobj.status = 0 # The test hasn't been taken as yet.
-            usertestobj.testurl = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
-            testlink = usertestobj.testurl
             usertestobj.validfrom = validfrom
             usertestobj.validtill = validtill
             if validtill == 'onwards':
                 usertestobj.validtill = '2025-12-31 00:00:00'
             candidatename = uobj.displayname
         else: # user doesn't exist. So populate the wouldbeusers table.
-            usertestobj = None # Make this None as we check for this after sending email.
+            checkexistswldbeobj = WouldbeUsers.objects.filter(test = testobj).filter(emailaddr = email)
+            # Check if we had sent a URL to this user for this test already.
+            # If so, we will use the URL created that time.
             wouldbeuserobj = WouldbeUsers()
-            wouldbeuserobj.emailaddr = email
+            if checkexistswldbeobj and checkexistswldbeobj.__len__() > 0:
+                testlink = checkexistswldbeobj[0].testurl
+                wouldbeuserobj.testurl = testlink
+                wouldbeuserobj.emailaddr = email
+            else:
+                wouldbeuserobj.emailaddr = email
+                wouldbeuserobj.testurl = gettesturlforuser(wouldbeuserobj.emailaddr, testid, baseurl)
+                testlink = wouldbeuserobj.testurl
             wouldbeuserobj.test = testobj
-            wouldbeuserobj.testurl = gettesturlforuser(wouldbeuserobj.emailaddr, testid, baseurl)
-            testlink = wouldbeuserobj.testurl
             wouldbeuserobj.validfrom = validfrom
             wouldbeuserobj.validtill = validtill
-            if wouldbeuserobj.validtill == "onwards":
-                wouldbeuserobj.validtill = "2025-12-31 00:00:00"
+            wouldbeuserobj.active = True
+            wouldbeuserobj.cancelled = False
+            if wouldbeuserobj.validtill == 'onwards':
+                wouldbeuserobj.validtill = '2025-12-31 00:00:00'
             candidatename = "candidate"
         # Now send the email... save the above records only when email has been sent successfully
         emailsubject = "A test has been scheduled for you on testyard"
@@ -2602,10 +2645,18 @@ def manageinvitations(request):
         usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled ]
         ctr += 1
     invitations_dict['usertest'] = usertest_dict
-    status = "Test not yet taken"
     ctr = 100
     for wouldbeuser in wouldbeuserqset:
         wouldbeuserid = ctr
+        status = wouldbeuser.status
+        if wouldbeuser.status == 0:
+            status = "Test not yet taken"
+        elif wouldbeuser.status == 1:
+            status = "Test is being taken"
+        elif wouldbeuser.status == 2:
+            status = "Test  has been taken"
+        else:
+            status = "Unknown status"
         wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, wouldbeuser.active, wouldbeuser.cancelled ]
         ctr += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict

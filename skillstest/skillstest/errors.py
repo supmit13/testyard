@@ -70,6 +70,8 @@ error_codes = { \
         '1073' : 'No test invitation was sent to the user or the invitation was cancelled or inactive.', \
         '1074' : 'The test link you clicked is no longer valid.', \
         '1075' : 'You have already taken this test. ', \
+        '1076' : 'You may not take this test as you are one of the evaluators or the creator of this test.', \
+        '1077' : 'The email Id specified in your link to the test could not be found.', \
     }
 
 def error_msg(code):

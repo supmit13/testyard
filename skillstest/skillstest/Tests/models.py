@@ -302,19 +302,26 @@ testyard as yet, but have been invited to take a test on it.
 class WouldbeUsers(models.Model):
     emailaddr = models.EmailField(null=False, blank=False) # Email address to which the link to the 'Test' was sent.
     test = models.ForeignKey(Test, related_name="+", null=True, blank=True)
-    testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user', primary_key=True)
+    testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user')
     validfrom = models.DateTimeField(null=True, blank=True)
     validtill = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
+    status = models.IntegerField(default=1, choices=((0, 'Not taken'), (1, 'Taking'), (2, 'Taken'))) # Determines whether the test has been taken, is being taken or will be taken.
+    outcome = models.NullBooleanField(default=None) # Result of the test, if taken. Default is null.
+    score = models.FloatField(default=0) # Score of the user.
+    starttime = models.DateTimeField(default=None) # Instant at which the user started taking the test. This might be the same as 'validfrom' value.
+    endtime = models.DateTimeField(default=None) # Instant at which the user completed the test. This might be same as 'validtill' value.
+    ipaddress = models.GenericIPAddressField(default='') # IP address from which the user logged in to take the test.
+    clientsware = models.CharField(max_length=150, default='') # User-agent (browser signature) of the user.
 
     class Meta:
         verbose_name = "wouldbeusers Table"
         db_table = 'Tests_wouldbeusers'
-
+    """
     def __unicode__(self):
         return "%s ==>> %s"%(self.test.testname, self.emailaddr)
 
-
+    """
 
 
