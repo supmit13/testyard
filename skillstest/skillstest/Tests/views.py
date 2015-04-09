@@ -2189,7 +2189,7 @@ def showtestcandidatemode(request):
             else: # User has never taken this test before.
                 pass
         else: # multiple attempts not allowed ...
-            if usertest and usertest.__len__() > 0: # ... and user has taken the test already
+            if usertestqset and usertestqset.__len__() > 0: # ... and user has taken the test already
                 message = error_msg('1066')
                 response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
                 return response
