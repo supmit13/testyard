@@ -147,7 +147,7 @@ class UserTest(models.Model):
     #validtill = models.DateTimeField(default=datetime.datetime.time(validfrom) + datetime.timedelta(hours=3))
     # Need to find a method to set validtill depending on 'validfrom' value... For now I am leaving them the same.
     validtill = models.DateTimeField(null=False, blank=False, default=datetime.datetime.now())
-    status = models.IntegerField(default=1, choices=((0, 'Not taken'), (1, 'Taking'), (2, 'Taken'))) # Determines whether the test has been taken, is being taken or will be taken.
+    status = models.IntegerField(default=0, choices=((0, 'Not taken'), (1, 'Taking'), (2, 'Taken'))) # Determines whether the test has been taken, is being taken or will be taken.
     outcome = models.NullBooleanField(default=None) # Result of the test, if taken. Default is null.
     score = models.FloatField(default=0) # Score of the user.
     starttime = models.DateTimeField(default=None) # Instant at which the user started taking the test. This might be the same as 'validfrom' value.
@@ -157,6 +157,7 @@ class UserTest(models.Model):
     sessid = models.CharField(max_length=50, default='')
     active = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
+    stringid = models.CharField(max_length=15, null=False)
 
 
     class Meta:
@@ -222,7 +223,7 @@ Evaluator will evaluate these responses and update this object
 class UserResponse(models.Model):
     test = models.ForeignKey(Test, blank=False, null=False)
     challenge = models.ForeignKey(Challenge, blank=False, null=False)
-    user = models.ForeignKey(User, blank=False, null=False)
+    emailaddr = models.EmailField(null=False, blank=False) # Email address of the user who sent this response.
     answer = models.TextField(blank=True, null=True) # This is the response that the User made.
     responsedatetime = models.DateTimeField(blank=True, null=True, default=None) # Instant at which the User submits the response.
     attachments = models.FileField(upload_to="DUMMY", blank=True, null=True, default=None) # The path will be in the format MEDIA_ROOT/<useremail>/<Test Id>/<Challenge Id>/filename.
@@ -235,7 +236,7 @@ class UserResponse(models.Model):
     evaluated_by = models.ForeignKey(User, related_name="+", blank=False, null=False) # This User will be one of the Evaluator group for this test.
     candidate_comment = models.TextField(null=True, blank=True, default=None)
     response_quality = models.CharField(max_length=3, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()))
-    # This will be entered by one of the evaluator.
+    # This will be entered by one of the evaluators.
 
 
     class Meta:
@@ -307,13 +308,15 @@ class WouldbeUsers(models.Model):
     validtill = models.DateTimeField(null=True, blank=True)
     active = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
-    status = models.IntegerField(default=1, choices=((0, 'Not taken'), (1, 'Taking'), (2, 'Taken'))) # Determines whether the test has been taken, is being taken or will be taken.
+    status = models.IntegerField(default=0, choices=((0, 'Not taken'), (1, 'Taking'), (2, 'Taken'))) # Determines whether the test has been taken, is being taken or will be taken.
     outcome = models.NullBooleanField(default=None) # Result of the test, if taken. Default is null.
     score = models.FloatField(default=0) # Score of the user.
     starttime = models.DateTimeField(default=None) # Instant at which the user started taking the test. This might be the same as 'validfrom' value.
     endtime = models.DateTimeField(default=None) # Instant at which the user completed the test. This might be same as 'validtill' value.
     ipaddress = models.GenericIPAddressField(default='') # IP address from which the user logged in to take the test.
     clientsware = models.CharField(max_length=150, default='') # User-agent (browser signature) of the user.
+    stringid = models.CharField(max_length=15, null=False)
+    
 
     class Meta:
         verbose_name = "wouldbeusers Table"

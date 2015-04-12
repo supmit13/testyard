@@ -72,6 +72,7 @@ error_codes = { \
         '1075' : 'You have already taken this test. ', \
         '1076' : 'You may not take this test as you are one of the evaluators or the creator of this test.', \
         '1077' : 'The email Id specified in your link to the test could not be found.', \
+        '1078' : 'Your request could not be processed correctly. Please retry with valid request parameters.', \
     }
 
 def error_msg(code):

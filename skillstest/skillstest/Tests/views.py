@@ -1991,7 +1991,10 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
         targetuserid = targetuserobj.id
     except:
         pass
-    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test&targetemail=" + base64.b64encode(targetuseremail)
+    randstring = skillutils.randomstringgen()
+    query_string = "targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test&targetemail=" + targetuseremail + "&rand=" + randstring
+    encoded_query_string = base64.b64encode(query_string)
+    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?" + encoded_query_string
     # Now bitlyfy the testurl
     bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS + "/v3/shorten?access_token=" + mysettings.BITLY_OAUTH_ACCESS_TOKEN + "&longUrl=" + skillutils.urlencodestring(testurl)
     try:
@@ -2003,7 +2006,7 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
         return response
     jsonobj = json.loads(jsonstringcontent)
     shorttesturl = jsonobj['data']['url']
-    return shorttesturl
+    return (shorttesturl, randstring)
 
 
 """
@@ -2041,7 +2044,6 @@ test Id (among other variables like the userId. A view on the server
 will accept the response and do the needful (that is, it will enter 
 the response in the name of the user to the database).
 """
-
 def showtestcandidatemode(request):
     if request.method != "POST" and request.method != 'GET': # If it is not a
         # POST or GET request, shoot it down. POST request comes when an
@@ -2050,20 +2052,29 @@ def showtestcandidatemode(request):
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
-    if not request.POST.has_key('testid') and not request.GET.has_key('testid'):
+    query_string = ""
+    try:
+        query_string = base64.b64decode(request.META['QUERY_STRING'])
+    except:
+        message = error_msg('1078')
+        response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    query_string_parts = query_string.split("&")
+    testid, targetemail, mode, rand = -1, "", "", ""
+    for qpart in query_string_parts:
+        qkey, qval = qpart.split("=")
+        if qkey == 'testid':
+            testid = qval
+        elif qkey == 'targetemail':
+            targetemail = qval
+        elif qkey == 'mode':
+            mode = qval
+        elif qkey == 'rand':
+            rand = qval
+    if not testid or testid == -1:
         message = error_msg('1059')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
-    testid = -1
-    if request.method == 'POST':
-        testid = request.POST['testid']
-    else:
-        testid = request.GET['testid']
-    targetemail = ""
-    if request.POST.has_key('targetemail'):
-        targetemail = base64.b64decode(request.POST['targetemail'])
-    elif request.GET.has_key('targetemail'):
-        targetemail = base64.b64decode(request.GET['targetemail'])
     testdict = {} # This will be our json object...
     testobj = None
     try:
@@ -2072,10 +2083,10 @@ def showtestcandidatemode(request):
         message = error_msg('1056')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
-    testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail, test=testobj)
+    testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
     testtakeruserobj = None
     if testtakeruserqset.__len__() == 0:
-        testtakeruserqset = WouldbeUsers.objects.filter(emailaddr=targetemail, test=testobj)
+        testtakeruserqset = WouldbeUsers.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
         if testtakeruserqset.__len__() == 0:
             message = error_msg('1077')
             response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
@@ -2157,7 +2168,7 @@ def showtestcandidatemode(request):
     if not testdict['usercreatorevaluatorflag']: 
         allowmultiattempts = testobj.allowmultiattempts
         usertest = testtakeruserobj
-        usertestqset = testtakeruserqset
+        usertestqset = testtakeruserqset.filter(status=2)
         if allowmultiattempts:
             maxattemptscount = testobj.maxattemptscount
             if usertestqset.__len__() >= int(maxattemptscount):
@@ -2183,7 +2194,7 @@ def showtestcandidatemode(request):
                 testtakentimedelta = currentdatetime - lasttimetesttaken
                 if testtakentimedelta.total_seconds() < attemptsintervalseconds:
                     secondsremaining = attemptsintervalseconds - testtakentimedelta.total_seconds()
-                    message = error_msg('1068') + " Please wait for %s seconds before attempting this test."%secondsremaining
+                    message = error_msg('1068') + " Please wait for %s before attempting this test."%skillutils.converttimeunit(secondsremaining)
                     response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
                     return response
             else: # User has never taken this test before.
@@ -2302,7 +2313,7 @@ def sendtestdata(request):
         message = "Error: " + error_msg('1071')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
-    starttest, starttime, testid, useremail, testlink = 0, '', -1, '', ''
+    starttest, starttime, testid, useremail, testlink, endtime, status = 0, '', -1, '', '', '', 1
     if request.POST.has_key('starttest'):
         starttest = request.POST['starttest']
     if request.POST.has_key('starttime'):
@@ -2311,13 +2322,16 @@ def sendtestdata(request):
         testid = request.POST['testid']
     if request.POST.has_key('useremail'):
         useremail = base64.b64decode(request.POST['useremail'])
+    if request.POST.has_key('endtime'):
+        endtime = request.POST['endtime']
+    if request.POST.has_key('status'):
+        status = request.POST['status']
     if starttest != '1': # Not necessary to add any of the gathered info to DB
         message = "Warning: Received a bogus message for test from %s\n"%request.META['REMOTE_ADDR']
         response = HttpResponse(message)
         return response
     clientsware = request.META['HTTP_USER_AGENT']
     ipaddress = request.META['REMOTE_ADDR']
-    status = 1 # 'Taking' the test.
     testobj = None
     try:
         testobj = Test.objects.filter(id=testid)[0]
@@ -2344,6 +2358,7 @@ def sendtestdata(request):
     usertestobj.clientsware = clientsware
     usertestobj.ipaddress = ipaddress
     usertestobj.starttime = urllib.unquote(starttime)
+    usertestobj.endtime = urllib.unquote(endtime)
     usertestobj.save()
     message = "Success: Test started."
     return HttpResponse(message)
@@ -2502,7 +2517,7 @@ def sendtestinvitations(request):
                 usertestobj = UserTest()
                 usertestobj.user = uobj
                 usertestobj.emailaddr = uobj.emailid # or = email
-                usertestobj.testurl = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
+                (usertestobj.testurl, usertestobj.stringid) = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
                 testlink = usertestobj.testurl
             usertestobj.test = testobj
             usertestobj.status = 0 # The test hasn't been taken as yet.
@@ -2522,9 +2537,10 @@ def sendtestinvitations(request):
                 wouldbeuserobj.emailaddr = email
             else:
                 wouldbeuserobj.emailaddr = email
-                wouldbeuserobj.testurl = gettesturlforuser(wouldbeuserobj.emailaddr, testid, baseurl)
+                (wouldbeuserobj.testurl, wouldbeuserobj.stringid) = gettesturlforuser(wouldbeuserobj.emailaddr, testid, baseurl)
                 testlink = wouldbeuserobj.testurl
             wouldbeuserobj.test = testobj
+            wouldbeuserobj.status = 0
             wouldbeuserobj.validfrom = validfrom
             wouldbeuserobj.validtill = validtill
             wouldbeuserobj.active = True
@@ -2574,6 +2590,7 @@ def sendtestinvitations(request):
     response = HttpResponse(message)
     return(response)
 
+
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
@@ -2606,7 +2623,7 @@ def manageinvitations(request):
         response = HttpResponse(message)
         return responses
     usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")
-    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active") # The status of these will always be 'Not Taken', since if the user tries to take the test, she/he will be asked 																		to logon.
+    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active")
     if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
         message = "Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\">Close</a>"%testid
         response = HttpResponse(message)
@@ -2657,7 +2674,22 @@ def manageinvitations(request):
             status = "Test  has been taken"
         else:
             status = "Unknown status"
-        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, wouldbeuser.active, wouldbeuser.cancelled ]
+        outcome = wouldbeuser.outcome
+        if not wouldbeuser.outcome:
+            outcome = "NA"
+        score = wouldbeuser.score
+        if not wouldbeuser.score:
+            score = "NA"
+        starttime, endttime = skillutils.readabledatetime(wouldbeuser.starttime), skillutils.readabledatetime(wouldbeuser.endtime)
+        if not wouldbeuser.starttime and  not wouldbeuser.endtime:
+            starttime, endtime = "NA", "NA"
+        ipaddress = wouldbeuser.ipaddress
+        if not wouldbeuser.ipaddress:
+            ipaddress = "NA"
+        clientsware = wouldbeuser.clientsware
+        if not wouldbeuser.clientsware:
+            clientsware = "NA"
+        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled ]
         ctr += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict
     tmpl = get_template("tests/manageinvitations.html")

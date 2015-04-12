@@ -1282,7 +1282,7 @@
 		    for(var i=0; i < emailvalues.length; i++){
 		      emailslist = emailslist + emailvalues[i]
 		    }
-		    emailsfield.value = emailslist;
+		    emailsfield.value = emailslist.replace(/\s+/g, "");
 		  }
 		  emailslist = "";
 		  var listofemails = emailsfield.value.split(",");

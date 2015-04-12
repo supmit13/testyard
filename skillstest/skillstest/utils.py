@@ -4,6 +4,7 @@ from functools import wraps
 import datetime
 import uuid, glob
 import urllib, urllib2
+import string, random
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -436,6 +437,49 @@ def urlencodestring(s):
     encodedStr = encodedStr.replace('-', '%2D')
     encodedStr = encodedStr.replace(',', '%2C')
     return (encodedStr)
+
+
+def converttimeunit(secs):
+    yearsecs = (365 * 24 * 60 * 60)
+    monthsecs = (30 * 24 * 60 * 60)
+    daysecs = 86400
+    hoursecs = 3600
+    minutesecs = 60
+    years, months, days, hours, minutes, seconds = 0, 0, 0, 0, 0, 0
+    if secs > yearsecs:
+        years = int(secs / yearsecs)
+        secs = secs % yearsecs 
+    if secs > monthsecs:
+        months = int(secs/monthsecs)
+        secs = secs % monthsecs
+    if secs > daysecs:
+        days = int(secs/daysecs)
+        secs = secs % daysecs
+    if secs > hoursecs:
+        hours = int(secs/hoursecs)
+        secs = secs % hoursecs
+    if secs > minutesecs:
+        minutes = int(secs/minutesecs)
+        seconds = secs % minutesecs
+    seconds = int(seconds)
+    intervalstring = ""
+    if years > 0:
+        intervalstring += str(years) + " years "
+    if months > 0:
+        intervalstring += str(months) + " months "
+    if days > 0:
+        intervalstring += str(days) + " days "
+    if hours > 0:
+        intervalstring += str(hours) + " hours "
+    if minutes > 0:
+        intervalstring += str(minutes) + " minutes "
+    if seconds > 0:
+        intervalstring += str(seconds) + " seconds"
+    return intervalstring
+
+
+def randomstringgen(size=26, chars=string.ascii_lowercase + string.digits):
+    return ''.join(random.choice(chars) for _ in range(size))
 
 
 class Logger(object):

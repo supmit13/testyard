@@ -375,4 +375,17 @@ alter table Tests_wouldbeusers add column endtime datetime DEFAULT NULL;
 alter table Tests_wouldbeusers add column ipaddress char(39) DEFAULT '';
 alter table Tests_wouldbeusers add column clientsware char(150) DEFAULT '';
 
+alter table Tests_usertest add column stringid varchar(15) NOT NULL;
+alter table Tests_wouldbeusers add column stringid varchar(15) NOT NULL;
+
+alter table Tests_usertest modify column stringid varchar(100);
+alter table Tests_wouldbeusers modify column stringid varchar(100);
+
+alter table Tests_userresponse drop foreign key user_id_refs_id_dfa3cedc;
+alter table Tests_userresponse drop column user_id;
+
+alter table Tests_userresponse add column emailaddr varchar (255) NOT NULL;
+
+alter table Tests_userresponse modify column evaluated_by_id int  DEFAULT NULL;
+
 COMMIT;

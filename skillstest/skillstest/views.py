@@ -82,10 +82,14 @@ def dashboard(request):
                           test.evaluator.groupmember9, test.evaluator.groupmember10 ) # Basically we keep the creator as the first element. Rest are evaluators.
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
     # *... and finally, those tests which the user has taken (i.e, user has been a candidate).
+    usertestqset = []
     try:
-        testlist_ascandidate = UserTest.objects.filter(user=userobj)[0].test
+        usertestqset = UserTest.objects.filter(user=userobj)
     except: # Can't say if we will find any records...
-        testlist_ascandidate = []
+        usertestqset = []
+    testlist_ascandidate = []
+    for usertest in usertestqset:
+        testlist_ascandidate.append(usertest.test)
     user_candidate_other_creator_evaluator_dict = {}
     for test in testlist_ascandidate:
         testcreator = test.creator

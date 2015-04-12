@@ -60,6 +60,11 @@
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test URL</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Email ID</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test Status</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test Outcome</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Score</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Started At - Ended At</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>IP Address</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Action</font></td>
 </tr>
 {% for wbukey, wbuvalue in wouldbeusers.items %}
@@ -69,6 +74,11 @@
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.2 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.3 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.4 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.5 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.6 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.7 }} - {{ wbuvalue.8 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.9 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.10 }}</font></td>
 	{% if wbuvalue.6 == 1 %}
 	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
 	{%else %}
