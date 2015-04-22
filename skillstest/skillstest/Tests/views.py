@@ -2084,14 +2084,17 @@ def showtestcandidatemode(request):
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
     testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
+    tabtype = 'usertest'
     testtakeruserobj = None
     if testtakeruserqset.__len__() == 0:
         testtakeruserqset = WouldbeUsers.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
+        tabtype = 'wouldbeusers'
         if testtakeruserqset.__len__() == 0:
             message = error_msg('1077')
             response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
             return response
     testtakeruserobj = testtakeruserqset[0]
+    tabid = testtakeruserobj.id
     userobj = None
     try:
         userobj = User.objects.filter(emailid=testtakeruserobj.emailaddr)[0]
@@ -2163,6 +2166,8 @@ def showtestcandidatemode(request):
     testdict['scope'] = testobj.scope
     testdict['sendtestdataurl'] = mysettings.SEND_TEST_DATA_URL
     testdict['targetemail'] = targetemail
+    testdict['tabtype'] = tabtype
+    testdict['tabid'] = tabid
     #testdict['testlink'] = request.META['HTTP_REFERER']
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
@@ -2189,7 +2194,7 @@ def showtestcandidatemode(request):
                 attemptsintervalseconds = int(attemptsinterval) * 86400 * 30*12
             else:
                 attemptsintervalseconds = int(attemptsinterval) # take the interval at face value.
-            if usertest.starttime is not None: # User has taken the test previously
+            if usertest.status > 0 and usertest.starttime is not None: # User has taken the test previously
                 lasttimetesttaken = skillutils.mysqltopythondatetime(str(usertest.starttime))
                 testtakentimedelta = currentdatetime - lasttimetesttaken
                 if testtakentimedelta.total_seconds() < attemptsintervalseconds:
@@ -2305,6 +2310,13 @@ def encryptstring(mystr):
 
 """
 Method to communicate information while user is taking test.
+The type of response is indicated by the value of mode. 
+0 - Response to a challenge, 1 - User ends the test by closing
+the challenge window, 2 - Test is over, 3 - User applies
+for a break (if break is allowed), 4 - User returns from a
+break (if break is allowed), 5 - Evaluator requests the
+candidate's response, 6 - Evaluator submits the evaluation,
+7 - User starts taking the test.
 """
 @csrf_exempt
 def sendtestdata(request):
@@ -2314,6 +2326,8 @@ def sendtestdata(request):
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
     starttest, starttime, testid, useremail, testlink, endtime, status = 0, '', -1, '', '', '', 1
+    mode, challengeid, challengetype, challengestatement, oneormore, resptext = -1, -1, "", "", False, ""
+    chkboxselectedoptions, radioselection, filbtext, useremail, tabref, tabid = [], "", "", "", "", -1
     if request.POST.has_key('starttest'):
         starttest = request.POST['starttest']
     if request.POST.has_key('starttime'):
@@ -2326,10 +2340,40 @@ def sendtestdata(request):
         endtime = request.POST['endtime']
     if request.POST.has_key('status'):
         status = request.POST['status']
-    if starttest != '1': # Not necessary to add any of the gathered info to DB
-        message = "Warning: Received a bogus message for test from %s\n"%request.META['REMOTE_ADDR']
-        response = HttpResponse(message)
-        return response
+    if request.POST.has_key('tabref'):
+        tabref = request.POST['tabref']
+    if request.POST.has_key('tabid'):
+        tabid = request.POST['tabid']
+    if request.POST.has_key('mode'):
+        mode = request.POST['mode']
+    if int(mode) == 0: # This is a response to a challenge by the test taker.
+        challengeid = request.POST['challengeid']
+        challengetype = request.POST['challengetype']
+        oneormore = request.POST['oneormore']
+        challengestatement = request.POST['challengestatement']
+        useremail = base64.b64decode(request.POST['useremail'])
+        respkeypattern = re.compile(r"^id_\d+$")
+        if challengetype  == 'CODN' or challengetype == 'SUBJ' or challengetype == 'ALGO':
+            for k in request.POST.keys():
+                if respkeypattern.search(k):
+                    resptext = request.POST[k]
+                    break
+        elif challengetype == 'MULT':
+            if oneormore == 'true': # checkboxes
+                checkoptionpattern = re.compile(r"^option_\d+$")
+                for k in request.POST.keys():
+                    if checkoptionpattern.search(k):
+                        chkboxselectedoptions.append(request.POST[k])
+            else: # radio buttons
+                if request.POST.has_key('rdoption'):
+                    radioselection = request.POST['rdoption']
+        elif challengetype == 'FILB':
+            filbpattern = re.compile(r"^filb_\d+$")
+            for k in request.POST.keys():
+                if filbpattern.search(k):
+                    filbtext = request.POST[k]
+                    break
+    
     clientsware = request.META['HTTP_USER_AGENT']
     ipaddress = request.META['REMOTE_ADDR']
     testobj = None
@@ -2339,27 +2383,68 @@ def sendtestdata(request):
         message = "Error: %s"%error_msg('1072')
         response = HttpResponse(message)
         return response
-    usertestobj = None
-    try:
-        usertestobj = UserTest.objects.filter(test=testobj).filter(emailaddr=useremail).filter(cancelled=False, active=True)[0]
-    except:
-        try:
-            usertestobj = WouldbeUsers.objects.filter(test=testobj).filter(emailaddr=useremail).filter(cancelled=False, active=True)[0]
-        except:
-            message = "Error: %s"%error_msg('1073')
-            response = HttpResponse(message)
-            return response
+    usertestqset = None
+    if tabref == 'usertest' and tabid > 0:
+        usertestqset = UserTest.objects.filter(id=int(tabid)).filter(cancelled=False, active=True)
+    elif tabref == 'wouldbeusers' and tabid > 0:
+        usertestqset = WouldbeUsers.objects.filter(id=int(tabid)).filter(cancelled=False, active=True)
+    else: # Unrecognized table ref and/or improper table Id.
+        message = "Error: %s"%error_msg('1079')
+        response = HttpResponse(message)
+        return response
+    if not usertestqset or len(usertestqset) == 0: # No matching record found.
+        message = "Error: %s"%error_msg('1073')
+        response = HttpResponse(message)
+        return response
+    usertestobj = usertestqset[0]
     curdatetime = datetime.datetime.now()
     if curdatetime > skillutils.mysqltopythondatetime(usertestobj.validtill.__str__()):
         message = "Error: %s\n"%error_msg('1074')
         response = HttpRequest(message)
         return response
-    usertestobj.status = status
-    usertestobj.clientsware = clientsware
-    usertestobj.ipaddress = ipaddress
-    usertestobj.starttime = urllib.unquote(starttime)
-    usertestobj.endtime = urllib.unquote(endtime)
-    usertestobj.save()
+    if int(mode) == 1 or int(mode) == 2: # User has ended test by closing the window using the 'End Test' button, or the test duration has run out.
+        usertestobj.status = status
+        usertestobj.endtime = urllib.unquote(endtime)
+        usertestobj.save()
+    if int(mode) == 7:
+        usertestobj.status = status
+        usertestobj.clientsware = clientsware
+        usertestobj.ipaddress = ipaddress
+        usertestobj.starttime = urllib.unquote(starttime)
+        usertestobj.save()
+    if int(mode) == 0:
+        userresponseobj = UserResponse()
+        userresponseobj.test = testobj
+        userresponseobj.challenge = Challenge.objects.filter(id=challengeid)[0]
+        userresponseobj.emailaddr = useremail
+        if challengetype == 'CODN' or challengetype == 'ALGO' or challengetype == 'SUBJ':
+            userresponseobj.answer = resptext
+        elif challengetype == 'MULT':
+            if oneormore == 'true': # checkboxes
+                selectedoptionstring = "#||#".join(chkboxselectedoptions)
+                userresponseobj.answer = selectedoptionstring
+            else:
+                userresponseobj.answer = urllib.unquote(radioselection)
+        elif challengetype == 'FILB':
+            userresponseobj.answer = filbtext
+        userresponseobj.candidate_comment = ""
+        userresponseobj.tabref = tabref
+        userresponseobj.tabid = tabid
+        responsedatetime = str(datetime.datetime.now())
+        responsedatetimeparts = responsedatetime.split(' ')
+        message = ""
+        if responsedatetimeparts.__len__() == 1:
+            responsedatetimeparts.append('00:00:00')
+        if responsedatetimeparts.__len__() == 2:
+            responsedate, responsetime = responsedatetimeparts[0], responsedatetimeparts[1]
+            responsedateparts = responsedate.split("-")
+            if responsedateparts.__len__() == 3:
+                responsedate = responsedateparts[0] + "-" + responsedateparts[1] + "-" + responsedateparts[2]
+            responsetime = str(responsetime)[:8]
+            responsedate = responsedate + ' ' + responsetime
+        userresponseobj.responsedatetime = responsedate
+        userresponseobj.attachment = ''
+        userresponseobj.save()
     message = "Success: Test started."
     return HttpResponse(message)
 
@@ -2650,7 +2735,7 @@ def manageinvitations(request):
         score = usertest.score
         if not usertest.score:
             score = "NA"
-        starttime, endttime = skillutils.readabledatetime(usertest.starttime), skillutils.readabledatetime(usertest.endtime)
+        starttime, endtime = skillutils.readabledatetime(usertest.starttime), skillutils.readabledatetime(usertest.endtime)
         if not usertest.starttime and  not usertest.endtime:
             starttime, endtime = "NA", "NA"
         ipaddress = usertest.ipaddress
@@ -2680,7 +2765,7 @@ def manageinvitations(request):
         score = wouldbeuser.score
         if not wouldbeuser.score:
             score = "NA"
-        starttime, endttime = skillutils.readabledatetime(wouldbeuser.starttime), skillutils.readabledatetime(wouldbeuser.endtime)
+        starttime, endtime = skillutils.readabledatetime(wouldbeuser.starttime), skillutils.readabledatetime(wouldbeuser.endtime)
         if not wouldbeuser.starttime and  not wouldbeuser.endtime:
             starttime, endtime = "NA", "NA"
         ipaddress = wouldbeuser.ipaddress

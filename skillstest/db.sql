@@ -388,4 +388,9 @@ alter table Tests_userresponse add column emailaddr varchar (255) NOT NULL;
 
 alter table Tests_userresponse modify column evaluated_by_id int  DEFAULT NULL;
 
+/* alter table Tests_userresponse add column usertest_id int not null, add foreign key fk_usertest (usertest_id) references Tests_usertest (id) on delete cascade; */
+
+alter table Tests_userresponse add column tabref varchar(40) not null;
+alter table Tests_userresponse add column tabid int not null;
+
 COMMIT;

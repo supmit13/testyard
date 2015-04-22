@@ -577,4 +577,26 @@ Fri, 10 Apr 2015, 02:03 HRS (IST).
 12.skillstest/skills_settings.py
 13.skillstest/skillstest/views.py
 14.files_to_commit.txt
+=====================================
+
+Thu, 24 Apr 2015, 02:46 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/skillstest/views.py
+14.static/css/panedwindow/panes.css
+15.static/css/panedwindow/tablet.css
+16.files_to_commit.txt
+=====================================
+
 

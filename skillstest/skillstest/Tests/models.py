@@ -223,6 +223,8 @@ Evaluator will evaluate these responses and update this object
 class UserResponse(models.Model):
     test = models.ForeignKey(Test, blank=False, null=False)
     challenge = models.ForeignKey(Challenge, blank=False, null=False)
+    tabref = models.CharField(blank=False, null=False, max_length=40)
+    tabid = models.IntegerField(blank=False, null=False)
     emailaddr = models.EmailField(null=False, blank=False) # Email address of the user who sent this response.
     answer = models.TextField(blank=True, null=True) # This is the response that the User made.
     responsedatetime = models.DateTimeField(blank=True, null=True, default=None) # Instant at which the User submits the response.
