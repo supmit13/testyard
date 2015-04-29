@@ -351,20 +351,20 @@ function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, start
         case 7:
             qlisttag = document.getElementById('qlist');
             qlisttag.style = "";
-            qlisttag.innerHTML = "Number of challenges attempted till now: " + (qalist.length - 1).toString();
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (qalist.length - 1).toString();
             break;
 
         case 4: // No responsenoreturn or norevisit set. Only challenges that have been responded to are displayed.
 	    qlisttag = document.getElementById('qlist');
 	    qlisttag.style = "";
-            qlisttag.innerHTML = "";
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
             for(var qctr=0; qctr < qalist.length; qctr++){
 		challengerec = qalist[qctr];
-		challengestatement15 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
 		if(challengerec[0].length < 25){
-		    challengestatement15 = challengerec[0];
+		    challengestatement25 = challengerec[0];
 		}
-		qlisttag.innerHTML += "<li><a href='#/' onClick='javascript:displaychallengescreen(qalist, qctr, index, randomlist,  testpages, starttime, mytime, ruleflag);'>" + challengestatement15 + "</a></li>";
+		qlisttag.innerHTML += "<li><a href='#' onClick=\"javascript:displaychallengescreen(qalist, qctr, index, randomlist,  testpages, starttime, mytime, ruleflag);\">" + challengestatement25 + "</a></li>";
 	    }
             break;
 	// Cases 9, 10, 11, 13, 14, 15: Display all challenges in the test with 
@@ -377,25 +377,27 @@ function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, start
  	case 15:
 	    qlisttag = document.getElementById('qlist');
 	    qlisttag.style = "";
-            qlisttag.innerHTML = "";
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
 	    for(var actr=0; actr < alllist.length; actr++){
 		challengerec = alllist[actr];
 	   	//alert(challengerec[0]);
-		challengestatement15 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
 		if(challengerec[0].length < 25){
-		    challengestatement15 = challengerec[0];
+		    challengestatement25 = challengerec[0];
 		}
 		foundflag = 0;
+		lastqctr=0;
 		for(var qctr=0; qctr < qalist.length; qctr++){
 		    qarec = qalist[qctr];
 		    if(qarec[0].toUpperCase() == challengerec[0].toUpperCase()){
-			qlisttag.innerHTML += "<li>" + challengestatement15 + "</li>";
+			qlisttag.innerHTML += "<li>" + challengestatement25 + "</li>";
 			foundflag = 1;
 			break;
 		    }
 		}
 		if(!foundflag){
-		    qlisttag.innerHTML += "<li><a href='#/' onClick='javascript:displaychallengescreen(qalist, qctr, index, randomlist, testpages, starttime, mytime, ruleflag);'>" + challengestatement15 + "</a></li>";
+		    lastqctr = actr;
+		    qlisttag.innerHTML += "<li><a href='#' onClick=\"javascript:displaychallengescreen(alllist, lastqctr, index, randomlist, testpages, starttime, mytime, ruleflag);\">" + challengestatement25 + "</a></li>";
 		}
 	    }
             break;
@@ -406,13 +408,14 @@ function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, start
 	    qlisttag = document.getElementById('qlist');
 	    qlisttag.style = "";
             qlisttag.innerHTML = "";
+	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
             for(var actr=0; actr < alllist.length; actr++){
 		challengerec = alllist[actr];
-		challengestatement15 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
 		if(challengerec[0].length < 25){
-		    challengestatement15 = challengerec[0];
+		    challengestatement25 = challengerec[0];
 		}
-		qlisttag.innerHTML += "<li><a href='#/' onClick='javascript:displaychallengescreen(alllist, actr, index, randomlist, testpages, starttime, mytime, ruleflag);'>" + challengestatement15 + "</a></li>";
+		qlisttag.innerHTML += "<li><a href='#' onClick=\"javascript:displaychallengescreen(alllist, actr, index, randomlist, testpages, starttime, mytime, ruleflag);\">" + challengestatement25 + "</a></li>";
 	    }
             break;
     }
@@ -423,7 +426,6 @@ function displaychallengescreen(challengelist, ctr, index, randomlist, testpages
     challengerec = challengelist[ctr];
     challengestatement = challengerec[0];
     tindex = randomlist[index];
-    alert(tindex);
     tmpchallengepage = testpages[tindex][0];
     tmpchallengeduration = testpages[tindex][1];
     tmpchallengestatement = testpages[tindex][2];
@@ -433,7 +435,7 @@ function displaychallengescreen(challengelist, ctr, index, randomlist, testpages
 	    testpages[tindex][0] = testpages[elem][0];
 	    testpages[tindex][1] = testpages[elem][1];
 	    testpages[tindex][2] = testpages[elem][2];
-
+	    alert(tindex + " **** " + elem);
 	    testpages[elem][0] = tmpchallengepage;
 	    testpages[elem][1] = tmpchallengeduration;
 	    testpages[elem][2] = tmpchallengestatement;
@@ -488,6 +490,12 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     }
     qareadiv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
     clock();
+    for(var i=0;i < qalist.length; i++){
+	if(testpages[elem][2] == qalist[i]){
+	    index = index + 1;
+	    return showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag);
+	}
+    }
     qareadiv.innerHTML += testpages[elem][0];
     nextduration = (testpages[randomlist[index]][1] * 1000);
     index = index + 1;
@@ -568,10 +576,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             pages[pagectr][0] += "Please also refer <a href='" + jsonobj.challenges[challenge].additionalurl + "'>here</a> for some relevant information.<br />";
         }
         if(jsonobj.challenges[challenge].challengetype == 'SUBJ' || jsonobj.challenges[challenge].challengetype == 'ALGO'){
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10'></textarea><br /><br />";
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from cloud9
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10'></textarea><br /><br />";
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
             pages[pagectr][0] += "<b>Select from below:</b><br />";
@@ -594,7 +602,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
-            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "'><br />";
+            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;'><br />";
         }
         pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + " seconds</font><br />";
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
