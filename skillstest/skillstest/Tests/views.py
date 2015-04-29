@@ -2446,7 +2446,7 @@ def sendtestdata(request):
         userresponseobj.responsedatetime = responsedate
         userresponseobj.attachment = ''
         userresponseobj.save()
-    if status == 2: # Send email to evaluator(s) with test name, test Id, email address, table reference and table Id.
+    if status == 2: # Test completed. Send email to evaluator(s) with test name, test Id, email address, table reference and table Id.
         fromaddr = "testyardteam@testyard.com"
         retval = 0
         testevallink = ""
