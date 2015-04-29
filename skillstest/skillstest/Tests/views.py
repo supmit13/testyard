@@ -33,6 +33,7 @@ from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, 
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
+import skillutils.Logger as Logger
 
 
 def get_user_tests(request):
@@ -2445,7 +2446,36 @@ def sendtestdata(request):
         userresponseobj.responsedatetime = responsedate
         userresponseobj.attachment = ''
         userresponseobj.save()
-    message = "Success: Test started."
+    if status == 2: # Send email to evaluator(s) with test name, test Id, email address, table reference and table Id.
+        fromaddr = "testyardteam@testyard.com"
+        retval = 0
+        testevallink = ""
+        emailsubject = "Test completed by user with email Id '%s'"%useremail
+        emailmessage = "Dear Sir, \
+         The  test named '%s' has been completed by user with email Id '%s'. You can start evaluating the \
+         responses by clicking on the following link: '%s'.\
+        Thanks,\
+        %s "%(testobj.testname, useremail, testevallink)
+        message = ""
+        evalemails = [] # Evaluator's and test creator's email address(es)
+        log = Logger(mysettings.LOG_PATH)
+        for evalemailid in evalemails:
+	    try:
+	        retval = send_mail(emailsubject, emailmessage, fromaddr, evalemails, False)
+	        message = "Successfully sent email to evaluator identified by '%s' for test identified by name '%s' and Id '%s' and candidate identified by email '%s'"%(evalemailid, testobj.testname, testid, useremail)
+	        log.logmessage(message)
+	        return HttpResponse(message)
+	    except: # Log this error with all the variables used above in try block. This will be used by admins to manually send the email.
+	        message = "Could not send email to evaluator '%s' regarding completion of test identified by name '%s' and Id '%s' for user identified by emailaddress '%s' with record in table '%s' and table Id '%s'"%(evalemailid, testobj.testname, testid, useremail, tabref, tabid)
+	        log.logmessage(message)
+	    # Also send an email to test creator informing about the exception.
+	        creatoremail = ""
+	        try:
+	            retval = send_mail("Could not send email to evaluator", message, fromaddr, [creatoremail,], False)
+	        except:
+	            pass # worthless email service!!! (cursing...).
+	return HttpResponse(message)
+    message = "Success: Test in progress."
     return HttpResponse(message)
 
 
