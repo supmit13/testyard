@@ -33,7 +33,7 @@ from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, 
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
-import skillutils.Logger as Logger
+from skillstest.utils import Logger
 
 
 def get_user_tests(request):
@@ -2308,6 +2308,25 @@ def encryptstring(mystr):
     return encodedstr
 """
 
+"""
+Function to generate a link using which an evaluator (identified by the parameter
+'evalemailid') would be able to assess the responses provided by the candidate
+(identified by the parameter 'useremail') for the test specified using the 
+parameter 'testobj'. The specific test invitation against which the candidate 
+supplied the responses is  specified using the parameters 'tabref' and 'tabid'.
+"""
+@csrf_exempt
+def getevaluationlink(request, testid, evalemailid, useremail, tabref, tabid):
+    evaluation_api_url = skillutils.gethosturl(request) + "/" + mysettings.TEST_EVALUATION_URL
+    queryparams = "testid=" + testid.__str__() + "&evalemail=" + evalemailid + "&candidateemail=" + useremail + "&tabref=" + tabref + "&tabid=" + tabid
+    encquerystr = base64.b64encode(queryparams)
+    evaluation_api_url += "?" + encquerystr
+    # Modify the URL to use 'https'
+    protocol, other = evaluation_api_url.split("://")
+    protocol = 'https'
+    evaluation_api_url = "://".join([protocol, other])
+    return evaluation_api_url
+
 
 """
 Method to communicate information while user is taking test.
@@ -2446,35 +2465,69 @@ def sendtestdata(request):
         userresponseobj.responsedatetime = responsedate
         userresponseobj.attachment = ''
         userresponseobj.save()
-    if status == 2: # Test completed. Send email to evaluator(s) with test name, test Id, email address, table reference and table Id.
+    if int(status) == 2: # Test completed. Send email to evaluator(s) with test name, test Id, email address, table reference and table Id.
         fromaddr = "testyardteam@testyard.com"
         retval = 0
-        testevallink = ""
-        emailsubject = "Test completed by user with email Id '%s'"%useremail
-        emailmessage = "Dear Sir, \
-         The  test named '%s' has been completed by user with email Id '%s'. You can start evaluating the \
-         responses by clicking on the following link: '%s'.\
-        Thanks,\
-        %s "%(testobj.testname, useremail, testevallink)
-        message = ""
+        evalobj = testobj.evaluator
         evalemails = [] # Evaluator's and test creator's email address(es)
-        log = Logger(mysettings.LOG_PATH)
+        evalemailsdict = {}
+        if testobj.creatorisevaluator:
+            evalemails.append(testobj.creator.emailid)
+            evalemailsdict[testobj.creator.emailid] = 1
+        groupmemberpattern = re.compile("groupmember\d+_id")
+        for dk in evalobj.__dict__.keys():
+            groupmemberpatmatch = groupmemberpattern.search(dk)
+            if not groupmemberpatmatch:
+                continue
+            if evalobj.__dict__[dk] and int(evalobj.__dict__[dk]) > 0:
+                try:
+                    if not evalemailsdict.has_key(User.objects.get(id=evalobj.__dict__[dk]).emailid):
+                        evalemailsdict[User.objects.get(id=evalobj.__dict__[dk]).emailid] = 1
+                        evalemails.append(User.objects.get(id=evalobj.__dict__[dk]).emailid)
+                    else:
+                        pass
+                except:
+                    pass
+        message = ""
+        log = None
+        try:
+            log = Logger(mysettings.LOG_PATH)
+        except:
+            print "Could not create 'Logger' object - logging will not be possible.\n"
+        #import pdb;pdb.set_trace()
         for evalemailid in evalemails:
+            emailsent = False
+            testevallink = getevaluationlink(request, testobj.id, evalemailid, useremail, tabref, tabid)
+            emailsubject = "Test taken by user with email Id '%s'"%useremail
+            emailmessage = """Dear Sir, 
+             The  test named '%s' has been completed by user with email Id '%s'. You can start evaluating the 
+             responses by clicking on the following link: '%s'. Do please let us know in case of any issues or
+             irregularities. 
+             Thanks,
+             %s """%(testobj.testname, useremail, testevallink, fromaddr)
 	    try:
-	        retval = send_mail(emailsubject, emailmessage, fromaddr, evalemails, False)
+	        retval = send_mail(emailsubject, emailmessage, fromaddr, [ evalemailid, ], False)
 	        message = "Successfully sent email to evaluator identified by '%s' for test identified by name '%s' and Id '%s' and candidate identified by email '%s'"%(evalemailid, testobj.testname, testid, useremail)
-	        log.logmessage(message)
-	        return HttpResponse(message)
+                if log is not None:
+	            log.logmessage(message)
+                else:
+                    print message
+                emailsent = True # Just for maintaining uniformity
 	    except: # Log this error with all the variables used above in try block. This will be used by admins to manually send the email.
 	        message = "Could not send email to evaluator '%s' regarding completion of test identified by name '%s' and Id '%s' for user identified by emailaddress '%s' with record in table '%s' and table Id '%s'"%(evalemailid, testobj.testname, testid, useremail, tabref, tabid)
-	        log.logmessage(message)
+                if log is not None:
+	            log.logmessage(message)
+                else:
+                    print message
+                emailsent = False
 	    # Also send an email to test creator informing about the exception.
-	        creatoremail = ""
+	    creatoremail = ""
+            if not emailsent or emailsent == False:
 	        try:
 	            retval = send_mail("Could not send email to evaluator", message, fromaddr, [creatoremail,], False)
 	        except:
 	            pass # worthless email service!!! (cursing...).
-	return HttpResponse(message)
+	#return HttpResponse(message)
     message = "Success: Test in progress."
     return HttpResponse(message)
 
@@ -2907,5 +2960,14 @@ def invitationcancellation(request):
     message = "Invitation URL '%s' has been cancelled as per your request. Please close and reopen the invitations view to observe the changes."%inviteobj.testurl
     response = HttpResponse(message)
     return response
+
+
+"""
+Function to enable a evaluator of the test to evaluate the candidate's responses.
+"""
+def evaluate(request):
+    pass
+
+
 
 

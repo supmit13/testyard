@@ -30,6 +30,10 @@ Creates and returns a session object if the request is a
 valid and authenticated session. Returns None otherwise.
 """
 def isloggedin(request):
+    if not request.COOKIES.has_key('sessioncode'):
+        if mysettings.DEBUG:
+            print "Invalid session code.\n"
+        return False
     sesscode = request.COOKIES['sessioncode']
     try:
         sessobj = Session.objects.get(sessioncode=sesscode)

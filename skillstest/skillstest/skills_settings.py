@@ -118,6 +118,7 @@ EDIT_CHALLENGE_URL = "skillstest/tests/challenge/edit/"
 SHOW_TEST_CANDIDATE_MODE_URL = "skillstest/test/showtestcandidatemode/"
 SEND_TEST_INVITATION_URL = "skillstest/test/sendtestinvitations/"
 SEND_TEST_DATA_URL = "skillstest/test/sendtestdata/"
+TEST_EVALUATION_URL = "skillstest/test/evaluate/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
