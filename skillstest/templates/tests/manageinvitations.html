@@ -1,5 +1,4 @@
-<form name='manageinvites' id='manageinvites' method='' action=''>
-<h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
+<p><form name='manageinvites' id='manageinvites' method='POST' action=''><h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
 {% if usertest.LENGTH > 0 %}
 <br /><br />
 <div id='utinfo' style=''>
@@ -102,4 +101,4 @@
 <td nowrap><input type='button' name='btnclose' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></td>
 </tr>
 </table>
-</form>
+</form></p>

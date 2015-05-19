@@ -119,6 +119,7 @@ SHOW_TEST_CANDIDATE_MODE_URL = "skillstest/test/showtestcandidatemode/"
 SEND_TEST_INVITATION_URL = "skillstest/test/sendtestinvitations/"
 SEND_TEST_DATA_URL = "skillstest/test/sendtestdata/"
 TEST_EVALUATION_URL = "skillstest/test/evaluate/"
+TEST_BULK_UPLOAD_URL = "skillstest/test/bulkupload/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -199,7 +200,7 @@ OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
 OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 
 # Number of complimentary tests a newly registered user can conduct:
-NEW_USER_FREE_TESTS_COUNT = 5
+NEW_USER_FREE_TESTS_COUNT = 7
 # Types of tests the user can conduct as part of complimentary test:
 NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 

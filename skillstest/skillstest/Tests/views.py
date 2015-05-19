@@ -25,6 +25,10 @@ from Crypto.Cipher import AES, DES3
 from Crypto import Random
 import base64,urllib, urllib2
 import simplejson as json
+from openpyxl import load_workbook
+from xlrd import open_workbook
+import csv
+import xml.etree.ElementTree as et
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -44,7 +48,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, ""
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -185,6 +189,7 @@ def get_user_tests(request):
     tests_user_dict['invitationcancelurl'] = skillutils.gethosturl(request) + "/" + invitationcancelurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
+    tests_user_dict['testbulkuploadurl'] = skillutils.gethosturl(request) + "/" + testbulkuploadurl
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
@@ -2331,7 +2336,7 @@ def getevaluationlink(request, testid, evalemailid, useremail, tabref, tabid):
 
 
 """
-Method to communicate information while user is taking test.
+Method to communicate with server while user is taking test.
 The type of response is indicated by the value of mode. 
 0 - Response to a challenge, 1 - User ends the test by closing
 the challenge window, 2 - Test is over, 3 - User applies
@@ -2971,5 +2976,435 @@ def evaluate(request):
     pass
 
 
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def createtestbulkupload(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testlinkid, exist_test_id, upload1, upload2, upload3, upload4, upload5, upload6, upload7, upload8, upload9, upload10 = [ "" for i in range(12)]
+    uploaddict = {}
+    if request.POST.has_key('testlinkid'):
+	testlinkid = request.POST['testlinkid']
+    if request.POST.has_key('exist_test_id'):
+	exist_test_id = request.POST['exist_test_id']
+    username = userobj.displayname
+    uploadPattern = re.compile(r"upload\d+")
+    for postparam in request.FILES.keys():
+	uploadfilename = None
+        #print request.FILES[postparam].name
+	if request.FILES.has_key(postparam) and request.FILES[postparam].name != "" and uploadPattern.search(postparam):
+            uploadfilename = request.FILES[postparam].name.split(".")[0]
+	else:
+	    continue
+        uploadedext = skillutils.get_extension2(request.FILES[postparam].name)
+        if uploadedext.lower() != 'csv' and uploadedext.lower() != 'xls' and uploadedext.lower() != 'xlsx' and uploadedext.lower() != 'xml':
+	    message = "Invalid test file format for POST parameter '%s'. Please upload 'csv' or 'xls(x)' or 'xml' files only."%postparam
+            continue
+        fpath, message, testmedia = skillutils.handleuploadedfile2(request.FILES[postparam], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload", uploadfilename)
+        uploadedfile = request.FILES[postparam].name
+	uploaddict[uploadedfile] = [fpath, uploadedext]
+    # At this point, all files have been uploaded. So we are ready to start creating the tests and their challenges.
+    # Note: We will delete the entire 'bulkupload' folder (along with its contents) once all tests from those files have been created.
+    testcount = 0
+    for filename in uploaddict.keys():
+        filepath = uploaddict[filename][0]
+        fileext = uploaddict[filename][1] # This can be bogus if extension is greater than 3 chars long, e.g xlsx.
+	if fileext == "xlsx":
+            testcount += create_test_from_xlsx(filename, filepath, testlinkid, userobj)
+        elif fileext == "xls":
+            testcount += create_test_from_xls(filename, filepath, testlinkid, userobj)
+	elif fileext == "csv":
+	    testcount += create_test_from_csv(filename, filepath, testlinkid, userobj)
+	elif fileext == "xml":
+	    testcount += create_test_from_xml(filename, filepath, testlinkid, userobj)
+	else:
+	    print "Unsupported format %s\n", fileext
+	    continue
+    try:
+        allfiles = os.listdir(mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload")
+        for filename in allfiles:
+            os.unlink(mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload" + os.path.sep + filename)
+        os.rmdir(mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload")
+    except:
+        print "Error removing bulkupload dir: %s\n"%sys.exc_info()[1].__str__()
+    return HttpResponse("%s tests created"%testcount.__str__())
+
+
+"""
+Function to create a test from data in a xlsx file.
+"""
+def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
+    try:
+        wb = load_workbook(filename=filepath)
+        ws = wb.worksheets[0]
+        rowctr = 0
+        testobj = None
+        for row in ws.rows:
+            if rowctr == 0: # This will be test metadata row
+                # Create a test object
+                testobj = Test()
+                testobj.createdate = datetime.datetime.now()
+                testobj.testname = row[0].value.decode('utf-8', "replace")
+                testobj.testtype = row[1].value.decode('utf-8', "replace")
+                testobj.ruleset = row[2].value.decode('utf-8', "replace")
+                testobj.topicname = ""
+                if row[3].value != "" and row[3].value is not None:
+                    testobj.topicname = row[3].value
+                    testobj.topic = Topic.objects.filter(id=-1)[0]
+                    testobj.topicname = testobj.topicname.replace("__", " ")
+                else:
+                    topicname = ""
+                    if row[4].value != "" and row[4].value is not None:
+                        topicname = row[4].value
+                    if topicname.__len__() > 0 and testobj.topicname.__len__() == 0:
+                        topic = Topic()
+                        topic.topicname = topicname
+                        topic.user = userobj
+                        topic.createdate = datetime.datetime.now()
+                        topic.isactive = True
+                        topic.save()
+                        testobj.topic = topic
+                        testobj.topicname = topic.topicname
+                if row[5].value != "":
+                    testobj.maxscore = int(row[5].value)
+                else:
+                    testobj.maxscore = 0
+                if row[6].value != "":
+                    testobj.challengecount = int(row[6].value)
+                else:
+                    testobj.challengecount = 0
+                if row[7].value != "":
+                    samescore = int(row[7].value)
+                else:
+                    samescore = False
+                if row[8].value != "":
+                    testobj.negativescoreallowed = int(row[8].value)
+                else:
+                    testobj.negativescoreallowed = False
+                if row[9].value != "":
+                    testobj.passscore = int(row[9].value)
+                else:
+                    testobj.passscore = 0
+                if row[10].value != "":
+                    testduration = int(row[10].value)
+                else:
+                    testduration = 0
+                testdurationunit = row[11].value.decode('utf-8', "replace")
+                if testdurationunit == 'h':
+                    testduration = testduration * 60 * 60
+                elif testdurationunit == 'm':
+                    testduration = testduration * 60
+                elif testdurationunit == 's':
+                    testduration = testduration
+                testobj.duration = testduration
+                testobj.creator = userobj
+                if row[12].value != "":
+                    maxchallengeduration = int(row[12].value)
+                else:
+                    maxchallengeduration = testduration
+                if row[13].value != "":
+                    maxchallengedurationunit = row[13].value
+                else:
+                    maxchallengedurationunit = testdurationunit
+                evaluatorids = row[14].value.decode('utf-8', "replace")
+                evaluatorgrpname = row[15].value.decode('utf-8', "replace")
+                evaluatorgrpname = evaluatorgrpname.replace(" ", "__")
+                evaluatorslist = evaluatorids.split(",")
+                evaluatorobj = Evaluator()
+                evaluatorobj.evalgroupname = evaluatorgrpname
+                evalctr = 0
+                for evalid in evaluatorslist:
+                    if evalctr == 0:
+                        evaluatorobj.groupmember1 = User.objects.get(emailid=evalid)
+                    elif evalctr == 1:
+                        evaluatorobj.groupmember2 = User.objects.get(emailid=evalid)
+                    elif evalctr == 2:
+                        evaluatorobj.groupmember3 = User.objects.get(emailid=evalid)
+                    elif evalctr == 3:
+                        evaluatorobj.groupmember4 = User.objects.get(emailid=evalid)
+                    elif evalctr == 4:
+                        evaluatorobj.groupmember5 = User.objects.get(emailid=evalid)
+                    elif evalctr == 5:
+                        evaluatorobj.groupmember6 = User.objects.get(emailid=evalid)
+                    elif evalctr == 6:
+                        evaluatorobj.groupmember7 = User.objects.get(emailid=evalid)
+                    elif evalctr == 7:
+                        evaluatorobj.groupmember8 = User.objects.get(emailid=evalid)
+                    elif evalctr == 8:
+                        evaluatorobj.groupmember9 = User.objects.get(emailid=evalid)
+                    elif evalctr == 9:
+                        evaluatorobj.groupmember10 = User.objects.get(emailid=evalid)
+                    evalctr += 1
+                evaluatorobj.save()
+                testobj.evaluator = evaluatorobj
+                if testobj.creator.emailid == testobj.evaluator.groupmember1.emailid or testobj.creator.emailid == testobj.evaluator.groupmember2.emailid or testobj.creator.emailid == testobj.evaluator.groupmember3.emailid or testobj.creator.emailid == testobj.evaluator.groupmember4.emailid or testobj.creator.emailid == testobj.evaluator.groupmember5.emailid or testobj.creator.emailid == testobj.evaluator.groupmember6.emailid or testobj.creator.emailid == testobj.evaluator.groupmember7.emailid or testobj.creator.emailid == testobj.evaluator.groupmember8.emailid or testobj.creator.emailid == testobj.evaluator.groupmember9.emailid or testobj.creator.emailid == testobj.evaluator.groupmember10.emailid:
+                    testobj.creatorisevaluator = True
+                else:
+                    testobj.creatorisevaluator = False
+                if row[16].value != "":
+                    testobj.publishdate = row[16].value
+                else:
+                    testobj.publishdate = datetime.datetime.now()
+                if row[17].value != "":
+                    testobj.activationdate = row[17].value
+                else:
+                    testobj.activationdate = datetime.datetime.now()
+                testobj.quality = row[18].value
+                if row[19].value and row[19].value != "":
+                    testobj.scope = row[19].value
+                else:
+                    testobj.scope = "private"
+                if row[20].value == "" or not row[20].value:
+                    testobj.allowedlanguages = 'enus'
+                else:
+                    testobj.allowedlanguages = row[20].value
+                testobj.progenv = row[21].value
+                if row[22].value != "":
+                    testobj.multimediareqd = row[22].value
+                else:
+                    testobj.multimediareqd = False
+                if row[23].value != "":
+                    testobj.randomsequencing = row[23].value
+                else:
+                    testobj.randomsequencing = False
+                testobj.allowmultiattempts = row[24].value
+                testobj.maxattemptscount = row[25].value
+                testobj.attemptsinterval = row[26].value
+                testobj.attemptsintervalunit = row[27].value
+                testobj.status = False
+                print "Creating test with name '%s'"%testobj.testname
+                testobj.save()
+            elif rowctr == 1:
+                pass
+            elif rowctr > 1: # Challenge row.
+                challengeobj = Challenge()
+                challengeobj.test = testobj
+                challengeobj.statement = row[0].value.decode('utf-8')
+                challengeobj.challengescore = row[1].value
+                challengeobj.timeframe = row[2].value
+                if row[3].value and row[3].value != "":
+                    challengeobj.negativescore = row[3].value
+                else:
+                    challengeobj.negativescore = 0
+                challengeobj.mediafile = row[4].value
+                challengeobj.additionalurl = row[5].value
+                challengeobj.challengetype = row[6].value
+                if row[7].value and row[7].value != "":
+                    challengeobj.mustrespond = row[7].value
+                else:
+                    challengeobj.mustrespond = True
+                challengeobj.oneormore = row[8].value
+                if row[9].value and row[9].value != "":
+                    challengeobj.challengequality = row[9].value
+                else:
+                    challengeobj.challengequality = testobj.quality
+                challengeobj.responsekey = row[10].value
+                if challengeobj.challengetype == 'MULT':
+                    if row[11].value != "":
+                        challengeobj.option1 = row[11].value
+                    if row[12].value != "":
+                        challengeobj.option2 = row[12].value
+                    if row[13].value != "":
+                        challengeobj.option3 = row[13].value
+                    if row[14].value != "":
+                        challengeobj.option4 = row[14].value
+                    if row[15].value != "":
+                        challengeobj.option5 = row[15].value
+                    if row[16].value != "":
+                        challengeobj.option6 = row[16].value
+                    if row[17].value != "":
+                        challengeobj.option7 = row[17].value
+                    if row[18].value != "":
+                        challengeobj.option8 = row[18].value
+                challengeobj.save()
+            rowctr += 1
+    except:
+        print "exception: %s\n"%sys.exc_info()[1].__str__()
+    return 1
+
+
+def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
+    try:
+        wb = open_workbook(filepath)
+        for sheet in wb.sheets():
+            rowctr = 0
+            for row in range(sheet.nrows):
+                if rowctr == 0:
+                    testobj = Test()
+                    testobj.createdate = datetime.datetime.now()
+                    testobj.testname = sheet.cell(row,0).value
+                    testobj.testtype = sheet.cell(row,1).value
+                    testobj.ruleset = sheet.cell(row,2).value
+                    if sheet.cell(row,3).value != "" and sheet.cell(row,3).value is not None:
+                        testobj.topicname = sheet.cell(row,3).value
+                    topicname = ""
+                    if sheet.cell(row,4).value != "" and sheet.cell(row,4).value is not None:
+                        topicname = sheet.cell(row,4).value
+                    if topicname.__len__() > 0:
+                        topic = Topic()
+                        topic.topicname = topicname
+                        topic.user = userobj
+                        topic.createdate = datetime.datetime.now()
+                        topic.isactive = True
+                        topic.save()
+                        testobj.topic = topic
+                        testobj.topicname = topic.topicname
+                    testobj.maxscore = sheet.cell(row,5).value
+                    testobj.challengecount = sheet.cell(row,6).value
+                    samescore = sheet.cell(row,7).value
+                    testobj.negativescoreallowed = sheet.cell(row,8).value
+                    testobj.passscore = sheet.cell(row,9).value
+                    testduration = sheet.cell(row,10).value
+                    testdurationunit = sheet.cell(row,11).value
+                    if testdurationunit == 'h':
+                        testduration = testduration * 60 * 60
+                    elif testdurationunit == 'm':
+                        testduration = testduration * 60
+                    elif testdurationunit == 's':
+                        testduration = testduration
+                    testobj.duration = testduration
+                    testobj.creator = userobj
+                    maxchallengeduration = sheet.cell(row,12).value
+                    maxchallengedurationunit = sheet.cell(row,13).value
+                    evaluatorids = sheet.cell(row,14).value
+                    evaluatorgrpname = sheet.cell(row,15).value
+                    evaluatorslist = evaluatorids.split(",")
+                    evaluatorobj = Evaluator()
+                    evaluatorobj.evalgroupname = evaluatorgrpname
+                    evalctr = 0
+                    for evalid in evaluatorslist:
+                        if evalctr == 0:
+                            evaluatorobj.groupmember1 = User.objects.get(emailid=evalid)
+                        elif evalctr == 1:
+                            evaluatorobj.groupmember2 = User.objects.get(emailid=evalid)
+                        elif evalctr == 2:
+                            evaluatorobj.groupmember3 = User.objects.get(emailid=evalid)
+                        elif evalctr == 3:
+                            evaluatorobj.groupmember4 = User.objects.get(emailid=evalid)
+                        elif evalctr == 4:
+                            evaluatorobj.groupmember5 = User.objects.get(emailid=evalid)
+                        elif evalctr == 5:
+                            evaluatorobj.groupmember6 = User.objects.get(emailid=evalid)
+                        elif evalctr == 6:
+                            evaluatorobj.groupmember7 = User.objects.get(emailid=evalid)
+                        elif evalctr == 7:
+                            evaluatorobj.groupmember8 = User.objects.get(emailid=evalid)
+                        elif evalctr == 8:
+                            evaluatorobj.groupmember9 = User.objects.get(emailid=evalid)
+                        elif evalctr == 9:
+                            evaluatorobj.groupmember10 = User.objects.get(emailid=evalid)
+                        evalctr += 1
+                    evaluatorobj.creationdate = datetime.datetime.now()
+                    evaluatorobj.save()
+                    testobj.evaluator = evaluatorobj
+                    if testobj.creator.emailid == testobj.evaluator.groupmember1 or testobj.creator.emailid == testobj.evaluator.groupmember2 or testobj.creator.emailid == testobj.evaluator.groupmember3 or testobj.creator.emailid == testobj.evaluator.groupmember4 or testobj.creator.emailid == testobj.evaluator.groupmember5 or testobj.creator.emailid == testobj.evaluator.groupmember6 or testobj.creator.emailid == testobj.evaluator.groupmember7 or testobj.creator.emailid == testobj.evaluator.groupmember8 or testobj.creator.emailid == testobj.evaluator.groupmember9 or testobj.creator.emailid == testobj.evaluator.groupmember10:
+                        testobj.creatorisevaluator = True
+                    testobj.publishdate = sheet.cell(row,16).value
+                    testobj.activationdate = sheet.cell(row,17).value
+                    testobj.quality = sheet.cell(row,18).value
+                    testobj.scope = sheet.cell(row,19).value
+                    testobj.allowedlanguages = sheet.cell(row,20).value
+                    testobj.progenv = sheet.cell(row,21).value
+                    if sheet.cell(row,22).value != "":
+                        testobj.multimediareqd = sheet.cell(row,22).value
+                    else:
+                        testobj.multimediareqd = False
+                    if sheet.cell(row,23).value != "":
+                        testobj.randomsequencing = sheet.cell(row,23).value
+                    else:
+                        testobj.randomsequencing = False
+                    print testobj.testname
+                    testobj.allowmultiattempts = sheet.cell(row,24).value
+                    testobj.maxattemptscount = sheet.cell(row,25).value
+                    testobj.attemptsinterval = sheet.cell(row,26).value
+                    testobj.attemptsintervalunit = sheet.cell(row,27).value
+                    testobj.status = False
+                    testobj.save()
+                elif rowctr == 1:
+                    pass
+                elif rowctr > 1: # Challenge row.
+                    challengeobj = Challenge()
+                    challengeobj.test = testobj
+                    challengeobj.statement = sheet.cell(row,0).value
+                    challengeobj.challengescore = sheet.cell(row,1).value
+                    challengeobj.timeframe = sheet.cell(row,2).value
+                    challengeobj.negativescore = sheet.cell(row,3).value or 0
+                    challengeobj.mediafile = sheet.cell(row,4).value
+                    challengeobj.additionalurl = sheet.cell(row,5).value
+                    challengeobj.challengetype = sheet.cell(row,6).value
+                    challengeobj.mustrespond = sheet.cell(row,7).value or 0
+                    challengeobj.oneormore = sheet.cell(row,8).value or 0
+                    challengeobj.challengequality = sheet.cell(row,9).value
+                    challengeobj.responsekey = sheet.cell(row,10).value
+                    if challengeobj.challengetype == 'MULT':
+                        if sheet.cell(row,11).value != "":
+                            challengeobj.option1 = sheet.cell(row,27).value
+                        if sheet.cell(row,12).value != "":
+                            challengeobj.option2 = sheet.cell(row,27).value
+                        if sheet.cell(row,13).value != "":
+                            challengeobj.option3 = sheet.cell(row,13).value
+                        if sheet.cell(row,14).value != "":
+                            challengeobj.option4 = sheet.cell(row,14).value
+                        if sheet.cell(row,15).value != "":
+                            challengeobj.option5 = sheet.cell(row,15).value
+                        if sheet.cell(row,16).value != "":
+                            challengeobj.option6 = sheet.cell(row,16).value
+                        if sheet.cell(row,17).value != "":
+                            challengeobj.option7 = sheet.cell(row,17).value
+                        if sheet.cell(row,18).value != "":
+                            challengeobj.option8 = sheet.cell(row,18).value
+                    challengeobj.save()
+                rowctr += 1
+    except:
+        print "exception: %s\n"%sys.exc_info()[1].__str__()
+    return 1
+
+
+def create_test_from_csv(filepath):
+    try:
+        with open(filepath, 'rb') as csvfile:
+            csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            rowctr = 0
+            for row in csvreader:
+                if rowctr == 0:
+                    testobj = Test()
+                    testobj.createdate = datetime.datetime.now()
+                    testobj.testname = row[0]
+                    testobj.testtype = row[1]
+                    testobj.ruleset = row[2]
+                    testobj.maxscore = row[5]
+                    testobj.challengecount = row[6]
+                    samescore = row[7]
+                    testobj.negativescoreallowed = row[8]
+                    testobj.passscore = row[9]
+                    testduration = row[10]
+                    testdurationunit = row[11]
+
+                elif rowctr == 1:
+                    pass
+                elif rowctr > 1:
+                    # Processing for challenges
+                    pass
+    except:
+        print "exception: %s\n"%sys.exc_info()[1].__str__()
+    return 1
+
+
+def create_test_from_xml(filepath):
+    pass
 
 

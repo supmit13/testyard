@@ -183,6 +183,21 @@ def get_extension(tmpfilepath):
 
 
 """
+Replica of 'get_extension' defined in earlier. In previous version,
+the file extension is assumed to be 3 chars long only. Hence, in this present
+scenario, it doesn't work. This version handles that scenario.
+"""
+def get_extension2(filename):
+    extPattern = re.compile("\.(\w{3,4})$")
+    extMatch = extPattern.search(filename)
+    ext = ""
+    if extMatch:
+        ext = extMatch.groups()[0]
+    return ext
+
+
+
+"""
 Handle uploaded file. Create the destination path if required.
 Returns a list containing the path to the uploaded file and a message
 (which would be '' in case of success).
@@ -193,6 +208,29 @@ def handleuploadedfile(uploaded_file, targetdir, filename=mysettings.PROFILE_PHO
         message = error_msg['1005']
         return [ None, message, '' ]
     ext = get_extension(uploaded_file.name)
+    destinationfile = os.path.sep.join([ targetdir, filename + "." + ext, ])
+    with open(destinationfile, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+        destination.close()
+        os.chmod(targetdir, 0777)
+        os.chmod(destinationfile, 0777) # Is there a way to club these 'chmod' statements?
+    return [ destinationfile, '', filename + "." + ext ]
+
+
+
+
+"""
+Replica of 'handleuploadedfile' defined in earlier. In previous version,
+the file extension is assumed to be 3 chars long only. Hence, in this present
+scenario, it doesn't work. This version handles that scenario.
+"""
+def handleuploadedfile2(uploaded_file, targetdir, filename=mysettings.PROFILE_PHOTO_NAME):
+    mkdir_p(targetdir)
+    if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
+        message = error_msg['1005']
+        return [ None, message, '' ]
+    ext = get_extension2(uploaded_file.name)
     destinationfile = os.path.sep.join([ targetdir, filename + "." + ext, ])
     with open(destinationfile, 'wb+') as destination:
         for chunk in uploaded_file.chunks():

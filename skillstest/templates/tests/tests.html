@@ -1,10 +1,10 @@
 	<!-- Code pertaining to drag and drop functionality of evaluator groups --> 	
-	<!--
+	
 	<script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' type='text/javascript'></script> 
 	<script src='http://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script>
-	--> 
+	 
 
 	<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
 	
@@ -889,6 +889,7 @@
 		    var thediv=document.getElementById('createtestdiv');
 		    if(thediv.style.display == "none"){
 		        thediv.style.display = "";
+			//thediv.class = "semitrans";
 		        thediv.innerHTML = "{% include 'tests/upload_test_form.html' %}";
 		    }
 		    else{
@@ -898,14 +899,40 @@
 		    return false;
 		}
 
-		// Function to perform the upload of test csv/xls.
+		// Function to perform the upload of test csv/xls/xml.
 		function uploadtests(){
+		    var postdata = new FormData(document.forms.namedItem("frmuploadtest"));
+		    //alert(postdata);
+		    var xmlhttp;
+  		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+  		    // Register the handler
+  		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            var thediv=document.getElementById('createtestdiv');
+		            thediv.style.display = "";
+		            thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+			    document.getElementById('uploadbox2').style.display = 'none';
+			    document.getElementById('uploadbox2').innerHTML = "";
+  		        }
+  		    };
+  		    xmlhttp.open("POST", '{{ testbulkuploadurl }}', true);
+  		    xmlhttp.send(postdata);
+  		    document.getElementById('uploadbox2').style.display = '';
+  		    document.getElementById('uploadbox2').innerHTML += "<br><img src='static/images/loading_small.gif'>";
+		    return true;
 		}
+
 
 		// Function to close test upload div
 		function closeuploadsview(){
 		    closediv();
 		}
+
 
 		// Function to download template file.
 		function downloadtemplatefile(){
@@ -916,6 +943,23 @@
 		function downloadhelpfile(){
 		    document.location = "static/datatemplates/uploadtesthelp.doc";
 		}
+
+		// Function to download sample csv file
+		function downloadsamplefile(fmt){
+		    if(fmt.toLowerCase() == "csv"){
+		    	document.location = "static/datatemplates/Sample.csv";
+		    }
+		    else if(fmt.toLowerCase() == "xls" || fmt.toLowerCase() == "xlsx"){
+			document.location = "static/datatemplates/Sample.xls";
+		    }
+		    else if(fmt.toLowerCase() == "xml"){
+			document.location = "static/datatemplates/Sample.xml";
+		    }
+		    else{
+			msg = "Unsupported file type";
+		    }
+		}
+
 
 		// Function to show test summary from where one can manipulate challenge scores, add/delete challenges, etc. (ah! here we go again!).
 		function showtestsummary(testid){
