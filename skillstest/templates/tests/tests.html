@@ -899,6 +899,7 @@
 		    return false;
 		}
 
+
 		// Function to perform the upload of test csv/xls/xml.
 		function uploadtests(){
 		    var postdata = new FormData(document.forms.namedItem("frmuploadtest"));
@@ -915,7 +916,13 @@
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		            var thediv=document.getElementById('createtestdiv');
 		            thediv.style.display = "";
-		            thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+                            // thediv.align = 'center';
+                            if(xmlhttp.responseText == '1'){
+		                thediv.innerHTML = "<font color='#0000DD'>The test and its challenges were successfully added</font>";
+                            }
+                            else{
+                                thediv.innerHTML = "<font color='#DD0000'>" + xmlhttp.responseText + "</font>";
+                            }
 			    document.getElementById('uploadbox2').style.display = 'none';
 			    document.getElementById('uploadbox2').innerHTML = "";
   		        }
@@ -1262,7 +1269,7 @@
 		// Called from manageinvitations. Deactivation is
   		// a temporary state and it can be revoked using 
 		// activateinvitation.
-		function activateinvitation(inviteid, tabref){
+		function activateinvitation(inviteid, tabref, tabid){
 		  var xmlhttp;
 		  if (window.XMLHttpRequest){
     		    xmlhttp=new XMLHttpRequest();
@@ -1277,6 +1284,7 @@
 		  else{
 		    postdata = postdata + document.getElementsByName('csrfmiddlewaretoken')[0].value + "&action=1";
 		  }
+                  postdata += "&tabid=" + tabid;
 		  xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      alert(xmlhttp.responseText);
@@ -1287,7 +1295,7 @@
   		  xmlhttp.send(postdata);
 		}
 
-		function deactivateinvitation(inviteid, tabref){
+		function deactivateinvitation(inviteid, tabref, tabid){
 		  var xmlhttp;
 		  if (window.XMLHttpRequest){
     		    xmlhttp=new XMLHttpRequest();
@@ -1303,6 +1311,7 @@
 		    csrftokenvalue = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 		  }
 		  var postdata = "inviteid=" + inviteid +  "&table=" + tabref + "&csrfmiddlewaretoken=" + csrftokenvalue + "&action=0"; //  action = 1 for activation
+                  postdata += "&tabid=" + tabid
 		  //alert(postdata);
 		  xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -1316,7 +1325,7 @@
 
 		// Cancel is a permanent state from which the invitation
 		// cannot be made available to user
-		function cancelinvitation(inviteurl, tabref){
+		function cancelinvitation(inviteurl, tabref, tabid){
 		  var resp = confirm("This action will permanently cancel the invitation Do you want to continue?");
     		  if(!resp){
 		    return(false);
@@ -1335,7 +1344,7 @@
 		  else{ // Case of Chrome and Opera where the form element is stripped off from innerHTML
 		    csrftokenvalue = document.getElementsByName('csrfmiddlewaretoken')[0].value;
 		  }
-		  var postdata = "inviteurl=" + inviteurl +  "&table=" + tabref + "&csrfmiddlewaretoken=" + csrftokenvalue;
+		  var postdata = "inviteurl=" + inviteurl +  "&table=" + tabref + "&csrfmiddlewaretoken=" + csrftokenvalue + "&tabid=" + tabid;
 		  //alert(postdata);
 		  xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){

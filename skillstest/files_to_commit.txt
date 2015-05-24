@@ -656,7 +656,7 @@ Fri, 15 May 2015, 02:46 HRS (IST).
 10.skillstest/utils.py
 11.skillstest/urls.py
 12.skillstest/skills_settings.py
-13.skillstest/skillstest/views.py
+13.skillstest/views.py
 14.static/javascript/pageutils.js
 15.templates/tests/upload_test_form.html
 16.skillstest/Tests/tasks.py

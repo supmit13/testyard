@@ -2,7 +2,7 @@
 	<metadata>
 	  <testname>A Sample Test</testname>
 	  <testtype>COMP</testtype>
-	  <testrules>breaknotallowed|responsenoreturn|norevisit</testrules>
+	  <testrules>breaknotallowed#||#responsenoreturn#||#norevisit</testrules>
 	  <testtopic>Database__Management</testtopic>
 	  <othertopicname></othertopicname>
 	  <totalscore>50</totalscore>

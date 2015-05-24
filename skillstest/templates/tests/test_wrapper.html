@@ -65,8 +65,8 @@ div.sec {
     display:inline-block;
 };
 
-#encountered {
-    background: rgba(100, 100, 123, 0.5);
+  #encountered {
+    background: rgba(0, 100, 123, 0.5);
     padding: 3px 5px;
     margin: -3px -5px;
     line-height: 1.7;
@@ -255,7 +255,7 @@ function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages
     }
     qareadiv.innerHTML += "<br /><br /><b>Please note the following: </b><br />";
     if(progenv != ""){
-        qareadiv.innerHTML += "You will be using a '" + progenv + "' programming environment while taking this test.<br />";
+        qareadiv.innerHTML += "You may be given a '" + progenv + "' programming environment while taking this test. You will need it to solve some of the challenges.<br />";
     }
     qareadiv.innerHTML += "This test is intended for " + skillqualitydict[quality] + " quality candidates.<br />";
     qareadiv.innerHTML += "The total marks is " + maxscore + ".<br />";
@@ -409,6 +409,7 @@ function getruleset(encjson){
     norevisitflag = 2;
     breaknotallowedflag = 4;
     showatonceflag = 8;
+    allowchallengenavflag = 16;
     ruleflag = 0;
     for(var i=0; i < ruleslist.length; i++){
         flagvalue = ruleslist[i];
@@ -424,8 +425,11 @@ function getruleset(encjson){
 	else if(flagvalue == 'showatonce'){
             ruleflag += showatonceflag;
         }
+        else if(flagvalue == 'allowchallengenavigation'){
+            ruleflag += allowchallengenavflag;
+        }
     }
-    return (ruleflag); // Possible values are 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15.
+    return (ruleflag); // Possible values are 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,..., 31.
 }
 
 
@@ -433,7 +437,6 @@ function getruleset(encjson){
 // applicable to the test and the state of the test at that instant.
 function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid){
     currentlydisplayedchallenge = testpages[randomlist[index]][2];
-    //alert(ruleflag);
     switch(ruleflag){
         case 1:
         case 2:
@@ -444,7 +447,39 @@ function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, start
             qlisttag = document.getElementById('qlist');
             qlisttag.style = "";
             qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
+            qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+	    for(var actr=0; actr < alllist.length; actr++){
+		challengerec = alllist[actr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		foundflag = 0;
+		lastqctr=0;
+		for(var qctr=0; qctr < Object.size(qalist); qctr++){
+		    qarec = qalist[qctr];
+		    //alert(currentlydisplayedchallenge.toUpperCase() + " ##### " + qarec[0].toUpperCase() + " ##### " + challengerec[0].toUpperCase());
+		    if(currentlydisplayedchallenge.toUpperCase() == challengerec[0].toUpperCase()){
+			qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
+			foundflag = 1;
+			break;
+		    }
+		    else if(qarec[0].toUpperCase() == challengerec[0].toUpperCase()){
+			qlisttag.innerHTML += "<li id='encountered'>" + challengestatement25 + "</li>";
+			foundflag = 1;
+			break;
+		    }
+		}
+		if(!foundflag){
+		    lastqctr = actr;
+		    nextindex = index + 1;
+                    qlisttag.innerHTML += "<li><a href='#/'  id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + lastqctr + ", " + nextindex + ", '" + randomlist + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+	    }
             break;
+
         case 4: // No responsenoreturn or norevisit set. Only challenges that have been responded to are displayed.
 	    qlisttag = document.getElementById('qlist');
 	    qlisttag.style = "";
@@ -467,8 +502,7 @@ function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, start
 		}
 	    }
             break;
-	// Cases 9, 10, 11, 13, 14, 15: Display all challenges in the test with 
-	// links to only those challenges that have not yet been responded to.
+	// Cases 9, 10, 11, 13, 14, 15: Display all challenges in the test.
 	case 9:
 	case 10:
  	case 11:
@@ -539,6 +573,245 @@ function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, start
 		}
 	    }
             break;
+        case 16:
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 23: // Handle navigation of questions by user here.
+            qlisttag = document.getElementById('qlist');
+	    qlisttag.style = "";
+            qlisttag.innerHTML = "";
+	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+            for(var actr=0; actr < Object.size(alllist); actr++){
+		challengerec = alllist[actr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		if (!index && index != 0){
+		    index = -1;
+		}
+		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
+		    qlisttag.innerHTML += "<li><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+		else{
+		    qlisttag.innerHTML += "<li><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+	    }
+            break;
+    }
+}
+
+
+// Display challenges on the left, depending on the set of rules
+// applicable to the test and the state of the test at that instant.
+function populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid){
+    currentlydisplayedchallenge = testpages[randomlist[index]][2];
+    //alert(ruleflag);
+    switch(ruleflag){
+        case 1:
+        case 2:
+        case 3:
+        case 5:
+        case 6:
+        case 7:
+            qlisttag = document.getElementById('qlist');
+            qlisttag.style = "";
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
+            for(var qctr=0; qctr < Object.size(qalist); qctr++){
+		qarec = qalist[qctr];
+                challengestatement25 = qarec[0].substring(0,25) + "... "; // Get the first 25 characters.
+                if(challengestatement25 == '... '){
+                    continue;
+                }
+		if(currentlydisplayedchallenge.toUpperCase() == qarec[0].toUpperCase()){
+		    qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
+		}
+		else{
+		    qlisttag.innerHTML += "<li id='simple'>" + challengestatement25 + "</li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+            }
+            break;
+        case 4: // No responsenoreturn or norevisit set. Only challenges that have been responded to are displayed.
+	    qlisttag = document.getElementById('qlist');
+	    qlisttag.style = "";
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+            for(var qctr=0; qctr < Object.size(qalist); qctr++){
+		challengerec = qalist[qctr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
+		    qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+                }
+		else{
+		    qlisttag.innerHTML += "<li id='simple'><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", '" + JSON.stringify(randomlist) + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+	    }
+            break;
+	// Cases 9, 10, 11, 13, 14, 15: Display all challenges in the test.
+	case 9:
+	case 10:
+ 	case 11:
+	case 13:
+	case 14:
+ 	case 15:
+	    qlisttag = document.getElementById('qlist');
+	    qlisttag.style = "";
+            qlisttag.innerHTML = "";
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+	    for(var actr=0; actr < alllist.length; actr++){
+		challengerec = alllist[actr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		foundflag = 0;
+		lastqctr=0;
+		for(var qctr=0; qctr < Object.size(qalist); qctr++){
+		    qarec = qalist[qctr];
+		    //alert(currentlydisplayedchallenge.toUpperCase() + " ##### " + qarec[0].toUpperCase() + " ##### " + challengerec[0].toUpperCase());
+		    if(currentlydisplayedchallenge.toUpperCase() == challengerec[0].toUpperCase()){
+			qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
+			foundflag = 1;
+			break;
+		    }
+		    else if(qarec[0].toUpperCase() == challengerec[0].toUpperCase()){
+			qlisttag.innerHTML += "<li id='encountered'>" + challengestatement25 + "</li>";
+			foundflag = 1;
+			break;
+		    }
+		}
+		if(!foundflag){
+		    lastqctr = actr;
+		    nextindex = index + 1;
+                    qlisttag.innerHTML += "<li>" + challengestatement25 + "</li>";
+		}
+	    }
+            break;
+	// Cases 8, 12: Display all challenges with links to the challenge screens (with the 
+	// user's response in it, if  the user has attempted it previously).
+	case 8:
+	case 12:
+	    qlisttag = document.getElementById('qlist');
+	    qlisttag.style = "";
+            qlisttag.innerHTML = "";
+	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+            for(var actr=0; actr < Object.size(alllist); actr++){
+		challengerec = alllist[actr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		if (!index && index != 0){
+		    index = -1;
+		}
+		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
+		    qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+		else{
+                    challengestatement = challengerec[0];
+                    found = 0;
+                    for(var qctr=0; qctr < Object.size(qalist); qctr++){
+                        qarec = qalist[qctr];
+                        qachallenge = qarec[0];
+                        if(challengestatement.toLowerCase() == qachallenge.toLowerCase()){
+                            qlisttag.innerHTML += "<li><a href='/#' id='encountered' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", '" + JSON.stringify(randomlist) + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+                            found = 1;
+                            break;
+                        }
+                    }
+		    if(!found){
+                        qlisttag.innerHTML += "<li>" + challengestatement25 + "</li>";
+                    }
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+	    }
+            break;
+        case 16:
+        case 17:
+        case 18:
+        case 19:
+        case 20:
+        case 21:
+        case 22:
+        case 23: // Handle navigation of questions by user here.
+            qlisttag = document.getElementById('qlist');
+	    qlisttag.style = "";
+            qlisttag.innerHTML = "";
+	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+            for(var actr=0; actr < Object.size(qalist); actr++){
+		challengerec = qalist[actr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		if (!index && index != 0){
+		    index = -1;
+		}
+		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
+		    qlisttag.innerHTML += "<li><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", '" + JSON.stringify(randomlist) + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+		else{
+		    qlisttag.innerHTML += "<li><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", '" + JSON.stringify(randomlist) + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+	    }
+            break;
+        case 24:
+        case 25:
+        case 26:
+        case 27:
+        case 28:
+        case 29:
+        case 30:
+        case 31:
+        case 32:
+            qlisttag = document.getElementById('qlist');
+	    qlisttag.style = "";
+            qlisttag.innerHTML = "";
+	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
+            for(var actr=0; actr < Object.size(alllist); actr++){
+		challengerec = alllist[actr];
+		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
+		if(challengerec[0].length < 25){
+		    challengestatement25 = challengerec[0];
+		}
+		if (!index && index != 0){
+		    index = -1;
+		}
+		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
+		    qlisttag.innerHTML += "<li><a href='#/' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", '" + JSON.stringify(randomlist) + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+		else{
+		    qlisttag.innerHTML += "<li><a href='#/' id='encountered' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", '" + JSON.stringify(randomlist) + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+	    }
+            break;
     }
 }
 
@@ -557,34 +830,37 @@ function restorepagedata(rawdata){
 	}
 	newlist = new Array();
 	newlist[0] = twoparts[0];
-	alert(newlist[0]);
         twopartssecond = twoparts[1].split(/\,\"/);
 	newlist[1] = twopartssecond[0];
-	alert(newlist[1]);
 	twopartssecond[1] = twopartssecond[1].substring(0, Object.size(twopartssecond[1]) - 2);
 	newlist[2] = twopartssecond[1];
-	alert(newlist[2]);
 	testpages[i] = newlist;
     }
     testpages[Object.size(rawdataparts) - 1] = rawdataparts[Object.size(rawdataparts) - 1];
-    //alert(testpages);
     return(testpages);
 }
 
 
-function displaychallengescreen(challengelistencstr, ctr, index, randomlist, enctestpages, starttime, mytime, ruleflag, tabref, tabid, encqalist){
+function displaychallengescreen(challengelistencstr, ctr, index, randomliststr, enctestpages, starttime, mytime, ruleflag, tabref, tabid, encqalist){
     // We keep all the data structures passed in as strings and convert them to their Object format as and when required.
     // JSON.parse doesn't work for arrays
-    //window.clearTimeout(mytime);
+    window.clearTimeout(mytime);
+    randomliststr = randomliststr.replace('[', '');
+    randomliststr = randomliststr.replace(']', '');
+    randomlist = randomliststr.split(",");
+    for(var j=0; j < randomlist.length; j++){
+        randomlist[j] = randomlist[j].replace('"', '');
+        randomlist[j] = parseInt(randomlist[j]);
+    }
+    //alert(randomlist[2]);
     challengelist = JSON.parse(Base64.decode(challengelistencstr));
     rawtestpages = Base64.decode(enctestpages);
     testpages = restorepagedata(rawtestpages);
     challengerec = challengelist[ctr];
     challengestatement = challengerec[0];
     qalist = JSON.parse(Base64.decode(encqalist));
-    //alert(testpages);
     start = 0;
-    if(ruleflag > 8 && ruleflag < 16){
+    if(ruleflag > 8 && ruleflag < 32){
         start = index;
     }
     else{
@@ -601,6 +877,7 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomlist, enc
     // If the challenge exists in 'qalist', then adjust the timeout limit and user's response as per the values in 'qalist'.
     for(var i=start; i < end; i++){
 	elem = randomlist[i];
+        //alert(elem);
 	if(testpages[elem][2].toUpperCase() == challengestatement.toUpperCase()){
 	    timeout = testpages[elem][1] * 1000;
 	    challengescreen = testpages[elem][0];
@@ -608,10 +885,10 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomlist, enc
 	    qarecfound = 0;
 	    for(var j=0; j < Object.size(qalist); j++){
 		qarec = qalist[j];
-		alert(qarec[0].toUpperCase());
+		//alert(qarec[0].toUpperCase());
 		if(qarec[0].toUpperCase() == challengestatement.toUpperCase()){
 		    timeout = timeout - qarec[2]; // these many milliseconds.
-		    alert(timeout);
+		    //alert(timeout);
 		    challengescreen = qarec[1];
 		    qarecfound = 1;
  	 	    break;
@@ -699,7 +976,7 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     	listitem[0] = "";
     	listitem[2] = 0; // time elapsed.
     	qalist[Object.size(qalist)] = listitem;
-    	populateleftpanel(ruleflag, qalist, index-1, randomlist, testpages, starttime, mytime, tabref, tabid);
+    	populateleftpanel2(ruleflag, qalist, index-1, randomlist, testpages, starttime, mytime, tabref, tabid);
 	return;
     }
     window.clearTimeout(mytime);
@@ -713,7 +990,7 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     listitem[0] = challengestatement;
     listitem[2] = timeelapsed;
     qalist[Object.size(qalist)] = listitem;
-    populateleftpanel(ruleflag, qalist, index-1, randomlist, testpages, starttime, mytime, tabref, tabid);
+    populateleftpanel2(ruleflag, qalist, index-1, randomlist, testpages, starttime, mytime, tabref, tabid);
 }
 
 
@@ -756,7 +1033,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
     testname = jsonobj.testname;
     optionpattern = new RegExp("^option\\d");
     pagectr = 0;
-    if(ruleflag > 7 && ruleflag < 16){
+    if(ruleflag > 7 && ruleflag < 32){
 	alllist = new Array();
     }
     for (challenge in jsonobj.challenges){
@@ -807,7 +1084,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         pages[pagectr][1] = jsonobj.challenges[challenge].timeframe;
 	pages[pagectr][2] = challenge;
 
-        if(ruleflag > 7 && ruleflag < 16){
+        if(ruleflag > 7 && ruleflag < 32){
 	    listitem = new Array();
 	    listitem[0] = challenge;
 	    listitem[1] = pages[pagectr][0];

@@ -181,6 +181,7 @@ RULES_DICT = { \
         'responsenoreturn' : 'Responded challenges may not be revisited', \
         'norevisit' : 'Attempted challenges may not be revisited', \
         'showatonce' : 'Show all challenges at the begining of the test', \
+        'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         }
 
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \

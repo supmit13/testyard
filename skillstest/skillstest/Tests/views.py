@@ -27,7 +27,7 @@ import base64,urllib, urllib2
 import simplejson as json
 from openpyxl import load_workbook
 from xlrd import open_workbook
-import csv
+import csv, string
 import xml.etree.ElementTree as et
 
 # Application specific libraries...
@@ -2834,7 +2834,7 @@ def manageinvitations(request):
         clientsware = usertest.clientsware
         if not usertest.clientsware:
             clientsware = "NA"
-        usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled ]
+        usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled, usertest.id ]
         ctr += 1
     invitations_dict['usertest'] = usertest_dict
     ctr = 100
@@ -2864,7 +2864,7 @@ def manageinvitations(request):
         clientsware = wouldbeuser.clientsware
         if not wouldbeuser.clientsware:
             clientsware = "NA"
-        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled ]
+        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled, wouldbeuser.id ]
         ctr += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict
     tmpl = get_template("tests/manageinvitations.html")
@@ -2901,13 +2901,36 @@ def invitationactivation(request):
         tablename = request.POST['table']
     if request.POST.has_key('action'):
         action = request.POST['action']
+    tabid = None
+    if request.POST.has_key('tabid'):
+        tabid = request.POST['tabid']
     inviteobj = None
     message = ''
     try:
         if tablename == 'usertest':
-            inviteobj =UserTest.objects.filter(testurl=invitationurl)[0]
+            if not tabid:
+                inviteobj =UserTest.objects.filter(testurl=invitationurl)[0]
+            else:
+                inviteqset =UserTest.objects.filter(testurl=invitationurl).filter(id=tabid)
+                if inviteqset.__len__() > 0:
+                    inviteobj = inviteqset[0]
+                else:
+                    inviteobj = None
+                    message = 'Could not create any invitation object (possibly due to Id mismatch - %s)'%invitationid
+                    response = HttpResponse(message)
+                    return response
         elif tablename == 'wouldbeusers':
-            inviteobj =WouldbeUsers.objects.filter(testurl=invitationurl)[0]
+            if not tabid:
+                inviteobj = WouldbeUsers.objects.filter(testurl=invitationurl)[0]
+            else:
+                inviteqset = WouldbeUsers.objects.filter(testurl=invitationurl).filter(id=tabid)
+                if inviteqset.__len__() > 0:
+                    inviteobj = inviteqset[0]
+                else:
+                    inviteobj = None
+                    message = 'Could not create any invitation object (possibly due to Id mismatch - %s)'%invitationid
+                    response = HttpResponse(message)
+                    return response
         else:
             pass
     except:
@@ -2944,18 +2967,20 @@ def invitationcancellation(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    invitationurl, tablename = "", ""
+    invitationurl, tablename, tabid = "", "",""
     if request.POST.has_key('inviteurl'):
         invitationurl = request.POST['inviteurl']
     if request.POST.has_key('table'):
         tablename = request.POST['table']
+    if request.POST.has_key('tabid'):
+        tabid = request.POST['tabid']
     inviteobj = None
     message = ''
     try:
         if tablename == 'usertest':
-            inviteobj = UserTest.objects.filter(testurl=invitationurl)[0]
+            inviteobj = UserTest.objects.filter(testurl=invitationurl, id=tabid)[0]
         elif tablename == 'wouldbeusers':
-            inviteobj =WouldbeUsers.objects.filter(testurl=invitationurl)[0]
+            inviteobj =WouldbeUsers.objects.filter(testurl=invitationurl, id=tabid)[0]
         else:
             pass
     except:
@@ -3046,6 +3071,7 @@ def createtestbulkupload(request):
 
 """
 Function to create a test from data in a xlsx file.
+TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
 """
 def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
     try:
@@ -3158,11 +3184,11 @@ def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
                 if row[16].value != "":
                     testobj.publishdate = row[16].value
                 else:
-                    testobj.publishdate = datetime.datetime.now()
+                    testobj.publishdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
                 if row[17].value != "":
                     testobj.activationdate = row[17].value
                 else:
-                    testobj.activationdate = datetime.datetime.now()
+                    testobj.activationdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
                 testobj.quality = row[18].value
                 if row[19].value and row[19].value != "":
                     testobj.scope = row[19].value
@@ -3195,7 +3221,10 @@ def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
                 challengeobj.test = testobj
                 challengeobj.statement = row[0].value.decode('utf-8')
                 challengeobj.challengescore = row[1].value
-                challengeobj.timeframe = row[2].value
+                if row[2].value and row[2].value != "":
+                    challengeobj.timeframe = row[2].value
+                else:
+                    challengeobj.timeframe = testobj.duration
                 if row[3].value and row[3].value != "":
                     challengeobj.negativescore = row[3].value
                 else:
@@ -3233,10 +3262,15 @@ def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
                 challengeobj.save()
             rowctr += 1
     except:
-        print "exception: %s\n"%sys.exc_info()[1].__str__()
+        message = "Exception occurred while creating test from file '%s': %s\n"%(os.path.basename(filepath), sys.exc_info()[1].__str__())
+        print message
+        return message
     return 1
 
 
+"""
+TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
+"""
 def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
     try:
         wb = open_workbook(filepath)
@@ -3246,29 +3280,50 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                 if rowctr == 0:
                     testobj = Test()
                     testobj.createdate = datetime.datetime.now()
-                    testobj.testname = sheet.cell(row,0).value
-                    testobj.testtype = sheet.cell(row,1).value
-                    testobj.ruleset = sheet.cell(row,2).value
+                    testobj.testname = sheet.cell(row,0).value.decode('utf-8', "replace")
+                    testobj.testtype = sheet.cell(row,1).value.decode('utf-8', "replace")
+                    testobj.ruleset = sheet.cell(row,2).value.decode('utf-8', "replace")
                     if sheet.cell(row,3).value != "" and sheet.cell(row,3).value is not None:
                         testobj.topicname = sheet.cell(row,3).value
-                    topicname = ""
-                    if sheet.cell(row,4).value != "" and sheet.cell(row,4).value is not None:
-                        topicname = sheet.cell(row,4).value
-                    if topicname.__len__() > 0:
-                        topic = Topic()
-                        topic.topicname = topicname
-                        topic.user = userobj
-                        topic.createdate = datetime.datetime.now()
-                        topic.isactive = True
-                        topic.save()
-                        testobj.topic = topic
-                        testobj.topicname = topic.topicname
-                    testobj.maxscore = sheet.cell(row,5).value
-                    testobj.challengecount = sheet.cell(row,6).value
-                    samescore = sheet.cell(row,7).value
-                    testobj.negativescoreallowed = sheet.cell(row,8).value
-                    testobj.passscore = sheet.cell(row,9).value
-                    testduration = sheet.cell(row,10).value
+                        testobj.topic = Topic.objects.filter(id=-1)[0]
+                        testobj.topicname = testobj.topicname.replace("__", " ")
+                    else:
+                        topicname = ""
+                        if sheet.cell(row,4).value != "" and sheet.cell(row,4).value is not None:
+                            topicname = sheet.cell(row,4).value
+                        if topicname.__len__() > 0 and testobj.topicname.__len__() == 0:
+                            topic = Topic()
+                            topic.topicname = topicname
+                            topic.user = userobj
+                            topic.createdate = datetime.datetime.now()
+                            topic.isactive = True
+                            topic.save()
+                            testobj.topic = topic
+                            testobj.topicname = topic.topicname
+                    if sheet.cell(row,5).value and sheet.cell(row,5).value != "":
+                        testobj.maxscore = sheet.cell(row,5).value
+                    else:
+                        testobj.maxscore = 0
+                    if sheet.cell(row,6).value and sheet.cell(row,6).value != "":
+                        testobj.challengecount = sheet.cell(row,6).value
+                    else:
+                        testobj.challengecount = 0
+                    if sheet.cell(row,7).value and sheet.cell(row,7).value != "":
+                        samescore = sheet.cell(row,7).value
+                    else:
+                        samescore = 0
+                    if sheet.cell(row,8).value and sheet.cell(row,8).value != "":
+                        testobj.negativescoreallowed = sheet.cell(row,8).value
+                    else:
+                        testobj.negativescoreallowed = 0
+                    if sheet.cell(row,9).value and sheet.cell(row,9).value != "":
+                        testobj.passscore = sheet.cell(row,9).value
+                    else:
+                        testobj.passscore = 0
+                    if sheet.cell(row,10).value and sheet.cell(row,10).value != "":
+                        testduration = sheet.cell(row,10).value
+                    else:
+                        testduration = 0
                     testdurationunit = sheet.cell(row,11).value
                     if testdurationunit == 'h':
                         testduration = testduration * 60 * 60
@@ -3278,10 +3333,17 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                         testduration = testduration
                     testobj.duration = testduration
                     testobj.creator = userobj
-                    maxchallengeduration = sheet.cell(row,12).value
-                    maxchallengedurationunit = sheet.cell(row,13).value
-                    evaluatorids = sheet.cell(row,14).value
-                    evaluatorgrpname = sheet.cell(row,15).value
+                    if sheet.cell(row,12).value and sheet.cell(row,12).value != "":
+                        maxchallengeduration = sheet.cell(row,12).value
+                    else:
+                        maxchallengeduration = testduration
+                    if sheet.cell(row,13).value and sheet.cell(row,13).value != "":
+                        maxchallengedurationunit = sheet.cell(row,13).value
+                    else:
+                        maxchallengedurationunit = testdurationunit
+                    evaluatorids = sheet.cell(row,14).value.decode('utf-8', "replace")
+                    evaluatorgrpname = sheet.cell(row,15).value.decode('utf-8', "replace")
+                    evaluatorgrpname = evaluatorgrpname.replace(" ", "__")
                     evaluatorslist = evaluatorids.split(",")
                     evaluatorobj = Evaluator()
                     evaluatorobj.evalgroupname = evaluatorgrpname
@@ -3311,13 +3373,27 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                     evaluatorobj.creationdate = datetime.datetime.now()
                     evaluatorobj.save()
                     testobj.evaluator = evaluatorobj
-                    if testobj.creator.emailid == testobj.evaluator.groupmember1 or testobj.creator.emailid == testobj.evaluator.groupmember2 or testobj.creator.emailid == testobj.evaluator.groupmember3 or testobj.creator.emailid == testobj.evaluator.groupmember4 or testobj.creator.emailid == testobj.evaluator.groupmember5 or testobj.creator.emailid == testobj.evaluator.groupmember6 or testobj.creator.emailid == testobj.evaluator.groupmember7 or testobj.creator.emailid == testobj.evaluator.groupmember8 or testobj.creator.emailid == testobj.evaluator.groupmember9 or testobj.creator.emailid == testobj.evaluator.groupmember10:
+                    if testobj.creator.emailid == testobj.evaluator.groupmember1.emailid or testobj.creator.emailid == testobj.evaluator.groupmember2.emailid or testobj.creator.emailid == testobj.evaluator.groupmember3.emailid or testobj.creator.emailid == testobj.evaluator.groupmember4.emailid or testobj.creator.emailid == testobj.evaluator.groupmember5.emailid or testobj.creator.emailid == testobj.evaluator.groupmember6.emailid or testobj.creator.emailid == testobj.evaluator.groupmember7.emailid or testobj.creator.emailid == testobj.evaluator.groupmember8.emailid or testobj.creator.emailid == testobj.evaluator.groupmember9.emailid or testobj.creator.emailid == testobj.evaluator.groupmember10.emailid:
                         testobj.creatorisevaluator = True
-                    testobj.publishdate = sheet.cell(row,16).value
-                    testobj.activationdate = sheet.cell(row,17).value
+                    else:
+                        testobj.creatorisevaluator = False
+                    if sheet.cell(row,16).value and sheet.cell(row,16).value != "":
+                        testobj.publishdate = sheet.cell(row,16).value
+                    else:
+                        testobj.publishdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
+                    if sheet.cell(row,17).value and sheet.cell(row,17).value != "":
+                        testobj.activationdate = sheet.cell(row,17).value
+                    else:
+                        testobj.activationdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
                     testobj.quality = sheet.cell(row,18).value
-                    testobj.scope = sheet.cell(row,19).value
-                    testobj.allowedlanguages = sheet.cell(row,20).value
+                    if sheet.cell(row,19).value and sheet.cell(row,19).value != "":
+                        testobj.scope = sheet.cell(row,19).value
+                    else:
+                        testobj.scope = "private"
+                    if sheet.cell(row,20).value and sheet.cell(row,20).value != "":
+                        testobj.allowedlanguages = sheet.cell(row,20).value
+                    else:
+                        testobj.allowedlanguages = "enus"
                     testobj.progenv = sheet.cell(row,21).value
                     if sheet.cell(row,22).value != "":
                         testobj.multimediareqd = sheet.cell(row,22).value
@@ -3327,12 +3403,12 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                         testobj.randomsequencing = sheet.cell(row,23).value
                     else:
                         testobj.randomsequencing = False
-                    print testobj.testname
                     testobj.allowmultiattempts = sheet.cell(row,24).value
                     testobj.maxattemptscount = sheet.cell(row,25).value
                     testobj.attemptsinterval = sheet.cell(row,26).value
                     testobj.attemptsintervalunit = sheet.cell(row,27).value
                     testobj.status = False
+                    print "Creating test with name '%s'"%testobj.testname
                     testobj.save()
                 elif rowctr == 1:
                     pass
@@ -3341,20 +3417,35 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                     challengeobj.test = testobj
                     challengeobj.statement = sheet.cell(row,0).value
                     challengeobj.challengescore = sheet.cell(row,1).value
-                    challengeobj.timeframe = sheet.cell(row,2).value
-                    challengeobj.negativescore = sheet.cell(row,3).value or 0
+                    if sheet.cell(row,2).value and sheet.cell(row,2).value != "":
+                        challengeobj.timeframe = sheet.cell(row,2).value
+                    else:
+                        challengeobj.timeframe = testobj.duration
+                    if sheet.cell(row,3).value and sheet.cell(row, 3).value != "":
+                        challengeobj.negativescore = sheet.cell(row, 3).value
+                    else:
+                        challengeobj.negativescore = 0
                     challengeobj.mediafile = sheet.cell(row,4).value
                     challengeobj.additionalurl = sheet.cell(row,5).value
                     challengeobj.challengetype = sheet.cell(row,6).value
-                    challengeobj.mustrespond = sheet.cell(row,7).value or 0
-                    challengeobj.oneormore = sheet.cell(row,8).value or 0
-                    challengeobj.challengequality = sheet.cell(row,9).value
+                    if sheet.cell(row,7).value and sheet.cell(row,7).value != "":
+                        challengeobj.mustrespond = sheet.cell(row,7).value
+                    else:
+                        challengeobj.mustrespond = True
+                    if sheet.cell(row,8).value and sheet.cell(row,8).value != "":
+                        challengeobj.oneormore = sheet.cell(row,8).value
+                    else:
+                        challengeobj.oneormore = False
+                    if sheet.cell(row,9).value and sheet.cell(row,9).value != "":
+                        challengeobj.challengequality = sheet.cell(row,9).value
+                    else:
+                        challengeobj.challengequality = testobj.quality
                     challengeobj.responsekey = sheet.cell(row,10).value
                     if challengeobj.challengetype == 'MULT':
                         if sheet.cell(row,11).value != "":
-                            challengeobj.option1 = sheet.cell(row,27).value
+                            challengeobj.option1 = sheet.cell(row,11).value
                         if sheet.cell(row,12).value != "":
-                            challengeobj.option2 = sheet.cell(row,27).value
+                            challengeobj.option2 = sheet.cell(row,12).value
                         if sheet.cell(row,13).value != "":
                             challengeobj.option3 = sheet.cell(row,13).value
                         if sheet.cell(row,14).value != "":
@@ -3367,44 +3458,422 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                             challengeobj.option7 = sheet.cell(row,17).value
                         if sheet.cell(row,18).value != "":
                             challengeobj.option8 = sheet.cell(row,18).value
+                    print "Creating challenge object '%s'...\n"%challengeobj.statement
                     challengeobj.save()
                 rowctr += 1
     except:
-        print "exception: %s\n"%sys.exc_info()[1].__str__()
+        message = "Exception occurred while creating test from file '%s': %s\n"%(os.path.basename(filepath), sys.exc_info()[1].__str__())
+        print message
+        return message
     return 1
 
 
-def create_test_from_csv(filepath):
+"""
+TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
+"""
+def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
     try:
         with open(filepath, 'rb') as csvfile:
-            csvreader = csv.reader(csvfile, delimiter=',', quotechar='"')
+            csvreader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
             rowctr = 0
             for row in csvreader:
                 if rowctr == 0:
                     testobj = Test()
                     testobj.createdate = datetime.datetime.now()
-                    testobj.testname = row[0]
+                    testobj.testname = row[0].decode('utf-8', 'replace')
                     testobj.testtype = row[1]
                     testobj.ruleset = row[2]
-                    testobj.maxscore = row[5]
-                    testobj.challengecount = row[6]
-                    samescore = row[7]
-                    testobj.negativescoreallowed = row[8]
-                    testobj.passscore = row[9]
-                    testduration = row[10]
+                    if row[3] != "" and row[3] is not None:
+                        testobj.topicname = row[3]
+                        testobj.topic = Topic.objects.filter(id=-1)[0]
+                        testobj.topicname = testobj.topicname.replace("__", " ")
+                    else:
+                        topicname = ""
+                        if row[4] != "" and row[4] is not None:
+                            topicname = row[4]
+                        if topicname.__len__() > 0 and testobj.topicname.__len__() == 0:
+                            topic = Topic()
+                            topic.topicname = topicname
+                            topic.user = userobj
+                            topic.createdate = datetime.datetime.now()
+                            topic.isactive = True
+                            topic.save()
+                            testobj.topic = topic
+                            testobj.topicname = topic.topicname
+                    if row[5] and row[5] != "":
+                        testobj.maxscore = row[5]
+                    else:
+                        testobj.maxscore = 0
+                    if row[6] and row[6] != "":
+                        testobj.challengecount = row[6]
+                    else:
+                        testobj.challengecount = 0
+                    if row[7] and row[7] != "":
+                        samescore = row[7]
+                    else:
+                        samescore = 0
+                    if row[8] and row[8] != "":
+                        testobj.negativescoreallowed = row[8]
+                    else:
+                        testobj.negativescoreallowed = 0
+                    if row[9] and row[9] != "":
+                        testobj.passscore = row[9]
+                    else:
+                        testobj.passscore = 0
+                    if row[10] and row[10] != "":
+                        testduration = row[10]
+                    else:
+                        testduration = 0
                     testdurationunit = row[11]
-
+                    if testdurationunit == 'h':
+                        testduration = testduration * 60 * 60
+                    elif testdurationunit == 'm':
+                        testduration = testduration * 60
+                    elif testdurationunit == 's':
+                        testduration = testduration
+                    else:
+                        testduration = testduration # Any other unit will be ignored and considered as seconds. Do we want it this way?
+                    testobj.duration = testduration
+                    testobj.creator = userobj
+                    testobj.status = False
+                    if row[12] and row[12] != "":
+                        maxchallengeduration = row[12]
+                    else:
+                        maxchallengeduration = testduration
+                    if row[13] and row[13] != "":
+                        maxchallengedurationunit = row[13]
+                    else:
+                        maxchallengedurationunit = testdurationunit
+                    evaluatorids = row[14].decode('utf-8', "replace")
+                    evaluatorgrpname = row[14].decode('utf-8', "replace")
+                    evaluatorgrpname = evaluatorgrpname.replace(" ", "__")
+                    evaluatorslist = evaluatorids.split(",")
+                    evaluatorobj = Evaluator()
+                    evaluatorobj.evalgroupname = evaluatorgrpname
+                    evalctr = 0
+                    quotePattern = re.compile('"')
+                    for evalid in evaluatorslist:
+                        evalid = re.sub(quotePattern, '', evalid) # Remove quote characters, if any.
+                        evalid = ''.join(s for s in evalid if s in string.printable) # Remove non-printable characters, including some unicode chars. Should be changed if foreign languages are to be supported.
+                        evalid = re.sub(mysettings.MULTIPLE_WS_PATTERN, '', evalid) # Remove inadvertant whitespaces, if any.
+                        evalid = evalid.__str__() # Finally, we want ASCII string, not unicode.
+                        print evalid
+                        if evalctr == 0:
+                            evaluatorobj.groupmember1 = User.objects.get(emailid=evalid)
+                        elif evalctr == 1:
+                            evaluatorobj.groupmember2 = User.objects.get(emailid=evalid)
+                        elif evalctr == 2:
+                            evaluatorobj.groupmember3 = User.objects.get(emailid=evalid)
+                        elif evalctr == 3:
+                            evaluatorobj.groupmember4 = User.objects.get(emailid=evalid)
+                        elif evalctr == 4:
+                            evaluatorobj.groupmember5 = User.objects.get(emailid=evalid)
+                        elif evalctr == 5:
+                            evaluatorobj.groupmember6 = User.objects.get(emailid=evalid)
+                        elif evalctr == 6:
+                            evaluatorobj.groupmember7 = User.objects.get(emailid=evalid)
+                        elif evalctr == 7:
+                            evaluatorobj.groupmember8 = User.objects.get(emailid=evalid)
+                        elif evalctr == 8:
+                            evaluatorobj.groupmember9 = User.objects.get(emailid=evalid)
+                        elif evalctr == 9:
+                            evaluatorobj.groupmember10 = User.objects.get(emailid=evalid)
+                        else:
+                            pass
+                        evalctr += 1
+                    evaluatorobj.creationdate = datetime.datetime.now()
+                    evaluatorobj.save()
+                    testobj.evaluator = evaluatorobj
+                    if testobj.creator.emailid == testobj.evaluator.groupmember1.emailid or testobj.creator.emailid == testobj.evaluator.groupmember2.emailid or testobj.creator.emailid == testobj.evaluator.groupmember3.emailid or testobj.creator.emailid == testobj.evaluator.groupmember4.emailid or testobj.creator.emailid == testobj.evaluator.groupmember5.emailid or testobj.creator.emailid == testobj.evaluator.groupmember6.emailid or testobj.creator.emailid == testobj.evaluator.groupmember7.emailid or testobj.creator.emailid == testobj.evaluator.groupmember8.emailid or testobj.creator.emailid == testobj.evaluator.groupmember9.emailid or testobj.creator.emailid == testobj.evaluator.groupmember10.emailid:
+                        testobj.creatorisevaluator = True
+                    else:
+                        testobj.creatorisevaluator = False
+                    if row[16] and row[16] != "":
+                        testobj.publishdate = row[16]
+                    else:
+                        testobj.publishdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
+                    if row[17] and row[17] != "":
+                        testobj.activationdate = row[17]
+                    else:
+                        testobj.activationdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
+                    testobj.quality = row[18]
+                    if row[19] and row[19] != "":
+                        testobj.scope = row[19]
+                    else:
+                        testobj.scope = "private"
+                    if row[20] and row[20] != "":
+                        testobj.allowedlanguages = row[20]
+                    else:
+                        testobj.allowedlanguages = "enus"
+                    testobj.progenv = row[21]
+                    if row[22] != "":
+                        testobj.multimediareqd = row[22]
+                    else:
+                        testobj.multimediareqd = False
+                    if row[23] != "":
+                        testobj.randomsequencing = row[23]
+                    else:
+                        testobj.randomsequencing = False
+                    testobj.allowmultiattempts = row[24]
+                    testobj.maxattemptscount = row[25]
+                    testobj.attemptsinterval = row[26]
+                    testobj.attemptsintervalunit = row[27]
+                    testobj.status = False
+                    print "Creating test with name '%s'"%testobj.testname
+                    testobj.save()
                 elif rowctr == 1:
                     pass
                 elif rowctr > 1:
-                    # Processing for challenges
-                    pass
+                    challengeobj = Challenge()
+                    challengeobj.test = testobj
+                    challengeobj.statement = row[0]
+                    challengeobj.challengescore = row[1]
+                    if row[2] and row[2] != "":
+                        challengeobj.timeframe = row[2]
+                    else:
+                        challengeobj.timeframe = testobj.duration
+                    if row[3] and row[3] != "":
+                        challengeobj.negativescore = row[3]
+                    else:
+                        challengeobj.negativescore = 0
+                    challengeobj.mediafile = row[4]
+                    challengeobj.additionalurl = row[5]
+                    challengeobj.challengetype = row[6]
+                    if row[7] and row[7] != "":
+                        challengeobj.mustrespond = row[7]
+                    else:
+                        challengeobj.mustrespond = True
+                    if row[8] and row[8] != "":
+                        challengeobj.oneormore = row[8]
+                    else:
+                        challengeobj.oneormore = False
+                    if row[9] and row[9] != "":
+                        challengeobj.challengequality = row[9]
+                    else:
+                        challengeobj.challengequality = testobj.quality
+                    challengeobj.responsekey = row[10]
+                    if challengeobj.challengetype == 'MULT':
+                        if row[11] != "":
+                            challengeobj.option1 = row[11]
+                        if row[12] != "":
+                            challengeobj.option2 = row[12]
+                        if row[13] != "":
+                            challengeobj.option3 = row[13]
+                        if row[14] != "":
+                            challengeobj.option4 = row[14]
+                        if row[15] != "":
+                            challengeobj.option5 = row[15]
+                        if row[16] != "":
+                            challengeobj.option6 = row[16]
+                        if row[17] != "":
+                            challengeobj.option7 = row[17]
+                        if row[18] != "":
+                            challengeobj.option8 = row[18]
+                    print "Creating challenge object '%s'...\n"%challengeobj.statement
+                    challengeobj.save()
     except:
-        print "exception: %s\n"%sys.exc_info()[1].__str__()
+        message = "Exception occurred while creating test from file '%s': %s\n"%(os.path.basename(filepath), sys.exc_info()[1].__str__())
+        print message
+        return message
     return 1
 
 
-def create_test_from_xml(filepath):
-    pass
+"""
+TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
+"""
+def create_test_from_xml(uploadedfile, filepath, testlinkid, userobj):
+    try:
+        tree = et.parse(filepath)
+        root = tree.getroot()
+        childnodes = root.getchildren()
+        challengeslist = []
+        testobj = Test()
+        for child in childnodes:
+            if child.tag == 'metadata': # Test object should be created using data from this node.
+                infonodes = child.getchildren()
+                evaluatoremailslist = []
+                evaluatorgroupname = ""
+                for infond in infonodes:
+                    if infond.tag == 'testname':
+                        testobj.testname = infond.text
+                    elif infond.tag == 'testtype':
+                        testobj.testtype = infond.text
+                    elif infond.tag == 'testrules':
+                        testobj.ruleset = infond.text
+                    elif infond.tag == 'testtopic' and infond.text != "":
+                        testobj.topicname = infond.text
+                        testobj.topicname = testobj.topicname.replace('__', ' ')
+                        testobj.topic = Topic.objects.filter(id=-1)[0]
+                    elif infond.tag == 'othertopicname' and infond.text == "":
+                        topic = Topic()
+                        topic.topicname = infond.text
+                        topic.user = userobj
+                        topic.createdate = datetime.datetime.now()
+                        topic.isactive = True
+                        topic.save()
+                        testobj.topic = topic
+                        testobj.topicname = topic.topicname
+                    elif infond.tag == 'totalscore':
+                        testobj.maxscore = infond.text
+                    elif infond.tag == 'numberofchallenges':
+                        testobj.challengecount = infond.text
+                    elif infond.tag == 'eachchallengesamescore':
+                        samescore = infond.text
+                    elif infond.tag == 'incorrectresponsenegativescore':
+                        testobj.negativescoreallowed = infond.text
+                        if not testobj.negativescoreallowed or testobj.negativescoreallowed == '':
+                            testobj.negativescoreallowed = 0
+                    elif infond.tag == 'passscore':
+                        testobj.passscore = infond.text
+                    elif infond.tag == 'testduration':
+                        testobj.duration = int(infond.text)
+                        if not testobj.duration or testobj.duration == "":
+                            raise ValueError('Test duration cannot be null')
+                    elif infond.tag == 'testdurationunit':
+                        testdurationunit = infond.text
+                        if testdurationunit == 'h':
+                            testobj.duration = testobj.duration * 60 * 60
+                        elif testdurationunit == 'm':
+                            testobj.duration = testobj.duration * 60
+                        elif testdurationunit == 's':
+                            testobj.duration = testobj.duration
+                        else:
+                            testobj.duration = testobj.duration
+                    elif infond.tag == 'maxchallengeduration': # Not used at present
+                        maxchallengeduration = infond.text
+                    elif infond.tag == 'maxchallengedurationunit': # Not used at present
+                        maxchallengedurationunit = infond.text
+                    elif infond.tag == 'evaluatoremailids':
+                        evaluatoremailids = infond.text
+                        evaluatoremailslist = evaluatoremailids.split(",")
+                    elif infond.tag == 'evaluatorgroupname':
+                        evaluatorgroupname = infond.text
+                    elif infond.tag == 'testpublishdate':
+                        testobj.publishdate = infond.text
+                        if not testobj.publishdate or testobj.publishdate == "":
+                            testobj.publishdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
+                    elif infond.tag == 'testactivationdate':
+                        testobj.activationdate = infond.text
+                        if not testobj.activationdate or testobj.activationdate == "":
+                            testobj.activationdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
+                    elif infond.tag == 'testtargetskilllevel':
+                        testobj.quality = infond.text
+                    elif infond.tag == 'testscope':
+                        testobj.scope = infond.text
+                        if not testobj.scope or testobj.scope == "":
+                            testobj.scope = 'private'
+                    elif infond.tag == 'answeringlanguage':
+                        testobj.allowedlanguages = infond.text
+                        if not testobj.allowedlanguages or testobj.allowedlanguages == "":
+                            testobj.allowedlanguages = "enus"
+                    elif infond.tag == 'programmingenvironment':
+                        testobj.progenv = infond.text
+                    elif infond.tag == 'needmultimedia':
+                        testobj.multimediareqd = infond.text
+                    elif infond.tag == 'randomsequencing':
+                        testobj.randomsequencing = infond.text
+                    elif infond.tag == 'allowmultipleattempts':
+                        testobj.allowmultiattempts = infond.text
+                    elif infond.tag == 'maxattemptsallowed':
+                        testobj.maxattemptscount = infond.text
+                    elif infond.tag == 'intervalbetweenattempts':
+                        testobj.attemptsinterval = infond.text
+                    elif infond.tag == 'intervalunits':
+                        testobj.attemptsintervalunit = infond.text
+                evaluatorobj = Evaluator()
+                evaluatorobj.evalgroupname = evaluatorgroupname
+                evalctr = 0
+                for emailid in evaluatoremailslist:
+                    grpmemberset = User.objects.filter(emailid=emailid)
+                    if grpmemberset.__len__() == 0:
+                        raise ValueError("No evaluators specified for the test")
+                    if evalctr == 0:
+                        evaluatorobj.groupmember1 = grpmemberset[0]
+                    elif evalctr == 1:
+                        evaluatorobj.groupmember2 = grpmemberset[0]
+                    elif evalctr == 2:
+                        evaluatorobj.groupmember3 = grpmemberset[0]
+                    elif evalctr == 3:
+                        evaluatorobj.groupmember4 = grpmemberset[0]
+                    elif evalctr == 4:
+                        evaluatorobj.groupmember5 = grpmemberset[0]
+                    elif evalctr == 5:
+                        evaluatorobj.groupmember6 = grpmemberset[0]
+                    elif evalctr == 6:
+                        evaluatorobj.groupmember7 = grpmemberset[0]
+                    elif evalctr == 7:
+                        evaluatorobj.groupmember8 = grpmemberset[0]
+                    elif evalctr == 8:
+                        evaluatorobj.groupmember9 = grpmemberset[0]
+                    elif evalctr == 9:
+                        evaluatorobj.groupmember10 = grpmemberset[0]
+                    evalctr += 1
+                evaluatorobj.save()
+                testobj.evaluator = evaluatorobj
+            elif child.tag == 'challenge': # Challenge object
+                infonodes = child.getchildren()
+                challengeobj = Challenge()
+                for infond in infonodes:
+                    if infond.tag == 'challengestatement':
+                        challengeobj.statement = infond.text
+                    elif infond.tag == 'challengescore':
+                        challengeobj.challengescore = infond.text
+                    elif infond.tag == 'challengeallocatedtime':
+                        challengeobj.timeframe = infond.text
+                    elif infond.tag == 'negativescore':
+                        challengeobj.negativescore = infond.text
+                        if not challengeobj.negativescore or challengeobj.negativescore == '':
+                            challengeobj.negativescore = 0
+                    elif infond.tag == 'challengeimagepath':
+                        challengeobj.mediafile = infond.text
+                    elif infond.tag == 'externalresourcepath':
+                        challengeobj.additionalurl = infond.text
+                    elif infond.tag == 'challengetype':
+                        challengeobj.challengetype = infond.text
+                    elif infond.tag == 'compulsoryforuser':
+                        challengeobj.mustrespond = infond.text
+                        if not challengeobj.mustrespond or challengeobj.mustrespond == "":
+                            challengeobj.mustrespond = True
+                    elif infond.tag == 'morethanoneoptioncorrect':
+                        challengeobj.oneormore = infond.text
+                    elif infond.tag == 'challengequality':
+                        challengeobj.challengequality = infond.text
+                        if not challengeobj.challengequality or challengeobj.challengequality == "":
+                            challengeobj.challengequality = testobj.quality
+                    elif infond.tag == 'correctresponse':
+                        challengeobj.responsekey = infond.text
+                    elif infond.tag == 'option_1':
+                        challengeobj.option1 = infond.text
+                    elif infond.tag == 'option_2':
+                        challengeobj.option2 = infond.text
+                    elif infond.tag == 'option_3':
+                        challengeobj.option3 = infond.text
+                    elif infond.tag == 'option_4':
+                        challengeobj.option4 = infond.text
+                    elif infond.tag == 'option_5':
+                        challengeobj.option5 = infond.text
+                    elif infond.tag == 'option_6':
+                        challengeobj.option6 = infond.text
+                    elif infond.tag == 'option_7':
+                        challengeobj.option7 = infond.text
+                    elif infond.tag == 'option_8':
+                        challengeobj.option8 = infond.text
+                    else:
+                        pass # Unrecognized parameter
+                challengeslist.append(challengeobj)
+        testobj.creator = userobj
+        testobj.status = False
+        testobj.save()
+        for challengeobj in challengeslist:
+            challengeobj.test = testobj
+            challengeobj.save()
+        print "Created test named '%s' with %s challenges."%(testobj.testname, challengeslist.__len__())
+    except:
+        message = "Exception occurred while creating test from file '%s': %s\n"%(os.path.basename(filepath), sys.exc_info()[1].__str__())
+        print message
+        return message
+    return 1
+
+
 
 

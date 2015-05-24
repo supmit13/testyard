@@ -196,7 +196,6 @@ def get_extension2(filename):
     return ext
 
 
-
 """
 Handle uploaded file. Create the destination path if required.
 Returns a list containing the path to the uploaded file and a message
@@ -444,6 +443,20 @@ def mysqltopythondatetime(mysqldatetime):
         mysqlhh, mysqlmm, mysqlss = hms[0], hms[1], '00'
     pythondatetime = datetime.datetime(int(mysqlyyyy), int(mysqlmon), int(mysqldd), int(mysqlhh), int(mysqlmm), int(mysqlss))
     return pythondatetime
+
+"""
+The parameter should be a string representation of datetime.datetime object. e.g. datetime.datetime.now()
+"""
+def pythontomysqldatetime(dt_date):
+    dt_date_parts = dt_date.split(' ')
+    timepattern = re.compile(r"(\d{1,2}:\d{1,2}:\d{1,2})\.?\d*$")
+    timematch = timepattern.search(dt_date_parts[1])
+    timepart = '00:00:00'
+    if timematch:
+        timepart = timematch.groups()[0]
+    mysqlcompatibledate = dt_date_parts[0] + " " + timepart
+    return mysqlcompatibledate
+
 
 """
 This will receive a date formatted like: 2015-03-24 16:59:34+00:00
