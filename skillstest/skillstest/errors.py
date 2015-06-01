@@ -1,5 +1,6 @@
 import os, sys, re, time
 import inspect
+from skillstest import settings as mysettings
 
 error_codes = { \
         '1111' : 'Please contact our support team at \'support@testyard.com\' for any issues. Please remember to send them a screenshot of your problem and the steps you performed that resulted in the issue. We will help you out at the earliest.', \
