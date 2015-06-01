@@ -158,6 +158,8 @@ class UserTest(models.Model):
     active = models.BooleanField(default=True)
     cancelled = models.BooleanField(default=False)
     stringid = models.CharField(max_length=15, null=False)
+    evaluator_comment = models.TextField(null=True, blank=True, default="")
+    first_eval_timestamp = models.IntegerField(default=None) # Instant at which you evaluate the candidate for the first time.
 
 
     class Meta:
@@ -281,7 +283,6 @@ and become the creator of the copied version of the 'Test'. 'User's
 taking this 'Test' will be judged by the second 'User' and in that case
 the primary 'User' will not be able to access the responses of the 'User's
 taking the copied 'Test'.
-
 class ShareTest(models.Model):
     testcreator = models.ForeignKey(User, related_name="+", null=False, blank=False) # A Test object is bound to have a creator.
     sharedwith = models.ForeignKey(User, related_name="+", null=False, blank=False) # User object with whom the Test is being shared.
@@ -318,6 +319,8 @@ class WouldbeUsers(models.Model):
     ipaddress = models.GenericIPAddressField(default='') # IP address from which the user logged in to take the test.
     clientsware = models.CharField(max_length=150, default='') # User-agent (browser signature) of the user.
     stringid = models.CharField(max_length=15, null=False)
+    evaluator_comment = models.TextField(null=True, blank=True, default="")
+    first_eval_timestamp = models.IntegerField(default=None) # Instant at which you evaluate the candidate for the first time.
     
 
     class Meta:

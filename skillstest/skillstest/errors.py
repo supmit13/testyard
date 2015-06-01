@@ -74,6 +74,10 @@ error_codes = { \
         '1077' : 'The email Id specified in your link to the test could not be found.', \
         '1078' : 'Your request could not be processed correctly. Please retry with valid request parameters.', \
         '1079' : 'Unrecognized table reference - the referred table does not exist.', \
+        '1080' : 'Could not retrieve test or evaluator objects for the given test Id.', \
+        '1081' : 'User is NOT permitted to evaluate this test.', \
+        '1082' : 'No email Id found in request', \
+        '1083' : 'You may not evaluate the candidate anymore. Your stipulated time of %s days for the purpose of evaluation has expired.', \
     }
 
 def error_msg(code):

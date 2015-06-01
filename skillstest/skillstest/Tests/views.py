@@ -48,7 +48,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -190,6 +190,9 @@ def get_user_tests(request):
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
     tests_user_dict['testbulkuploadurl'] = skillutils.gethosturl(request) + "/" + testbulkuploadurl
+    tests_user_dict['testevaluationurl'] = skillutils.gethosturl(request) + "/" + testevaluationurl
+    tests_user_dict['evaluateresponseurl'] = skillutils.gethosturl(request) + "/" + evaluateresponseurl
+    tests_user_dict['getevaluationdetailsurl'] = skillutils.gethosturl(request) + "/" + getevaluationdetailsurl
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
@@ -2997,10 +3000,221 @@ def invitationcancellation(request):
 """
 Function to enable a evaluator of the test to evaluate the candidate's responses.
 """
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def evaluate(request):
-    pass
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = None
+    candidateresponses = {}
+    if not request.POST.has_key('testid'):
+        candidateresponses['Error'] = error_msg('1059')
+        response = HttpResponse(json.dumps(candidateresponses))
+        return response
+    testid = request.POST['testid']
+    # First ensure that the user is a valid evaluator for the given test
+    testobj = None
+    evalobj = None
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+        evalobj = testobj.evaluator
+    except:
+        print "Could not retrieve test object or evaluator object for given test Id %s\n"%testid
+        candidateresponses['Error'] = error_msg('1080')
+        response = HttpResponse(json.dumps(candidateresponses))
+        return response
+    userisvalidevaluator = False
+    useremail = userobj.emailid
+    evaluatoremails = []
+    if evalobj.groupmember1:
+        evaluatoremails.append(evalobj.groupmember1.emailid)
+    if evalobj.groupmember2:
+        evaluatoremails.append(evalobj.groupmember2.emailid)
+    if evalobj.groupmember3:
+        evaluatoremails.append(evalobj.groupmember3.emailid)
+    if evalobj.groupmember4:
+        evaluatoremails.append(evalobj.groupmember4.emailid)
+    if evalobj.groupmember5:
+        evaluatoremails.append(evalobj.groupmember5.emailid)
+    if evalobj.groupmember6:
+        evaluatoremails.append(evalobj.groupmember6.emailid)
+    if evalobj.groupmember7:
+        evaluatoremails.append(evalobj.groupmember7.emailid)
+    if evalobj.groupmember8:
+        evaluatoremails.append(evalobj.groupmember8.emailid)
+    if evalobj.groupmember9:
+        evaluatoremails.append(evalobj.groupmember9.emailid)
+    if evalobj.groupmember10:
+        evaluatoremails.append(evalobj.groupmember10.emailid)
+    if testobj.creatorisevaluator:
+        evaluatoremails.append(testobj.creator.emailid)
+    if useremail not in evaluatoremails:
+        candidateresponses['Error'] = error_msg('1081')
+        response = HttpResponse(json.dumps(candidateresponses))
+        return response
+    else:
+        userisvalidevaluator = True
+    if userisvalidevaluator: # Get a list of all candidates who have taken this test.
+        utqset = UserTest.objects.filter(test=testobj)
+        wbuqset = WouldbeUsers.objects.filter(test=testobj)
+        for ut in utqset:
+            if ut.active and not ut.cancelled and ut.status == 2:
+                candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment}
+                userresputqueryset = UserResponse.objects.filter(test=testobj, tabref='usertest', tabid=ut.id, emailaddr=ut.emailaddr)
+                for userrespobj in userresputqueryset:
+                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
+                candidateresponses[ut.emailaddr] = candidaterec
+        for wbu in wbuqset:
+            if wbu.active and not wbu.cancelled and wbu.status == 2:
+                candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment}
+                userrespwbequeryset = UserResponse.objects.filter(test=testobj, tabref='wouldbeusers', tabid=wbu.id, emailaddr=wbu.emailaddr)
+                for userrespobj in userrespwbequeryset:
+                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
+                candidateresponses[wbu.emailaddr] = candidaterec
+    return HttpResponse(base64.b64encode(json.dumps(candidateresponses)))
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def evaluateresponses(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = None
+    emailid, tabid, tabref, evaltestcomment = "", -1, "", ""
+    maxcctr = -1
+    postdataencpluscsrf = request.body
+    postdataenc, csrfparam = postdataencpluscsrf.split("&")
+    postdata = base64.b64decode(postdataenc)
+    postdict = {}
+    postkeyvals = postdata.split("&")
+    for keyval in postkeyvals:
+        key, val = keyval.split("=")
+        postdict[key] = val
+    if not postdict.has_key('testid'):
+        message = error_msg('1059')
+        response = HttpResponse(message)
+        return response
+    testid = postdict['testid']
+    # First ensure that the user is a valid evaluator for the given test
+    testobj = None
+    evalobj = None
+    passscore = None
+    if postdict.has_key('maxcctr'):
+        maxcctr = postdict['maxcctr']
+    if postdict.has_key('testid'):
+        testid = postdict['testid']
+    if postdict.has_key('emailid'):
+        emailid = postdict['emailid']
+    if postdict.has_key('tabid'):
+        tabid = postdict['tabid']
+    if postdict.has_key('tabref'):
+        tabref = postdict['tabref']
+    if postdict.has_key('evaltestcomment'):
+        evaltestcomment = postdict['evaltestcomment']
+    if testid:
+        testobj = Test.objects.get(id=testid)
+        passscore = testobj.passscore
+    # Check if this test may be evaluated again - if 10 days have passed since it was first evaluated, then it may not be evaluated anymore.
+    utobj = None
+    evallimit = 86400 * int(mysettings.NUM_DAYS_EVALUATION_COMMIT)
+    if tabref == 'wouldbeusers':
+        utobj = WouldbeUsers.objects.get(id=tabid)
+        if not utobj.first_eval_timestamp:
+            utobj.first_eval_timestamp = int(time.time())
+        else:
+            firsttimestamp = utobj.first_eval_timestamp
+            currenttimestamp = int(time.time())
+            if currenttimestamp - firsttimestamp > evallimit:
+                message = error_msg('1083')
+                response = HttpResponse(message)
+                return response
+    elif tabref == 'usertest':
+        utobj = UserTest.objects.get(id=tabid)
+        if not utobj.first_eval_timestamp:
+            utobj.first_eval_timestamp = int(time.time())
+        else:
+            firsttimestamp = utobj.first_eval_timestamp
+            currenttimestamp = int(time.time())
+            if currenttimestamp - firsttimestamp > evallimit:
+                message = error_msg('1083')
+                response = HttpResponse(message)
+                return response
+    else:
+        message = "Error: " + error_msg('1079')
+        response = HttpResponse(message)
+        return response
+    totalscore = 0
+    for cctr in range(1, int(maxcctr) + 1):
+        challengeid, assessment, comments, maxscore = -1, 0.0, "", 0
+        if postdict.has_key('challengeid_' + cctr.__str__()):
+            challengeid = postdict['challengeid_' + cctr.__str__()]
+        else:
+            continue # no use retrieving other elements with same id as we won't be able to store those values against a challenge.
+        if postdict.has_key('assessment_' + cctr.__str__()):
+            assessment = postdict['assessment_' + cctr.__str__()]
+            totalscore = totalscore + float(assessment)
+        if postdict.has_key('maxscore_' + cctr.__str__()):
+            maxscore = postdict['maxscore_' + cctr.__str__()]
+        if postdict.has_key('comments_' + cctr.__str__()):
+            comments = postdict['comments_' + cctr.__str__()]
+        if float(assessment) > float(maxscore):
+            message += "Error: assessment greater than maxscore in challenge with Id %s<br />"%challengeid
+            continue
+        challengeobj = Challenge.objects.filter(id=challengeid)
+        userrespqset = UserResponse.objects.filter(test=testobj, challenge=challengeobj, emailaddr=emailid, tabref=tabref, tabid=tabid)
+        if userrespqset.__len__() == 0:
+            message += "Error: Could not find the challenge object to update <br />"
+            continue
+        userrespobj = userrespqset[0]
+        userrespobj.evaluation = assessment
+        userrespobj.evaluator_remarks = comments
+        userrespobj.save() # User response updated with evaluation and evaluator remarks and saved.
+    utobj.score = totalscore
+    utobj.evaluator_comment = evaltestcomment
+    if passscore and passscore <= totalscore:
+        utobj.outcome = True
+    elif not passscore and totalscore > 0:
+        utobj.outcome = None
+    elif passscore and passscore > totalscore:
+        utobj.outcome = False
+    else:
+        pass
+    utobj.save()
+    message += "Handled %s answers for user with email address '%s'"%(maxcctr.__str__(), emailid)
+    return HttpResponse(message)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getevaluationdetails(request):
+    return evaluate(request)
 
 @skillutils.is_session_valid
 @skillutils.session_location_match

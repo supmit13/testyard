@@ -66,6 +66,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.ACCTACTIVATION_URL, 'skillstest.Auth.views.acctactivation', name='acctactivation'),
     url(r'%s$'%mysettings.PROFIMG_CHANGE_URL[1:], 'skillstest.views.profileimagechange', name='profileimagechange'),
     url(r'%s$'%mysettings.TEST_EVALUATION_URL, 'skillstest.Tests.views.evaluate', name='evaluate'),
+    url(r'%s$'%mysettings.EVALUATE_RESPONSE_URL, 'skillstest.Tests.views.evaluateresponses', name='evaluateresponses'),
+    url(r'%s$'%mysettings.GET_CURRENT_EVALUATION_DATA_URL, 'skillstest.Tests.views.getevaluationdetails', name='getevaluationdetails'),
     url(r'%s$'%mysettings.TEST_BULK_UPLOAD_URL, 'skillstest.Tests.views.createtestbulkupload', name='createtestbulkupload'),
 )
 

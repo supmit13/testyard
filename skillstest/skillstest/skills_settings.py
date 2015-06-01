@@ -119,6 +119,8 @@ SHOW_TEST_CANDIDATE_MODE_URL = "skillstest/test/showtestcandidatemode/"
 SEND_TEST_INVITATION_URL = "skillstest/test/sendtestinvitations/"
 SEND_TEST_DATA_URL = "skillstest/test/sendtestdata/"
 TEST_EVALUATION_URL = "skillstest/test/evaluate/"
+EVALUATE_RESPONSE_URL = "skillstest/test/assessresponse/"
+GET_CURRENT_EVALUATION_DATA_URL = "skillstest/test/getcurrentevaldata/"
 TEST_BULK_UPLOAD_URL = "skillstest/test/bulkupload/"
 
 TEST_RUN = False # Set this to True during testing the app.
@@ -175,6 +177,9 @@ MULTIPLE_WS_PATTERN = re.compile(r"^\s*$", re.MULTILINE | re.DOTALL)
 PHONENUM_PATTERN = re.compile(r"^\d+$", re.MULTILINE | re.DOTALL)
 REALNAME_PATTERN = re.compile(r"^([a-zA-Z\s]*)$", re.MULTILINE | re.DOTALL)
 
+# Number of days after which you cannot modify an evaluation. This is counted from the time at which you evaluate a test for the first time.
+NUM_DAYS_EVALUATION_COMMIT = 10
+
 # Dictionary containing all rules that may be imposed on a test.
 RULES_DICT = { \
         'breaknotallowed' : 'Breaks are NOT allowed while taking the test', \
@@ -216,5 +221,10 @@ BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
+
+# Private networks needs the owner to allow members to be a part of it. Open networks may be joined by anyone. A hidden network will not
+# be listed by a search of the network by its name, but accessing its page will allow an user to request its owner to allow her/him in 
+# the network. A hidden network is also private in nature.
+NETWORK_TYPES_LIST = { 'PRIV' : 'Private', 'OPEN' : 'Public', 'HIDN' : 'Hidden' } 
 
 

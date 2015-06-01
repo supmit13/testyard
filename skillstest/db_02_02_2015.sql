@@ -534,6 +534,12 @@ alter table Tests_userresponse modify column evaluated_by_id int  DEFAULT NULL;
 alter table Tests_userresponse add column tabref varchar(40) not null;
 alter table Tests_userresponse add column tabid int not null;
 
+alter table Tests_usertest add column evaluator_comment longtext default "";
+alter table Tests_wouldbeusers add column evaluator_comment longtext default "";
+
+alter table Tests_usertest add column first_eval_timestamp int (11) default NULL;
+alter table Tests_wouldbeusers add column first_eval_timestamp int (11) default NULL;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

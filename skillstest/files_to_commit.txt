@@ -669,5 +669,33 @@ Fri, 15 May 2015, 02:46 HRS (IST).
 23.files_to_commit.txt
 ==================================
 
+Tue, 02 Jun 2015, 01:12 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/views.py
+14.static/javascript/pageutils.js
+15.templates/tests/upload_test_form.html
+16.skillstest/Tests/tasks.py
+17.static/datatemplates/uploadtest.tmpl
+18.static/datatemplates/uploadtesthelp.doc
+19.static/datatemplates/Sample.xls
+20.static/datatemplates/Sample.xlsx
+21.static/datatemplates/Sample.csv
+22.static/datatemplates/Sample.xml
+23.skillstest/Network/models.py
+24.skillstest/Network/views.py
+25.files_to_commit.txt
+==================================
 
 

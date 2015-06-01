@@ -459,6 +459,28 @@ def pythontomysqldatetime(dt_date):
 
 
 """
+The parameter should be a string representation of datetime.datetime object. e.g. datetime.datetime.now()
+"""
+def pythontomysqldatetime2(dt_date):
+    dt_date_parts = dt_date.split(' ')
+    timepattern = re.compile(r"(\d{1,2}:\d{1,2}:\d{1,2})\.?\d*$")
+    timematch = None
+    if dt_date_parts.__len__() > 1:
+        timematch = timepattern.search(dt_date_parts[1])
+    if not timematch:
+        mysqlcompatibledate = "Not Applicable"
+        return mysqlcompatibledate
+    timepart = '00:00:00'
+    if timematch:
+        timepart = timematch.groups()[0]
+    mysqlcompatibledate = ""
+    if dt_date_parts.__len__() > 0:
+        mysqlcompatibledate = dt_date_parts[0] + " " + timepart
+    return mysqlcompatibledate
+
+
+
+"""
 This will receive a date formatted like: 2015-03-24 16:59:34+00:00
 The return value would be '24 Mar 2015, 16:59:34'. If the date comes
 in any other format, the returned value would in the format 
