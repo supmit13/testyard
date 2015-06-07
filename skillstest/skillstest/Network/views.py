@@ -152,6 +152,10 @@ def creategroup(request):
         response = HttpResponse(message)
         return response
     # If we survived till here, we can safely create a group and its owner groupmember object.
+    if not isgroupnameunique(groupname):
+        message = "Group name added is not unique. Please rectify and try to create the group again."
+        response = HttpResponse(message)
+        return response
     grpobj = Group()
     grpmember = GroupMember()
     grpobj.owner = userobj
@@ -201,6 +205,13 @@ def creategroup(request):
     message = "Group created successfully."
     response = HttpResponse(message)
     return response
+
+
+def isgroupnameunique(groupname):
+    grpqsets = Group.objects.filter(groupname=groupname)
+    if grpqsets.__len__() > 0:
+        return False
+    return True
 
 
 
