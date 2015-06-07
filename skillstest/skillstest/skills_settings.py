@@ -122,6 +122,9 @@ TEST_EVALUATION_URL = "skillstest/test/evaluate/"
 EVALUATE_RESPONSE_URL = "skillstest/test/assessresponse/"
 GET_CURRENT_EVALUATION_DATA_URL = "skillstest/test/getcurrentevaldata/"
 TEST_BULK_UPLOAD_URL = "skillstest/test/bulkupload/"
+SET_VISIBILITY_URL = "skillstest/test/visibility/"
+
+CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -222,9 +225,46 @@ BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
 
-# Private networks needs the owner to allow members to be a part of it. Open networks may be joined by anyone. A hidden network will not
-# be listed by a search of the network by its name, but accessing its page will allow an user to request its owner to allow her/him in 
-# the network. A hidden network is also private in nature.
-NETWORK_TYPES_LIST = { 'PRIV' : 'Private', 'OPEN' : 'Public', 'HIDN' : 'Hidden' } 
+# Private groups needs the owner to allow members to be a part of it. Open groups may be joined by anyone. A hidden group will not
+# be listed by a search of the group by its name, but accessing its page will allow an user to request its owner to allow her/him in 
+# the group. A hidden group is also private in nature.
+GROUP_TYPES_DICT = { 'PRIV' : 'Private', 'OPEN' : 'Public', 'HIDN' : 'Hidden' }
 
+CONNECT_INVITATION_TEXT = "I would like to connect with you on TestYard."
+
+BANKS_DICT = {  'SBI_INDIA' : 'State Bank of India', \
+	        'PNB_INDIA' : 'Punjab National Bank', \
+		'PNSB_INDIA' : 'Punjab and Sind Bank', \
+		'AXIS_INDIA' : 'Axis Bank',\
+		'ICICI_INDIA' : 'ICICI Bank', \
+		'HDFC_INDIA' : 'HDFC Bank',\
+		'CITI_INDIA' : 'Citi Bank', \
+		'RBS_INDIA' : 'Royal Bank of Scotland',\
+		'SBM_INDIA' : 'State Bank of Mysore', \
+		'SBT_INDIA' : 'State Bank of Travancore', \
+		'SBJ_INDIA' : 'State Bank of Bikaner and Jaipur', \
+		'SBP_INDIA' : 'State Bank of Patiala', \
+		'SBH_INDIA' : 'State Bank of Hyderabad',\
+		'CORP_INDIA' : 'Corporation Bank', \
+		'DHANALAKSHMI_INDIA' : 'Dhanalakshmi Bank',\
+		'INDIANBANK' : 'Indian Bank',\
+		'HSBC_INDIA' : 'HSBC Bank', \
+		'STANCHART_INDIA' : 'Standard Chartered Bank',\
+		'BOI_INDIA' : 'Bank of India',\
+		'IOB_INDIA' : 'Indian Overseas Bank',\
+		'CANBANK_INDIA' : 'Canara Bank', \
+		'DENA_INDIA' : 'Dena Bank', \
+		'BOB_INDIA' : 'Bank of Baroda', \
+		'VIJ_INDIA' : 'Vijaya Bank', \
+		'UCO_INDIA' : 'UCO Bank', \
+		'UBI_INDIA' : 'Union Bank of India',\
+		'SYND_INDIA' : 'Syndicate Bank', \
+		'UTD_INDIA' : 'United Bank of India',\
+		'OBC_INDIA' : 'Oriental Bank of Commerce',\
+		'CBI_INDIA' : 'Central Bank of India',\
+		'ANDH_INDIA' : 'Andhra Bank',\
+		'ALHD_INDIA' : 'Allahabad Bank',\
+		'MAH_INDIA' : 'Maharashtra Bank',\
+		'IDBI_INDIA' : 'IDBI Bank',\
+}
 

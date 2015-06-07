@@ -1,0 +1,55 @@
+	
+	<div class="postpagesnav">
+		
+		</div>
+		
+		</div>
+		
+		<!-- ### Sidebar Begin ### -->
+
+		
+		<div id="sidebar">
+			<a href="{{ logout_url }}"><b>Logout</b></a>	
+		<ul>
+
+		<li><h2>Search</h2>
+		<form id="searchform" method="get" action="#">
+			<div>
+			<input type="text" value="" name="s" id="searchfield" />
+			<input type="button" id="searchsubmit" value="Search" />
+			</div>
+
+		</form>
+		</li>
+	
+		<li><h2>Your Groups</h2>
+		{% if groups|length == 0 %}
+		  <font color='#0000AA' size=-1>You have not joined any group yet.</font>
+		{% endif %}
+		<ul>
+		{% for grp in groups %}
+			<li>{{ grp }}</li>
+		{% endfor %}
+		</ul>
+
+		</li>
+
+	  	<li class="linkcat"><h2>Your Connections</h2>
+		{% if connections|length == 0 %}
+		  <font color='#0000AA' size=-1>You have not added any contacts yet.</font>
+		{% endif %}
+		<ul>
+		{% for conn in connections %}
+			<li>{{ conn }}</li>
+		{% endfor %}
+		</ul>
+		</li>
+
+
+		</ul>	
+		
+		</div>
+
+		<!-- ### Sidebar End ### -->
+
+	</div>

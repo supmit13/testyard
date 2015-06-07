@@ -48,7 +48,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -138,8 +138,9 @@ def get_user_tests(request):
     try:
         usertestqset = UserTest.objects.filter(user=userobj)
     except: # Can't say if we will find any records...
-        usertestqset = []
+        usertestqset = WouldbeUsers.objects.filter(user=userobj)
     testlist_ascandidate = []
+    tests_candidate_ordered_createdate = []
     for usertest in usertestqset:
         testlist_ascandidate.append(usertest.test)
     user_candidate_other_creator_evaluator_dict = {}
@@ -148,7 +149,11 @@ def get_user_tests(request):
         creator_evaluators = ( testcreator, test.evaluator.groupmember1, test.evaluator.groupmember2, test.evaluator.groupmember3, test.evaluator.groupmember4, \
                           test.evaluator.groupmember5, test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
                           test.evaluator.groupmember9, test.evaluator.groupmember10 )
-        user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
+        if not user_candidate_other_creator_evaluator_dict.has_key(test.testname):
+            user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
+        else:
+            continue
+        tests_candidate_ordered_createdate.append(test.testname)
     tests_user_dict = {}
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     tests_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
@@ -193,8 +198,10 @@ def get_user_tests(request):
     tests_user_dict['testevaluationurl'] = skillutils.gethosturl(request) + "/" + testevaluationurl
     tests_user_dict['evaluateresponseurl'] = skillutils.gethosturl(request) + "/" + evaluateresponseurl
     tests_user_dict['getevaluationdetailsurl'] = skillutils.gethosturl(request) + "/" + getevaluationdetailsurl
+    tests_user_dict['settestvisibilityurl'] = skillutils.gethosturl(request) + "/" + settestvisibilityurl
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
+    tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
     tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
     return  tests_user_dict
 
@@ -247,6 +254,45 @@ def ispermittedtoview(userobj, testobj, tests_user_dict):
            return True  
     return False
 
+
+"""
+This function will compute the next test date (if repeats are allowed) from 
+the current test date and attempts interval values. The current test date is
+in mysql compatible form : yyyy-mm-dd hh:min:ss
+"""
+def get_next_date(curtestdate, attemptsinterval, attemptsintervalunit):
+    datepart, timepart = curtestdate.split(" ")
+    YYYY, MM, DD = datepart.split("-")
+    hh, mm, ss = timepart.split(":")
+    if attemptsintervalunit == 'h':
+        hh = hh + attemptsinterval
+        if hh > 24:
+            hh = hh - 24
+            DD = DD + 1
+    elif attemptsintervalunit == 'm':
+        mm = mm + attemptsinterval
+        if mm > 60:
+            mm = mm - 60
+            hh = hh + 1
+    elif attemptsintervalunit == 'd':
+        DD = DD + attemptsinterval
+        if DD > 30:
+            DD = DD - 30
+            MM = MM + 1
+    elif attemptsintervalunit == 'M':
+        MM = MM + attemptsinterval
+        if MM > 12:
+            MM = MM - 12
+            YYYY = YYYY + 1
+    elif attemptsintervalunit == 'Y':
+        YYYY = YYYY + attemptsinterval
+    else:
+        msg = "Incorrect attemptsintervalunit (%s)"%attemptsintervalunit
+        return(msg)
+    next_test_date = YYYY + "-" + MM + "-" + DD + " " + hh + ":" + mm + ":" + ss
+    return next_test_date
+
+
 """
 This view will provide the following functionalities:
 Display a table of tests with latest first... These are all tests the user has created. This page will give the user
@@ -256,8 +302,7 @@ all this data in dashboard too, but from here the user will be able to go into d
 attempted by a certain candidate, the exact choices/answers the candidate made and how much points/grades the user
 conceded to the candidate for that answer. NOTE: This page will also provide the user with the capability to add and
 modify tests that are scheduled in future and in which she/he is creator. This page will display a link that will
-enable the user to create tests (if he is a premium user or has conducted less than skills_settings.NEW_USER_FREE_TESTS_COUNT since registering), add/modify/delete candidates to those tests, make assessm-
-ents for tests in which she/he is the evaluator, etc.
+enable the user to create tests (if he is a premium user or has conducted less than skills_settings.NEW_USER_FREE_TESTS_COUNT since registering), add/modify/delete candidates to those tests, make assessments for tests in which she/he is the evaluator, etc.
 The page consists of following:
     1) A list of all tests (of past) in which she/he is creator, ordered latest first. The fields are "Test name", "Test URL"
     (This is the url at which the creator or evaluators can access just the questions of the test in one place (as if written
@@ -396,6 +441,7 @@ def manage(request):
     testnames_candidature_list.sort()
     testnames_candidature_dict = {}
     testlist_ascandidate = tests_user_dict['testlist_ascandidate']
+    uniquedict = {}
     for tobj in testlist_ascandidate:
         try:
             test_name = tobj.testname
@@ -434,7 +480,31 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness]
+            utqset = UserTest.objects.filter(test=tobj, emailaddr=userobj.emailid)
+            if utqset.__len__() == 0:
+                utqset.append(WouldbeUsers.objects.filter(test=tobj, emailaddr=userobj.emailid))
+            if utqset.__len__() == 0: # If queryset length is still 0, then there is some discrepency in code. Skip this record.
+                continue
+            utobj = None
+            for utobj in utqset:
+                if utobj and utobj.score > 0: # Find which invitation the user has used to take the test. It will have a positive score value.
+                    break
+            if not uniquedict.has_key(test_name):
+                uniquedict[test_name] = 1
+            else:
+                continue
+            candidate_score = utobj.score
+            test_taken_on = utobj.starttime
+            next_test_date = ""
+            if not tobj.allowmultiattempts:
+                next_test_date = "Not Applicable"
+            else:
+                if test_taken_on:
+                    next_test_date = get_next_date(test_taken_on, attemptsinterval, attemptsintervalunit)
+                else:
+                    next_test_date = "Anytime" # If no usertest object exists then the user would be able to take the test anytime.
+            visibility = utobj.visibility
+            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, candidate_score, test_taken_on, next_test_date, visibility]
         except:
             response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
             return HttpResponse(response)
@@ -4089,5 +4159,66 @@ def create_test_from_xml(uploadedfile, filepath, testlinkid, userobj):
     return 1
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def setvisibility(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid, visibility, vtype = -1, 0, ""
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid'];
+    if request.POST.has_key('vtype'):
+        vtype = request.POST['vtype'];
+    if request.POST.has_key('visibility'):
+        visibility = request.POST['visibility'];
+    testobj = None
+    if testid != -1:
+        testobj = Test.objects.get(id=testid)
+    if vtype == 'test':
+        if visibility == '0':
+            testobj.scope = 'private'
+            message = "Visibility value set to private"
+        elif visibility == '1':
+            testobj.scope = 'protected'
+            message = "Visibility value set to protected"
+        elif visibility == '2':
+            testobj.scope = 'public'
+            message = "Visibility value set to public"
+        else:
+            pass
+        testobj.save()
+    elif vtype == 'usertest':
+        emailid = userobj.emailid
+        utqset = UserTest.objects.filter(emailaddr=emailid, test=testobj)
+        if utqset.__len__() == 0:
+            utqset = WouldbeUsers.objects.filter(emailaddr=emailid, test=testobj)
+        for utobj in utqset: # there may be multiple invitation records
+            utobj.visibility = int(visibility)
+            utobj.save()
+        if visibility == '0':
+            message = "Visibility value set to private"
+        elif visibility == '1':
+            message = "Visibility value set to protected"
+        elif visibility == '2':
+            message = "Visibility value set to public"
+        else:
+            message = "Unrecognized visibility value."
+    else:
+        message = "Unrecognized vtype value."
+    response = HttpResponse(message)
+    return response
 
 

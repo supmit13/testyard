@@ -1,0 +1,280 @@
+		{% include "inc/html_head.html" %}
+
+
+	<style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:0px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+	</style>
+
+	<script language='JavaScript'>
+
+	function senddataasync(uriencodeddata, httpmethod, targeturl){
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //document.write(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Display the response in the parent screen if everything went well.
+		    alert(xmlhttp.responseText);
+	        }
+	    };
+	    xmlhttp.open(httpmethod, targeturl, true);
+	    xmlhttp.send(uriencodeddata);
+	}
+
+
+	function showgrouppage(groupid){
+	    
+	}
+
+
+	function showconnectionsprofile(connid){
+	}
+
+
+	function showpaymentoption(){
+	    ispaid = document.getElementById('ispaid');
+	    if(ispaid.checked == true){
+	    	paymentdiv = document.getElementById('paymentdiv');
+	    	// Create the HTML for innerHTML
+	    	html = "<table border='0' cellspacing='2' cellpadding='2'>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname'>";
+	    	{% for bankcode, bankname in availablebanks.iteritems %}
+			html += "<option value='{{ bankcode }}'>{{ bankname }}</option>";
+	    	{% endfor %}
+	    	html += "</select></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' max_length='250' size='10'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' size='10'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' max_length='255' size='20'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' max_length='255' size='20'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee: </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
+	    	html += "</table>";
+	    	paymentdiv.style.display = "";
+	    	paymentdiv.innerHTML = html;
+	    }
+	    else{
+		paymentdiv = document.getElementById('paymentdiv');
+		paymentdiv.style.display = "none";
+	    	paymentdiv.innerHTML = "";
+	    }
+	}
+
+
+	function showtests(){
+	    clrtest = document.getElementById('cleartest');
+	    clrtestdiv = document.getElementById('cleartestdiv');
+	    html = "";
+	    if(clrtest.checked == true){
+		html += "<table border=0 cellspacing=2 cellpadding=2>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Select Test to Clear Before Allowing Users to Enter:</font></td><td nowrap><select name='testtoclear' id='testtoclear'>";
+		{% for testid, testname in alltests.iteritems %}
+		    html += "<option value='{{ testid }}'>{{ testname }}</option>";
+		{% endfor %}
+		html += "</select></td></tr>";
+	        html += "</table>";
+		clrtestdiv.style.display = "";
+		clrtestdiv.innerHTML = html;
+	    }
+	    else{
+		clrtestdiv.style.display = "none";
+		clrtestdiv.innerHTML = "";
+	    }
+	}
+
+
+	function creategroup(){
+	    groupname = document.frmcreategroup.groupname.value.trim();
+	    groupdescription = document.frmcreategroup.groupdescription.value.trim();
+	    grouptopic = document.frmcreategroup.grouptopic.value;
+	    ispaid = document.getElementById('ispaid');
+	    isactive = document.getElementById('isactive');
+	    allowentry = document.getElementById('allowentry');
+	    cleartest = document.getElementById('cleartest');
+	    grouptype = document.frmcreategroup.grouptype.value;
+	    maxmemberscount = document.frmcreategroup.maxmemberscount.value;
+	    csrftoken = document.frmcreategroup.csrfmiddlewaretoken.value;
+
+	    bankname = "";
+	    branchname = "";
+	    ifsccode = "";
+	    acctownername = "";
+	    acctnumber = "";
+	    testtoclear = "";
+ 	    entryfee = "";
+	    if(ispaid.checked == true){
+		bankname = document.frmcreategroup.bankname.value;
+		branchname = document.frmcreategroup.branchname.value.trim();
+		ifsccode = document.frmcreategroup.ifsccode.value.trim();
+		acctownername = document.frmcreategroup.acctownername.value.trim();
+		acctnumber = document.frmcreategroup.acctnumber.value.trim();
+		entryfee = document.frmcreategroup.entryfee.value.trim();
+	    }
+	    if(cleartest.checked == true){
+		testtoclear = document.frmcreategroup.testtoclear.value;
+	    }
+	    ////// Validate the input here
+	    alphanumericpattern = new RegExp("^([\\w\\d]+)$");
+	    if(groupname == ""){
+		alert("Group name may not be empty or contain only spaces.");
+		document.frmcreategroup.groupname.value = "";
+		document.frmcreategroup.groupname.focus();
+		return (false);
+	    }
+	    if(!alphanumericpattern.test(groupname)){
+		alert("Group names may contain alphanumeric characters only.");
+		document.frmcreategroup.groupname.focus();
+		return(false);
+	    }
+	    numericpattern = new RegExp("^\\d+$");
+	    alphabetspattern = new RegExp("^[\\w\\s]+$");
+ 	    floatnumpattern = new RegExp("^\\d+\.?\\d*$")
+	    if(maxmemberscount == ""){
+		maxmemberscount = "10000";
+	    }
+	    if(!numericpattern.test(maxmemberscount)){
+		alert("Max Members Count should have a numeric value.");
+		document.frmcreategroup.maxmemberscount.value = "";
+		document.frmcreategroup.maxmemberscount.focus();
+		return(false);
+	    }
+	    if(ispaid.checked == true){
+		if(branchname == "" || !alphanumericpattern.test(branchname)){
+		    alert("Branch name cannot be empty and should contain alphanumeric characters only.");
+		    document.frmcreategroup.branchname.value = "";
+		    document.frmcreategroup.branchname.focus();
+		    return(false);
+		}
+		if(ifsccode == "" || !alphanumericpattern.test(ifsccode)){
+		    alert("IFSC Code cannot be empty and should contain alphanumeric characters only.");
+		    document.frmcreategroup.ifsccode.value = "";
+		    document.frmcreategroup.ifsccode.focus();
+		    return(false);
+		}
+		if(acctownername == "" || !alphabetspattern.test(acctownername)){
+		    alert("Account Owner's name cannot be empty and should contain alphabets only.");
+		    document.frmcreategroup.acctownername.value = "";
+		    document.frmcreategroup.acctownername.focus();
+		    return(false);
+		}
+		if(acctnumber == "" || !alphanumericpattern.test(acctnumber)){
+		    alert("Account number cannot be empty and should contain alphanumeric characters only.");
+		    document.frmcreategroup.acctnumber.value = "";
+		    document.frmcreategroup.acctnumber.focus();
+		    return(false);
+		}
+		if(entryfee == "" || !floatnumpattern.test(entryfee)){
+		    alert("Entry Fee cannot be empty and should contain decimal number only.");
+		    document.frmcreategroup.entryfee.value = "";
+		    document.frmcreategroup.entryfee.focus();
+		    return(false);
+		}
+	    }
+	    ////// Input validation ends here. If we have come thus far, the input is good enough!
+	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount;
+	    if(ispaid.checked == true){
+		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee;
+	    }
+	    else{
+		postdata += "&ispaid=0";
+	    }
+	    if(cleartest.checked == true){
+		postdata += "&cleartest=1&testtoclear=" + testtoclear;
+	    }
+	    if(isactive.checked == true){
+		postdata += "&isactive=1";
+	    }
+	    if(allowentry.checked == true){
+		postdata += "&allowentry=1";
+	    }
+	    postdata += "&csrfmiddlewaretoken=" + csrftoken;
+	    postdata = encodeURI(postdata);
+	    //alert(postdata);
+	    senddataasync(postdata, "POST", '{{ creategroupurl }}');
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "none";
+	    screendiv.innerHTML = "";
+	}
+
+
+	function closecreategroupscreen(){
+	    tscreen = document.getElementById('transscreens');
+	    tscreen.style.display = "none";
+	    tscreen.innerHTML = "";
+	    return (false);
+	}
+
+
+	function displaycreategroupscreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action=''>";
+	    html += "{% csrf_token %}";
+	    html += "<table border=0 cellspacing=2 cellpadding=3>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic'>";
+	    {% for topic in alltopics %}
+		html += "<option value='{{ topic }}'>{{ topic }}</option>";
+	    {% endfor %}
+	    html += "</select></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Permissions</font></td><td nowrap>&nbsp;<font color='#0000AA' size=-1>Is Paid:&nbsp;</font><input type='checkbox' name='ispaid' id='ispaid' value='1' onChange='javascript:showpaymentoption();'><br><div id='paymentdiv' style=''></div><font color='#0000AA' size=-1>Group Type:&nbsp;</font><select name='grouptype'>";
+	    {% for grptype, grptypename in grouptypes.iteritems %}
+	        html += "<option value='{{ grptype }}'>{{ grptypename }}</option>";
+	    {% endfor %}
+	    html += "</select><br>";
+	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked><br>";
+	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked><br>";
+	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5><br>";
+	    html += "<font color='#0000AA' size=-1>Does entry to the group require the user to clear a test:&nbsp;</font><input type='checkbox' name='cleartest' id='cleartest' value='1' onChange='javascript:showtests();'><br><div id='cleartestdiv' style=''></div>";
+	    html += "</td></tr>";
+	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'></td></tr>";
+	    html += "</table>";
+	    html += "</form>";
+	    screendiv.display = "";
+	    screendiv.innerHTML = html;
+	}
+
+
+	function displayjoinagroupscreen(){
+	}
+
+	function displayaddcontactscreen(){
+	}
+
+	</script>
+	
+		{% include "inc/mission_statement.html" %}
+		<!-- ### Post Entry Begin ###  -->
+
+		<div class="post">
+			<span class="meta">
+			<h3>Dear {{ displayname }},</h3>
+			{{ msg }}
+			<div class="entry">
+			<h3><font color='#00AA00'>Create a group <a href='#/' onClick='javascript:displaycreategroupscreen();'>here</a>...</font></h3>
+			<h3><font color='#00AA00'>... or join one <a href='#/' onClick='javascript:displayjoinagroupscreen();'>here</a></font></h3>
+			<h3><font color='#00AA00'>Or may be, you would like to <a href='#/' onClick='javascript:displayaddcontactscreen();'>add</a> a contact?</font></h3><br />
+			</div>
+			<div style='display:none;' id="transscreens" class="semitrans"></div>
+			</span>
+		</div>
+
+
+		<!-- ### Post Entry End ### -->
+
+		{% include "network/right_panel.html" %}
+		
+		{% include "inc/html_foot.html" %}

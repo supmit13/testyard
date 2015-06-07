@@ -5,37 +5,137 @@ from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
+import skillstest.utils as skillutils
+
 import os, sys, re, time, datetime
 import inspect
 
-
-class Post(models.Model):
-    pass
-
-
-class Network(models.Model):
-    owner = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
-    networkname = models.CharField(max_length=200, blank=False, null=False)
+class Group(models.Model):
+    owner = models.ForeignKey(User, related_name="+", null=False, blank=False, default='')
+    groupname = models.CharField(max_length=200, blank=False, null=False)
     tagline = models.TextField(default="")
     description = models.TextField(default="")
-    members = models.ManyToManyField(User)
     memberscount = models.IntegerField(default=0)
-    status = models.BooleanField(default=True)
-    networktype = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.NETWORK_TYPES_LIST.iteritems()), default='OPEN')
-    posts = models.ManyToManyField(Post)
+    maxmemberslimit = models.IntegerField(default=10000)
+    status = models.BooleanField(default=True) # keep track of whether the group is active or not.
+    grouptype = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.GROUP_TYPES_DICT.iteritems()), default='OPEN')
+    creationdate = models.DateTimeField(auto_now=True,default=None)
+    allowentry = models.BooleanField(default=True) # Keep track of whether users can be added to the group or not.
+    groupimagefile = models.CharField(max_length=200, blank=True, null=True)
+    basedontopic = models.CharField(max_length=200, blank=False, null=False) # Associated topic on which the group is based.
+    # The topic should be one of the topics listed by skillutils.TEST_TOPICS or any custom topic added by the user while creating a test previously.
+    adminremarks = models.TextField(default="")
+    stars = models.IntegerField(default=0) # Indicates the popularity of the group.
+    # TODO: Identify the set of criteria for which a group might gain or lose stars.
+    entrytest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default=None) # A group might have an entry test. Users who pass the test would be allowed to be members of the group. Default is None (no test).
+    ispaid = models.BooleanField(default=False) # Whether entry into the group is paid or not.
+    entryfee = models.FloatField(default=0.0) # If paid, then this will contain the entry fee for the group.
 
     class Meta:
-        verbose_name = "Network Table"
-        db_table = 'Tests_network'
+        verbose_name = "Group Table"
+        db_table = 'Network_group'
 
     def __unicode__(self):
-        return "%s"%(self.member.firstname + "'s network")
+        return "%s"%(self.member.firstname + "'s group")
 
-    def add(self, member):
-        pass
 
-    def remove(self, member):
-        pass
+class Post(models.Model):
+    postcontent = models.TextField(default="")
+    poster = models.ForeignKey(User, related_name="+", null=False, blank=False, default='')
+    posttargettype = models.CharField(max_length=200, blank=False, null=False) # Can be 'user' or 'group'. This will determine if the target
+    # of the post is another member or group.
+    posttargetuser = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
+    posttargetgroup = models.ForeignKey(Group, related_name="+", null=True, blank=True, default='')
+    imagefile = models.CharField(max_length=200, blank=True, null=True) # image associated with the post, if any.
+    videofile = models.CharField(max_length=200, blank=True, null=True) # video associated with the post, if any.
+    scope = models.CharField(max_length=200, blank=False, null=False, default='public') # Can be either public, private or protected.
+    relatedpost_id = models.IntegerField(default=None) # If the post is related to another post object from some other user/group
+    deleted = models.BooleanField(default=False)
+    hidden = models.BooleanField(default=False)
+    stars = models.IntegerField(default=0)
 
+    class Meta:
+        verbose_name = "Posts Table"
+        db_table = 'Network_post'
+
+    def __unicode__(self):
+        return "%s"%(self.poster + "'s post")
+
+
+class GroupMember(models.Model):
+    group = models.ForeignKey(Group, null=False, blank=False)
+    member = models.ForeignKey(User, null=False, blank=False)
+    membersince = models.DateTimeField(auto_now=True, default=None)
+    status = models.BooleanField(default=True) # 'active' or 'inactive' -- True or False.
+    removed = models.BooleanField(default=False)
+    blocked = models.BooleanField(default=False) # Posts to the group from this member will be blocked.
+
+    class Meta:
+        verbose_name = "GroupMember Table"
+        db_table = 'Network_groupmember'
+
+    """
+    def add(self, member, group):
+        if self.memberscount + 1 > self.maxmemberslimit:
+            return 0
+        self.members.append(member)
+        self.memberscount += 1
+        return self.memberscount
+
+    def remove(self, member, group):
+        allmembers = self.members
+        foundflag = 0
+        ctr = 0
+        for usr in allmembers:
+            if usr.emailid == member.emailid:
+                foundflag = 1
+                break
+            ctr += 1
+        if foundflag:
+            return self.members.pop(ctr)
+        else:
+            return -1
+    """
+
+class Connection(models.Model):
+    focususer = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    connectedto = models.ForeignKey(User, null=True, blank=True)
+    connectedfrom = models.DateTimeField(default=None) # Date and time of creation of this connection
+    deleted = models.BooleanField(default=False)
+    blocked = models.BooleanField(default=False) # Posts from the 'connectedto' user will be blocked.
+    connectedthru = models.CharField(max_length=200, blank=True, null=True) # If connected through facebook or linkedin or through any other channel.
+
+    class Meta:
+        verbose_name = "GroupMember Table"
+        db_table = 'Network_connection'
+
+
+class ConnectionInvitation(models.Model):
+    fromuser = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    touser = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    invitationcontent = models.TextField(default=mysettings.CONNECT_INVITATION_TEXT)
+    invitationstatus = models.CharField(max_length=6, choices=(('open', 'Opened'), ('closed', 'Closed'), ('accept', 'Accepted'), ('refuse', 'Refused')), default='open')
+    invitationdate = models.DateTimeField(default=None)
+
+    class Meta:
+        verbose_name = "GroupMember Table"
+        db_table = 'Network_connectioninvitation'
+
+
+class OwnerBankAccount(models.Model):
+    groupowner = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    bankname = models.CharField(max_length=255, null=False, blank=False)
+    bankbranch = models.CharField(max_length=255, null=False, blank=False)
+    accountnumber = models.CharField(max_length=50, null=False, blank=False)
+    ifsccode = models.CharField(max_length=10, null=False, blank=False)
+    accountownername = models.CharField(max_length=255, null=False, blank=False)
+    creationdate = models.DateTimeField(auto_now=True, default=None)
+
+    class Meta:
+        verbose_name = "ownerbankaccount Table"
+        db_table = 'Network_ownerbankaccount'
+
+
+    
 
 

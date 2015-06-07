@@ -540,6 +540,110 @@ alter table Tests_wouldbeusers add column evaluator_comment longtext default "";
 alter table Tests_usertest add column first_eval_timestamp int (11) default NULL;
 alter table Tests_wouldbeusers add column first_eval_timestamp int (11) default NULL;
 
+alter table Tests_usertest add column visibility int(11) default 0;
+alter table Tests_wouldbeusers add column visibility int(11) default 0;
+
+create table Network_group (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	owner_id int(11) NOT NULL,
+	groupname varchar (255) NOT NULL,
+	tagline text DEFAULT "",
+	description text DEFAULT "",
+	memberscount int(11) DEFAULT 0,
+	maxmemberslimit int(11) DEFAULT 10000,
+	status boolean DEFAULT true,
+	grouptype varchar(255) DEFAULT "",
+	creationdate datetime,
+	allowentry boolean DEFAULT true,
+	groupimagefile varchar(255) DEFAULT "",
+	basedontopic varchar(200) DEFAULT "",
+	adminremarks text DEFAULT "",
+	stars int(11) DEFAULT 0,
+	entrytest_id int(11) DEFAULT NULL,
+	ispaid boolean DEFAULT false,
+	entryfee float DEFAULT 0.0,
+	primary key (`id`),
+	FOREIGN KEY (`owner_id`) REFERENCES `Auth_user` (`id`),
+	FOREIGN KEY (`entrytest_id`) REFERENCES `Tests_test` (`id`)
+);
+
+
+create table Network_post (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	poster_id int(11) NOT NULL,
+	posttargettype varchar(200) NOT NULL,
+	posttargetuser_id int(11) DEFAULT NULL,
+	posttargetgroup_id int(11) DEFAULT NULL,
+ 	imagefile varchar(255) DEFAULT '',
+	videofile varchar(255) DEFAULT '',
+	scope varchar(255) DEFAULT 'public',
+	relatedpost_id int(11) DEFAULT NULL,
+	deleted boolean DEFAULT false,
+	hidden boolean DEFAULT false,
+	stars int(11) DEFAULT 0,
+	primary key (`id`),
+	FOREIGN KEY (`poster_id`) REFERENCES `Auth_user` (`id`),
+	FOREIGN KEY (`relatedpost_id`) REFERENCES `Network_post` (`id`),
+ 	FOREIGN KEY (`posttargetuser_id`) REFERENCES `Auth_user` (`id`),
+	FOREIGN KEY (`posttargetgroup_id`) REFERENCES `Network_group` (`id`)
+);
+
+
+create table Network_groupmember (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	group_id int(11) NOT NULL,
+	member_id int(11) NOT NULL,
+	membersince datetime DEFAULT NULL,
+	status boolean DEFAULT true,
+	removed boolean DEFAULT false,
+	blocked boolean DEFAULT false,
+	primary key (`id`),
+	FOREIGN KEY (`member_id`) REFERENCES `Auth_user` (`id`),
+	FOREIGN KEY (`group_id`) REFERENCES `Network_group` (`id`)
+);
+
+
+create table Network_connection (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	focususer_id int(11) NOT NULL,
+	connectedto_id int(11) NOT NULL,
+	connectedfrom datetime DEFAULT NULL,
+	deleted boolean DEFAULT false,
+	blocked boolean DEFAULT false,
+	connectedthru varchar(200) DEFAULT '',
+	primary key (`id`),
+	FOREIGN KEY (`focususer_id`) REFERENCES `Auth_user` (`id`),
+	FOREIGN KEY (`connectedto_id`) REFERENCES `Auth_user` (`id`)
+);
+
+
+create table Network_connectioninvitation (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	fromuser_id int(11) NOT NULL,
+	touser_id int(11) NOT NULL,
+	invitationcontent text DEFAULT "",
+	invitationstatus varchar(5) DEFAULT "open",
+	invitationdate datetime DEFAULT NULL,
+	primary key (`id`),
+	FOREIGN KEY (`fromuser_id`) REFERENCES `Auth_user` (`id`),
+	FOREIGN KEY (`touser_id`) REFERENCES `Auth_user` (`id`)
+);
+
+
+create table Network_ownerbankaccount (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	groupowner_id int(11) NOT NULL,
+	bankname varchar(255) NOT NULL,
+	accountnumber varchar(50) NOT NULL,
+	ifsccode varchar(10) NOT NULL,
+	accountownername varchar(255) NOT NULL,
+ 	creationdate datetime DEFAULT NULL,
+	primary key (`id`),
+	FOREIGN KEY (`groupowner_id`) REFERENCES `Auth_user` (`id`)
+);
+
+alter table Network_ownerbankaccount add column bankbranch varchar(255) NOT NULL;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

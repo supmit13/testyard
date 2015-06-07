@@ -57,7 +57,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SEARCH_URL, 'skillstest.Tests.views.search', name='searchtests'),
     url(r'%s$'%mysettings.CLEAR_NEGATIVE_SCORE_URL, 'skillstest.Tests.views.clearnegativescoreurl', name='clearnegativescoreurl'),
     url(r'%s$'%mysettings.DELETE_TEST_URL,'skillstest.Tests.views.deletetest', name='deletetesturl'),
-    url(r'%s$'%mysettings.NETWORK_URL, 'skillstest.Users.views.network', name='network'),
+    url(r'%s$'%mysettings.NETWORK_URL, 'skillstest.Network.views.network', name='network'),
     url(r'%s$'%mysettings.ANALYTICS_URL, 'skillstest.Tests.views.analytics', name='analytics'),
     url(r'%s$'%mysettings.ABOUTUS_URL, 'skillstest.views.aboutus', name='aboutus'),
     url(r'%s$'%mysettings.HELP_URL, 'skillstest.views.helpndocs', name='helpndocs'),
@@ -69,5 +69,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.EVALUATE_RESPONSE_URL, 'skillstest.Tests.views.evaluateresponses', name='evaluateresponses'),
     url(r'%s$'%mysettings.GET_CURRENT_EVALUATION_DATA_URL, 'skillstest.Tests.views.getevaluationdetails', name='getevaluationdetails'),
     url(r'%s$'%mysettings.TEST_BULK_UPLOAD_URL, 'skillstest.Tests.views.createtestbulkupload', name='createtestbulkupload'),
+    url(r'%s$'%mysettings.SET_VISIBILITY_URL, 'skillstest.Tests.views.setvisibility', name='setvisibility'),
+
+    url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
 )
 

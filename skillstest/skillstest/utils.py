@@ -350,7 +350,7 @@ def includedtemplatevars(pagetitle, request):
     select_subscription = ""
     select_tests = ""
     select_search = ""
-    select_pronet = ""
+    select_socnet = ""
     select_analytics = ""
     select_aboutus = ""
     select_helpndoc = ""
@@ -365,8 +365,8 @@ def includedtemplatevars(pagetitle, request):
         select_tests = " class=\"highlight\""
     elif pagetitle == 'Search':
         select_search = " class=\"highlight\""
-    elif pagetitle == 'Networking':
-        select_pronet = " class=\"highlight\""
+    elif pagetitle == 'Network':
+        select_socnet = " class=\"highlight\""
     elif pagetitle == 'Test Analytics':
         select_analytics = " class=\"highlight\""
     elif pagetitle == 'About Us':
@@ -378,7 +378,7 @@ def includedtemplatevars(pagetitle, request):
     else: # Invalid tab, control should not have come here. Skip quietly.
         pass
     cntxt = { 'pagetitle' : pagetitle, 'select_profile' : select_profile, 'select_dashboard' : select_dashboard, 'select_subscription' : select_subscription, \
-              'select_tests' : select_tests, 'select_search' : select_search, 'select_pronet' : select_pronet, 'select_analytics' : select_analytics, \
+              'select_tests' : select_tests, 'select_search' : select_search, 'select_socnet' : select_socnet, 'select_analytics' : select_analytics, \
               'select_aboutus' : select_aboutus, 'select_helpndoc' : select_helpndoc, 'select_careers' : select_careers, }
     # Add the page URLs from mysettings in context
     cntxt['profile_url'] = gethosturl(request) + "/" + mysettings.PROFILE_URL
