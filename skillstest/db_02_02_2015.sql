@@ -644,6 +644,23 @@ create table Network_ownerbankaccount (
 
 alter table Network_ownerbankaccount add column bankbranch varchar(255) NOT NULL;
 
+alter table Network_post add column posttargettest_id int(11) DEFAULT NULL;
+
+alter table Network_post add column postcontent text DEFAULT NULL;
+
+create table Network_groupjoinrequest (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	group_id int(11) NOT NULL,
+	user_id int(11) NOT NULL,
+	requestdate datetime DEFAULT NULL,
+	outcome varchar(6) DEFAULT 'open',
+	reason text DEFAULT "",
+	active boolean default true,
+	primary key (`id`),
+	FOREIGN KEY (`group_id`) REFERENCES `Network_group` (`id`),
+	FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
+)ENGINE=Innodb;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

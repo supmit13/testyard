@@ -79,6 +79,9 @@ error_codes = { \
         '1081' : 'User is NOT permitted to evaluate this test.', \
         '1082' : 'No email Id found in request', \
         '1083' : 'You may not evaluate the candidate anymore. Your stipulated time of %s days for the purpose of evaluation has expired.'%(mysettings.NUM_DAYS_EVALUATION_COMMIT), \
+        '1084' : 'Group with the name "%s" doesn\'t exist.',\
+        '1085' : 'No group id found in request',\
+        '1086' : 'Group with the given id does not exist.',\
     }
 
 def error_msg(code):

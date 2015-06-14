@@ -122,9 +122,14 @@ TEST_EVALUATION_URL = "skillstest/test/evaluate/"
 EVALUATE_RESPONSE_URL = "skillstest/test/assessresponse/"
 GET_CURRENT_EVALUATION_DATA_URL = "skillstest/test/getcurrentevaldata/"
 TEST_BULK_UPLOAD_URL = "skillstest/test/bulkupload/"
+SHOW_TEST_INFO_URL = "skillstest/test/showtestinfo/"
 SET_VISIBILITY_URL = "skillstest/test/visibility/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
+CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"
+SEARCH_GROUP_URL = "skillstest/network/group/search"
+GET_GROUP_INFO_URI = "skillstest/network/group/getinfo/"
+SEND_JOIN_REQUEST_URL = "skillstest/network/group/sendjoinrequest/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -267,4 +272,7 @@ BANKS_DICT = {  'SBI_INDIA' : 'State Bank of India', \
 		'MAH_INDIA' : 'Maharashtra Bank',\
 		'IDBI_INDIA' : 'IDBI Bank',\
 }
+
+REQUEST_ACTIVE_INTERVAL = 90 # Amount of time (in days) for which a request to join a group or to connect with another user remains valid.
+GROUP_JOIN_REQUEST_SUBJECT = "Testyard user has requested your permission to join the group '%s'"
 

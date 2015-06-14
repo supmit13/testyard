@@ -27,7 +27,6 @@
 	    xmlhttp.onreadystatechange = function(){
                 //document.write(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    // Display the response in the parent screen if everything went well.
 		    alert(xmlhttp.responseText);
 	        }
 	    };
@@ -36,8 +35,126 @@
 	}
 
 
-	function showgrouppage(groupid){
-	    
+	function closegroupdivscreen(ctr){
+	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
+	    showgroupdivarea.style.display = "none;";
+	    showgroupdivarea.innerHTML = "";
+	}
+
+
+        function showtestinfo(testid, ctr){
+	    var xmlhttp;
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + csrfform.csrfmiddlewaretoken.value;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Open popup (disgusting!) and show data.
+		    testinfowin = window.open("", "testinfowindow", "width=400, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    jsondata = JSON.parse(xmlhttp.responseText);
+		    html = "<html><head><title>Test Info</title></head><body bgcolor='#669999'>";
+		    if(jsondata['warning'] == ""){
+			html += "<center><h3>" + jsondata['testname'] + "</h3></center>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Topic: " + jsondata['topicname'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Owner: " + jsondata['topicname'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Type: " + jsondata['testtype'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Max Score: " + jsondata['maxscore'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Pass Score: " + jsondata['passscore'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Number of Challenges: " + jsondata['numchallenges'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Number of attempts allowed: " + jsondata['maxattemptscount'] + "</font><br>";
+			if(parseInt(jsondata['maxattemptscount']) > 1){
+			    html += "<font color='#0000AA' style='font-weight:bold' size=-1>Minimum Interval between 2 successive attempts: " + jsondata['attemptsinterval'] + " " + jsondata['attemptsintervalunit'] + "</font><br>";
+			}
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Quality: " + jsondata['quality'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Negative Scoring: " + jsondata['negativescoreallowed'] + "</font><br>";
+		    }
+		    else{
+			html += "<center>" + jsondata['warning'] + "</center>";
+		    }
+		    html += "<br><center><input type='button' name='btnclose' id='btnclose' value='Close' onClick='javascript:window.close();'></center>";
+		    html += "</body></html>";
+		    testinfowin.document.write(html);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{showtestinfourl}}', true);
+	    xmlhttp.send(postdata);
+ 	}
+
+
+	function sendjoinrequest(grpid, ctr, testid){
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    validfrom = '{{ validfrom }}';
+	    postdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken + "&testid=" + testid + "&baseurl=" + '{{ baseurl }}' + "&txtemailslist=" + '{{ selfemailid }}' + "&validfrom=" + validfrom; // no validfrom and validtill
+	    encodedpostdata = encodeURI(postdata);
+	    progressdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progressdiv.style.display = "";
+	    progressdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+   	    //alert(encodedpostdata);
+	    senddataasync(encodedpostdata, 'POST', '{{ joinrequesturl }}');
+	    progressdiv.style = "display:none;";
+	    progressdiv.innerHTML = "";
+	}
+
+	function showgrouppage(grpmembername, grpname, csrftoken, ctr){
+	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
+	    showgroupdivarea.style.display = "";
+	    html = "";
+	    postdata = "groupname=" + grpname + "&csrfmiddlewaretoken=" + csrftoken + "&membername=" + grpmembername;
+	    postdatauriencoded = encodeURI(postdata);
+	    showgroupdivarea.innerHTML = "";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //document.write(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    jsobj = JSON.parse(xmlhttp.responseText);
+		    html = "";
+		    if(jsobj.groupimagefile){
+			html += "<img src='static/images/" + jsobj.groupimagefile + "'>";
+		    }
+		    html += "<br /><form name='csrfform_" + ctr + "' id='csrfform_" + ctr + "'>{% csrf_token %}</form><br />";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Number of members: " + jsobj.memberscount + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Type: " + jsobj.grouptype + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Topic: " + jsobj.topic + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Owner: " + jsobj.owner + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Created On: " + jsobj.creationdate + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Stars: " + jsobj.stars + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br>";
+		    if(jsobj.ispaid){
+		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.entryfee + "</font></span><br>";
+		    }
+		    if(jsobj.entrytestid){
+		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Do I need to pass a test in order to join this group: <a href='#/' onClick='javascript:showtestinfo(\"" + jsobj.entrytestid + "\", \"" + ctr + "\");'>" + jsobj.entrytestname + "</a></font></span><br>";
+		    }
+		    else{
+			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Do I need to pass a test in order to join this group: No </font></span><br>";
+		    }
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br>";
+		    if(jsobj.allowentry){
+		        html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+		    }
+		    else{
+			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ");'></span><br>";
+		    }
+		    showgroupdivarea.style.display = "";
+		    showgroupdivarea.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupinfouri }}', true);
+	    xmlhttp.send(postdatauriencoded);
 	}
 
 
@@ -98,6 +215,7 @@
 	function creategroup(){
 	    groupname = document.frmcreategroup.groupname.value.trim();
 	    groupdescription = document.frmcreategroup.groupdescription.value.trim();
+	    tagline = document.frmcreategroup.tagline.value.trim();
 	    grouptopic = document.frmcreategroup.grouptopic.value;
 	    ispaid = document.getElementById('ispaid');
 	    isactive = document.getElementById('isactive');
@@ -183,7 +301,7 @@
 		}
 	    }
 	    ////// Input validation ends here. If we have come thus far, the input is good enough!
-	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount;
+	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline;
 	    if(ispaid.checked == true){
 		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee;
 	    }
@@ -205,7 +323,7 @@
 	    senddataasync(postdata, "POST", '{{ creategroupurl }}');
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.style.display = "none";
-	    screendiv.innerHTML = "";
+	    screendiv.innerHTML = "<font color='#0000AA' style='font-weight:bold' size=-1>Group created successfully</font>";
 	}
 
 
@@ -217,14 +335,44 @@
 	}
 
 
+	function checknameavailability(){
+	    grpname = document.frmcreategroup.groupname.value.trim();
+	    availspan = document.getElementById('checkavailability');
+	    if(grpname == ""){
+		availspan.style.display = "";
+		availspan.innerHTML = "<font color='#AA0000' size=-2>Invalid group name</font>";
+	        return(0);
+	    }
+	    postdata = encodeURI("groupname=" + grpname + "&csrfmiddlewaretoken=" + document.frmcreategroup.csrfmiddlewaretoken.value);
+	    availspan.style.display = "";
+	    availspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Display the response in the parent screen if everything went well.
+		    availspan.innerHTML = xmlhttp.responseText;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ checkgrpnameavailabilityurl }}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
 	function displaycreategroupscreen(){
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.style.display = "";
 	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action=''>";
 	    html += "{% csrf_token %}";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();'><span id='checkavailability' style='' nowrap></span></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10'></textarea></td></tr>";
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic'>";
 	    {% for topic in alltopics %}
 		html += "<option value='{{ topic }}'>{{ topic }}</option>";
@@ -248,7 +396,70 @@
 	}
 
 
+	function searchforgroup(){
+	    grpkeyword = document.getElementById('grpkeyword').value.trim();
+	    postdata = "grpkeyword=" + grpkeyword + "&csrfmiddlewaretoken=" + document.joinagroup.csrfmiddlewaretoken.value;
+	    topic = document.getElementById('topic');
+	    for(var i=0; i < topic.options.length; i++){
+		if(topic.options[i].selected){
+		    topicname = topic.options[i].value;
+		    topicname = topicname.replace("_", " ");
+		    postdata = postdata + "&topic=" + topicname;
+		}
+	    }
+	    uriencodeddata = encodeURI(postdata);
+   	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //document.write(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    searchresultarea = document.getElementById('searchresultdiv');
+		    searchresultarea.style.display = "";
+		    jsonresult = JSON.parse(xmlhttp.responseText);
+		    if(jsonresult.length == 0){
+			searchresultarea.innerHTML = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
+			return(0);
+		    }
+		    html = "<table border=0 cellspacing=2 cellpadding=5 width='95%'>";
+		    for(var j=0; j < jsonresult.length; j++){
+			if(j % 2 == 0){
+			    html += "<tr bgcolor='#66CCFF'><td nowrap><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			}
+			else{
+			    html += "<tr bgcolor='#99CCFF'><td nowrap><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</font></a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			}
+		    }
+		    html += "</table>";
+		    searchresultarea.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ searchgroupurl }}', true);
+	    xmlhttp.send(uriencodeddata);
+	}
+
+
 	function displayjoinagroupscreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "<center><h3><font color='#0000AA'>Search for a group based on the following parameters:</font></h3>";
+	    html += "<form name='joinagroup' id='joinagroup' method='POST' action=''>";
+	    html += "{% csrf_token %}";
+	    html += "<table border='0' cellspacing='3' cellpadding='3'>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Select Topic(s):</font></td><td align='center'><select name='topic' id='topic' multiple size=4>";
+	    {% for topicunderscored, topicname in topics.iteritems %}
+		html += "<option value='{{ topicunderscored }}'>{{ topicname }}</option>";
+	    {% endfor %}
+	    html += "</select></td></tr>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Enter Keyword:</font></td><td align='center'><input type='text' name='grpkeyword' id='grpkeyword' value=''></td></tr>";
+	    html += "<tr><td nowrap align='center' colspan='2'><input type='button' name='btnsearchgroups' id='btnsearchgroups' value='Search' onClick='searchforgroup();'>&nbsp;&nbsp;<input type='button' name='btncancelsearch' id='btncancelsearch' value='Close' onClick='closecreategroupscreen();'></td></tr>";
+	    html += "</table>";
+	    html += "</form><br><br><div id='searchresultdiv' style=''></div></center>";
+            screendiv.innerHTML = html;
 	}
 
 	function displayaddcontactscreen(){

@@ -42,10 +42,11 @@ class Group(models.Model):
 class Post(models.Model):
     postcontent = models.TextField(default="")
     poster = models.ForeignKey(User, related_name="+", null=False, blank=False, default='')
-    posttargettype = models.CharField(max_length=200, blank=False, null=False) # Can be 'user' or 'group'. This will determine if the target
-    # of the post is another member or group.
+    posttargettype = models.CharField(max_length=200, blank=False, null=False) # Can be 'user', 'group' or 'test'. This will determine if 
+    # the target of the post is another member or a group or a test.
     posttargetuser = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
     posttargetgroup = models.ForeignKey(Group, related_name="+", null=True, blank=True, default='')
+    posttargettest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default='')
     imagefile = models.CharField(max_length=200, blank=True, null=True) # image associated with the post, if any.
     videofile = models.CharField(max_length=200, blank=True, null=True) # video associated with the post, if any.
     scope = models.CharField(max_length=200, blank=False, null=False, default='public') # Can be either public, private or protected.
@@ -136,6 +137,17 @@ class OwnerBankAccount(models.Model):
         db_table = 'Network_ownerbankaccount'
 
 
+class GroupJoinRequest(models.Model):
+    group = models.ForeignKey(Group, related_name="+", null=False, blank=False)
+    user = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    requestdate = models.DateTimeField(auto_now=True, default=None) # Date and time of sending the request
+    outcome = models.CharField(max_length=6, choices=(('open', 'Open'), ('close', 'Close'), ('accept', 'Accepted'), ('refuse', 'Refused')), default='open') # What happened to the request - is it still open, or accepted or closed... or whatever.
+    reason = models.TextField(default="") # If the request was refused, why was it done so.
+    active = models.BooleanField(default=True) # A request is automatically deactivated after a fixed amount of time (determined by mysettings.REQUEST_ACTIVE_INTERVAL)
+
+    class Meta:
+        verbose_name = "groupjoinrequest Table"
+        db_table = 'Network_groupjoinrequest'
     
 
 

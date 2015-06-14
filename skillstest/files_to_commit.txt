@@ -716,4 +716,20 @@ Sun, 07 Jun 2015, 14:35 HRS (IST).
 14.files_to_commit.txt
 ==================================
 
-
+Sun, 14 Jun 2015, 21:35 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.files_to_commit.txt
+==================================

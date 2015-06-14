@@ -69,8 +69,13 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.EVALUATE_RESPONSE_URL, 'skillstest.Tests.views.evaluateresponses', name='evaluateresponses'),
     url(r'%s$'%mysettings.GET_CURRENT_EVALUATION_DATA_URL, 'skillstest.Tests.views.getevaluationdetails', name='getevaluationdetails'),
     url(r'%s$'%mysettings.TEST_BULK_UPLOAD_URL, 'skillstest.Tests.views.createtestbulkupload', name='createtestbulkupload'),
+    url(r'%s$'%mysettings.SHOW_TEST_INFO_URL, 'skillstest.Tests.views.showtestinfo', name='showtestpage'),
     url(r'%s$'%mysettings.SET_VISIBILITY_URL, 'skillstest.Tests.views.setvisibility', name='setvisibility'),
 
     url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
+    url(r'%s$'%mysettings.CHECK_GRPNAME_AVAIL_URL, 'skillstest.Network.views.checkgrpnameavailability', name='creategroup'),
+    url(r'%s$'%mysettings.SEARCH_GROUP_URL, 'skillstest.Network.views.searchgroups', name='searchgroups'),
+    url(r'%s$'%mysettings.GET_GROUP_INFO_URI, 'skillstest.Network.views.getgroupinfo', name='getgroupinfo'),
+    url(r'%s$'%mysettings.SEND_JOIN_REQUEST_URL, 'skillstest.Network.views.handlejoinrequest', name='handlejoinrequest'),
 )
 

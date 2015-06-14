@@ -2740,7 +2740,7 @@ def sendtestinvitations(request):
     # record pertaining to the user and test will be entered in Tests_usertest
     # and the record in 'wouldbeuser' will be deleted.
     for email in emailslist:
-        """ This email should not be the test creator's or one of the evaluators emails."""
+        """ This email should not be the test creator's or one of the evaluator's emails."""
         if email == testobj.creator.emailid or email in testevalemailidlist:
             continue
         uobjqset = User.objects.filter(emailid=email)
@@ -4220,5 +4220,43 @@ def setvisibility(request):
         message = "Unrecognized vtype value."
     response = HttpResponse(message)
     return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showtestinfo(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    testqset = Test.objects.filter(id=testid, scope='public')
+    testobj = None
+    if testqset.__len__() > 0:
+        testobj = testqset[0]
+    jsondata = {}
+    if not testobj:
+        jsondata = { 'warning' : "<font color='#AA0000'>This owner of this test has not marked it as publicly viewable test.</font>" }
+    else:
+        try:
+            jsondata = { 'testname' : testobj.testname, 'topicname' : testobj.topicname, 'creatorname' : testobj.creator.displayname, 'testtype' : testobj.testtype, 'maxscore' : testobj.maxscore, 'passscore' : testobj.passscore, 'numchallenges' : testobj.challengecount, 'maxattemptscount' : testobj.maxattemptscount, 'attemptsinterval' : testobj.attemptsinterval, 'attemptsintervalunit' : testobj.attemptsintervalunit, 'quality' : testobj.quality, 'negativescoreallowed' : testobj.negativescoreallowed, 'warning' : '' }
+        except:
+            jsondata = { 'warning' : "<font color='#AA0000'>" + sys.exc_info()[1].__str__() + "</font>" }
+    serialized_data = json.dumps(jsondata)
+    return HttpResponse(serialized_data)
+
 
 
