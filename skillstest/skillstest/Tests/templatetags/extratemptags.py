@@ -25,7 +25,10 @@ Need this to use with the filter defined above.
 def getval(the_list, index):
     if the_list.__len__() < index:
         return ""
-    return the_list[index]
+    if the_list.__len__() > 0:
+        return the_list[index]
+    else:
+        return ""
 
 
 

@@ -731,5 +731,6 @@ Sun, 14 Jun 2015, 21:35 HRS (IST).
 11.skillstest/Network/views.py
 12.templates/network/network.html
 13.templates/network/right_panel.html
-14.files_to_commit.txt
+14.skillstest/Tests/templatetags/extratemptags.py
+15.files_to_commit.txt
 ==================================

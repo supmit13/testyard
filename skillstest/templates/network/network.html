@@ -92,20 +92,73 @@
 	    csrfform = document.getElementById(formid);
 	    csrftoken = csrfform.csrfmiddlewaretoken.value;
 	    validfrom = '{{ validfrom }}';
-	    postdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken + "&testid=" + testid + "&baseurl=" + '{{ baseurl }}' + "&txtemailslist=" + '{{ selfemailid }}' + "&validfrom=" + validfrom; // no validfrom and validtill
-	    encodedpostdata = encodeURI(postdata);
-	    progressdiv = document.getElementById('showprogress_' + ctr.toString());
-	    progressdiv.style.display = "";
-	    progressdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
-   	    //alert(encodedpostdata);
-	    senddataasync(encodedpostdata, 'POST', '{{ joinrequesturl }}');
-	    progressdiv.style = "display:none;";
-	    progressdiv.innerHTML = "";
+	    //encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken + "&testid=" + testid + "&baseurl=" + encodeURIComponent('{{ baseurl }}') + "&txtemailslist=" + encodeURIComponent('{{ selfemailid }}') + "&validfrom=" + encodeURIComponent(validfrom); // no validtill
+	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    if(testid && testid != null){
+		encodedpostdata += "&testid=" + testid;
+	    }
+	    progdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    progdiv.style = "";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    progdiv.style = "display:none";
+	    	    progdiv.innerHTML = "";
+		    closegroupdivscreen(ctr);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ joinrequesturl }}', true);
+	    xmlhttp.send(encodedpostdata);
 	}
+
+	// Function to send a gentle reminder to the group's owner to allow the 
+	// logged in user into the group.
+	function sendgentlereminder(grpid, ctr, testid){
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    if(testid && testid != null){
+		encodedpostdata += "&testid=" + testid;
+	    }
+	    progdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    progdiv.style = "";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    progdiv.style = "display:none";
+	    	    progdiv.innerHTML = "";
+		    closegroupdivscreen(ctr);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ gentlereminderurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
+	// Function to allow the user to exit from a given group
+	function grpexitrequest(grpid, ctr, testid){
+	}
+
 
 	function showgrouppage(grpmembername, grpname, csrftoken, ctr){
 	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
-	    showgroupdivarea.style.display = "";
+	    showgroupdivarea.style = "";
 	    html = "";
 	    postdata = "groupname=" + grpname + "&csrfmiddlewaretoken=" + csrftoken + "&membername=" + grpmembername;
 	    postdatauriencoded = encodeURI(postdata);
@@ -118,7 +171,6 @@
 	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	    }
 	    xmlhttp.onreadystatechange = function(){
-                //document.write(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsobj = JSON.parse(xmlhttp.responseText);
 		    html = "";
@@ -144,7 +196,21 @@
 		    }
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br>";
 		    if(jsobj.allowentry){
-		        html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			if(jsobj.alreadyrequested == '0' && jsobj.alreadyrefused == '0' && jsobj.alreadyallowed == '0' && jsobj.alreadyignored == '0'){
+		            html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			}
+			else if(jsobj.alreadyrequested == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			}
+			else if(jsobj.alreadyrefused == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			}
+			else if(jsobj.alreadyallowed == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			}
+			else if(jsobj.alreadyignored == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			}
 		    }
 		    else{
 			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ");'></span><br>";
@@ -167,7 +233,7 @@
 	    if(ispaid.checked == true){
 	    	paymentdiv = document.getElementById('paymentdiv');
 	    	// Create the HTML for innerHTML
-	    	html = "<table border='0' cellspacing='2' cellpadding='2'>";
+	    	html = "<table border='0' cellspacing='2' cellpadding='8'>";
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname'>";
 	    	{% for bankcode, bankname in availablebanks.iteritems %}
 			html += "<option value='{{ bankcode }}'>{{ bankname }}</option>";

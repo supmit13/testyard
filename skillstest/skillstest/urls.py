@@ -77,5 +77,6 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SEARCH_GROUP_URL, 'skillstest.Network.views.searchgroups', name='searchgroups'),
     url(r'%s$'%mysettings.GET_GROUP_INFO_URI, 'skillstest.Network.views.getgroupinfo', name='getgroupinfo'),
     url(r'%s$'%mysettings.SEND_JOIN_REQUEST_URL, 'skillstest.Network.views.handlejoinrequest', name='handlejoinrequest'),
+    url(r'%s$'%mysettings.SEND_GENTLE_REMINDER_URL, 'skillstest.Network.views.sendgentlereminder', name='sendgentlereminder'),
 )
 

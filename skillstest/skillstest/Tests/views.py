@@ -482,7 +482,9 @@ def manage(request):
             evaluatorlinks = ", ".join(evaluatorlinkslist)
             utqset = UserTest.objects.filter(test=tobj, emailaddr=userobj.emailid)
             if utqset.__len__() == 0:
-                utqset.append(WouldbeUsers.objects.filter(test=tobj, emailaddr=userobj.emailid))
+                wdqset = WouldbeUsers.objects.filter(test=tobj, emailaddr=userobj.emailid)
+                for wdobj in wdqset:
+                    utqset.append(wdobj)
             if utqset.__len__() == 0: # If queryset length is still 0, then there is some discrepency in code. Skip this record.
                 continue
             utobj = None

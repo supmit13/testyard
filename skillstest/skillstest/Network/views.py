@@ -24,8 +24,8 @@ import simplejson as json
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
-from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
+from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -39,6 +39,7 @@ def get_network_template_vars(userobj):
     templatevars['getgroupinfouri'] = mysettings.GET_GROUP_INFO_URI
     templatevars['showtestinfourl'] = mysettings.SHOW_TEST_INFO_URL
     templatevars['joinrequesturl'] = mysettings.SEND_JOIN_REQUEST_URL
+    templatevars['gentlereminderurl'] = mysettings.SEND_GENTLE_REMINDER_URL
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
     datepart, timepart = validfromstr.split(" ")
@@ -87,7 +88,7 @@ def network(request):
         contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(\"%s\");'>%s</a>"%(contact.id, contact.displayname)
         contacts.append(contactlink)
     for groupmember in groupmembersqset:
-        grouplink = "<a href='#/' onClick='javascript:showgrouppage(\"%s\", \"%s\");'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.groupname)
+        grouplink = "<a href='#/' onClick='javascript:managegroup(\"%s\", \"%s\");'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.groupname)
         groups.append(grouplink)
     alltopicsdict = {}
     for topic in mysettings.TEST_TOPICS:
@@ -391,6 +392,24 @@ def getgroupinfo(request):
             postdict['stars'] = postobj.stars
             grouppostslist.append(postdict)
         grpdict['posts'] = grouppostslist
+        # At max only one of the following 4 variables will have a value of '1'.
+        grpdict['alreadyrequested'] = 0
+        grpdict['alreadyrefused'] = 0
+        grpdict['alreadyallowed'] = 0
+        grpdict['alreadyignored'] = 0
+        # Check if the logged in user has already requested to be allowed in the group
+        grpjoinreqqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj, outcome='open', active=True)
+        if grpjoinreqqset.__len__() > 0:
+            grpdict['alreadyrequested'] = 1
+        grprefuseqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj, outcome='refuse')
+        if grprefuseqset.__len__() > 0:
+            grpdict['alreadyrefused'] = 1
+        grpallowedqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj, outcome='accept')
+        if grpallowedqset.__len__() > 0:
+            grpdict['alreadyallowed'] = 1
+        grpignoredqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj, outcome='close')
+        if grpignoredqset.__len__() > 0:
+            grpdict['alreadyignored'] = 1
     try:
         groupcontent = json.dumps(grpdict) # serialize json
     except:
@@ -432,6 +451,8 @@ def handlejoinrequest(request):
     joinrequest.active = True
     joinrequest.reason = ""
     # 1) Send an email to the group's owner
+    # TODO: When displaying the group's data to its owner, we would list the requests received for that group from Network_groupjoinrequest
+    # and tally the entries in Tests_usertest and Tests_wouldbeusers tables.
     groupowner = groupobj.owner
     subject = mysettings.GROUP_JOIN_REQUEST_SUBJECT%groupobj.groupname
     message = """I, %s, would like to join the group '%s' owned by you.
@@ -445,19 +466,23 @@ def handlejoinrequest(request):
         message = "Could not send email to group's owner"
         response = HttpResponse(message)
         return response
-    # 2) Send an invitation to the user for taking the qualifying test (if any)
+    # 2) Send a request to the test creator so that she/he sends an invitation to the user to take the qualifying test (if any).
     if groupobj.entrytest is not None: # The 'request' object needs to have the following params: testid, baseurl, txtemailslist, validfrom and validtill.
+        subject = "Allow me to take the test named '%s'"%groupobj.entrytest.testname
+        message = """
+            Hi,
+
+            I would like to take the test named '%s' created by you. I need to pass this test in order to 
+            become a member of a group named '%s' on TestYard. Hence, please send me an invitation to take the
+	    above mentioned test. (You would be able to send invitations for the test from "Groups You Own"
+	    ==>> <group name> ==>> "Manage Group" screen, accessible on the right panel of the "Network" tab.)
+
+	    Thanks,
+            %s"""%(groupobj.entrytest.testname, groupobj.groupname, userobj.displayname)
         try:
-            from skillstest.Tests.views import sendtestinvitations
-            response = sendtestinvitations(request)
-            successpattern = re.compile("Success", re.IGNORECASE|re.DOTALL)
-            if not successpattern.search(response.content):
-                message = "Failed to send invitation to user email Id %s"%userobj.emailid
-                response = HttpResponse(message)
-                return response
-            # If it is a paid group, payment needs to be handled after the user has cleared the test.
+            skillutils.sendemail(groupobj.entrytest.creator, subject, message, userobj.emailid)
         except:
-            message = "Could not send invitation for the test to %s: %s"%(userobj.displayname, sys.exc_info()[1].__str__())
+            message = "Could not send request for invitation to the test to %s: %s"%(userobj.displayname, sys.exc_info()[1].__str__())
             response = HttpResponse(message)
             return response
     else:
@@ -467,10 +492,109 @@ def handlejoinrequest(request):
         joinrequest.save()
     except:
         message = "Could not save the join request: %s"%sys.exc_info()[1].__str__()
-    message += "Join request sent successfully."
+        response = HttpResponse(message)
+        return response
+    message = "Join request sent successfully."
     response = HttpResponse(message)
     return response
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def sendgentlereminder(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    groupid = None
+    if request.POST.has_key('groupid'):
+        groupid = request.POST['groupid']
+    else:
+        message = error_msg('1085')
+        response = HttpResponse(message)
+        return response
+    groupqset = Group.objects.filter(id=groupid)
+    if groupqset.__len__() == 0:
+        message = error_msg('1086')
+        response = HttpResponse(message)
+        return response
+    groupobj = groupqset[0]
+    testid = None
+    testobj = None
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    grpjoinqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj)
+    grpjoinobj = None
+    if grpjoinqset.__len__() > 0:
+        grpjoinobj = grpjoinqset[0]
+    reminderflag = True
+    if grpjoinobj is not None:
+        gm = GentleReminder()
+        gm.grpjoinrequest = grpjoinobj
+        try:
+            gm.save()
+            message = "Success: Added gentle reminder in GentleReminder"
+            emailsubject = "Gentle Reminder - Please add %s in group '%s'"%(userobj.displayname, groupobj.groupname)
+            emailmessage = """
+		Hi,
+		
+		This is a gentle reminder to add me in the group named '%s'."""%groupobj.groupname
+	    if testid is not None:
+                testqset = Test.objects.filter(id=testid)
+                if testqset.__len__() > 0:
+                    testobj = testqset[0]
+                    utqset = UserTest.objects.filter(user=userobj,test=testobj, active=True, cancelled=False)
+                    if utqset.__len__() == 0:
+                        utqset = WouldbeUsers.objects.filter(user=userobj,test=testobj, active=True, cancelled=False)
+                    if utqset.__len__() == 0:
+                        emailmessage += """I would like to take the test named '%s' created by you. I need to pass this test in order to 
+                        become a member of a group named '%s' (owned by you) on TestYard. Hence, please send me an invitation to take the
+	                above mentioned test. (You would be able to send invitations for the test from 'Groups You Own' ==>> <group name>
+                        ==>> 'Manage Group' screen, accessible on the right panel of the 'Network' tab).
+                        """%(testobj.testname, groupobj.groupname)
+                    else:
+                        utobj = None
+                        for utobj in utqset:
+                            if utobj.status == 1 or utobj.status == 2:
+                                break
+                        if utobj.status == 0 or utobj.status == 1: # No gentle reminder should be sent. The user hasn't yet taken the test.
+                            reminderflag = False
+                        else:
+                            emailmessage += """I have already taken the test for entry into the group named '%s'. Once it is evaluated, it 
+                            would be possible for me to enter the group, (given that I pass the test). Could you please do the needful so that
+                            it would be possible for me to use the platform if I am eligible to enter the group.
+                            """
+            else:
+                emailmessage += """I have sent a request to you to join the group '%s'. Could you please allow me into the group so that I
+                may access its resources and participate in all conversations.
+                """%(groupobj.groupname)
+	    emailmessage += """Thanks,
+		%s
+            """%(userobj.displayname)
+            if testid and testqset.__len__() > 0:
+                if reminderflag is True:
+                    skillutils.sendemail(groupobj.entrytest.creator, emailsubject, emailmessage, userobj.emailid)
+                else:
+                    message = "You have not yet taken the test needed to be eligible to enter the group"
+                    response = HttpResponse(message)
+                    return response
+            else:
+	        skillutils.sendemail(groupobj.owner, emailsubject, emailmessage, userobj.emailid)
+            response = HttpResponse(message)
+            return response
+        except:
+            message = "Could not save record in GentleReminder. Error: %s"%sys.exc_info()[1].__str__()
+            response = HttpResponse(message)
+            return response
+    else:
+        message = "Error: Could not find matching record in GroupJoinRequest"
+        response = HttpResponse(message)
+        return response
 
 

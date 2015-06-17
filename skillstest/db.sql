@@ -521,4 +521,12 @@ create table Network_groupjoinrequest (
 	FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
 )ENGINE=Innodb;
 
+create table Network_gentlereminder (
+	id int(11) NOT NULL AUTO_INCREMENT,
+	grpjoinrequest_id int(11) NOT NULL,
+	reminderdate datetime DEFAULT NULL,
+	primary key(`id`),
+	FOREIGN KEY (`grpjoinrequest_id`) REFERENCES `Network_groupjoinrequest` (`id`)
+)ENGINE=Innodb;
+
 COMMIT;

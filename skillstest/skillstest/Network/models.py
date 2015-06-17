@@ -149,5 +149,11 @@ class GroupJoinRequest(models.Model):
         verbose_name = "groupjoinrequest Table"
         db_table = 'Network_groupjoinrequest'
     
+class GentleReminder(models.Model):
+    grpjoinrequest = models.ForeignKey(GroupJoinRequest, related_name="+", null=False, blank=False)
+    reminderdate = models.DateTimeField(auto_now=True, default=None) # Date and time of sending the reminder
 
+    class Meta:
+        verbose_name = "gentlereminder Table"
+        db_table = 'Network_gentlereminder'
 

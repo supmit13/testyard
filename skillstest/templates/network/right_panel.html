@@ -21,10 +21,10 @@
 
 		</form>
 		</li>
-	
-		<li><h2>Your Groups</h2>
+
+		<li><h2>Groups You Own</h2>
 		{% if groups|length == 0 %}
-		  <font color='#0000AA' size=-1>You have not joined any group yet.</font>
+		  <font color='#0000AA' size=-1>You do not own any group yet.</font>
 		{% endif %}
 		<ul>
 		{% for grp in groups %}
@@ -34,9 +34,9 @@
 
 		</li>
 
-	  	<li class="linkcat"><h2>Your Connections</h2>
+	  	<li class="linkcat"><h2>Connections You Made</h2>
 		{% if connections|length == 0 %}
-		  <font color='#0000AA' size=-1>You have not added any contacts yet.</font>
+		  <font color='#0000AA' size=-1>You have not made any connections yet.</font>
 		{% endif %}
 		<ul>
 		{% for conn in connections %}
@@ -47,7 +47,7 @@
 
 
 		</ul>	
-		
+
 		</div>
 
 		<!-- ### Sidebar End ### -->
