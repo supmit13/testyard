@@ -40,6 +40,8 @@ def get_network_template_vars(userobj):
     templatevars['showtestinfourl'] = mysettings.SHOW_TEST_INFO_URL
     templatevars['joinrequesturl'] = mysettings.SEND_JOIN_REQUEST_URL
     templatevars['gentlereminderurl'] = mysettings.SEND_GENTLE_REMINDER_URL
+    templatevars['getgroupdataurl'] = mysettings.GET_GROUP_DATA_URL
+    templatevars['grpimguploadurl'] = mysettings.GROUP_IMG_UPLOAD_URL + '?groupname='
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
     datepart, timepart = validfromstr.split(" ")
@@ -85,10 +87,10 @@ def network(request):
     contacts = []
     groups = []
     for contact in contactsqset:
-        contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(\"%s\");'>%s</a>"%(contact.id, contact.displayname)
+        contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a>"%(contact.id, contact.displayname)
         contacts.append(contactlink)
     for groupmember in groupmembersqset:
-        grouplink = "<a href='#/' onClick='javascript:managegroup(\"%s\", \"%s\");'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.groupname)
+        grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.groupname)
         groups.append(grouplink)
     alltopicsdict = {}
     for topic in mysettings.TEST_TOPICS:
@@ -99,6 +101,8 @@ def network(request):
         topicunderscored = topicobj.topicname.replace(" ", "_")
         alltopicsdict[topicunderscored] = topicobj.topicname
     contextdict = { 'displayname' : userobj.displayname, 'msg' : '<b><i>it is social networking time!</i></b>', 'connections' : contacts, 'groups' : groups, 'topics' : alltopicsdict }
+    contextdict['image_height'] = mysettings.PROFILE_PHOTO_HEIGHT
+    contextdict['image_width'] = mysettings.PROFILE_PHOTO_WIDTH
     inc_context = skillutils.includedtemplatevars("Network", request) # Since this is the 'Network' page for the user.
     for inc_key in inc_context.keys():
         contextdict[inc_key] = inc_context[inc_key]
@@ -569,7 +573,7 @@ def sendgentlereminder(request):
                             emailmessage += """I have already taken the test for entry into the group named '%s'. Once it is evaluated, it 
                             would be possible for me to enter the group, (given that I pass the test). Could you please do the needful so that
                             it would be possible for me to use the platform if I am eligible to enter the group.
-                            """
+                            """%(groupobj.groupname)
             else:
                 emailmessage += """I have sent a request to you to join the group '%s'. Could you please allow me into the group so that I
                 may access its resources and participate in all conversations.
@@ -596,5 +600,162 @@ def sendgentlereminder(request):
         message = "Error: Could not find matching record in GroupJoinRequest"
         response = HttpResponse(message)
         return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getgroupdata(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    groupmembername, groupname = None, None
+    if request.POST.has_key('membername'):
+        groupmembername = request.POST['membername']
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    if not groupmembername or not groupname: # if either of the variables is None, we will set a message and return
+        message = error_msg('1087')
+        response = HttpResponse(message)
+        return response
+    # All is well if we are here... extract data from Network_group
+    grpobj = None
+    grpqset = None
+    try:
+        grpqset = Group.objects.filter(groupname=groupname)
+    except:
+        print "Error finding the requested group: %s"%(sys.exc_info()[1].__str__())
+        message = error_msg('1089')
+        response = HttpResponse(message)
+    if not grpqset or grpqset.__len__() == 0:
+        message = error_msg('1088')
+        response = HttpResponse(message)
+        return response
+    grpobj = grpqset[0]
+    contextdict = {}
+    contextdict['groupname'] = grpobj.groupname
+    contextdict['tagline'] = grpobj.tagline
+    contextdict['description'] = grpobj.description
+    contextdict['ownedby'] = grpobj.owner.firstname + " " + grpobj.owner.middlename + " " + grpobj.owner.lastname + " (" + grpobj.owner.displayname + ") "
+    if grpobj.groupimagefile is not None:
+        contextdict['groupimagefile'] = grpobj.groupimagefile
+    else:
+        contextdict['groupimagefile'] = "static/images/nopic.png"
+    contextdict['basedontopic'] = grpobj.basedontopic
+    topicsdict = {}
+    for topicname in mysettings.TEST_TOPICS:
+        topickey = topicname.replace(" ", "_")
+        topicsdict[topickey] = topicname
+    topicsqset = Topic.objects.filter(user=userobj)
+    for topicobj in topicsqset:
+        topicname = topicobj.topicname
+        topickey = topicname.replace(" ", "_")
+        topicsdict[topickey] = topicname
+    contextdict['alltopics'] = topicsdict
+    contextdict['memberscount'] = grpobj.memberscount
+    contextdict['maxmemberslimit'] = grpobj.maxmemberslimit
+    contextdict['grouptype'] = grpobj.grouptype
+    allgrptypesdict = {}
+    for grptypecode in mysettings.GROUP_TYPES_DICT.keys():
+        allgrptypesdict[grptypecode] = mysettings.GROUP_TYPES_DICT[grptypecode]
+    contextdict['allgrouptypes'] = allgrptypesdict
+    contextdict['allowentry'] = grpobj.allowentry
+    contextdict['status'] = grpobj.status
+    contextdict['adminremarks'] = grpobj.adminremarks
+    contextdict['stars'] = grpobj.stars
+    contextdict['ispaid'] = grpobj.ispaid
+    if grpobj.ispaid:
+        ownerbankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj)
+        ownerbankacctobj = ownerbankacctqset[0] # Expect to have only one account registered for the user.
+        contextdict['bankname'] = ownerbankacctobj.bankname
+        contextdict['bankbranch'] = ownerbankacctobj.bankbranch
+        contextdict['accountnumber'] = ownerbankacctobj.accountnumber
+        contextdict['ifsccode'] = ownerbankacctobj.ifsccode
+        contextdict['accountownername'] = ownerbankacctobj.accountownername
+    contextdict['testname'] = None
+    if grpobj.entrytest:
+        contextdict['testname'] = grpobj.entrytest.testname
+    if grpobj.ispaid:
+        contextdict['entryfee'] = grpobj.entryfee
+    # Is the user the owner of this group? If so, we will need to display all the join requests to the group.
+    # The owner (user) should be able to review the join requests and selectively allow some of them into the group.
+    isowner = False
+    if groupmembername == grpobj.owner.displayname:
+        isowner = True
+    contextdict['userisowner'] = isowner
+    if isowner is True:
+        allmembersqset = GroupMember.objects.filter(group=grpobj)
+        contextdict['groupmembers'] = tuple(allmembersqset) # should be immutable
+    grppostsqset = Post.objects.filter(posttargetgroup=grpobj)
+    contextdict['groupposts'] = tuple(grppostsqset) # should be immutable
+    if isowner is True:
+        joinreqqset = GroupJoinRequest.objects.filter(group=grpobj)
+        contextdict['joinrequests'] = tuple(joinreqqset) # should be immutable
+    if grpobj.ispaid:
+        bankacctqset = OwnerBankAccount.objects.filter(groupowner=grpobj.owner)
+        contextdict['ownerbankaccts'] = tuple(bankacctqset) # should be immutable
+    alltestsownedqset = Test.objects.filter(creator=userobj)
+    alltestsowned = {}
+    for ownedtestobj in alltestsownedqset:
+        alltestsowned[ownedtestobj.id] = ownedtestobj.testname
+    contextdict['alltestsowned'] = alltestsowned # should be immutable
+    # Render content using 'contextdict'
+    tmpl = get_template("network/managegroups.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    managegroupshtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        managegroupshtml = managegroupshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(managegroupshtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def groupimgupload(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    query_string = request.META['QUERY_STRING']
+    paramkeyval = query_string.split("=")
+    groupname = ""
+    groupobj = None
+    if paramkeyval[0] == 'groupname':
+        groupname = paramkeyval[1]
+        groupqset = Group.objects.filter(groupname=groupname)
+        if groupqset.__len__() == 0:
+            message = error_msg('1088')
+            response = HttpResponse(message)
+            return response
+        groupobj = groupqset[0]
+    if request.FILES.has_key('profpic'):
+        grpimgpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "groups" + os.path.sep + groupname
+        imagefilename = request.FILES['profpic'].name.split(".")[0]
+        fpath, message, profpic = skillutils.handleuploadedfile2(request.FILES['profpic'], grpimgpath, imagefilename)
+        groupobj.groupimagefile = profpic
+        try:
+            groupobj.save()
+            message = "success"
+        except:
+            message = error_msg('1041')
+    else:
+        message = "failed"
+    return HttpResponse(message)
+
+
+
+
+
 
 

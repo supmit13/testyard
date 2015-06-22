@@ -109,7 +109,6 @@ function uploader(viewurl, csrftoken){
 function uploadimage(){
   var targeturl = document.profimageuploadform.action;
   var postdata = new FormData(document.forms.namedItem("profimageuploadform"));
-  //alert(postdata);
   var xmlhttp;
   if (window.XMLHttpRequest){
     xmlhttp=new XMLHttpRequest();

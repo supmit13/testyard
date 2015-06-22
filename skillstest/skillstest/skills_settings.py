@@ -131,6 +131,8 @@ SEARCH_GROUP_URL = "skillstest/network/group/search"
 GET_GROUP_INFO_URI = "skillstest/network/group/getinfo/"
 SEND_JOIN_REQUEST_URL = "skillstest/network/group/sendjoinrequest/"
 SEND_GENTLE_REMINDER_URL = "skillstest/network/group/sendgentlereminder/"
+GET_GROUP_DATA_URL = "skillstest/network/group/groupdata/"
+GROUP_IMG_UPLOAD_URL = "skillstest/network/group/imgupload/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

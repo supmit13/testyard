@@ -224,6 +224,29 @@
 	}
 
 
+	function managegroup(membername, groupname){
+	    var xmlhttp;
+	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    encodedpostdata = encodeURI(postdata);
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    screendiv = document.getElementById('transscreens');
+		    groupdatahtml = xmlhttp.responseText;
+		    //alert(groupdatahtml);
+		    screendiv.innerHTML = groupdatahtml;
+		    screendiv.style.display = "";
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
 	function showconnectionsprofile(connid){
 	}
 
@@ -367,7 +390,7 @@
 		}
 	    }
 	    ////// Input validation ends here. If we have come thus far, the input is good enough!
-	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline;
+	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline + "&grouptype=" + grouptype;
 	    if(ispaid.checked == true){
 		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee;
 	    }
@@ -531,6 +554,91 @@
 	function displayaddcontactscreen(){
 	}
 
+
+	function savesettings(){
+	}
+
+
+	function closescreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.innerHTML = "";
+	    screendiv.style.display = "none";
+	}
+
+
+	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, adminremarks, testname, grpname, bankname, bankbranch, acctname, acctnum, ifsccode){
+	    openclosediv = document.getElementById('openclose');
+	    paramspaneldiv = document.getElementById('paramspanel');
+	    openpattern = new RegExp("Open");
+	    openclosecontent = openclosediv.innerHTML;
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+ 	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + testname + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
+		if(!grpimgfile){
+		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
+		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='static/images/nopic.png' height='{{image_height}}' width='{{image_width}}' alt='Group Image' id='groupimage'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
+		}
+		else{
+		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
+		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='media/{{displayname}}/groups/" + grpname + "/" + grpimgfile + "' height='{{image_height}}' width='{{image_width}}'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Change/Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
+		}
+		{% for topic in alltopics %}
+		    topickey = "{{topic}}".replace(" ", "_");
+		    if("{{topic}}" == basedontopic){
+			html += "<option value='" + topickey + "' selected>{{topic}}</option>";
+		    }
+		    else{
+			html += "<option value='" + topickey + "'>{{topic}}</option>";
+		    }
+		{% endfor %}
+                html += "</select></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Members Count</font>:</td><td nowrap> <font size=-1 color='#0000AA' style='font-weight: bold'>" + memberscount + "</font></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Max Members Limit</font>:</td><td nowrap> <input type='text' name='maxmemberslimit' id='maxmemberslimit' value='" + maxmemberslimit + "'></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Type</font>:</td><td nowrap> <select name='grouptypes'>";
+		{% for grpkey, grpval in grouptypes.iteritems %}
+		    if("{{grpkey}}" == grouptype){
+			html += "<option value='{{grpkey}}' selected>{{grpval}}</option>";
+		    }
+		    else{
+			html += "<option value='{{grpkey}}'>{{grpval}}</option>";
+		    }
+		{% endfor %}
+		html += "</select></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Allow Entry</font>:</td>";
+		if(allowentry){
+		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1' checked>";
+		}
+		else{
+		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1'>";
+		}
+		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Paid</font>: </td>";
+		if(ispaid){
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' checked>";
+		}
+		else{
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'>";
+		}
+		html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
+		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
+    		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
+		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Test</font>: </td><td nowrap><select name='alltestsowned' id='alltestsowned'>";
+		{% for tid, tname in alltests.iteritems %}
+		    if("{{tname}}" == testname){
+			html += "<option value='{{tid}}' selected>{{tname}}</option>";
+		    }
+		    else{
+			html += "<option value='{{tid}}'>{{tname}}</option>";
+		    }
+		{% endfor %}
+		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td></tr>";
+		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center></form>";
+		paramspaneldiv.style.display = "";
+	 	paramspaneldiv.innerHTML = html;
+	    }
+	    else{
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + testname + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
+		paramspaneldiv.innerHTML = "";
+		paramspaneldiv.style.display = "none";
+	    }
+	}
+	
 	</script>
 	
 		{% include "inc/mission_statement.html" %}

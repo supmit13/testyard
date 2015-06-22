@@ -82,6 +82,9 @@ error_codes = { \
         '1084' : 'Group with the name "%s" doesn\'t exist.',\
         '1085' : 'No group id found in request',\
         '1086' : 'Group with the given id does not exist.',\
+        '1087' : 'One or more of the required parameters (groupmembername and groupname) is missing.',\
+        '1088' : 'The group with the given name does not exist.',\
+        '1089' : 'An unknown error occurred while trying to find the given group',\
     }
 
 def error_msg(code):

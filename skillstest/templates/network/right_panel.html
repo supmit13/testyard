@@ -13,16 +13,17 @@
 		<ul>
 
 		<li><h2>Search</h2>
-		<form id="searchform" method="get" action="#">
+		<form id="searchform" name="searchform" method="post" action="#">
 			<div>
 			<input type="text" value="" name="s" id="searchfield" />
 			<input type="button" id="searchsubmit" value="Search" />
+			{% csrf_token %}
 			</div>
 
 		</form>
 		</li>
 
-		<li><h2>Groups You Own</h2>
+		<li><h2>Groups Subscribed by You</h2>
 		{% if groups|length == 0 %}
 		  <font color='#0000AA' size=-1>You do not own any group yet.</font>
 		{% endif %}
