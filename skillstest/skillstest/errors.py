@@ -85,6 +85,13 @@ error_codes = { \
         '1087' : 'One or more of the required parameters (groupmembername and groupname) is missing.',\
         '1088' : 'The group with the given name does not exist.',\
         '1089' : 'An unknown error occurred while trying to find the given group',\
+        '1090' : 'Could not create/edit the bankaccount object or groupobj or both.',\
+        '1091' : 'Successfully update the group and bank account info', \
+        '1092' : 'Could not add member to the group',\
+        '1093' : 'You have been added to the group successfully', \
+        '1094' : 'Blocked from group as user has exceeded the maximum number of attempts of taking the test', \
+        '1095' : 'Could not send email to group\'s owner',\
+        '1096' : 'Could not send invitation of the entry test to the user',\
     }
 
 def error_msg(code):

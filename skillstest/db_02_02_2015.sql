@@ -669,6 +669,13 @@ create table Network_gentlereminder (
 	FOREIGN KEY (`grpjoinrequest_id`) REFERENCES `Network_groupjoinrequest` (`id`)
 )ENGINE=Innodb;
 
+alter table Network_ownerbankaccount add column group_id INT(11) NOT NULL;
+
+alter table Network_group add column max_tries_allowed INT(11) NOT NULL;
+
+alter table Network_group add column require_owner_permission BOOLEAN DEFAULT FALSE;
+
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -28,8 +28,10 @@ class Group(models.Model):
     stars = models.IntegerField(default=0) # Indicates the popularity of the group.
     # TODO: Identify the set of criteria for which a group might gain or lose stars.
     entrytest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default=None) # A group might have an entry test. Users who pass the test would be allowed to be members of the group. Default is None (no test).
+    max_tries_allowed = models.IntegerField(default=3) # Number of tries allowed before the user is no longer considered for the test.
     ispaid = models.BooleanField(default=False) # Whether entry into the group is paid or not.
     entryfee = models.FloatField(default=0.0) # If paid, then this will contain the entry fee for the group.
+    require_owner_permission = models.BooleanField(null=False, blank=False, default=False) # Require owner's permission before allowing any user to become a member.
 
     class Meta:
         verbose_name = "Group Table"
@@ -125,6 +127,7 @@ class ConnectionInvitation(models.Model):
 
 class OwnerBankAccount(models.Model):
     groupowner = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    group = models.ForeignKey(Group, null=False, blank=False)
     bankname = models.CharField(max_length=255, null=False, blank=False)
     bankbranch = models.CharField(max_length=255, null=False, blank=False)
     accountnumber = models.CharField(max_length=50, null=False, blank=False)

@@ -160,6 +160,9 @@ class UserTest(models.Model):
     stringid = models.CharField(max_length=15, null=False)
     evaluator_comment = models.TextField(null=True, blank=True, default="")
     first_eval_timestamp = models.IntegerField(default=None) # Instant at which you evaluate the candidate for the first time.
+    visibility = models.IntegerField(default=0, choices=((0, 'Private'), (1, 'Protected'), (2, 'Public')))
+    # Tests with visibility set to 'Private' cannot be viewed by anyone, 'Protected' tests are visible only to members within the user's 
+    # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
 
 
     class Meta:
@@ -247,7 +250,7 @@ class UserResponse(models.Model):
         verbose_name = "UserResponse Table"
         db_table = 'Tests_userresponse'
 
-        
+
     def __unicode__(self):
         return "%s"%(self.answer)
 
@@ -321,7 +324,9 @@ class WouldbeUsers(models.Model):
     stringid = models.CharField(max_length=15, null=False)
     evaluator_comment = models.TextField(null=True, blank=True, default="")
     first_eval_timestamp = models.IntegerField(default=None) # Instant at which you evaluate the candidate for the first time.
-    
+    visibility = models.IntegerField(default=0, choices=((0, 'Private'), (1, 'Protected'), (2, 'Public'))) 
+    # Tests with visibility set to 'Private' cannot be viewed by anyone, 'Protected' tests are visible only to members within the user's 
+    # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
 
     class Meta:
         verbose_name = "wouldbeusers Table"

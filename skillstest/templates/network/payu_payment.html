@@ -1,0 +1,18 @@
+
+
+<form method="post" action="https://secure.payu.com/api/v2_1/orders">
+    <input type="hidden" name="continueUrl" value="http://{{hosturl}}/continue" >
+    <input type="hidden" name="currencyCode" value="PLN" >
+    <input type="hidden" name="customerIp" value="{{ customer_ip }}" >
+    <input type="hidden" name="description" value="{{order_desc}}" >
+    <input type="hidden" name="merchantPosId" value="{{posId}}" >    
+    <input type="hidden" name="notifyUrl" value="http://{{hosturl}}/notify" >
+    <input type="hidden" name="products[0].name" value="{{groupname}}" >
+    <input type="hidden" name="products[0].quantity" value="1" >
+    <input type="hidden" name="products[0].unitPrice" value="{{subscription_amt}}" >
+    <input type="hidden" name="totalAmount" value="{{total_amt}}" >
+    <input type="hidden" name="OpenPayu-Signature" value="sender={{posId}};algorithm=MD5;signature=5fa8d94670eee6d182e930a0ccf9c2c6" >
+    <button type="submit" formtarget="_blank" >Pay with PayU</button>
+</form >
+
+

@@ -133,6 +133,7 @@ SEND_JOIN_REQUEST_URL = "skillstest/network/group/sendjoinrequest/"
 SEND_GENTLE_REMINDER_URL = "skillstest/network/group/sendgentlereminder/"
 GET_GROUP_DATA_URL = "skillstest/network/group/groupdata/"
 GROUP_IMG_UPLOAD_URL = "skillstest/network/group/imgupload/"
+SAVE_GROUP_DATA_URL = "skillstest/network/group/save/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -278,4 +279,7 @@ BANKS_DICT = {  'SBI_INDIA' : 'State Bank of India', \
 
 REQUEST_ACTIVE_INTERVAL = 90 # Amount of time (in days) for which a request to join a group or to connect with another user remains valid.
 GROUP_JOIN_REQUEST_SUBJECT = "Testyard user has requested your permission to join the group '%s'"
+
+PAYU_POS_ID = 145227
+PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
 

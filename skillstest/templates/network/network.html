@@ -1,6 +1,5 @@
 		{% include "inc/html_head.html" %}
 
-
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -11,6 +10,12 @@
 	  background-color:#669999;
 	  color:#FFFFFF;
 	  position:absolute; top:250px; left:0px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+	.tbl-fixed-width{
+    	  table-layout:fixed;
+    	  width: 100%;
+	  word-wrap: break-word;
 	}
 	</style>
 
@@ -62,7 +67,7 @@
 		    if(jsondata['warning'] == ""){
 			html += "<center><h3>" + jsondata['testname'] + "</h3></center>";
 			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Topic: " + jsondata['topicname'] + "</font><br>";
-			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Owner: " + jsondata['topicname'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Owner: " + jsondata['creatorname'] + "</font><br>";
 			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Type: " + jsondata['testtype'] + "</font><br>";
 			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Max Score: " + jsondata['maxscore'] + "</font><br>";
 			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Pass Score: " + jsondata['passscore'] + "</font><br>";
@@ -226,7 +231,7 @@
 
 	function managegroup(membername, groupname){
 	    var xmlhttp;
-	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value;
 	    encodedpostdata = encodeURI(postdata);
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();
@@ -290,6 +295,7 @@
 		    html += "<option value='{{ testid }}'>{{ testname }}</option>";
 		{% endfor %}
 		html += "</select></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Maximum number of attempts allowed:</font></td><td nowrap><input type='text' name='max_test_attempts' value='3' size='5' maxlength='10'></td></tr>";
 	        html += "</table>";
 		clrtestdiv.style.display = "";
 		clrtestdiv.innerHTML = html;
@@ -309,6 +315,7 @@
 	    ispaid = document.getElementById('ispaid');
 	    isactive = document.getElementById('isactive');
 	    allowentry = document.getElementById('allowentry');
+	    require_owner_perms = document.frmcreategroup.require_owner_perms;
 	    cleartest = document.getElementById('cleartest');
 	    grouptype = document.frmcreategroup.grouptype.value;
 	    maxmemberscount = document.frmcreategroup.maxmemberscount.value;
@@ -320,6 +327,7 @@
 	    acctownername = "";
 	    acctnumber = "";
 	    testtoclear = "";
+	    maxtestattempts = "";
  	    entryfee = "";
 	    if(ispaid.checked == true){
 		bankname = document.frmcreategroup.bankname.value;
@@ -331,6 +339,7 @@
 	    }
 	    if(cleartest.checked == true){
 		testtoclear = document.frmcreategroup.testtoclear.value;
+		maxtestattempts = document.frmcreategroup.max_test_attempts.value;
 	    }
 	    ////// Validate the input here
 	    alphanumericpattern = new RegExp("^([\\w\\d]+)$");
@@ -355,6 +364,12 @@
 		alert("Max Members Count should have a numeric value.");
 		document.frmcreategroup.maxmemberscount.value = "";
 		document.frmcreategroup.maxmemberscount.focus();
+		return(false);
+	    }
+	    if(!numericpattern.test(maxtestattempts)){
+		alert("Max Attempts Count should have a numeric value.");
+		document.frmcreategroup.max_test_attempts.value = "";
+		document.frmcreategroup.max_test_attempts.focus();
 		return(false);
 	    }
 	    if(ispaid.checked == true){
@@ -398,13 +413,16 @@
 		postdata += "&ispaid=0";
 	    }
 	    if(cleartest.checked == true){
-		postdata += "&cleartest=1&testtoclear=" + testtoclear;
+		postdata += "&cleartest=1&testtoclear=" + testtoclear + "&max_test_attempts=" + maxtestattempts;
 	    }
 	    if(isactive.checked == true){
 		postdata += "&isactive=1";
 	    }
 	    if(allowentry.checked == true){
 		postdata += "&allowentry=1";
+	    }
+	    if(require_owner_perms.checked == true){
+		postdata += "&require_owner_perms=1";
 	    }
 	    postdata += "&csrfmiddlewaretoken=" + csrftoken;
 	    postdata = encodeURI(postdata);
@@ -474,6 +492,7 @@
 	    html += "</select><br>";
 	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked><br>";
 	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked><br>";
+   	    //html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1'><br>";
 	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5><br>";
 	    html += "<font color='#0000AA' size=-1>Does entry to the group require the user to clear a test:&nbsp;</font><input type='checkbox' name='cleartest' id='cleartest' value='1' onChange='javascript:showtests();'><br><div id='cleartestdiv' style=''></div>";
 	    html += "</td></tr>";
@@ -514,13 +533,13 @@
 			searchresultarea.innerHTML = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
 			return(0);
 		    }
-		    html = "<table border=0 cellspacing=2 cellpadding=5 width='95%'>";
+		    html = "<table border=0 cellspacing=2 cellpadding=5 width='95%' class='tbl-fixed-width'>";
 		    for(var j=0; j < jsonresult.length; j++){
 			if(j % 2 == 0){
-			    html += "<tr bgcolor='#66CCFF'><td nowrap><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			    html += "<tr bgcolor='#66CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
 			}
 			else{
-			    html += "<tr bgcolor='#99CCFF'><td nowrap><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</font></a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			    html += "<tr bgcolor='#99CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</font></a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
 			}
 		    }
 		    html += "</table>";
@@ -554,8 +573,29 @@
 	function displayaddcontactscreen(){
 	}
 
-
+	// Save data pertaining to group settings.
+	// TODO: Add input validation
 	function savesettings(){
+	    settingselements = document.frmsettings.elements;
+	    postdata = "";
+	    for(var i=0; i < settingselements.length; i++){
+		if(settingselements[i].name == "adminremarks" || settingselements[i].name == "bankname" || settingselements[i].name == "bankbranch" || settingselements[i].name == "acctname"){
+		    postdata += settingselements[i].name + "=" + encodeURI(settingselements[i].value) + "&";
+		}
+		else{
+		    if(settingselements[i].name == "allowentry" || settingselements[i].name == "ispaid"){
+			if(settingselements[i].checked == true){
+		    	    postdata += settingselements[i].name + "=" + settingselements[i].value + "&";
+			}
+		    }
+		    else{
+			postdata += settingselements[i].name + "=" + settingselements[i].value + "&";
+		    }
+		}
+	    }
+	    //alert(postdata);
+	    targetUrl = '{{savegrpdataurl}}';
+	    senddataasync(postdata, 'POST', targetUrl);
 	}
 
 
@@ -563,6 +603,25 @@
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.innerHTML = "";
 	    screendiv.style.display = "none";
+	}
+
+	function changefinancialcontrolstate(ctrl){
+	    if(ctrl.checked == false){
+		document.frmsettings.entryfee.disabled = true;
+		document.frmsettings.bankname.disabled = true;
+		document.frmsettings.bankbranch.disabled = true;
+		document.frmsettings.acctname.disabled = true;
+		document.frmsettings.acctnum.disabled = true;
+		document.frmsettings.ifsccode.disabled = true;
+	    }
+            else{
+		document.frmsettings.entryfee.disabled = false;
+		document.frmsettings.bankname.disabled = false;
+		document.frmsettings.bankbranch.disabled = false;
+		document.frmsettings.acctname.disabled = false;
+		document.frmsettings.acctnum.disabled = false;
+		document.frmsettings.ifsccode.disabled = false;
+	    }
 	}
 
 
@@ -601,23 +660,31 @@
 		    }
 		{% endfor %}
 		html += "</select></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Allow Entry</font>:</td>";
-		if(allowentry){
+		if(allowentry == 'True'){
 		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1' checked>";
 		}
 		else{
 		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1'>";
 		}
 		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Paid</font>: </td>";
-		if(ispaid){
-		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' checked>";
+		if(ispaid == 'True'){
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' checked onChange='javascript:changefinancialcontrolstate(this);'>";
 		}
 		else{
-		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'>";
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'  onChange='javascript:changefinancialcontrolstate(this);'>";
 		}
-		html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
-		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
-		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
-    		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
+		if(ispaid == 'True'){
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
+    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
+		}
+		else{
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
+    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
+		}
 		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Test</font>: </td><td nowrap><select name='alltestsowned' id='alltestsowned'>";
 		{% for tid, tname in alltests.iteritems %}
 		    if("{{tname}}" == testname){
@@ -628,7 +695,7 @@
 		    }
 		{% endfor %}
 		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td></tr>";
-		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center></form>";
+		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
 		paramspaneldiv.style.display = "";
 	 	paramspaneldiv.innerHTML = html;
 	    }

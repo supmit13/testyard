@@ -2639,6 +2639,7 @@ def sendtestinvitations(request):
     testid = request.POST['testid']
     baseurl = request.POST['baseurl']
     emailsliststr = request.POST['txtemailslist']
+    joingroupflag = request.POST.get('joingroupflag', None)
     emailsliststr = re.sub(re.compile(r"%20", re.MULTILINE|re.DOTALL), mysettings.HEXCODE_CHAR_MAP['%20'], emailsliststr) # replace for whitespace
     emailsliststr = re.sub(re.compile(r"%2C", re.MULTILINE|re.DOTALL), ",", emailsliststr) # replace for comma
     emailslist = emailsliststr.split(",")
@@ -2657,8 +2658,9 @@ def sendtestinvitations(request):
         response = HttpResponse(message)
         return response
     # Check if the user is the creator of this test. Only creators of a test 
-    # are allowed to send invitations to candidates.
-    if testobj.creator.id != userobj.id:
+    # are allowed to send invitations to candidates (except when an invitation 
+    # needs to be sent automatically due to a user's need to join a group).
+    if testobj.creator.id != userobj.id and not joingroupflag:
         message = "Error: " + error_msg('1070')
         response = HttpResponse(message)
         return response
