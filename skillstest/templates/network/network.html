@@ -30,7 +30,7 @@
 	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 	    }
 	    xmlhttp.onreadystatechange = function(){
-                //document.write(xmlhttp.responseText);
+                //alert(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    alert(xmlhttp.responseText);
 	        }
@@ -92,16 +92,12 @@
  	}
 
 
-	function sendjoinrequest(grpid, ctr, testid){
+	function sendjoinrequest(grpid, ctr){
 	    formid = "csrfform_" + ctr;
 	    csrfform = document.getElementById(formid);
 	    csrftoken = csrfform.csrfmiddlewaretoken.value;
 	    validfrom = '{{ validfrom }}';
-	    //encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken + "&testid=" + testid + "&baseurl=" + encodeURIComponent('{{ baseurl }}') + "&txtemailslist=" + encodeURIComponent('{{ selfemailid }}') + "&validfrom=" + encodeURIComponent(validfrom); // no validtill
 	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
-	    if(testid && testid != null){
-		encodedpostdata += "&testid=" + testid;
-	    }
 	    progdiv = document.getElementById('showprogress_' + ctr.toString());
 	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
 	    progdiv.style = "";
@@ -193,28 +189,22 @@
 		    if(jsobj.ispaid){
 		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.entryfee + "</font></span><br>";
 		    }
-		    if(jsobj.entrytestid){
-		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Do I need to pass a test in order to join this group: <a href='#/' onClick='javascript:showtestinfo(\"" + jsobj.entrytestid + "\", \"" + ctr + "\");'>" + jsobj.entrytestname + "</a></font></span><br>";
-		    }
-		    else{
-			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Do I need to pass a test in order to join this group: No </font></span><br>";
-		    }
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br>";
 		    if(jsobj.allowentry){
 			if(jsobj.alreadyrequested == '0' && jsobj.alreadyrefused == '0' && jsobj.alreadyallowed == '0' && jsobj.alreadyignored == '0'){
-		            html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+		            html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
 			else if(jsobj.alreadyrequested == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
 			else if(jsobj.alreadyrefused == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
 			else if(jsobj.alreadyallowed == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
 			else if(jsobj.alreadyignored == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entrytestid + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
 		    }
 		    else{
@@ -229,9 +219,10 @@
 	}
 
 
-	function managegroup(membername, groupname){
+	function managegroup(membername, groupname, currency){
 	    var xmlhttp;
-	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value;
+	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency;
+	    //alert(postdata);
 	    encodedpostdata = encodeURI(postdata);
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();
@@ -271,38 +262,27 @@
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' size='10'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' max_length='255' size='20'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' max_length='255' size='20'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Currency: </font></td><td><select name='currency'>";
+		{% for currency in allcurrencies %}
+		    {% if currency == defaultcurrency %}
+		        html += "<option value='{{currency}}' selected>{{currency}}</option>";
+		    {% else %}
+			html += "<option value='{{currency}}'>{{currency}}</option>";
+		    {% endif %}
+		{% endfor %}
+		html += "</select></td></tr>";
 		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee: </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
 	    	html += "</table>";
+		document.frmcreategroup.require_owner_perms.checked = false;
+		document.frmcreategroup.require_owner_perms.disabled = true;
 	    	paymentdiv.style.display = "";
 	    	paymentdiv.innerHTML = html;
 	    }
 	    else{
+		document.frmcreategroup.require_owner_perms.disabled = false;
 		paymentdiv = document.getElementById('paymentdiv');
 		paymentdiv.style.display = "none";
 	    	paymentdiv.innerHTML = "";
-	    }
-	}
-
-
-	function showtests(){
-	    clrtest = document.getElementById('cleartest');
-	    clrtestdiv = document.getElementById('cleartestdiv');
-	    html = "";
-	    if(clrtest.checked == true){
-		html += "<table border=0 cellspacing=2 cellpadding=2>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Select Test to Clear Before Allowing Users to Enter:</font></td><td nowrap><select name='testtoclear' id='testtoclear'>";
-		{% for testid, testname in alltests.iteritems %}
-		    html += "<option value='{{ testid }}'>{{ testname }}</option>";
-		{% endfor %}
-		html += "</select></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Maximum number of attempts allowed:</font></td><td nowrap><input type='text' name='max_test_attempts' value='3' size='5' maxlength='10'></td></tr>";
-	        html += "</table>";
-		clrtestdiv.style.display = "";
-		clrtestdiv.innerHTML = html;
-	    }
-	    else{
-		clrtestdiv.style.display = "none";
-		clrtestdiv.innerHTML = "";
 	    }
 	}
 
@@ -316,7 +296,6 @@
 	    isactive = document.getElementById('isactive');
 	    allowentry = document.getElementById('allowentry');
 	    require_owner_perms = document.frmcreategroup.require_owner_perms;
-	    cleartest = document.getElementById('cleartest');
 	    grouptype = document.frmcreategroup.grouptype.value;
 	    maxmemberscount = document.frmcreategroup.maxmemberscount.value;
 	    csrftoken = document.frmcreategroup.csrfmiddlewaretoken.value;
@@ -326,9 +305,8 @@
 	    ifsccode = "";
 	    acctownername = "";
 	    acctnumber = "";
-	    testtoclear = "";
-	    maxtestattempts = "";
  	    entryfee = "";
+	    currency = "INR";
 	    if(ispaid.checked == true){
 		bankname = document.frmcreategroup.bankname.value;
 		branchname = document.frmcreategroup.branchname.value.trim();
@@ -336,10 +314,7 @@
 		acctownername = document.frmcreategroup.acctownername.value.trim();
 		acctnumber = document.frmcreategroup.acctnumber.value.trim();
 		entryfee = document.frmcreategroup.entryfee.value.trim();
-	    }
-	    if(cleartest.checked == true){
-		testtoclear = document.frmcreategroup.testtoclear.value;
-		maxtestattempts = document.frmcreategroup.max_test_attempts.value;
+		currency = document.frmcreategroup.currency.options[document.frmcreategroup.currency.options.selectedIndex].value;
 	    }
 	    ////// Validate the input here
 	    alphanumericpattern = new RegExp("^([\\w\\d]+)$");
@@ -366,15 +341,9 @@
 		document.frmcreategroup.maxmemberscount.focus();
 		return(false);
 	    }
-	    if(!numericpattern.test(maxtestattempts)){
-		alert("Max Attempts Count should have a numeric value.");
-		document.frmcreategroup.max_test_attempts.value = "";
-		document.frmcreategroup.max_test_attempts.focus();
-		return(false);
-	    }
 	    if(ispaid.checked == true){
-		if(branchname == "" || !alphanumericpattern.test(branchname)){
-		    alert("Branch name cannot be empty and should contain alphanumeric characters only.");
+		if(branchname == "" || !alphabetspattern.test(branchname)){
+		    alert("Branch name cannot be empty and should contain alphabets and whitespace characters only.");
 		    document.frmcreategroup.branchname.value = "";
 		    document.frmcreategroup.branchname.focus();
 		    return(false);
@@ -407,13 +376,10 @@
 	    ////// Input validation ends here. If we have come thus far, the input is good enough!
 	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline + "&grouptype=" + grouptype;
 	    if(ispaid.checked == true){
-		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee;
+		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee + "&currency=" + currency;
 	    }
 	    else{
 		postdata += "&ispaid=0";
-	    }
-	    if(cleartest.checked == true){
-		postdata += "&cleartest=1&testtoclear=" + testtoclear + "&max_test_attempts=" + maxtestattempts;
 	    }
 	    if(isactive.checked == true){
 		postdata += "&isactive=1";
@@ -422,7 +388,7 @@
 		postdata += "&allowentry=1";
 	    }
 	    if(require_owner_perms.checked == true){
-		postdata += "&require_owner_perms=1";
+	    	postdata += "&require_owner_perms=1";
 	    }
 	    postdata += "&csrfmiddlewaretoken=" + csrftoken;
 	    postdata = encodeURI(postdata);
@@ -492,10 +458,8 @@
 	    html += "</select><br>";
 	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked><br>";
 	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked><br>";
-   	    //html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1'><br>";
+   	    html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1'><br>";
 	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5><br>";
-	    html += "<font color='#0000AA' size=-1>Does entry to the group require the user to clear a test:&nbsp;</font><input type='checkbox' name='cleartest' id='cleartest' value='1' onChange='javascript:showtests();'><br><div id='cleartestdiv' style=''></div>";
-	    html += "</td></tr>";
 	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'></td></tr>";
 	    html += "</table>";
 	    html += "</form>";
@@ -624,15 +588,26 @@
 	    }
 	}
 
+        
+	function changepaidstatus(){
+	    if(document.frmsettings.require_owner_perms.checked == false){
+	        document.frmsettings.ispaid.disabled=false;
+		document.frmsettings.ispaid.checked=true;
+	    }
+	    else{
+		document.frmsettings.ispaid.disabled=true;
+		document.frmsettings.ispaid.checked=false;
+	    }
+	}
 
-	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, adminremarks, testname, grpname, bankname, bankbranch, acctname, acctnum, ifsccode){
+	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency){
 	    openclosediv = document.getElementById('openclose');
 	    paramspaneldiv = document.getElementById('paramspanel');
 	    openpattern = new RegExp("Open");
 	    openclosecontent = openclosediv.innerHTML;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
  	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
-		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + testname + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
 		if(!grpimgfile){
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
 		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='static/images/nopic.png' height='{{image_height}}' width='{{image_width}}' alt='Group Image' id='groupimage'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
@@ -673,34 +648,51 @@
 		else{
 		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'  onChange='javascript:changefinancialcontrolstate(this);'>";
 		}
+		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Review user before admitting into the group:&nbsp;</font></td>";
+		{% if require_owner_perms %}
+		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' checked onchange='javascript:changepaidstatus();'>";
+		{% else %}
+		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' onchange='javascript:changepaidstatus();'>";
+		{% endif %}
 		if(ispaid == 'True'){
-		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
+		    {% for curr in allcurrencies %}
+			if(currency == '{{curr}}'){
+			    html += "<option value='{{curr}}' selected>{{curr}}</option>";
+			}
+			else{
+			    html += "<option value='{{curr}}'>{{curr}}</option>";
+			}
+		    {%  endfor %}
+		    html += "</select></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
 		else{
 		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
+		    {% for curr in allcurrencies %}
+			if(currency == '{{curr}}'){
+			    html += "<option value='{{curr}}' selected>{{curr}}</option>";
+			}
+			else{
+			    html += "<option value='{{curr}}'>{{curr}}</option>";
+			}
+		    {%  endfor %}
+		    html += "</select></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' disabled=true></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
-		html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Test</font>: </td><td nowrap><select name='alltestsowned' id='alltestsowned'>";
-		{% for tid, tname in alltests.iteritems %}
-		    if("{{tname}}" == testname){
-			html += "<option value='{{tid}}' selected>{{tname}}</option>";
-		    }
-		    else{
-			html += "<option value='{{tid}}'>{{tname}}</option>";
-		    }
-		{% endfor %}
 		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td></tr>";
 		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
 		paramspaneldiv.style.display = "";
 	 	paramspaneldiv.innerHTML = html;
 	    }
 	    else{
-		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + testname + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
 		paramspaneldiv.innerHTML = "";
 		paramspaneldiv.style.display = "none";
 	    }

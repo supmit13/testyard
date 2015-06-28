@@ -92,6 +92,7 @@ error_codes = { \
         '1094' : 'Blocked from group as user has exceeded the maximum number of attempts of taking the test', \
         '1095' : 'Could not send email to group\'s owner',\
         '1096' : 'Could not send invitation of the entry test to the user',\
+        '1097' : 'Failed to create group member - %s',\
     }
 
 def error_msg(code):

@@ -535,4 +535,17 @@ alter table Network_group add column max_tries_allowed INT(11) NOT NULL;
 
 alter table Network_group add column require_owner_permission BOOLEAN DEFAULT FALSE;
 
+alter table Network_group add column currency varchar(3) NOT NULL DEFAULT 'INR';
+
+create table Network_joinrequeststatus(
+	id int(11) NOT NULL AUTO_INCREMENT,
+	joinrequest_id int(11) NOT NULL,
+	payment_status boolean DEFAULT FALSE,
+	test_status int(11) DEFAULT 0,
+	primary key(`id`),
+	FOREIGN KEY (`joinrequest_id`) REFERENCES `Network_groupjoinrequest` (`id`)
+)ENGINE=Innodb;
+
+drop table Network_joinrequeststatus;
+
 COMMIT;

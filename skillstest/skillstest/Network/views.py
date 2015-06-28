@@ -67,6 +67,11 @@ def get_network_template_vars(userobj):
     for test in alltestsqset:
         alltests[test.id] = test.testname
     templatevars['alltests'] = alltests
+    allcurrencies = []
+    for currency in mysettings.SUPPORTED_CURRENCIES:
+        allcurrencies.append(currency)
+    templatevars['allcurrencies'] = allcurrencies
+    templatevars['defaultcurrency'] = mysettings.DEFAULT_CURRENCY
     return templatevars
 
 
@@ -92,7 +97,7 @@ def network(request):
         contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a>"%(contact.id, contact.displayname)
         contacts.append(contactlink)
     for groupmember in groupmembersqset:
-        grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.groupname)
+        grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
         groups.append(grouplink)
     alltopicsdict = {}
     for topic in mysettings.TEST_TOPICS:
@@ -137,7 +142,7 @@ def creategroup(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, testtoclear, entryfee, tagline, max_test_attempts =  ("" for i in range(0,18))
+    groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, entryfee, tagline, currency, require_owner_perms =  ("" for i in range(0,18))
     if request.POST.has_key('groupname'):
         groupname = urllib.unquote(request.POST['groupname']).decode('utf8')
     if request.POST.has_key('groupdescription'):
@@ -152,6 +157,8 @@ def creategroup(request):
         grouptype = request.POST['grouptype']
     if request.POST.has_key('ispaid'):
         ispaid = int(request.POST['ispaid'])
+    if request.POST.has_key('require_owner_perms'):
+        require_owner_perms = request.POST['require_owner_perms']
     testobj = None
     try:
     	if ispaid == 1:
@@ -161,6 +168,7 @@ def creategroup(request):
 	    acctownername = request.POST['acctownername']
 	    acctnumber = request.POST['acctnumber']
             entryfee = request.POST['entryfee']
+            currency = request.POST['currency']
         else:
             ispaid = False
         if request.POST.has_key('isactive') and request.POST['isactive'] == '1':
@@ -171,14 +179,6 @@ def creategroup(request):
             allowentry = True
         else:
             allowentry = False
-        if request.POST.has_key('cleartest') and request.POST['cleartest'] == '1':
-            cleartest = True
-            testtoclear = int(request.POST['testtoclear'])
-            max_test_attempts = int(request.POST['max_test_attempts'])
-            testobj = Test.objects.get(id=testtoclear)
-        else:
-            cleartest = False
-            testtoclear = 0
     except:
         message = "Could not create group: %s"%sys.exc_info()[1].__str__()
         response = HttpResponse(message)
@@ -203,15 +203,18 @@ def creategroup(request):
     grpobj.ispaid = ispaid
     grpobj.adminremarks = "admin"
     grpobj.stars = 0
-    grpobj.entrytest = testobj
-    grpobj.max_tries_allowed = max_test_attempts
     if not entryfee or entryfee == "":
         entryfee = 0.0
     grpobj.entryfee = float(entryfee)
+    grpobj.currency = currency
     grpmember.member = userobj
     grpmember.status = True
     grpmember.removed = False
     grpmember.blocked = False
+    if require_owner_perms == '1':
+        grpmember.require_owner_permission = True
+    else:
+        grpmember.require_owner_permission = False
     try:
         grpobj.save()
         grpmember.group = grpobj
@@ -230,6 +233,7 @@ def creategroup(request):
         ownerbankacctobj.accountnumber = acctnumber
         ownerbankacctobj.ifsccode = ifsccode
         ownerbankacctobj.accountownername = acctownername
+        ownerbankacctobj.require_owner_permission = require_owner_perms
         try:
             ownerbankacctobj.save()
         except:
@@ -379,13 +383,9 @@ def getgroupinfo(request):
         grpdict['topic'] = groupobj.basedontopic
         grpdict['groupimagefile'] = groupobj.groupimagefile
         grpdict['stars'] = groupobj.stars
-        grpdict['entrytestname'] = ""
-        grpdict['entrytestid'] = ""
-        if groupobj.entrytest is not None:
-            grpdict['entrytestname'] = groupobj.entrytest.testname
-            grpdict['entrytestid'] = str(groupobj.entrytest.id)
         grpdict['ispaid'] = groupobj.ispaid
         grpdict['entryfee'] = groupobj.entryfee
+        grpdict['currency'] = groupobj.currency
         grpdict['adminremarks'] = groupobj.adminremarks
         grpdict['owner'] = groupobj.owner.displayname
         grpdict['posts'] = []
@@ -443,7 +443,7 @@ def handlejoinrequest(request):
     groupid = None
     allowentryflag = False
     allowinvitationflag = False
-    allowownerintimation = False;
+    allowownerintimation = False
     blockflag = False
     if request.POST.has_key('groupid'):
         groupid = request.POST['groupid']
@@ -451,9 +451,9 @@ def handlejoinrequest(request):
         message = error_msg('1085')
         response = HttpResponse(message)
         return response
-    require_owner_perms = False
-    if request.POST.has_key('require_owner_perms') and request.POST['require_owner_perms'] == '1':
-        require_owner_perms = True
+    #require_owner_perms = False
+    #if request.POST.has_key('require_owner_perms') and request.POST['require_owner_perms'] == '1':
+    #    require_owner_perms = True
     groupqset = Group.objects.filter(id=groupid)
     if groupqset.__len__() == 0:
         message = error_msg('1086')
@@ -463,61 +463,6 @@ def handlejoinrequest(request):
     joinrequest = GroupJoinRequest()
     joinrequest.user = userobj
     joinrequest.group = groupobj
-    # Check #1: Does entry to the group require the user to pass a test? If so, is count of attempts by the user < max attempts allowed?
-    if groupobj.entrytest is not None:
-        user_attempts_count = 0
-        max_attempts_count = int(groupobj.max_tries_allowed)
-        testobj = groupobj.entrytest
-        utqset = UserTest.objects.filter(test=testobj, user=userobj).order_by('validfrom') # Considering attempts after registration only.
-        for utobj in utqset:
-            if utobj.outcome is None:
-                continue
-            if utobj.outcome is False:
-                user_attempts_count += 1
-                continue
-            if utobj.outcome: # True, passed the test
-                if user_attempts_count <= max_attempts_count:
-                    allowentryflag = True # should be allowed entry to the group
-                    break
-        if user_attempts_count < max_attempts_count and not allowentryflag and not allowinvitationflag: # should be sent an invite
-            allowinvitationflag = True
-        elif user_attempts_count >= max_attempts_count  and not allowentryflag and not allowinvitationflag:
-            blockflag = True
-        # Check #2: Is the number of users in the group less than the max permitted value? (TODO - not implemented yet)
-        if allowentryflag:
-            joinrequest.outcome = 'accept'
-            joinrequest.active = False
-            joinrequest.reason = "cleared test"
-            joinrequest.save()
-            # Now make user a member of the group
-            grpmember = GroupMember()
-            grpmember.member = userobj
-            grpmember.status = True
-            grpmember.removed = False
-            grpmember.blocked = False
-            try:
-                grpmember.save()
-                message = error_msg('1093')
-                response = HttpResponse(message)
-                return response
-            except:
-                message = error_msg('1092') + " - " + sys.exc_info()[1].__str__()
-                response = HttpResponse(message)
-                return response
-        elif allowinvitationflag:
-            joinrequest.outcome = 'open'
-            joinrequest.active = True
-            joinrequest.reason = '%s attempts left. '%(max_attempts_count - user_attempts_count)
-        elif blockflag: # Number of attempts for taking the test and passing has exceeded the max attempts allowed value.
-            joinrequest.outcome = 'refuse'
-            joinrequest.active = False
-            joinrequest.reason = error_msg('1094')
-            joinrequest.save()
-            message = joinrequest.reason
-            response = HttpResponse(message)
-            return response
-        else:
-            pass
     if groupobj.ispaid:
         joinrequest.outcome = 'open'
         joinrequest.active = True
@@ -525,72 +470,51 @@ def handlejoinrequest(request):
         allowinvitationflag = True
         grpmember = GroupMember()
         grpmember.member = userobj
-        grpmember.status = False # Make status True once payment is made
+        grpmember.group = groupobj
+        grpmember.status = False # Make status True once payment is processed
         grpmember.removed = False
         grpmember.blocked = False
-        # Handle payment through payment gateway
+        # Handle payment through payment gateway 
     else: # Vanilla flavoured group - no payment to make, no test to clear
-        joinrequest.outcome = 'accept'
-        joinrequest.active = False
-        joinrequest.reason += ""
-        allowinvitationflag = True
-        grpmember = GroupMember()
-        grpmember.member = userobj
-        grpmember.status = True
-        grpmember.removed = False
-        grpmember.blocked = False
-    # 1) Send an email to the group's owner
-    # TODO: When displaying the group's data to its owner, we would list the requests received for that group from Network_groupjoinrequest
-    # and tally the entries in Tests_usertest and Tests_wouldbeusers tables.
-    groupowner = groupobj.owner
-    subject = mysettings.GROUP_JOIN_REQUEST_SUBJECT%groupobj.groupname
-    message = """I, %s, am joining the group '%s' owned by you.
-    Thanks,
-    %s
-	"""%(userobj.displayname, groupobj.groupname, userobj.displayname)
-    fromaddr = userobj.emailid
-    try:
-        skillutils.sendemail(groupowner, subject, message, fromaddr)
-    except:
-        message = error_msg('1095') + " - " + sys.exc_info()[1].__str__()
-        response = HttpResponse(message)
-        return response
-    newresponse = None
-    if groupobj.entrytest is not None and allowinvitationflag == True: 
-        # 2) Send the test invitation to the current user. The 'request' object needs 
-        # to have the following params: testid, baseurl, txtemailslist, validfrom and validtill.
-        testobj = groupobj.entrytest
-        validfrom = datetime.datetime.now()
-        validtill = validfrom + datetime.timedelta(days=60)
-        validfrom = skillutils.pythontomysqldatetime2(str(validfrom))
-        validtill = skillutils.pythontomysqldatetime2(str(validtill))
-        validfromparts = validfrom.split(" ")
-        validfromdateparts = validfromparts[0].split("-")
-        validfrom = validfromdateparts[2] + "-" + validfromdateparts[1] + "-" + validfromdateparts[0] + " " + validfromparts[1]
-        validtillparts = validtill.split(" ")
-        validtilldateparts = validtillparts[0].split("-")
-        validtill = validtilldateparts[2] + "-" + validtilldateparts[1] + "-" + validtilldateparts[0] + " " + validtillparts[1]
-        request.POST = {'testid' : groupobj.entrytest.id, 'baseurl' : skillutils.gethosturl(request), 'txtemailslist' : userobj.emailid, 'validfrom' : str(validfrom), 'validtill' : str(validtill), 'joingroupflag' : 1}
-        try:
-            newresponse = sendtestinvitations(request)
-            return newresponse
-        except:
-            message = error_msg('1096') + " - " + sys.exc_info()[1].__str__()
-            print sys.exc_info()[1].__str__()
+        if require_owner_perms:
+            joinrequest.outcome = 'hold'
+            joinrequest.active = True
+            joinrequest.reason += "require owner perms" 
+            # The group owner will be presented with a page listing all join requests whose  
+            # 'outcome' is 'hold' and 'reason' is 'require owner perms'.
+            allowinvitationflag = True
+            try:
+                joinrequest.save()
+                message = "A message bearing your request to join the group has been sent to the owner of the group. You will be inducted as soon as the owner approves your request."
+            except:
+                message = "Could not save the join request: %s"%sys.exc_info()[1].__str__()
             response = HttpResponse(message)
             return response
-    try:
-        joinrequest.save()
-    except:
-        message = "Could not save the join request: %s"%sys.exc_info()[1].__str__()
-        response = HttpResponse(message)
-        return response
-    response = None
-    if not newresponse: # Paid membership or vanilla membership
-        grpmember.save()
-        message = "Join request handled successfully."
-        response = HttpResponse(message)
-    return response
+        else:
+            joinrequest.outcome = 'accept'
+            joinrequest.active = False
+            joinrequest.reason += ""
+
+            grpmember = GroupMember()
+            grpmember.member = userobj
+            grpmember.group = groupobj
+            grpmember.status = True
+            grpmember.removed = False
+            grpmember.blocked = False
+            allowinvitationflag = False
+            try:
+                joinrequest.save()
+            except:
+                message = "Could not save the join request: %s"%sys.exc_info()[1].__str__()
+                response = HttpResponse(message)
+                return response
+            try:
+                grpmember.save()
+                message = "Join request handled successfully."
+            except:
+                message = error_msg('1097')%(sys.exc_info()[1].__str__())
+            response = HttpResponse(message)
+            return response
 
 
 @skillutils.is_session_valid
@@ -619,10 +543,6 @@ def sendgentlereminder(request):
         response = HttpResponse(message)
         return response
     groupobj = groupqset[0]
-    testid = None
-    testobj = None
-    if request.POST.has_key('testid'):
-        testid = request.POST['testid']
     grpjoinqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj)
     grpjoinobj = None
     if grpjoinqset.__len__() > 0:
@@ -639,47 +559,14 @@ def sendgentlereminder(request):
 		Hi,
 		
 		This is a gentle reminder to add me in the group named '%s'."""%groupobj.groupname
-	    if testid is not None:
-                testqset = Test.objects.filter(id=testid)
-                if testqset.__len__() > 0:
-                    testobj = testqset[0]
-                    utqset = UserTest.objects.filter(user=userobj,test=testobj, active=True, cancelled=False)
-                    if utqset.__len__() == 0:
-                        utqset = WouldbeUsers.objects.filter(user=userobj,test=testobj, active=True, cancelled=False)
-                    if utqset.__len__() == 0:
-                        emailmessage += """I would like to take the test named '%s' created by you. I need to pass this test in order to 
-                        become a member of a group named '%s' (owned by you) on TestYard. Hence, please send me an invitation to take the
-	                above mentioned test. (You would be able to send invitations for the test from 'Groups Subscrbed by you' ==>> <group name>
-                        ==>> 'Manage Group' screen, accessible on the right panel of the 'Network' tab).
-                        """%(testobj.testname, groupobj.groupname)
-                    else:
-                        utobj = None
-                        for utobj in utqset:
-                            if utobj.status == 1 or utobj.status == 2:
-                                break
-                        if utobj.status == 0 or utobj.status == 1: # No gentle reminder should be sent. The user hasn't yet taken the test.
-                            reminderflag = False
-                        else:
-                            emailmessage += """I have already taken the test for entry into the group named '%s'. Once it is evaluated, it 
-                            would be possible for me to enter the group, (given that I pass the test). Could you please do the needful so that
-                            it would be possible for me to use the platform if I am eligible to enter the group.
-                            """%(groupobj.groupname)
-            else:
-                emailmessage += """I have sent a request to you to join the group '%s'. Could you please allow me into the group so that I
+	    emailmessage += """I have sent a request to you to join the group '%s'. Could you please allow me into the group so that I
                 may access its resources and participate in all conversations.
                 """%(groupobj.groupname)
 	    emailmessage += """Thanks,
 		%s
             """%(userobj.displayname)
-            if testid and testqset.__len__() > 0:
-                if reminderflag is True:
-                    skillutils.sendemail(groupobj.entrytest.creator, emailsubject, emailmessage, userobj.emailid)
-                else:
-                    message = "You have not yet taken the test needed to be eligible to enter the group"
-                    response = HttpResponse(message)
-                    return response
-            else:
-	        skillutils.sendemail(groupobj.owner, emailsubject, emailmessage, userobj.emailid)
+
+	    skillutils.sendemail(groupobj.owner, emailsubject, emailmessage, userobj.emailid)
             response = HttpResponse(message)
             return response
         except:
@@ -760,6 +647,7 @@ def getgroupdata(request):
     contextdict['adminremarks'] = grpobj.adminremarks
     contextdict['stars'] = grpobj.stars
     contextdict['ispaid'] = grpobj.ispaid
+    contextdict['require_owner_perms'] = grpobj.require_owner_permission
     if grpobj.ispaid:
         ownerbankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj, group=grpobj)
         if ownerbankacctqset.__len__() > 0:
@@ -775,11 +663,9 @@ def getgroupdata(request):
             contextdict['accountnumber'] = ""
             contextdict['ifsccode'] = ""
             contextdict['accountownername'] = ""
-    contextdict['testname'] = None
-    if grpobj.entrytest:
-        contextdict['testname'] = grpobj.entrytest.testname
     if grpobj.ispaid:
         contextdict['entryfee'] = grpobj.entryfee
+        contextdict['currency'] = grpobj.currency
     # Is the user the owner of this group? If so, we will need to display all the join requests to the group.
     # The owner (user) should be able to review the join requests and selectively allow some of them into the group.
     isowner = False
@@ -800,11 +686,6 @@ def getgroupdata(request):
         contextdict['bankaccountid'] = ""
         if bankacctqset.__len__() > 0:
             contextdict['bankaccountid'] = bankacctqset[0].id
-    alltestsownedqset = Test.objects.filter(creator=userobj)
-    alltestsowned = {}
-    for ownedtestobj in alltestsownedqset:
-        alltestsowned[ownedtestobj.id] = ownedtestobj.testname
-    contextdict['alltestsowned'] = alltestsowned # should be immutable
     # Render content using 'contextdict'
     tmpl = get_template("network/managegroups.html")
     contextdict.update(csrf(request))
@@ -866,7 +747,7 @@ def savegroupdata(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
-    topics, maxmemberslimit, grouptypes, allowentry, ispaid, entryfee, bankname, bankbranch, acctname, acctnum, ifsccode, alltestsowned, adminremarks, groupname = ("" for i in range(0,14))
+    topics, maxmemberslimit, grouptypes, allowentry, ispaid, entryfee, bankname, bankbranch, acctname, acctnum, ifsccode, alltestsowned, adminremarks, groupname, currency = ("" for i in range(0,15))
     if request.POST.has_key('topics'):
         topics = request.POST['topics']
         topics = topics.replace("_", " ")
@@ -884,6 +765,8 @@ def savegroupdata(request):
         ispaid = False
     if request.POST.has_key('entryfee'):
         entryfee = request.POST['entryfee']
+    if request.POST.has_key('currency'):
+        currency = request.POST['currency']
     if request.POST.has_key('bankname'):
         bankname = request.POST['bankname']
     if request.POST.has_key('bankbranch'):
@@ -892,8 +775,6 @@ def savegroupdata(request):
         acctname = request.POST['acctname']
     if request.POST.has_key('acctnum'):
         acctnum = request.POST['acctnum']
-    if request.POST.has_key('alltestsowned'):
-        alltestsowned = request.POST['alltestsowned']
     if request.POST.has_key('ifsccode'):
         ifsccode = request.POST['ifsccode']
     if request.POST.has_key('adminremarks'):
@@ -916,12 +797,7 @@ def savegroupdata(request):
         groupobj.entryfee = 0
     else:
         groupobj.entryfee = float(entryfee)
-    testqset = Test.objects.filter(id=alltestsowned)
-    if testqset.__len__() == 0:
-        testobj = None
-    else:
-        testobj = testqset[0]
-    groupobj.entrytest = testobj
+        groupobj.currency = currency
     bankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj, group=groupobj)
     bankacctobj = None
     if bankacctqset.__len__() == 0:

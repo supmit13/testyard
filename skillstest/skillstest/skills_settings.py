@@ -283,3 +283,8 @@ GROUP_JOIN_REQUEST_SUBJECT = "Testyard user has requested your permission to joi
 PAYU_POS_ID = 145227
 PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
 
+SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR')
+DEFAULT_CURRENCY = 'INR'
+
+
+

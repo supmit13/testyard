@@ -30,6 +30,7 @@ class Group(models.Model):
     entrytest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default=None) # A group might have an entry test. Users who pass the test would be allowed to be members of the group. Default is None (no test).
     max_tries_allowed = models.IntegerField(default=3) # Number of tries allowed before the user is no longer considered for the test.
     ispaid = models.BooleanField(default=False) # Whether entry into the group is paid or not.
+    currency = models.CharField(max_length=3, blank=False, null=False, default='USD')
     entryfee = models.FloatField(default=0.0) # If paid, then this will contain the entry fee for the group.
     require_owner_permission = models.BooleanField(null=False, blank=False, default=False) # Require owner's permission before allowing any user to become a member.
 
@@ -151,6 +152,7 @@ class GroupJoinRequest(models.Model):
     class Meta:
         verbose_name = "groupjoinrequest Table"
         db_table = 'Network_groupjoinrequest'
+
     
 class GentleReminder(models.Model):
     grpjoinrequest = models.ForeignKey(GroupJoinRequest, related_name="+", null=False, blank=False)
