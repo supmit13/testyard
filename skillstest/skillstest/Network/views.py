@@ -20,6 +20,7 @@ import cPickle
 import decimal, math
 import urllib, urllib2
 import simplejson as json
+import socket
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -44,6 +45,7 @@ def get_network_template_vars(userobj):
     templatevars['getgroupdataurl'] = mysettings.GET_GROUP_DATA_URL
     templatevars['grpimguploadurl'] = mysettings.GROUP_IMG_UPLOAD_URL + '?groupname='
     templatevars['savegrpdataurl'] = mysettings.SAVE_GROUP_DATA_URL
+    templatevars['getpaymentgwurl'] = mysettings.PAYMENT_GW_URL
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
     datepart, timepart = validfromstr.split(" ")
@@ -381,12 +383,17 @@ def getgroupinfo(request):
         grpdict['creationdate'] = createdate_serializable
         grpdict['allowentry'] = groupobj.allowentry
         grpdict['topic'] = groupobj.basedontopic
-        grpdict['groupimagefile'] = groupobj.groupimagefile
+        #grpdict['groupimagefile'] = groupobj.groupimagefile
         grpdict['stars'] = groupobj.stars
         grpdict['ispaid'] = groupobj.ispaid
         grpdict['entryfee'] = groupobj.entryfee
         grpdict['currency'] = groupobj.currency
         grpdict['adminremarks'] = groupobj.adminremarks
+        grpdict['require_owner_perms'] = groupobj.require_owner_permission
+        if groupobj.groupimagefile:
+            grpdict['groupimagefile'] = "media/" + userobj.displayname + "/groups/" + groupobj.groupname + "/" + groupobj.groupimagefile
+        else:
+            grpdict['groupimagefile'] = ""
         grpdict['owner'] = groupobj.owner.displayname
         grpdict['posts'] = []
         grouppostslist = grpdict['posts']
@@ -451,7 +458,7 @@ def handlejoinrequest(request):
         message = error_msg('1085')
         response = HttpResponse(message)
         return response
-    #require_owner_perms = False
+    require_owner_perms = False
     #if request.POST.has_key('require_owner_perms') and request.POST['require_owner_perms'] == '1':
     #    require_owner_perms = True
     groupqset = Group.objects.filter(id=groupid)
@@ -463,10 +470,11 @@ def handlejoinrequest(request):
     joinrequest = GroupJoinRequest()
     joinrequest.user = userobj
     joinrequest.group = groupobj
+    require_owner_perms = groupobj.require_owner_permission
     if groupobj.ispaid:
         joinrequest.outcome = 'open'
         joinrequest.active = True
-        joinrequest.reason += "Paid user. "
+        joinrequest.reason += "Paid user."
         allowinvitationflag = True
         grpmember = GroupMember()
         grpmember.member = userobj
@@ -475,7 +483,7 @@ def handlejoinrequest(request):
         grpmember.removed = False
         grpmember.blocked = False
         # Handle payment through payment gateway 
-    else: # Vanilla flavoured group - no payment to make, no test to clear
+    else: # Vanilla flavoured group - no payment to make.
         if require_owner_perms:
             joinrequest.outcome = 'hold'
             joinrequest.active = True
@@ -485,16 +493,14 @@ def handlejoinrequest(request):
             allowinvitationflag = True
             try:
                 joinrequest.save()
-                message = "A message bearing your request to join the group has been sent to the owner of the group. You will be inducted as soon as the owner approves your request."
+                message = "A message bearing your request to join the group has been sent to the owner of the group. You will be added as soon as the owner approves your request."
             except:
                 message = "Could not save the join request: %s"%sys.exc_info()[1].__str__()
-            response = HttpResponse(message)
-            return response
         else:
-            joinrequest.outcome = 'accept'
+            joinrequest.outcome = 'close'
             joinrequest.active = False
             joinrequest.reason += ""
-
+            
             grpmember = GroupMember()
             grpmember.member = userobj
             grpmember.group = groupobj
@@ -513,8 +519,8 @@ def handlejoinrequest(request):
                 message = "Join request handled successfully."
             except:
                 message = error_msg('1097')%(sys.exc_info()[1].__str__())
-            response = HttpResponse(message)
-            return response
+    response = HttpResponse(message)
+    return response
 
 
 @skillutils.is_session_valid
@@ -821,6 +827,55 @@ def savegroupdata(request):
     return HttpResponse(error_msg('1091'))
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showpaymentscreen(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    groupid = -1
+    entryfee = ""
+    if request.POST.has_key('groupid'):
+        groupid = request.POST['groupid']
+    if request.POST.has_key('entryfee'):
+        entryfee = request.POST['entryfee']
+    if groupid == -1 or groupid == '':
+        message = error_msg('1085')
+        response = HttpResponse(message)
+        return response
+    groupobj = Group.objects.get(id=groupid)
+    contextdict = {}
+    if not groupobj:
+        message = error_msg('1086')
+        response = HttpResponse(message)
+        return response
+    contextdict['hosturl'] = socket.gethostname()
+    contextdict['customer_ip'] = mysettings.CUSTOMER_IP_ADDRESS
+    entryfee = groupobj.entryfee
+    curr = groupobj.currency
+    if curr == 'USD':
+        equiv_rs = entryfee * skillutils.fetch_currency_rate('USD', 'INR')
+    elif curr == 'EUR':
+        equiv_rs = entryfee * skillutils.fetch_currency_rate('EUR', 'INR')
+    else:
+        equiv_rs = entryfee
+    contextdict['order_desc'] = entryfee
+    contextdict['posId'] = mysettings.PAYU_POS_ID
+    contextdict['groupname'] = groupobj.groupname
+    contextdict['subscription_amt'] = entryfee
+    contextdict['total_amt'] = entryfee
+    contextdict['signature'] = mysettings.PAYU_SECOND_ID
+    tmpl = get_template("network/payu_payment.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    payuhtml = tmpl.render(cxt)
+    response = HttpResponse(payuhtml)
+    return response
 
 

@@ -93,6 +93,7 @@ error_codes = { \
         '1095' : 'Could not send email to group\'s owner',\
         '1096' : 'Could not send invitation of the entry test to the user',\
         '1097' : 'Failed to create group member - %s',\
+	'1098' : 'Failed to connect to easyapi to retrieve exchange rates',\
     }
 
 def error_msg(code):

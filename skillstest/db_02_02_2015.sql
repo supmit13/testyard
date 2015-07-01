@@ -688,6 +688,16 @@ create table Network_joinrequeststatus(
 
 drop table Network_joinrequeststatus;
 
+create table Network_exchangerates(
+	id int(11) NOT NULL AUTO_INCREMENT,
+	curr_from varchar (4) NOT NULL,
+	curr_to varchar(4) NOT NULL,
+	conv_rate varchar(20) NOT NULL,
+	dateofrate datetime default NULL,
+	fetchtime datetime NOT NULL,
+	primary key (`id`)
+) ENGINE=Innodb;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

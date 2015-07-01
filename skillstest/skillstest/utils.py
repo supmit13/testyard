@@ -19,6 +19,7 @@ from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Network.models import ExchangeRates
 
 multiplecommapattern = re.compile("\,+")
 endcommapattern = re.compile("\,$")
@@ -557,6 +558,15 @@ def converttimeunit(secs):
 
 def randomstringgen(size=26, chars=string.ascii_lowercase + string.digits):
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def fetch_currency_rate(fromcurr, tocurr):
+    dateofrate = str(datetime.datetime.now())
+    dateofrateparts = dateofrate.split(" ")
+    dateofrateparts2 = dateofrateparts[0].split("-")
+    dateofratemysql = dateofrateparts2[2] + '-' + dateofrateparts2[1] + '-' + dateofrateparts2[0]
+    xchangeobj = ExchangeRates(curr_from=fromcurr, curr_to=tocurr, dateofrate=dateofratemysql)
+    return xchangeobj.conv_rate
 
 
 class Logger(object):

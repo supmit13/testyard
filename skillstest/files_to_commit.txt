@@ -799,6 +799,10 @@ Sun, 29 Jun 2015, 21:01 HRS (IST).
 16.templates/network/payu_payment.html
 17.skillstest/Tests/models.py
 18.templates/network/managegroups.html
-19.files_to_commit.txt
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.files_to_commit.txt
 
 

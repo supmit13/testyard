@@ -5,7 +5,7 @@ from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
-import skillstest.utils as skillutils
+#import skillstest.utils as skillutils
 
 import os, sys, re, time, datetime
 import inspect
@@ -161,4 +161,17 @@ class GentleReminder(models.Model):
     class Meta:
         verbose_name = "gentlereminder Table"
         db_table = 'Network_gentlereminder'
+
+class ExchangeRates(models.Model):
+    curr_from = models.CharField(max_length=3, null=False, blank=False)
+    curr_to = models.CharField(max_length=3, null=False, blank=False)
+    conv_rate = models.CharField(max_length=20, null=True, blank=True, default='')
+    dateofrate = models.DateTimeField(default=None) # Date on which the conversion rate is valid
+    fetchtime = models.DateTimeField(auto_now=True) # date and time on which the rates were fetched.
+
+    class Meta:
+        verbose_name = "Exchange Rates Table"
+        db_table = 'Network_exchangerates'
+
+
 

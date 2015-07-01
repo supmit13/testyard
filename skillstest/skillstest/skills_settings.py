@@ -134,6 +134,7 @@ SEND_GENTLE_REMINDER_URL = "skillstest/network/group/sendgentlereminder/"
 GET_GROUP_DATA_URL = "skillstest/network/group/groupdata/"
 GROUP_IMG_UPLOAD_URL = "skillstest/network/group/imgupload/"
 SAVE_GROUP_DATA_URL = "skillstest/network/group/save/"
+PAYMENT_GW_URL = "skillstest/network/payu/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -285,6 +286,13 @@ PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
 
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR')
 DEFAULT_CURRENCY = 'INR'
+
+CUSTOMER_IP_ADDRESS = '192.168.1.4:8080'
+
+EASYAPI_USERNAME = 'supmit'
+EASYAPI_PASSWORD = 'spmprx13'
+EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
+EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 
 

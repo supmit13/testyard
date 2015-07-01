@@ -81,5 +81,6 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.GET_GROUP_DATA_URL, 'skillstest.Network.views.getgroupdata', name='getgroupdata'),
     url(r'%s$'%mysettings.GROUP_IMG_UPLOAD_URL, 'skillstest.Network.views.groupimgupload', name='groupimgupload'),
     url(r'%s$'%mysettings.SAVE_GROUP_DATA_URL, 'skillstest.Network.views.savegroupdata', name='savegroupdata'),
+    url(r'%s$'%mysettings.PAYMENT_GW_URL, 'skillstest.Network.views.showpaymentscreen', name='showpaymentscreen'),
 )
 

@@ -1,4 +1,10 @@
 
+<html>
+<head>
+<title>Payment Process - Step #1</title>
+</head>
+
+<body bgcolor='#669999'>
 
 <form method="post" action="https://secure.payu.com/api/v2_1/orders">
     <input type="hidden" name="continueUrl" value="http://{{hosturl}}/continue" >
@@ -11,8 +17,11 @@
     <input type="hidden" name="products[0].quantity" value="1" >
     <input type="hidden" name="products[0].unitPrice" value="{{subscription_amt}}" >
     <input type="hidden" name="totalAmount" value="{{total_amt}}" >
-    <input type="hidden" name="OpenPayu-Signature" value="sender={{posId}};algorithm=MD5;signature=5fa8d94670eee6d182e930a0ccf9c2c6" >
-    <button type="submit" formtarget="_blank" >Pay with PayU</button>
+    <input type="hidden" name="OpenPayu-Signature" value="sender={{posId}};algorithm=MD5;signature={{signature}}" >
+    <center><button type="submit" formtarget="_blank" >Pay with PayU</button></center>
 </form >
+</body>
+</html>
 
+		
 
