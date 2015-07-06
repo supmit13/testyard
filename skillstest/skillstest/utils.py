@@ -5,6 +5,8 @@ import datetime
 import uuid, glob
 import urllib, urllib2
 import string, random
+import StringIO, gzip
+import mimetypes, mimetools
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -563,10 +565,30 @@ def randomstringgen(size=26, chars=string.ascii_lowercase + string.digits):
 def fetch_currency_rate(fromcurr, tocurr):
     dateofrate = str(datetime.datetime.now())
     dateofrateparts = dateofrate.split(" ")
-    dateofrateparts2 = dateofrateparts[0].split("-")
-    dateofratemysql = dateofrateparts2[2] + '-' + dateofrateparts2[1] + '-' + dateofrateparts2[0]
-    xchangeobj = ExchangeRates(curr_from=fromcurr, curr_to=tocurr, dateofrate=dateofratemysql)
-    return xchangeobj.conv_rate
+    dateofrate_min = dateofrateparts[0] + " 00:00:01"
+    dateofrate_max = dateofrateparts[0] + " 23:59:59"
+    try:
+        xchangeqset = ExchangeRates.objects.filter(curr_from=fromcurr, curr_to=tocurr, dateofrate__range=(dateofrate_min, dateofrate_max))
+        return float(xchangeqset[0].conv_rate)
+    except:
+        print "Error: ",sys.exc_info()[1].__str__()
+        return 0
+
+
+"""
+Function to decode encoded HTML content extracted from 
+websites. The input parameter is the gzipped encoded
+content of the concerned website. 
+"""
+def decodeGzippedContent(encoded_content):
+    response_stream = StringIO.StringIO(encoded_content)
+    decoded_content = ""
+    try:
+        gzipper = gzip.GzipFile(fileobj=response_stream)
+        decoded_content = gzipper.read()
+    except: # Maybe this isn't gzipped content after all....
+        decoded_content = encoded_content
+    return(decoded_content)
 
 
 class Logger(object):

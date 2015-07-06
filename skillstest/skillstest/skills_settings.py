@@ -135,6 +135,9 @@ GET_GROUP_DATA_URL = "skillstest/network/group/groupdata/"
 GROUP_IMG_UPLOAD_URL = "skillstest/network/group/imgupload/"
 SAVE_GROUP_DATA_URL = "skillstest/network/group/save/"
 PAYMENT_GW_URL = "skillstest/network/payu/"
+PAYU_CONFIRM_URL = "skillstest/network/payu/confirm/"
+SEARCH_USER_URL = "skillstest/network/searchuser/"
+SEND_CONNECTION_URL = "skillstest/network/connect/sendrequest"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -281,14 +284,24 @@ BANKS_DICT = {  'SBI_INDIA' : 'State Bank of India', \
 REQUEST_ACTIVE_INTERVAL = 90 # Amount of time (in days) for which a request to join a group or to connect with another user remains valid.
 GROUP_JOIN_REQUEST_SUBJECT = "Testyard user has requested your permission to join the group '%s'"
 
+CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
+
+# Payment gateway settings
+# PayU settings
 PAYU_POS_ID = 145227
 PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
+PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
+PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
-SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR')
-DEFAULT_CURRENCY = 'INR'
+PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
+PAYPAL_LIVE_URL = "https://api.paypal.com"
 
-CUSTOMER_IP_ADDRESS = '192.168.1.4:8080'
+SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
+DEFAULT_CURRENCY = 'PLN'
 
+CUSTOMER_IP_ADDRESS = '192.168.1.3:8080'
+
+# Easy API params:
 EASYAPI_USERNAME = 'supmit'
 EASYAPI_PASSWORD = 'spmprx13'
 EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'

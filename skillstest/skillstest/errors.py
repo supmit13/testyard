@@ -94,6 +94,19 @@ error_codes = { \
         '1096' : 'Could not send invitation of the entry test to the user',\
         '1097' : 'Failed to create group member - %s',\
 	'1098' : 'Failed to connect to easyapi to retrieve exchange rates',\
+        '1099' : 'Could not understand the date at which the rates are to be queried',\
+        '1100' : 'HTTP request method not supported.', \
+        '1101' : 'Could not make request to the targetted URL',\
+        '1102' : 'This group is not owned by you',\
+        '1103' : 'We did not get a location header, meaning we are not on the right track to payment. Please retry!',\
+        '1104' : 'Could not find the userid in the request',\
+        '1105' : 'Could not find the user identified by the id %s',\
+        '1106' : 'Could not send the invitation to the user identified by %s',\
+        '1107' : 'Successfully sent the invitation to the user identified by %s',\
+        '1108' : 'You are already connected to the user identified by %s',\
+        '1109' : 'You have already sent a connection invitation to the user identified by %s',\
+        '1110' : 'The target user has refused your connect request in the past. Hence you may not send any further requests to the target user.',\
+        '1111' : '',\
     }
 
 def error_msg(code):

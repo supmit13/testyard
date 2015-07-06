@@ -698,6 +698,13 @@ create table Network_exchangerates(
 	primary key (`id`)
 ) ENGINE=Innodb;
 
+ALTER table Network_groupjoinrequest add column orderId varchar(60) default '';
+
+alter table Subscription_transaction add column orderId varchar(60) NOT NULL;
+alter table Subscription_transaction add column group_id int(11) default NULL;
+
+alter table Subscription_transaction modify column usersession varchar(100) NOT NULL;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

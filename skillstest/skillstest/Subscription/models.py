@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 from  django.core.validators import validate_email
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
+from skillstest.Network.models import Group
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import os, sys, re, time, datetime
@@ -108,8 +109,10 @@ Transaction related info of Users (who bought plans and/or tests).
 class Transaction(models.Model):
     username = models.CharField(max_length=100, null=False, blank=False, validators=[ validate_user, ])
     user = models.ForeignKey(User, null=False, blank=False)
-    planname = models.CharField(max_length=200, null=True, blank=True)
-    usersession = models.CharField(max_length=50, blank=False, null=False, validators=[ validate_session, ])
+    orderId = models.CharField(max_length=40, null=False, blank=False)
+    planname = models.CharField(max_length=200, null=True, blank=True, default=None) # This will have a value if user registers for a subscription plan.
+    group = models.ForeignKey(Group, null=True, blank=True) # This will have a value when a user registers for a paid  group.
+    usersession = models.CharField(max_length=100, blank=False, null=False, validators=[ validate_session, ])
     payamount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     transactiondate = models.DateTimeField(auto_now=True)
     comments = models.TextField(default='')

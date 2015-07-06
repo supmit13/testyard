@@ -27,8 +27,8 @@ class Group(models.Model):
     adminremarks = models.TextField(default="")
     stars = models.IntegerField(default=0) # Indicates the popularity of the group.
     # TODO: Identify the set of criteria for which a group might gain or lose stars.
-    entrytest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default=None) # A group might have an entry test. Users who pass the test would be allowed to be members of the group. Default is None (no test).
-    max_tries_allowed = models.IntegerField(default=3) # Number of tries allowed before the user is no longer considered for the test.
+    #entrytest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default=None) # A group might have an entry test. Users who pass the test would be allowed to be members of the group. Default is None (no test).
+    #max_tries_allowed = models.IntegerField(default=3) # Number of tries allowed before the user is no longer considered for the test.
     ispaid = models.BooleanField(default=False) # Whether entry into the group is paid or not.
     currency = models.CharField(max_length=3, blank=False, null=False, default='USD')
     entryfee = models.FloatField(default=0.0) # If paid, then this will contain the entry fee for the group.
@@ -119,7 +119,7 @@ class ConnectionInvitation(models.Model):
     touser = models.ForeignKey(User, related_name="+", null=False, blank=False)
     invitationcontent = models.TextField(default=mysettings.CONNECT_INVITATION_TEXT)
     invitationstatus = models.CharField(max_length=6, choices=(('open', 'Opened'), ('closed', 'Closed'), ('accept', 'Accepted'), ('refuse', 'Refused')), default='open')
-    invitationdate = models.DateTimeField(default=None)
+    invitationdate = models.DateTimeField(auto_now=True, default=None)
 
     class Meta:
         verbose_name = "GroupMember Table"
@@ -145,9 +145,10 @@ class GroupJoinRequest(models.Model):
     group = models.ForeignKey(Group, related_name="+", null=False, blank=False)
     user = models.ForeignKey(User, related_name="+", null=False, blank=False)
     requestdate = models.DateTimeField(auto_now=True, default=None) # Date and time of sending the request
-    outcome = models.CharField(max_length=6, choices=(('open', 'Open'), ('close', 'Close'), ('accept', 'Accepted'), ('refuse', 'Refused')), default='open') # What happened to the request - is it still open, or accepted or closed... or whatever.
+    outcome = models.CharField(max_length=6, choices=(('open', 'Open'), ('close', 'Close'), ('accept', 'Accept'), ('refuse', 'Refuse')), default='open') # What happened to the request - is it still open, or accepted or closed... or whatever.
     reason = models.TextField(default="") # If the request was refused, why was it done so.
     active = models.BooleanField(default=True) # A request is automatically deactivated after a fixed amount of time (determined by mysettings.REQUEST_ACTIVE_INTERVAL)
+    orderId = models.CharField(max_length=60, null=True, blank=True, default=None) # This is the order Id for join requests to paid groups.
 
     class Meta:
         verbose_name = "groupjoinrequest Table"
@@ -161,6 +162,7 @@ class GentleReminder(models.Model):
     class Meta:
         verbose_name = "gentlereminder Table"
         db_table = 'Network_gentlereminder'
+
 
 class ExchangeRates(models.Model):
     curr_from = models.CharField(max_length=3, null=False, blank=False)

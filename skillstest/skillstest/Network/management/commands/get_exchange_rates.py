@@ -5,6 +5,7 @@ import urllib, urllib2
 
 # This command will fetch the conversion rates from http://theeasyapi.com/ using
 # the API and store it in the 'Network_exchangerates' table.
+# Schedule: To be run from cron once every day.
 
 from django.core.management.base import NoArgsCommand
 from skillstest.Network.tasks import fetch_exchange_rates

@@ -82,5 +82,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.GROUP_IMG_UPLOAD_URL, 'skillstest.Network.views.groupimgupload', name='groupimgupload'),
     url(r'%s$'%mysettings.SAVE_GROUP_DATA_URL, 'skillstest.Network.views.savegroupdata', name='savegroupdata'),
     url(r'%s$'%mysettings.PAYMENT_GW_URL, 'skillstest.Network.views.showpaymentscreen', name='showpaymentscreen'),
+    url(r'%s$'%mysettings.PAYU_CONFIRM_URL, 'skillstest.Network.views.confirmpayment_payu', name='confirmpayment_payu'),
+    url(r'%s$'%mysettings.SEARCH_USER_URL, 'skillstest.Network.views.searchuser', name='searchuser'),
+    url(r'%s$'%mysettings.SEND_CONNECTION_URL, 'skillstest.Network.views.sendconnectionrequest', name='sendconnectionrequest'),
 )
 
