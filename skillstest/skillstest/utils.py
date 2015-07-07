@@ -482,6 +482,29 @@ def pythontomysqldatetime2(dt_date):
     return mysqlcompatibledate
 
 
+"""
+The name suggests the purpose and attempt. (uugh!!!)
+"""
+def yetanotherpythontomysqldatetime(dt_date):
+    year = str(dt_date.year)
+    mon = str(dt_date.month)
+    day = str(dt_date.day)
+    minute = str(dt_date.minute)
+    hour = str(dt_date.hour)
+    second = str(dt_date.second)
+    if mon.__len__() == 1:
+        mon = "0" + mon
+    if day.__len__() == 1:
+        day = "0" + day
+    if hour.__len__() == 1:
+        hour = "0" + hour
+    if minute.__len__() == 1:
+        minute = "0" + minute
+    if second.__len__() == 1:
+        second = "0" + second
+    mysqldt = year + "-" + mon + "-" + day + " " + hour + ":" + minute + ":" + second
+    return mysqldt
+
 
 """
 This will receive a date formatted like: 2015-03-24 16:59:34+00:00

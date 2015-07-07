@@ -698,8 +698,48 @@ def getgroupdata(request):
     grppostsqset = Post.objects.filter(posttargetgroup=grpobj)
     contextdict['groupposts'] = tuple(grppostsqset) # should be immutable
     if isowner is True:
-        joinreqqset = GroupJoinRequest.objects.filter(group=grpobj)
-        contextdict['joinrequests'] = tuple(joinreqqset) # should be immutable
+        joinrequestsinfo = {}
+        joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')
+        joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='closed')
+        joinreqsrefuseqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='refuse')
+        joinreqsacceptqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='accept')
+        joinrequestsinfo['open'] = []
+        for joinreq in joinreqsopenqset:
+            d = {}
+            d['displayname'] = joinreq.user.displayname
+            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            joinrequestsinfo['open'].append(d)
+        joinrequestsinfo['close'] = []
+        for joinreq in joinreqsclosedqset:
+            d = {}
+            d['displayname'] = joinreq.user.displayname
+            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            joinrequestsinfo['close'].append(d)
+        joinrequestsinfo['refuse'] = []
+        for joinreq in joinreqsrefuseqset:
+            d = {}
+            d['displayname'] = joinreq.user.displayname
+            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            joinrequestsinfo['refuse'].append(d)
+        joinrequestsinfo['accept'] = []
+        for joinreq in joinreqsacceptqset:
+            d = {}
+            d['displayname'] = joinreq.user.displayname
+            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            joinrequestsinfo['accept'].append(d)
+        contextdict['joinrequestsinfo'] = joinrequestsinfo
     if grpobj.ispaid:
         bankacctqset = OwnerBankAccount.objects.filter(groupowner=grpobj.owner)
         contextdict['ownerbankaccts'] = tuple(bankacctqset) # should be immutable
@@ -1232,10 +1272,17 @@ def sendconnectionrequest(request):
         response = HttpResponse(message)
         return response
     # Check if the user has already sent a connection invitation or if the user is already in the contact list.
-    connqueryset = Connection.objects.filter(focususer=userobj, connectedto=targetuser, deleted=False)
+    # For already existing connections, check both ways, i.e. where focususer is userobj (case #1) , as well as where focususer is targetuser (case #2).
+    connqueryset = Connection.objects.filter(focususer=userobj, connectedto=targetuser, deleted=False) # Case #1
     if connqueryset.__len__() > 0:
         message = error_msg('1108')
         message = message%targetuser.displayname
+        response = HttpResponse(message)
+        return response
+    connqueryset = Connection.objects.filter(focususer=targetuser, connectedto=userobj, deleted=False) # Case #2
+    if connqueryset.__len__() > 0:
+        message = error_msg('1108')
+        message = message%focususer.displayname
         response = HttpResponse(message)
         return response
     conninviteqset = ConnectionInvitation.objects.filter(fromuser=userobj, touser=targetuser, invitationstatus='open')

@@ -647,7 +647,7 @@
 			    name = d['name'];
 			    profilepic = d['profileimage'];
 			    userid = d['uid'];
-			    html += "<tr><td nowrap align='right'><a href='#/' onClick='javascript:showuserprofile(" + userid + ");'><font color='#FFFFFF'>" + alldispnames[dispname] + "</font></a></td><td nowrap>" + name + "</td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");'><span id='userwaiter_" + ctr + "'></span></td></tr>";
+			    html += "<tr><td nowrap align='right'><a href='#/' onClick='javascript:showuserprofile(" + userid + ");' title='public profile'><font color='#FFFFFF'>" + alldispnames[dispname] + "</font></a></td><td nowrap>" + name + "</td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");'><span id='userwaiter_" + ctr + "'></span></td></tr>";
 			    ctr++;
 		        }
 		    }
@@ -836,7 +836,74 @@
 		paramspaneldiv.style.display = "none";
 	    }
 	}
+
+
+	function renderrequests(){
+	}
+
+
+	function savethisrecord(displayname){
+	}
 	
+
+	function popupjoinrequests(grpname, joinrequestsinfo, state){
+	    showhidediv = document.getElementById("showhidejoinrequests");
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    html = "<html><head><title>Join Requests to '" + grpname + "'</title></head><body bgcolor='#669999'>";
+	    html += "<center><font color='#0000AA' style='font-weight:bold' size='+1'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action=''>Join Requests</font></center>";
+  	    html += "<center><select name='requeststate' onChange='javascript:renderrequests();'><option value='open' selected>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
+	    html += "<center><table border='0' cellspacing='3' cellpadding='4'>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold'>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Date of Request</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Action</font></td></tr>";
+	    if(state == "open"){
+		reqslist = joinrequestsinfo['open'];
+		for (request in reqslist){
+		    imglink = request['userimageurl'];
+		    displayname = request['displayname'];
+		    fullname = request['fullname'];
+		    requestdate = request['requestdate'];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap>" + fullname + "</td><td nowrap>" + displayname + "</td><td nowrap>" + requestdate + "</td><td align='right'><select name='action_" + displayname + "'><option value='open' selected='selected'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"" + displayname + "\");'></td></tr>";
+		}
+	    }
+            else if(state == "close"){
+		reqslist = joinrequestsinfo['close'];
+		for (request in reqslist){
+		    imglink = request['userimageurl'];
+		    displayname = request['displayname'];
+		    fullname = request['fullname'];
+		    requestdate = request['requestdate'];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap>" + fullname + "</td><td nowrap>" + displayname + "</td><td nowrap>" + requestdate + "</td><td align='right'><select name='action_" + displayname + "'><option value='open'>Open</option><option value='close' selected='selected'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"" + displayname + "\");'></td></tr>";
+		}
+	    }
+	    else if(state == "refuse"){
+		reqslist = joinrequestsinfo['refuse'];
+		for (request in reqslist){
+		    imglink = request['userimageurl'];
+		    displayname = request['displayname'];
+		    fullname = request['fullname'];
+		    requestdate = request['requestdate'];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap>" + fullname + "</td><td nowrap>" + displayname + "</td><td nowrap>" + requestdate + "</td><td align='right'><select name='action_" + displayname + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse' selected='selected'>Refuse</option><option value='accept'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"" + displayname + "\");'></td></tr>";
+		}
+	    }
+	    else if(state == "accept"){
+		reqslist = joinrequestsinfo['accept'];
+		for (request in reqslist){
+		    imglink = request['userimageurl'];
+		    displayname = request['displayname'];
+		    fullname = request['fullname'];
+		    requestdate = request['requestdate'];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap>" + fullname + "</td><td nowrap>" + displayname + "</td><td nowrap>" + requestdate + "</td><td align='right'><select name='action_" + displayname + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"" + displayname + "\");'></td></tr>";
+		}
+	    }
+	    html += "</table></center>";
+	    html += "</form></body></html>";
+	    joinreqspopup = window.open("", "joinreqswin", "width=800, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	    joinreqspopup.document.write(html);
+	}
+
+
+	function collapsiblegroupposts(postslist){
+	}
+
 	</script>
 	
 		{% include "inc/mission_statement.html" %}
