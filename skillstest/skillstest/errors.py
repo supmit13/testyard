@@ -106,7 +106,9 @@ error_codes = { \
         '1108' : 'You are already connected to the user identified by %s',\
         '1109' : 'You have already sent a connection invitation to the user identified by %s',\
         '1110' : 'The target user has refused your connect request in the past. Hence you may not send any further requests to the target user.',\
-        '1111' : '',\
+        '1111' : 'No groupname or user names contained in the request',\
+        '1112' : 'Failed to create the group object from the provided groupname',\
+        '1113' : 'Saved states of the users',\
     }
 
 def error_msg(code):

@@ -85,5 +85,6 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.PAYU_CONFIRM_URL, 'skillstest.Network.views.confirmpayment_payu', name='confirmpayment_payu'),
     url(r'%s$'%mysettings.SEARCH_USER_URL, 'skillstest.Network.views.searchuser', name='searchuser'),
     url(r'%s$'%mysettings.SEND_CONNECTION_URL, 'skillstest.Network.views.sendconnectionrequest', name='sendconnectionrequest'),
+    url(r'%s$'%mysettings.SAVE_GROUP_JOIN_STATUS_URL, 'skillstest.Network.views.savegroupjoinstatus', name='savegroupjoinstatus'),
 )
 

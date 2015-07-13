@@ -138,6 +138,7 @@ PAYMENT_GW_URL = "skillstest/network/payu/"
 PAYU_CONFIRM_URL = "skillstest/network/payu/confirm/"
 SEARCH_USER_URL = "skillstest/network/searchuser/"
 SEND_CONNECTION_URL = "skillstest/network/connect/sendrequest"
+SAVE_GROUP_JOIN_STATUS_URL = "skillstest/network/group/savejoinstatus/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

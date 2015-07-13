@@ -5,7 +5,7 @@ from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedir
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson
+#from django.utils import simplejson
 from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
@@ -50,6 +50,7 @@ def get_network_template_vars(userobj):
     templatevars['payuconfirmurl'] = mysettings.PAYU_CONFIRM_URL
     templatevars['searchuserurl'] = mysettings.SEARCH_USER_URL
     templatevars['sendconnectionurl'] = mysettings.SEND_CONNECTION_URL
+    templatevars['savegroupjoinstatusurl'] = mysettings.SAVE_GROUP_JOIN_STATUS_URL
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
     datepart, timepart = validfromstr.split(" ")
@@ -698,48 +699,45 @@ def getgroupdata(request):
     grppostsqset = Post.objects.filter(posttargetgroup=grpobj)
     contextdict['groupposts'] = tuple(grppostsqset) # should be immutable
     if isowner is True:
-        joinrequestsinfo = {}
+        joinrequestsinfo = { 'open' : [], 'close' : [], 'refuse' : [], 'accept' : [] }
         joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')
         joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='closed')
         joinreqsrefuseqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='refuse')
         joinreqsacceptqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='accept')
-        joinrequestsinfo['open'] = []
         for joinreq in joinreqsopenqset:
-            d = {}
-            d['displayname'] = joinreq.user.displayname
-            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
             requestdtobj = joinreq.requestdate
-            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
-            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
-            joinrequestsinfo['open'].append(d)
-        joinrequestsinfo['close'] = []
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['open'].append(ll)
         for joinreq in joinreqsclosedqset:
-            d = {}
-            d['displayname'] = joinreq.user.displayname
-            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
             requestdtobj = joinreq.requestdate
-            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
-            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
-            joinrequestsinfo['close'].append(d)
-        joinrequestsinfo['refuse'] = []
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['close'].append(ll)
         for joinreq in joinreqsrefuseqset:
-            d = {}
-            d['displayname'] = joinreq.user.displayname
-            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
             requestdtobj = joinreq.requestdate
-            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
-            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
-            joinrequestsinfo['refuse'].append(d)
-        joinrequestsinfo['accept'] = []
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['refuse'].append(ll)
         for joinreq in joinreqsacceptqset:
-            d = {}
-            d['displayname'] = joinreq.user.displayname
-            d['fullname'] = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
             requestdtobj = joinreq.requestdate
-            d['requestdate'] = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
-            d['userimageurl'] = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
-            joinrequestsinfo['accept'].append(d)
-        contextdict['joinrequestsinfo'] = joinrequestsinfo
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['accept'].append(ll)
+        joinrequestsinfo_str = json.dumps(joinrequestsinfo)
+        contextdict['joinrequestsinfo'] = base64.b64encode(joinrequestsinfo_str) # Had to encode this as otherwise the data gets garbled.
     if grpobj.ispaid:
         bankacctqset = OwnerBankAccount.objects.filter(groupowner=grpobj.owner)
         contextdict['ownerbankaccts'] = tuple(bankacctqset) # should be immutable
@@ -1320,6 +1318,70 @@ def sendconnectionrequest(request):
         return response
     message = error_msg('1107')
     message = message%targetuser.displayname
+    response = HttpResponse(message)
+    return response
+
+
+
+def savegroupjoinstatus(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    displaynames, groupname, states = ("" for i in range(0,3))
+    if request.POST.has_key('displaynames'):
+        displaynames = request.POST['displaynames']
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    if request.POST.has_key('states'):
+        states = request.POST['states']
+
+    displaynames_list = displaynames.split("##")
+    states_list = states.split("##")
+    if not groupname or displaynames.__len__() == 0:
+        message = error_msg('1111')
+        response = HttpResponse(message)
+        return response
+    groupobj = None
+    try:
+        groupobj = Group.objects.get(groupname=groupname)
+    except:
+        message = error_msg('1112')
+        response = HttpResponse(message)
+        return response
+    ctr = 0
+    for dispname in displaynames_list:
+        state = states_list[ctr]
+        uobj = None
+        try:
+            uobj = User.objects.get(displayname=dispname)
+        except:
+            ctr += 1
+            continue
+        greqs = GroupJoinRequest.objects.filter(user=uobj, group=groupobj)
+        for groupjoinreq in greqs:
+            groupjoinreq.outcome = state
+            groupjoinreq.active = False
+            groupjoinreq.save()
+        if state == "accept":
+            groupmember = GroupMember()
+            groupmember.group = groupobj
+            groupmember.member = uobj
+            groupmember.membersince = datetime.datetime.now()
+            groupmember.status = True
+            groupmember.removed = False
+            groupmember.blocked = False
+            groupmember.save()
+        elif state == "refuse":
+            pass # Need to handle this 
+        elif state == "close":
+            pass
+        ctr += 1
+    message = error_msg('1113')
     response = HttpResponse(message)
     return response
 
