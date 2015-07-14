@@ -1376,10 +1376,11 @@ def savegroupjoinstatus(request):
             groupmember.removed = False
             groupmember.blocked = False
             groupmember.save()
+            message = "accept##" + dispname + "||"
         elif state == "refuse":
-            pass # Need to handle this 
+            message = "refuse##" + dispname + "||" # Need to handle this 
         elif state == "close":
-            pass
+            message = "close##" + dispname + "||"
         ctr += 1
     message = error_msg('1113')
     response = HttpResponse(message)

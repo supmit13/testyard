@@ -847,10 +847,6 @@
 	}
 
 
-	function savealljoinrequestchanges(winhndl, groupname){
-	}
-	
-
 	function joinpopupcontent(grpname, joinrequestsinfo_strb64, state){
 	    joinrequestsinfo_str = Base64.decode(joinrequestsinfo_strb64);
 	    joinrequestsinfo = JSON.parse(joinrequestsinfo_str);
@@ -875,46 +871,59 @@
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold'>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Date of Request</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Action</font></td></tr>";
 	    if(state == "open"){
 		reqslist = joinrequestsinfo['open'];
-		for (var i=0; i < reqslist.length; i++){
-		    request = reqslist[i]
+		for (indx in reqslist){
+		    request = reqslist[indx];
 		    imglink = request[3];
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
 	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open' selected='selected'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    indx++;
 		}
 	    }
             else if(state == "close"){
 		reqslist = joinrequestsinfo['close'];
-		for (request in reqslist){
+    		i = 0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
 		    imglink = request[3];
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
 	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close' selected='selected'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    i++;
+		    indx++;
 		}
 	    }
 	    else if(state == "refuse"){
 		reqslist = joinrequestsinfo['refuse'];
-		for (request in reqslist){
+		i = 0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
 		    imglink = request[3];
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
 	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse' selected='selected'>Refuse</option><option value='accept'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    indx++;
+		    i++;
 		}
 	    }
 	    else if(state == "accept"){
 		reqslist = joinrequestsinfo['accept'];
-		for (request in reqslist){
+		i = 0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
 		    imglink = request[3];
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
 	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    indx++;
+		    i++;
 		}
 	    }
-	    html += "<tr><td align='center' colspan='5'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"" + grpname + "\");'>&nbsp;&nbsp;<input type='button' name='btncancelclose' id='btncancelclose' value='Cancel & Close' onClick='javascript:window.close();'></td></tr>";
+	    html += "<tr><td align='center' colspan='5'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"" + grpname + "\");'>&nbsp;&nbsp;<input type='button' name='btncancelclose' id='btncancelclose' value='Cancel &amp; Close' onClick='javascript:window.close();'></td></tr>";
 	    html += "</table></center>";
 	    return (html);
 	}
@@ -923,7 +932,7 @@
 	// We will be getting base64 encoded data for the 2nd param.
 	function popupjoinrequests(grpname, joinrequestsinfo_strb64, state){
 	    html = "<html><head><title>Join Requests to '" + grpname + "'</title>";
-	    html += "</head><body bgcolor='#669999'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action=''>";
+	    html += "</head><body bgcolor='#669999'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
 	    html += "<div id='contentspace' style=''>";
   	    html += joinpopupcontent(grpname, joinrequestsinfo_strb64, state);
 	    html += "</div></form>"; // end of 'contentspace' div
