@@ -944,5 +944,33 @@ Wed, 15 Jul 2015, 01:56 HRS (IST).
 23.skillstest/Subscription/models.py
 24.static/javascript/network.js
 25.files_to_commit.txt
+=========================================
+
+Thu, 23 Jul 2015, 22:58 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
 
 

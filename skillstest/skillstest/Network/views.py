@@ -100,12 +100,22 @@ def network(request):
     groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False)
     contacts = []
     groups = []
+    groupsdict = {}
+    contactsdict = {}
+    testtakersdict = {}
     for contact in contactsqset:
         contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a>"%(contact.id, contact.displayname)
         contacts.append(contactlink)
+        if not contactsdict.has_key(contact.id):
+            contactsdict[contact.id] = contact.displayname
     for groupmember in groupmembersqset:
         grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
         groups.append(grouplink)
+        if not groupsdict.has_key(groupmember.group.id):
+            groupsdict[groupmember.group.id] = groupmember.group.groupname
+    usertestqset = UserTest.objects.filter(user=userobj).distinct()
+    for utobj in usertestqset:
+        testtakersdict[utobj.test.id] = utobj.test.testname
     alltopicsdict = {}
     for topic in mysettings.TEST_TOPICS:
         topicunderscored = topic.replace(" ", "_")
@@ -126,6 +136,9 @@ def network(request):
     contextdict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     contextdict['baseurl'] = skillutils.gethosturl(request)
     contextdict['selfemailid'] = userobj.emailid
+    contextdict['groupsdict'] = groupsdict
+    contextdict['contactsdict'] = contactsdict
+    contextdict['testtakersdict'] = testtakersdict
     # Now create and render the template here
     tmpl = get_template("network/network.html")
     contextdict.update(csrf(request))
@@ -637,6 +650,7 @@ def getgroupdata(request):
         return response
     grpobj = grpqset[0]
     contextdict = {}
+    contextdict['dispname'] = userobj.displayname
     contextdict['groupname'] = grpobj.groupname
     contextdict['tagline'] = grpobj.tagline
     contextdict['description'] = grpobj.description
@@ -701,7 +715,7 @@ def getgroupdata(request):
     if isowner is True:
         joinrequestsinfo = { 'open' : [], 'close' : [], 'refuse' : [], 'accept' : [] }
         joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')
-        joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='closed')
+        joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='close')
         joinreqsrefuseqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='refuse')
         joinreqsacceptqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='accept')
         for joinreq in joinreqsopenqset:
@@ -734,7 +748,16 @@ def getgroupdata(request):
             requestdtobj = joinreq.requestdate
             requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
             userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
-            ll = [ displayname, fullname, requestdate, userimageurl ]
+            grpmemberqset = GroupMember.objects.filter(group=grpobj, member=joinreq.user)
+            if grpmemberqset.__len__() == 0:
+                message = error_msg('1115')
+                response = HttpResponse(message)
+                return response
+            grpmemberobj = grpmemberqset[0]
+            if grpmemberobj.group.owner.displayname != grpmemberobj.member.displayname:
+                ll = [ displayname, fullname, requestdate, userimageurl, grpmemberobj.removed, grpmemberobj.blocked ]
+            else:
+                ll = [ displayname, fullname, requestdate, userimageurl, -1, -1 ]
             joinrequestsinfo['accept'].append(ll)
         joinrequestsinfo_str = json.dumps(joinrequestsinfo)
         contextdict['joinrequestsinfo'] = base64.b64encode(joinrequestsinfo_str) # Had to encode this as otherwise the data gets garbled.
@@ -1332,6 +1355,7 @@ def savegroupjoinstatus(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
+    ctr = 0
     displaynames, groupname, states = ("" for i in range(0,3))
     if request.POST.has_key('displaynames'):
         displaynames = request.POST['displaynames']
@@ -1339,9 +1363,18 @@ def savegroupjoinstatus(request):
         groupname = request.POST['groupname']
     if request.POST.has_key('states'):
         states = request.POST['states']
-
+    if request.POST.has_key('hit'):
+        hit = request.POST['hit']
+    if hit == 'single':
+        ctr = int(request.POST['counter'])
+    if hit == 'multi':
+        blockstates = request.POST['blockstates']
+        removestates = request.POST['removestates']
+    blockstates_parts = []
+    removestates_parts = []
     displaynames_list = displaynames.split("##")
     states_list = states.split("##")
+    state = 'open'
     if not groupname or displaynames.__len__() == 0:
         message = error_msg('1111')
         response = HttpResponse(message)
@@ -1353,35 +1386,84 @@ def savegroupjoinstatus(request):
         message = error_msg('1112')
         response = HttpResponse(message)
         return response
-    ctr = 0
+
     for dispname in displaynames_list:
-        state = states_list[ctr]
+        if states_list.__len__() > ctr:
+            state = states_list[ctr]
+        else:
+            state = states_list[0] # case of a single record to save
         uobj = None
         try:
             uobj = User.objects.get(displayname=dispname)
         except:
-            ctr += 1
             continue
         greqs = GroupJoinRequest.objects.filter(user=uobj, group=groupobj)
+        chkblock = 0
+        chkremv = 0
+        if hit == 'multi': # Handling multiple records
+            blockstates_parts = blockstates.split("##")
+            removestates_parts = removestates.split("##")
+            blockstates_parts.pop()
+            removestates_parts.pop()
+            chkblock = blockstates_parts[ctr]
+            chkremv = removestates_parts[ctr]
+            print dispname + "#####" + chkblock + "####" + chkremv
+        else:
+            if request.POST.has_key('chkblock_' + str(ctr)):
+                chkblock = 1
+            if request.POST.has_key('chkremv_' + str(ctr)):
+                chkremv = 1
         for groupjoinreq in greqs:
+            if groupjoinreq.outcome == 'accept' and state != 'accept':
+                message = error_msg('1114')
+                response = HttpResponse(message)
+                return response
             groupjoinreq.outcome = state
-            groupjoinreq.active = False
+            #groupjoinreq.active = False
             groupjoinreq.save()
+        
         if state == "accept":
-            groupmember = GroupMember()
-            groupmember.group = groupobj
-            groupmember.member = uobj
-            groupmember.membersince = datetime.datetime.now()
-            groupmember.status = True
-            groupmember.removed = False
-            groupmember.blocked = False
-            groupmember.save()
+            grpmemberqset = GroupMember.objects.filter(member=uobj, group=groupobj)# Check if user is already a member
+            groupmember = None
+            if grpmemberqset.__len__() == 0:
+                groupmember = GroupMember()
+                groupmember.group = groupobj
+                groupmember.member = uobj
+                groupmember.membersince = skillutils.yetanotherpythontomysqldatetime(datetime.datetime.now())
+            elif grpmemberqset.__len__() >= 1:
+                groupmember = grpmemberqset[0]
+            try:
+                groupmember.status = True
+                if groupmember.group.owner.displayname != groupmember.member.displayname:#user is not the owner of the group
+                    groupmember.removed = int(chkremv)
+                    groupmember.blocked = int(chkblock)
+                elif groupmember.group.owner.displayname == groupmember.member.displayname and (int(chkremv) == 1 or int(chkblock) == 1):
+                    message = error_msg('1117')
+                    response = HttpResponse(message)
+                    return response
+            except:
+                message = error_msg('1116')
+                response = HttpResponse(message)
+                return response
+            if chkremv:
+                groupmember.removeagent = 'owner'
+                groupmember.lastremovaldate = skillutils.yetanotherpythontomysqldatetime(datetime.datetime.now())
+            try:
+                groupmember.save()
+            except:
+                message = error_msg('1118')
+                response = HttpResponse(message)
+                return response
             message = "accept##" + dispname + "||"
         elif state == "refuse":
             message = "refuse##" + dispname + "||" # Need to handle this 
         elif state == "close":
             message = "close##" + dispname + "||"
-        ctr += 1
+        try:
+            ctr += 1
+        except:
+            print sys.exc_info()[1].__str__()
+            ctr += 1
     message = error_msg('1113')
     response = HttpResponse(message)
     return response

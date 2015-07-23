@@ -28,7 +28,7 @@ class Group(models.Model):
     stars = models.IntegerField(default=0) # Indicates the popularity of the group.
     # TODO: Identify the set of criteria for which a group might gain or lose stars.
     #entrytest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default=None) # A group might have an entry test. Users who pass the test would be allowed to be members of the group. Default is None (no test).
-    #max_tries_allowed = models.IntegerField(default=3) # Number of tries allowed before the user is no longer considered for the test.
+    max_tries_allowed = models.IntegerField(default=3) # Number of tries allowed before the user is no longer considered for the test.
     ispaid = models.BooleanField(default=False) # Whether entry into the group is paid or not.
     currency = models.CharField(max_length=3, blank=False, null=False, default='USD')
     entryfee = models.FloatField(default=0.0) # If paid, then this will contain the entry fee for the group.
@@ -73,6 +73,10 @@ class GroupMember(models.Model):
     status = models.BooleanField(default=True) # 'active' or 'inactive' -- True or False.
     removed = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False) # Posts to the group from this member will be blocked.
+    # The following field specifies who removed the user from the group. 
+    # A member may be removed from the group by herself/himself, or the owner.
+    removeagent = models.CharField(null=True, blank=True, default=None, max_length=10) # May have one of the following 3 values: user, owner, null.
+    lastremovaldate = models.DateTimeField(default=None)
 
     class Meta:
         verbose_name = "GroupMember Table"

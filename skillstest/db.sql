@@ -565,4 +565,7 @@ alter table Subscription_transaction add column group_id int(11) default NULL;
 
 alter table Subscription_transaction modify column usersession varchar(100) NOT NULL;
 
+alter table Network_groupmember add column `removeagent` varchar(10) default null;
+alter table Network_groupmember add column `lastremovaldate` datetime default null;
+
 COMMIT;

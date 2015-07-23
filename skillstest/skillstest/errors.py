@@ -109,6 +109,12 @@ error_codes = { \
         '1111' : 'No groupname or user names contained in the request',\
         '1112' : 'Failed to create the group object from the provided groupname',\
         '1113' : 'Saved states of the users',\
+        '1114' : 'You are trying to modify one or more accepted members outcome. Once a user has been accepted by the group, you may not change the join requests outcome',\
+        '1115' : 'Could not find group member with the given group object and user object.',\
+        '1116' : 'Could not set groupmember values',\
+        '1117' : 'Group member is the owner of the group - owner cannot be blocked or removed from the group',\
+        '1118' : 'Could not save groupmember object',\
+        '1119' : 'Could not find the user object for the given displayname',\
     }
 
 def error_msg(code):
