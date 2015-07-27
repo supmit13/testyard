@@ -708,6 +708,14 @@ alter table Subscription_transaction modify column usersession varchar(100) NOT 
 alter table Network_groupmember add column `removeagent` varchar(10) default null;
 alter table Network_groupmember add column `lastremovaldate` datetime default null;
 
+alter table Network_connectioninvitation modify column invitationstatus varchar(10) default 'open';
+
+alter table Network_post drop column imagefile;
+alter table Network_post drop column videofile;
+alter table Network_post add column attachmentfile varchar(512) default '';
+
+alter table Network_post add column postmsgtag varchar(255) default '';
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

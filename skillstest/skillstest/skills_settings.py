@@ -139,6 +139,8 @@ PAYU_CONFIRM_URL = "skillstest/network/payu/confirm/"
 SEARCH_USER_URL = "skillstest/network/searchuser/"
 SEND_CONNECTION_URL = "skillstest/network/connect/sendrequest"
 SAVE_GROUP_JOIN_STATUS_URL = "skillstest/network/group/savejoinstatus/"
+CONNECTION_INVITE_HANDLER_URL = "skillstest/network/connect/handleinvitation/"
+POST_MESSAGE_CONTENT_URL = "skillstest/network/postcontent/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

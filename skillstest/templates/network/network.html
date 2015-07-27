@@ -12,6 +12,17 @@
 	  position:absolute; top:250px; left:0px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
 
+	.semitrans2 {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:10px; width:80%; height:25%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
 	.tbl-fixed-width{
     	  table-layout:fixed;
     	  width: 100%;
@@ -299,9 +310,6 @@
 	    };
 	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
 	    xmlhttp.send(encodedpostdata);
-	}
-
-	function showconnectionsprofile(connid){
 	}
 
 
@@ -719,6 +727,13 @@
 	    screendiv.style.display = "none";
 	}
 
+
+	function closescreen2(){
+	    screendiv = document.getElementById('transscreens2');
+	    screendiv.innerHTML = "";
+	    screendiv.style.display = "none";
+	}
+
 	function changefinancialcontrolstate(ctrl){
 	    if(ctrl.checked == false){
 		document.frmsettings.entryfee.disabled = true;
@@ -1014,36 +1029,65 @@
 	}
 
 
-	function collapsiblegroupposts(grpname, postslist){
+	function collapsiblegroupposts(grpname, postslistenc){
+	    postslist_str = Base64.decode(postslistenc);
+	    postslist = JSON.parse(postslist_str);
+	    posts = "<br><br><font color='#0000AA' size=-1>";
+	    imgpattern = new RegExp("\\.(jpe?g|png|tiff?|bmp|gif|svg)$");
+	    postslength = postslist.length;
+	    if(postslength > 10){
+		postslength = 10;
+	    }
+	    for(var i=0; i < postslength; i++){
+		post = postslist[i];
+		attachedfile = post[2];
+		if(imgpattern.test(attachedfile)){
+		    posts += "<img src='" + attachedfile + "' width='60px' height='60px'>";
+	    	}
+	    	else{
+		    attachedfileparts = attachedfile.split("/");
+		    posts += "<a href='" + attachedfile + "'>" + attachedfileparts[attachedfileparts.length - 1] + "</a>";
+	    	}
+		posts += "<br>" + post[0] + "<br>";
+		posts += " - " + post[1] + "<hr><br><br>";
+	    }
+	    posts += "</font>";
+	    if(postslength > 10){
+	    	posts += "<br><br><a href='#/' onClick='javascript:displaymore();'>Display More</a>";
+	    }
+	    showdiv = document.getElementById("grouppostspanel");
+	    showdiv.innerHTML = posts;
 	}
 
 
 	function displaypostamessagescreen(){
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.style.display = "";
-	    html = "<form name='frmpostamessage' id='frmpostamessage' method='POST' action=''>";
+	    html = "<form name='frmpostamessage' id='frmpostamessage' method='POST' action='' enctype='multipart/form-data'>";
 	    html += "{% csrf_token %}";
 	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center>";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* New Thread: &nbsp;</font></td><td width='70%'><input type='checkbox' name='newthread' value='1' checked=checked>&nbsp;<font color='#0000AA'>Yes</font></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30'></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroup' id='targetgroup' size='3' multiple><option value='' selected>Groups List - None</option>";
+	    
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' multiple><option value=''>Groups List - None</option>";
 	    {% for k,v in groupsdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
             html += "</select>";
-	    html += "<select name='targetconnection' id='targetconnection' size='3' multiple><option value=''>Connections List - None</option>";
+	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
+	    html += "<select name='targetconnections' id='targetconnections' size='3' multiple><option value=''>Connections List - None</option>";
 	    {% for k,v in contactsdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
 	    html += "</select>";
-	    html += "<select name='testtakers' id='testtakers' size='3' multiple><option value='' selected>Takers of Tests - None</option>";
+	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
+	    html += "<select name='testtakers' id='testtakers' size='3' multiple><option value=''>Takers of Tests - None</option>";
 	    {% for k,v in testtakersdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10'></textarea></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachments' id='postattachments'>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment'>";
 	    html += "<tr><td width='70%' nowrap colspan=2 align='center'><input type='button' name='postmessage' id='postmessage' value='Post Message' onClick='javascript:postmessagetotarget();'>&nbsp;&nbsp;<input type='button' name='closepostscreen' id='closepostscreen' value='Close Screen' onClick='javascript:closescreen();'></td></tr>";
 	    html += "</table></form>";
 	    screendiv.innerHTML = html;
@@ -1051,7 +1095,112 @@
 
 
 	function postmessagetotarget(){
+	    targetgroups = "";
+	    targetconnections = "";
+ 	    targettests = "";
+            targettypes = 0
+	    for(var i=1; i < document.frmpostamessage.targetgroups.options.length; i++){
+		if(document.frmpostamessage.targetgroups.options[i].selected == true){
+		    targetgroups += document.frmpostamessage.targetgroups.options[i].value + "##";
+		}
+	    }
+            if(targetgroups.length > 0){
+		targettypes++;
+	    }
+	    for(var i=1; i < document.frmpostamessage.targetconnections.options.length; i++){
+		if(document.frmpostamessage.targetconnections.options[i].selected == true){
+		    targetconnections += document.frmpostamessage.targetconnections.options[i].value + "##";
+		}
+	    }
+	    if(targetconnections.length > 0){
+		targettypes++;
+	    }
+   	    for(var i=1; i < document.frmpostamessage.testtakers.options.length; i++){
+		if(document.frmpostamessage.testtakers.options[i].selected == true){
+		    targettests += document.frmpostamessage.testtakers.options[i].value + "##";
+		}
+	    }
+	    if(targettests.length > 0){
+		targettypes++;
+	    }
+	    if(targettypes > 1){
+		alert("You may not post to more than one type of targets at a time. Please select users OR groups OR tests.");
+		return(false);
+	    }
+	    msgtag = document.frmpostamessage.msgtag.value;
+	    if(msgtag.trim() == ""){
+		alert("Message Tag cannot be empty");
+		document.frmpostamessage.msgtag.focus();
+		return(false);
+	    }
+ 	    postcontent = document.frmpostamessage.postcontent.value;
+	    if(postcontent.trim() == ""){
+		alert("Post Message cannot be empty!");
+		document.frmpostamessage.postcontent.focus();
+		return(false);
+	    }
+	    var postdata = new FormData(document.forms.namedItem("frmpostamessage"));
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    closescreen();
+	        }
+	    };
+	    xmlhttp.open('POST', '{{postcontenturl}}', true);
+	    xmlhttp.send(postdata);
 	}
+
+
+	function handleinvitation(invid, senderdispname, csrftoken){
+	    selinvitestatus = document.getElementById('selinvaction').value;
+	    postdata = "inviteid=" + invid + "&sendername=" + senderdispname + "&csrfmiddlewaretoken=" + csrftoken + "&invitationstatus=" + selinvitestatus;
+	    connwaiterspan = document.getElementById('connwaiterspan');
+	    connwaiterspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+            var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    closescreen2();
+                    location.reload();
+	        }
+	    };
+	    xmlhttp.open('POST', '{{handleconnectinviteurl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function openinvite(conninvid, senderdispname){
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    screendiv = document.getElementById('transscreens2');
+	    screendiv.style.display = "";
+	    html = "<center><table border=0 cellspacing='1' cellpadding='3'>";
+	    html += "<tr bgcolor='#99CCFF'><td align='right' width='30%' nowrap><font color='#00AA00' style='font-weight:bold;'>You have a invitation to connect from '" + senderdispname + "'. Please select an action: </td><td width='50%' nowrap><select name='selinvaction' id='selinvaction'><option value='accept'>Accept</option><option value='refuse'>Refuse</option><option value='close'>Close</option></select>&nbsp;&nbsp;<input type='button' name='btninviteaction' id='btninviteaction' value='Submit' onClick=\"javascript:handleinvitation('" + conninvid + "', '" + senderdispname + "', '" + csrftoken + "');\"><span id='connwaiterspan'></span>&nbsp;&nbsp;<input type='button' name='btncloseinvdiv' id='btncloseinvdiv' value='Decide Later' onClick='javascript:closescreen2();'></td></tr>";
+	    html += "</table></center>";
+	    screendiv.innerHTML = html;
+	}
+
+
+	function showconnectionsprofile(connid){
+	}
+
+	function manageconnection(connid){
+	}
+
 
 	</script>
 	
@@ -1069,6 +1218,7 @@
 			<h3><font color='#00AA00'>Or you might want to <a href='#/' onClick='javascript:displaypostamessagescreen();'>post</a>  a message</font></h3><br />
 			</div>
 			<div style='display:none;' id="transscreens" class="semitrans"></div>
+			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
 			</span>
 		</div>
 

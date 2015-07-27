@@ -5,7 +5,6 @@ from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedir
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-#from django.utils import simplejson
 from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
@@ -22,6 +21,7 @@ import urllib, urllib2
 import simplejson as json
 import socket
 import base64
+from itertools import chain
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -51,6 +51,8 @@ def get_network_template_vars(userobj):
     templatevars['searchuserurl'] = mysettings.SEARCH_USER_URL
     templatevars['sendconnectionurl'] = mysettings.SEND_CONNECTION_URL
     templatevars['savegroupjoinstatusurl'] = mysettings.SAVE_GROUP_JOIN_STATUS_URL
+    templatevars['handleconnectinviteurl'] = mysettings.CONNECTION_INVITE_HANDLER_URL
+    templatevars['postcontenturl'] = mysettings.POST_MESSAGE_CONTENT_URL
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
     datepart, timepart = validfromstr.split(" ")
@@ -98,16 +100,20 @@ def network(request):
     # Display contacts and groups associated with the user.
     contactsqset = Connection.objects.filter(focususer=userobj, deleted=False, blocked=False)
     groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False)
+    connectioninvitationsqset = ConnectionInvitation.objects.filter(touser=userobj, invitationstatus='open').order_by('invitationdate')
     contacts = []
     groups = []
     groupsdict = {}
-    contactsdict = {}
     testtakersdict = {}
+    contactsdict = {}
+    connectinvitesdict = {}
     for contact in contactsqset:
-        contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a>"%(contact.id, contact.displayname)
+        contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a> - <a href='#/' onClick='javascript:manageconnection(%s);'>manage</a>"%(contact.id, contact.connectedto.displayname, contact.id)
         contacts.append(contactlink)
-        if not contactsdict.has_key(contact.id):
-            contactsdict[contact.id] = contact.displayname
+        if not contactsdict.has_key(str()):
+            contactsdict[str(contact.id)] = contact.connectedto.displayname
+        else:
+            pass
     for groupmember in groupmembersqset:
         grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
         groups.append(grouplink)
@@ -124,6 +130,19 @@ def network(request):
     for topicobj in dyntopicsqset:
         topicunderscored = topicobj.topicname.replace(" ", "_")
         alltopicsdict[topicunderscored] = topicobj.topicname
+    for conninvite in connectioninvitationsqset:
+        fromuser = conninvite.fromuser
+        fromusername = fromuser.displayname
+        fromuserid = fromuser.id
+        invid = conninvite.id
+        invitationdate = conninvite.invitationdate
+        invitationcontent = conninvite.invitationcontent
+        invitationcontent_short = invitationcontent[:15] + "..."
+        if not connectinvitesdict.has_key(fromusername):
+            connectinvitesdict[str(invid)] = [ fromuserid, fromusername, invitationdate, invitationcontent_short, invitationcontent ]
+        else:
+            connectinvitesdict[str(invid)][2] = invitationdate
+            connectinvitesdict[str(invid)][3] = invitationcontent_short
     contextdict = { 'displayname' : userobj.displayname, 'msg' : '<b><i>it is social networking time!</i></b>', 'connections' : contacts, 'groups' : groups, 'topics' : alltopicsdict }
     contextdict['image_height'] = mysettings.PROFILE_PHOTO_HEIGHT
     contextdict['image_width'] = mysettings.PROFILE_PHOTO_WIDTH
@@ -137,8 +156,9 @@ def network(request):
     contextdict['baseurl'] = skillutils.gethosturl(request)
     contextdict['selfemailid'] = userobj.emailid
     contextdict['groupsdict'] = groupsdict
-    contextdict['contactsdict'] = contactsdict
     contextdict['testtakersdict'] = testtakersdict
+    contextdict['contactsdict'] = contactsdict
+    contextdict['connectinvitesdict'] = connectinvitesdict
     # Now create and render the template here
     tmpl = get_template("network/network.html")
     contextdict.update(csrf(request))
@@ -711,7 +731,22 @@ def getgroupdata(request):
         allmembersqset = GroupMember.objects.filter(group=grpobj)
         contextdict['groupmembers'] = tuple(allmembersqset) # should be immutable
     grppostsqset = Post.objects.filter(posttargetgroup=grpobj)
-    contextdict['groupposts'] = tuple(grppostsqset) # should be immutable
+    postcontent = []
+    for grppost in grppostsqset:
+        content = grppost.postcontent
+        poster = grppost.poster.displayname
+        attachmentfile = grppost.attachmentfile
+        attachmentfile = "media/" + userobj.displayname + "/posts/" + attachmentfile
+        scope = 'public'
+        if grppost.scope != 'public':
+            continue # should be shown only to users who are in the contact list of the current user - will be implemented later
+        if grppost.deleted or grppost.hidden: # Do not show this post.
+            continue
+        stars = grppost.stars
+        postattr = (content, poster, attachmentfile, scope, stars.__str__())
+        postcontent.append(postattr)
+    postcontentenc = base64.b64encode(json.dumps(postcontent))
+    contextdict['groupposts'] = postcontentenc
     if isowner is True:
         joinrequestsinfo = { 'open' : [], 'close' : [], 'refuse' : [], 'accept' : [] }
         joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')
@@ -771,7 +806,13 @@ def getgroupdata(request):
     tmpl = get_template("network/managegroups.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
-    managegroupshtml = tmpl.render(cxt)
+    try:
+        managegroupshtml = tmpl.render(cxt)
+    except:
+        print sys.exc_info()[1].__str__()
+        message = error_msg('1132')
+        response = HttpResponse(message)
+        return response
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         managegroupshtml = managegroupshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(managegroupshtml)
@@ -1345,7 +1386,9 @@ def sendconnectionrequest(request):
     return response
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def savegroupjoinstatus(request):
     if request.method != 'POST':
         message = error_msg('1004')
@@ -1467,5 +1510,215 @@ def savegroupjoinstatus(request):
     message = error_msg('1113')
     response = HttpResponse(message)
     return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def handleconnectinvitation(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    inviteid, sendername, invitationstatus = -1, "", "refuse"
+    if request.POST.has_key('inviteid'):
+        inviteid = int(request.POST['inviteid'])
+    if request.POST.has_key('sendername'):
+        sendername = request.POST['sendername']
+    if request.POST.has_key('invitationstatus'):
+        invitationstatus = request.POST['invitationstatus']
+    fromuserqset = User.objects.filter(displayname = sendername)
+    fromuserobj = None
+    if fromuserqset.__len__() == 0:
+        message = error_msg('1120')
+        response = HttpResponse(message)
+        return response
+    else:
+        fromuserobj = fromuserqset[0]
+    conninviteqset = ConnectionInvitation.objects.filter(id=inviteid)
+    if conninviteqset.__len__() == 0:
+        message = error_msg('1121')
+        response = HttpResponse(message)
+        return response
+    conninviteobj = conninviteqset[0]
+    if invitationstatus == 'accept' or invitationstatus == 'refuse' or invitationstatus == 'close':
+        conninviteobj.invitationstatus = invitationstatus
+        try:
+            conninviteobj.save()
+        except:
+            message = error_msg('1125')%sys.exc_info()[1].__str__()
+            print sys.exc_info()[1].__str__()
+            response = HttpResponse(message)
+            return response
+    else:
+        pass
+    # 2 records will be inserted by code below in Network_connection
+    # - one with focususer set to the userobj, and other with connectedto 
+    # as userobj
+    if invitationstatus == 'accept':
+        existingconnectionqset = Connection.objects.filter(focususer=userobj, connectedto=fromuserobj)
+        existingconnectionqset2 = Connection.objects.filter(focususer=fromuserobj, connectedto=userobj)
+        if len(list(existingconnectionqset)) > 0 or len(list(existingconnectionqset2)) > 0:
+            message = error_msg('1126')
+            response = HttpResponse(message)
+            return response
+        connobj = Connection()
+        connobj.focususer = userobj
+        connobj.connectedto = fromuserobj
+        connobj.connectedthru = ""
+        try:
+            connobj.save()
+        except:
+            message = error_msg('1122')
+            response = HttpResponse(message)
+            return response
+        connobj2 = Connection()
+        connobj2.focususer = fromuserobj
+        connobj2.connectedto = userobj
+        connobj2.connectedthru = ""
+        try:
+            connobj2.save()
+        except:
+            message = error_msg('1122')
+            response = HttpResponse(message)
+            return response
+        message = error_msg('1123')
+        response = HttpResponse(message)
+        return response
+    else:
+        message = error_msg('1124')
+        response = HttpResponse(message)
+        return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def postmessagecontent(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    targetgroups, targetconnections, targettests, newthread, msgtag, postcontent = "", "", "", 0, "", ""
+    postdata = dict(request.POST)
+    if postdata.has_key('targetgroups'):
+        targetgroups = postdata['targetgroups']
+        for i in range(0,targetgroups.__len__()):
+            if targetgroups[i] == '':
+                targetgroups.pop(i)
+    if postdata.has_key('targetconnections'):
+        targetconnections = postdata['targetconnections']
+        for i in range(0,targetconnections.__len__()):
+            if targetconnections[i] == '':
+                targetconnections.pop(i)
+    if postdata.has_key('targettests'):
+        targettests = postdata['targettests']
+        for i in range(0,targettests.__len__()):
+            if targettests[i] == '':
+                targettests.pop(i)
+    if postdata.has_key('newthread'):
+        newthread = postdata['newthread']
+    if postdata.has_key('msgtag'):
+        msgtag = str(postdata['msgtag'][0])
+    if postdata.has_key('postcontent'):
+        postcontent = str(postdata['postcontent'][0])
+    if postcontent.strip() == "" or msgtag.strip() == "":
+        message = error_msg('1131')
+        response = HttpResponse(message)
+        return response
+    targetgroupids = targetgroups
+    targetconnectionids = targetconnections
+    targettestids = targettests
+    if (targetgroupids.__len__() > 0 and targetconnectionids.__len__() > 0) or (targetgroupids.__len__() > 0 and targettestids.__len__() > 0) or (targetconnectionids.__len__() > 0 and targettestids.__len__() > 0):
+        message = error_msg('1127')
+        response = HttpResponse(message)
+        return response
+    attachmentfile = ""
+    if request.FILES.has_key('postattachment'):
+        postattachmentpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "posts" + os.path.sep
+        postattachmentfilename = request.FILES['postattachment'].name.split(".")[0]
+        fpath, message, attachmentfile = skillutils.handleuploadedfile2(request.FILES['postattachment'], postattachmentpath, postattachmentfilename)
+    # Now, if targetgroupids.__len__() > 0, send it to the group's messages.
+    # Basically, all these will be stored in the Network_post table with the 
+    # appropriate 'posttargettype' values ('group', 'user' or 'test').
+    message = ""
+    if targetgroupids.__len__() > 0:
+        for tgid in targetgroupids:
+            post = Post()
+            targetgroup = Group.objects.get(id=tgid)
+            post.posttargettype = 'group'
+            post.posttargetgroup = targetgroup
+            post.postmsgtag = msgtag
+            post.poster = userobj
+            post.postcontent = postcontent
+            post.scope = 'public'
+            post.attachmentfile = attachmentfile
+            try:
+                post.save()
+            except:
+                print "Error: %s"%sys.exc_info()[1].__str__()
+                message += error_msg('1128')%sys.exc_info()[1].__str__()
+                message += "\n"
+                continue
+        message += error_msg('1129')
+        response = HttpResponse(message)
+        return response
+    if targetconnectionids.__len__() > 0:
+        for tconnid in targetconnectionids:
+            post = Post()
+            targetconnection = Connection.objects.get(id=tconnid)
+            post.posttargettype = 'user'
+            post.posttargetuser = targetconnection.connectedto
+            post.postmsgtag = msgtag
+            post.poster = userobj
+            post.postcontent = postcontent
+            post.scope = 'public'
+            post.attachmentfile = attachmentfile
+            try:
+                post.save()
+            except:
+                print "Error: %s"%sys.exc_info()[1].__str__()
+                message += error_msg('1128')%sys.exc_info()[1].__str__()
+                message += "\n"
+                continue
+        message += error_msg('1129')
+        response = HttpResponse(message)
+        return response
+    if targettestids.__len__() > 0:
+        for ttestid in targettestids:
+            post = Post()
+            targettest = Test.objects.get(id=ttestid)
+            post.posttargettype = 'test'
+            post.posttargettest = targettest
+            post.postmsgtag = msgtag
+            post.poster = userobj
+            post.postcontent = postcontent
+            post.scope = 'public'
+            post.attachmentfile = attachmentfile
+            try:
+                post.save()
+            except:
+                print "Error: %s"%sys.exc_info()[1].__str__()
+                message += error_msg('1128')%sys.exc_info()[1].__str__()
+                message += "\n"
+                continue
+        message += error_msg('1129')
+        response = HttpResponse(message)
+        return response
+    # If we have reached here, it means there are no targets specified for this message
+    message = error_msg('1130')
+    response = HttpResponse(message)
+    return response
+
+
+
 
 

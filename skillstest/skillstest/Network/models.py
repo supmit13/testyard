@@ -43,15 +43,15 @@ class Group(models.Model):
 
 
 class Post(models.Model):
+    postmsgtag = models.CharField(max_length=255, null=True, blank=True, default='')
     postcontent = models.TextField(default="")
     poster = models.ForeignKey(User, related_name="+", null=False, blank=False, default='')
-    posttargettype = models.CharField(max_length=200, blank=False, null=False) # Can be 'user', 'group' or 'test'. This will determine if 
+    posttargettype = models.CharField(max_length=200, blank=False, null=False) # Can be 'user', 'group' and/or 'test'. This will determine if 
     # the target of the post is another member or a group or a test.
     posttargetuser = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
     posttargetgroup = models.ForeignKey(Group, related_name="+", null=True, blank=True, default='')
     posttargettest = models.ForeignKey(Test, related_name="+", null=True, blank=True, default='')
-    imagefile = models.CharField(max_length=200, blank=True, null=True) # image associated with the post, if any.
-    videofile = models.CharField(max_length=200, blank=True, null=True) # video associated with the post, if any.
+    attachmentfile = models.CharField(max_length=200, blank=True, null=True) # image associated with the post, if any.
     scope = models.CharField(max_length=200, blank=False, null=False, default='public') # Can be either public, private or protected.
     relatedpost_id = models.IntegerField(default=None) # If the post is related to another post object from some other user/group
     deleted = models.BooleanField(default=False)
@@ -108,7 +108,7 @@ class GroupMember(models.Model):
 class Connection(models.Model):
     focususer = models.ForeignKey(User, related_name="+", null=False, blank=False)
     connectedto = models.ForeignKey(User, null=True, blank=True)
-    connectedfrom = models.DateTimeField(default=None) # Date and time of creation of this connection
+    connectedfrom = models.DateTimeField(default=None, auto_now=True) # Date and time of creation of this connection
     deleted = models.BooleanField(default=False)
     blocked = models.BooleanField(default=False) # Posts from the 'connectedto' user will be blocked.
     connectedthru = models.CharField(max_length=200, blank=True, null=True) # If connected through facebook or linkedin or through any other channel.

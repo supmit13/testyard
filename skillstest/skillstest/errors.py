@@ -115,6 +115,19 @@ error_codes = { \
         '1117' : 'Group member is the owner of the group - owner cannot be blocked or removed from the group',\
         '1118' : 'Could not save groupmember object',\
         '1119' : 'Could not find the user object for the given displayname',\
+        '1120' : 'Could not identify the user from whom the invitation came.',\
+        '1121' : 'Could not find the invitation record from the given Id',\
+        '1122' : 'Could not connect to the specified user. Sorry for this inconvenience.',\
+        '1123' : 'Successfully added connection to your list of contacts',\
+        '1124' : 'Successfully modified the status of the invitation.', \
+        '1125' : 'Could not update the invitation status - %s',\
+        '1126' : 'You are already connected to the user you are trying to connect to.',\
+        '1127' : 'You cannot post or send a message to more than one type of entity at the same time. You must either choose user(s), OR group(s) OR test(s).',\
+        '1128' : 'Could not post message - Error: %s',\
+        '1129' : 'Message has been posted successfully',\
+        '1130' : 'Your message could not be sent as you did not specify any target for the message',\
+        '1131' : 'There is no content to post. You have specified an empty message',\
+        '1132' : 'Could not display the screen due to a technical issue. Please contact the site administrator as admin@testyard.com',\
     }
 
 def error_msg(code):
