@@ -57,6 +57,7 @@ class Post(models.Model):
     deleted = models.BooleanField(default=False)
     hidden = models.BooleanField(default=False)
     stars = models.IntegerField(default=0)
+    createdon = models.DateTimeField(auto_now=True,default=None)
 
     class Meta:
         verbose_name = "Posts Table"

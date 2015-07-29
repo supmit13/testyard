@@ -1028,6 +1028,42 @@
 	    joinreqspopup.document.getElementsByTagName('head')[0].appendChild(script);
 	}
 
+	
+	function humanreadabledate(datestr){
+	    datesplit = datestr.split("+");
+	    dateparts = datesplit[0].split(" ");
+	    datecomponents = dateparts[0].split("-");
+	    year = datecomponents[0];
+	    mon = datecomponents[1];
+	    day = datecomponents[2];
+	    timecomponents = dateparts[1].split(":");
+	    //alert(dateparts[0]);
+	    hour = timecomponents[0];
+	    min = timecomponents[1];
+	    sec = timecomponents[2];
+	    if(day.length == 1){
+		day = '0' + day;
+	    }
+	    if(mon.length == 1){
+		mon = '0' + mon;
+	    }
+	    monthsdict = {};
+	    monthsdict['01'] = 'Jan';
+	    monthsdict['02'] = 'Feb';
+	    monthsdict['03'] = 'Mar';
+	    monthsdict['04'] = 'Apr';
+	    monthsdict['05'] = 'May';
+ 	    monthsdict['06'] = 'Jun';
+	    monthsdict['07'] = 'Jul';
+	    monthsdict['08'] = 'Aug';
+	    monthsdict['09'] = 'Sep';
+	    monthsdict['10'] = 'Oct';
+	    monthsdict['11'] = 'Nov';
+	    monthsdict['12'] = 'Dec';
+	    readabledate = monthsdict[mon] + " " + day + ", " + year + ", " + dateparts[1] + " HRS.";
+	    return(readabledate);
+	}
+
 
 	function collapsiblegroupposts(grpname, postslistenc){
 	    postslist_str = Base64.decode(postslistenc);
@@ -1041,22 +1077,45 @@
 	    for(var i=0; i < postslength; i++){
 		post = postslist[i];
 		attachedfile = post[2];
+		profilepic = post[5];
+		imgtag = "<table border=0><tr><td width='80%'><img src='" + profilepic + "' width='60px' height='60px'>";
+		posts += imgtag + "<br>" + post[1] + "<br></td>";
+		if(post[6] != "" && post[6] != 'None'){
+		    readabledate = humanreadabledate(post[6].toString());
+		    posts += "<td align='right' valign='top' width='30%' nowrap><i>Posted on </i>" + readabledate + "</td>";
+		}
+		else{
+		    posts += "<td align='right' valign='top' width='30%'>&nbsp;</td>";
+		}
+		posts += "</tr></table>";
 		if(imgpattern.test(attachedfile)){
-		    posts += "<img src='" + attachedfile + "' width='60px' height='60px'>";
+		    posts += "<br><center><img src='" + attachedfile + "' width='200px' height='150px'></center>";
 	    	}
 	    	else{
 		    attachedfileparts = attachedfile.split("/");
-		    posts += "<a href='" + attachedfile + "'>" + attachedfileparts[attachedfileparts.length - 1] + "</a>";
+		    posts += "<br><center><a href='" + attachedfile + "'>" + attachedfileparts[attachedfileparts.length - 1] + "</a></center>";
 	    	}
 		posts += "<br>" + post[0] + "<br>";
-		posts += " - " + post[1] + "<hr><br><br>";
+		posts += "<hr><br><br>";
 	    }
 	    posts += "</font>";
-	    if(postslength > 10){
-	    	posts += "<br><br><a href='#/' onClick='javascript:displaymore();'>Display More</a>";
+	    if(postslist.length > 10){
+	    	posts += "<br><center><a href='#/' onClick='javascript:displaymore();'>Display More</a></center>";
 	    }
 	    showdiv = document.getElementById("grouppostspanel");
 	    showdiv.innerHTML = posts;
+	    anchor = document.getElementById('postsanchor');
+	    anchor.innerHTML = "Hide";
+	    anchor.setAttribute('onclick', 'hidegroupposts("' + grpname + '", "' + postslistenc + '");');
+	}
+
+
+	function hidegroupposts(grpname, postslistenc){
+	    postsdiv = document.getElementById('grouppostspanel');
+	    postsdiv.innerHTML = "";
+	    anchor = document.getElementById('postsanchor');
+	    anchor.innerHTML = "Show";
+	    anchor.setAttribute('onclick', 'collapsiblegroupposts("' + grpname + '", "' + postslistenc + '");');
 	}
 
 

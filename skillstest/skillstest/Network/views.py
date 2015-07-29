@@ -658,7 +658,7 @@ def getgroupdata(request):
     grpobj = None
     grpqset = None
     try:
-        grpqset = Group.objects.filter(groupname=groupname).filter(owner=userobj)
+        grpqset = Group.objects.filter(groupname=groupname)
     except:
         print "Error finding the requested group: %s"%(sys.exc_info()[1].__str__())
         message = error_msg('1089')
@@ -730,20 +730,23 @@ def getgroupdata(request):
     if isowner is True:
         allmembersqset = GroupMember.objects.filter(group=grpobj)
         contextdict['groupmembers'] = tuple(allmembersqset) # should be immutable
-    grppostsqset = Post.objects.filter(posttargetgroup=grpobj)
+    grppostsqset = Post.objects.filter(posttargetgroup=grpobj).order_by('-createdon')
     postcontent = []
     for grppost in grppostsqset:
         content = grppost.postcontent
+        content = content.replace("\n", "<br>")
         poster = grppost.poster.displayname
         attachmentfile = grppost.attachmentfile
-        attachmentfile = "media/" + userobj.displayname + "/posts/" + attachmentfile
+        attachmentfile = "media/" + poster + "/posts/" + attachmentfile
         scope = 'public'
         if grppost.scope != 'public':
-            continue # should be shown only to users who are in the contact list of the current user - will be implemented later
+            continue # should be shown only to users who are in the contact list of the current user - will be implemented later.
         if grppost.deleted or grppost.hidden: # Do not show this post.
             continue
         stars = grppost.stars
-        postattr = (content, poster, attachmentfile, scope, stars.__str__())
+        profpic = "media/" + grppost.poster.displayname + "/images/" + str(grppost.poster.userpic)
+        postdate = str(grppost.createdon)
+        postattr = (content, poster, attachmentfile, scope, stars.__str__(), profpic, postdate)
         postcontent.append(postattr)
     postcontentenc = base64.b64encode(json.dumps(postcontent))
     contextdict['groupposts'] = postcontentenc

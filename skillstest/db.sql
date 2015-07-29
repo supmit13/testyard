@@ -575,5 +575,6 @@ alter table Network_post drop column videofile;
 alter table Network_post add column attachmentfile varchar(512) default '';
 
 alter table Network_post add column postmsgtag varchar(255) default '';
+alter table Network_post add column createdon datetime not NULL;
 
 COMMIT;
