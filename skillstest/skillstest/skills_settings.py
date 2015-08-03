@@ -141,6 +141,8 @@ SEND_CONNECTION_URL = "skillstest/network/connect/sendrequest"
 SAVE_GROUP_JOIN_STATUS_URL = "skillstest/network/group/savejoinstatus/"
 CONNECTION_INVITE_HANDLER_URL = "skillstest/network/connect/handleinvitation/"
 POST_MESSAGE_CONTENT_URL = "skillstest/network/postcontent/"
+POST_REPLY_CONTENT_URL = "skillstest/network/postreply/"
+NEXT_POST_LIST_URL = "skillstest/network/posts/paginatedcontent/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -309,6 +311,8 @@ EASYAPI_USERNAME = 'supmit'
 EASYAPI_PASSWORD = 'spmprx13'
 EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
+
+MAX_POSTS_IN_PAGE = 10
 
 
 

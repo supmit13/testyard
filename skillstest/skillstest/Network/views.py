@@ -53,6 +53,10 @@ def get_network_template_vars(userobj):
     templatevars['savegroupjoinstatusurl'] = mysettings.SAVE_GROUP_JOIN_STATUS_URL
     templatevars['handleconnectinviteurl'] = mysettings.CONNECTION_INVITE_HANDLER_URL
     templatevars['postcontenturl'] = mysettings.POST_MESSAGE_CONTENT_URL
+    templatevars['postreplyurl'] = mysettings.POST_REPLY_CONTENT_URL
+    templatevars['nextpostcontenturl'] = mysettings.NEXT_POST_LIST_URL
+    templatevars['postsperpage'] = mysettings.MAX_POSTS_IN_PAGE
+
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
     datepart, timepart = validfromstr.split(" ")
@@ -441,8 +445,7 @@ def getgroupinfo(request):
             postdict = {}
             postdict['content'] = postobj.postcontent
             postdict['poster_name'] = postobj.poster.displayname
-            postdict['imagefile'] = postobj.imagefile
-            postdict['videofile'] = postobj.videofile
+            postdict['attachmentfile'] = postobj.attachmentfile
             postdict['stars'] = postobj.stars
             grouppostslist.append(postdict)
         grpdict['posts'] = grouppostslist
@@ -730,12 +733,18 @@ def getgroupdata(request):
     if isowner is True:
         allmembersqset = GroupMember.objects.filter(group=grpobj)
         contextdict['groupmembers'] = tuple(allmembersqset) # should be immutable
-    grppostsqset = Post.objects.filter(posttargetgroup=grpobj).order_by('-createdon')
+    # Get a list of the top level posts (relatedpost_id=None)
+    grppostsqset = Post.objects.filter(posttargetgroup=grpobj).filter(relatedpost_id=None).order_by('-createdon')[:(int(mysettings.MAX_POSTS_IN_PAGE) + 1)] # We limit results to first batch of the set here.
     postcontent = []
     for grppost in grppostsqset:
         content = grppost.postcontent
         content = content.replace("\n", "<br>")
         poster = grppost.poster.displayname
+        msgtag = grppost.postmsgtag
+        posttargettype = grppost.posttargettype
+        posttargetgroup = grppost.posttargetgroup
+        posttargetuser = grppost.posttargetuser
+        posttargettest = grppost.posttargettest
         attachmentfile = grppost.attachmentfile
         attachmentfile = "media/" + poster + "/posts/" + attachmentfile
         scope = 'public'
@@ -744,11 +753,50 @@ def getgroupdata(request):
         if grppost.deleted or grppost.hidden: # Do not show this post.
             continue
         stars = grppost.stars
+        postid = grppost.id
+        # Now find out which posts are related to this post using the relatedpost_id field
+        subposts = Post.objects.filter(relatedpost_id=postid).order_by('-createdon')
+        subpostlist = []
+        for subp in subposts:
+            try:
+                subcontent = subp.postcontent
+                subcontent = subcontent.replace("\n", "<br>")
+                subposter = subp.poster.displayname
+                subattachment = subp.attachmentfile
+                subattachment = "media/" + subposter + "/posts/" + subattachment
+                subscope = 'public'
+                if subp.scope != 'public':
+                    continue
+                if subp.deleted or subp.hidden:
+                    continue
+                substars = subp.stars
+                subprofpic = "media/" + subp.poster.displayname + "/images/" + str(subp.poster.userpic)
+                subpostdate = subp.createdon
+                subpostid = subp.id
+                subpostdate = skillutils.pythontomysqldatetime(str(subpostdate))
+                subpost_params = [ subcontent, subposter, subattachment, subscope, substars.__str__(), subprofpic, subpostdate, subpostid ]
+                subpostlist.append(subpost_params)
+            except:
+                message = error_msg('1135') + "<br>" + sys.exc_info()[1].__str__()
+                response = HttpResponse(message)
+                continue
         profpic = "media/" + grppost.poster.displayname + "/images/" + str(grppost.poster.userpic)
         postdate = str(grppost.createdon)
-        postattr = (content, poster, attachmentfile, scope, stars.__str__(), profpic, postdate)
+        try:
+            postdate = skillutils.pythontomysqldatetime(postdate)
+        except:
+            postdate = ""
+        postid = grppost.id
+        
+        postattr = (content, poster, attachmentfile, scope, stars.__str__(), profpic, postdate, postid, msgtag, posttargettype, subpostlist)
         postcontent.append(postattr)
-    postcontentenc = base64.b64encode(json.dumps(postcontent))
+    try:
+        postcontentenc = base64.b64encode(json.dumps(postcontent))
+    except:
+        message = error_msg('1135') + "\n" + sys.exc_info()[1].__str__()
+        print message
+        response = HttpResponse(message)
+        return response
     contextdict['groupposts'] = postcontentenc
     if isowner is True:
         joinrequestsinfo = { 'open' : [], 'close' : [], 'refuse' : [], 'accept' : [] }
@@ -805,6 +853,7 @@ def getgroupdata(request):
         contextdict['bankaccountid'] = ""
         if bankacctqset.__len__() > 0:
             contextdict['bankaccountid'] = bankacctqset[0].id
+    contextdict['postsperpage'] = mysettings.MAX_POSTS_IN_PAGE
     # Render content using 'contextdict'
     tmpl = get_template("network/managegroups.html")
     contextdict.update(csrf(request))
@@ -819,6 +868,108 @@ def getgroupdata(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         managegroupshtml = managegroupshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(managegroupshtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def nextpostlist(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    groupname, nextfirst, nextlast = "", -1, -1
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    if request.POST.has_key('nextfirst'):
+        nextfirst = int(request.POST['nextfirst'])
+    if request.POST.has_key('nextlast'):
+        nextlast = int(request.POST['nextlast'])
+    if not groupname:
+        message = error_msg('1087')
+        response = HttpResponse(message)
+        return response
+    if nextfirst == -1 or nextlast == -1:
+        message = error_msg('1136')
+        response = HttpResponse(message)
+        return response
+    grpobj = None
+    try:
+        grpobj = Group.objects.get(groupname=groupname)
+    except:
+        message = error_msg('1084')%groupname
+        response = HttpResponse(message)
+        return response
+    postsqset = Post.objects.filter(posttargetgroup=grpobj).filter(relatedpost_id=None).order_by('-createdon')[nextfirst:(nextlast + 1)]
+    postcontent = []
+    for grppost in postsqset:
+        content = grppost.postcontent
+        content = content.replace("\n", "<br>")
+        poster = grppost.poster.displayname
+        msgtag = grppost.postmsgtag
+        posttargettype = grppost.posttargettype
+        posttargetgroup = grppost.posttargetgroup
+        posttargetuser = grppost.posttargetuser
+        posttargettest = grppost.posttargettest
+        attachmentfile = grppost.attachmentfile
+        attachmentfile = "media/" + poster + "/posts/" + attachmentfile
+        scope = 'public'
+        if grppost.scope != 'public':
+            continue # should be shown only to users who are in the contact list of the current user - will be implemented later.
+        if grppost.deleted or grppost.hidden: # Do not show this post.
+            continue
+        stars = grppost.stars
+        postid = grppost.id
+        # Now find out which posts are related to this post using the relatedpost_id field
+        subposts = Post.objects.filter(relatedpost_id=postid).order_by('-createdon')
+        subpostlist = []
+        for subp in subposts:
+            try:
+                subcontent = subp.postcontent
+                subcontent = subcontent.replace("\n", "<br>")
+                subposter = subp.poster.displayname
+                subattachment = subp.attachmentfile
+                subattachment = "media/" + subposter + "/posts/" + subattachment
+                subscope = 'public'
+                if subp.scope != 'public':
+                    continue
+                if subp.deleted or subp.hidden:
+                    continue
+                substars = subp.stars
+                subprofpic = "media/" + subp.poster.displayname + "/images/" + str(subp.poster.userpic)
+                subpostdate = subp.createdon
+                subpostid = subp.id
+                subpostdate = skillutils.pythontomysqldatetime(str(subpostdate))
+                subpost_params = [ subcontent, subposter, subattachment, subscope, substars.__str__(), subprofpic, subpostdate, subpostid ]
+                subpostlist.append(subpost_params)
+            except:
+                message = error_msg('1135') + "<br>" + sys.exc_info()[1].__str__()
+                response = HttpResponse(message)
+                continue
+        profpic = "media/" + grppost.poster.displayname + "/images/" + str(grppost.poster.userpic)
+        postdate = str(grppost.createdon)
+        try:
+            postdate = skillutils.pythontomysqldatetime(postdate)
+        except:
+            postdate = ""
+        postid = grppost.id
+        
+        postattr = (content, poster, attachmentfile, scope, stars.__str__(), profpic, postdate, postid, msgtag, posttargettype, subpostlist)
+        postcontent.append(postattr)
+    try:
+        postcontentenc = base64.b64encode(json.dumps(postcontent))
+    except:
+        message = error_msg('1135') + "\n" + sys.exc_info()[1].__str__()
+        print message
+        response = HttpResponse(message)
+        return response
+    message = postcontentenc
+    response = HttpResponse(message)
+    return response
 
 
 @skillutils.is_session_valid
@@ -1722,6 +1873,64 @@ def postmessagecontent(request):
     return response
 
 
-
+def postreplycontent(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    postid = -1
+    if request.POST.has_key('postid'):
+        postid = request.POST['postid']
+    else:
+        message = error_msg('1133')
+        response = HttpResponse(message)
+        return response
+    postobj = Post.objects.get(id=postid)
+    replycontent = request.POST['replycontent']
+    replyattachmentfile = ""
+    if request.FILES.has_key('replyattachment'):
+        replyattachmentpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "posts" + os.path.sep
+        replyattachmentfilename = request.FILES['replyattachment'].name.split(".")[0]
+        fpath, message, replyattachmentfile = skillutils.handleuploadedfile2(request.FILES['replyattachment'], replyattachmentpath, replyattachmentfilename)
+    postmsgtag = postobj.postmsgtag
+    posttargettype = postobj.posttargettype
+    posttargetuser = postobj.posttargetuser
+    posttargetgroup = postobj.posttargetgroup
+    posttargettest = postobj.posttargettest
+    scope = postobj.scope
+    relatedpost_id = postobj.id
+    deleted = postobj.deleted
+    hidden = postobj.hidden
+    stars = postobj.stars
+    replypostobj = Post()
+    replypostobj.postmsgtag = postmsgtag
+    replypostobj.postcontent = replycontent
+    replypostobj.posttargettype = posttargettype
+    replypostobj.posttargetgroup = posttargetgroup
+    replypostobj.posttargetuser = posttargetuser
+    replypostobj.posttargettest = posttargettest
+    replypostobj.scope = scope
+    replypostobj.relatedpost_id = relatedpost_id
+    replypostobj.deleted = deleted
+    replypostobj.hidden = hidden
+    replypostobj.stars = stars
+    replypostobj.attachmentfile = replyattachmentfile
+    replypostobj.poster = userobj
+    try:
+        replypostobj.save()
+    except:
+        message = error_msg('1134')
+        message += sys.exc_info()[1].__str__()
+        print message
+        response = HttpResponse(message)
+        return response
+    message = "You have successfully posted your reply message."
+    response = HttpResponse(message)
+    return response
+    
 
 

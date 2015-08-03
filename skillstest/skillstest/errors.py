@@ -128,6 +128,10 @@ error_codes = { \
         '1130' : 'Your message could not be sent as you did not specify any target for the message',\
         '1131' : 'There is no content to post. You have specified an empty message',\
         '1132' : 'Could not display the screen due to a technical issue. Please contact the site administrator as admin@testyard.com',\
+        '1133' : 'Did not find any post Id from the request. Check the data you are sending.',\
+        '1134' : 'Could not post your message due to some technical issue. Contact our support to resolve this.',\
+        '1135' : 'Could not open a related post due to a technical error.',\
+        '1136' : 'One or more parameters are missing or has invalid value.',\
     }
 
 def error_msg(code):

@@ -1065,20 +1065,68 @@
 	}
 
 
-	function collapsiblegroupposts(grpname, postslistenc){
+	function discardreply(postid){
+ 	    replydivid = "replydiv" + postid.toString();
+	    replydivcontrol = document.getElementById(replydivid);
+	    replydivcontrol.innerHTML = "";
+	    //replydivcontrol.style = "display:none;";
+	}
+
+	function postreply(postid){
+	    var postdata = new FormData(document.forms.namedItem("frmreplymsg"));
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    discardreply(postid);
+		    window.location.href = window.location.href;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{postreplyurl}}', true);
+	    xmlhttp.send(postdata)
+	}
+
+	// Function to open a collapsible editable interface for replying
+	// to a message posted in a group.
+	function showreplyscreen(postid){
+	    replydivid = "replydiv" + postid.toString();
+	    replydivcontrol = document.getElementById(replydivid);
+	    html = "<form name='frmreplymsg' method='POST' action='' enctype='multipart/form-data'>";
+	    html += "<table border=0 cellspacing='3' cellpadding='3'>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>*Reply Message:</font></td><td nowrap><textarea name='replycontent' cols='40' rows='10'></textarea></td></tr>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>Add Attachment:</font></td><td nowrap><input type='file' name='replyattachment' id='replyattachment' value=''></td></tr>";
+	    html += "<tr><td nowrap align='center' valign='middle' colspan='2'><input type='button' name='btnreplymsg' id='btnreplymsg' value='Send Reply' onClick='javascript:postreply(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancelreply' id='btncancelreply' value='Discard Reply' onClick='javascript:discardreply(" + postid + ");'></td></tr>";
+	    html += "{% csrf_token %}</table><input type='hidden' name='postid' value='" + postid + "'></form>";
+	    //alert(html);
+	    replydivcontrol.innerHTML = html;
+	    replydivcontrol.style = "";
+	    return(0);
+	}
+
+
+	function collapsiblegroupposts(grpname, postslistenc, lastelem){
 	    postslist_str = Base64.decode(postslistenc);
 	    postslist = JSON.parse(postslist_str);
 	    posts = "<br><br><font color='#0000AA' size=-1>";
 	    imgpattern = new RegExp("\\.(jpe?g|png|tiff?|bmp|gif|svg)$");
 	    postslength = postslist.length;
-	    if(postslength > 10){
-		postslength = 10;
+	    if(postslength > {{postsperpage}}){
+		postslength = {{postsperpage}};
 	    }
 	    for(var i=0; i < postslength; i++){
 		post = postslist[i];
 		attachedfile = post[2];
 		profilepic = post[5];
-		imgtag = "<table border=0><tr><td width='80%'><img src='" + profilepic + "' width='60px' height='60px'>";
+        	subposts = post[10];
+		//alert(subposts);
+		imgtag = "<table border=0><tr><td width='80%' colspan='2'><img src='" + profilepic + "' width='60px' height='60px'>";
 		posts += imgtag + "<br>" + post[1] + "<br></td>";
 		if(post[6] != "" && post[6] != 'None'){
 		    readabledate = humanreadabledate(post[6].toString());
@@ -1093,29 +1141,88 @@
 	    	}
 	    	else{
 		    attachedfileparts = attachedfile.split("/");
-		    posts += "<br><center><a href='" + attachedfile + "'>" + attachedfileparts[attachedfileparts.length - 1] + "</a></center>";
+		    posts += "<br><center><a href='" + attachedfile + "'><font color='#0000AA'><i>" + attachedfileparts[attachedfileparts.length - 1] + "</i></font></a></center>";
 	    	}
 		posts += "<br>" + post[0] + "<br>";
+		// Handle replies to this post here.
+	  	posts += Array(50).join("--");
+		for(var j=0;j < subposts.length;j++){
+		    subpostrecord = subposts[j];
+		    subprofpic = subpostrecord[5];
+		    subattachment = subpostrecord[2];
+		    subimgtag = Array(10).join(" ") + "<table border=0><tr><td width='5%'>&nbsp;</td><td width='80%'><img src='" + subprofpic + "' width='60px' height='60px'>";
+		    posts += subimgtag + "<br>" + subpostrecord[1] + "<br></td>";
+		    if(subpostrecord[6] != "" && subpostrecord[6] != 'None'){
+			subreadabledate = humanreadabledate(subpostrecord[6].toString());
+		        posts += "<td align='right' valign='top' width='30%' nowrap><i>Posted on </i>" + subreadabledate + "</td>";
+		    }
+		    else{
+			posts += "<td align='right' valign='top' width='30%'>&nbsp;</td>";
+		    }
+		    posts += "</tr>";
+		    if(imgpattern.test(subattachment)){
+		    	posts += "<br><center><img src='" + subattachment + "' width='200px' height='150px'></center>";
+	    	    }
+	    	    else{
+		    	subattachedfileparts = subattachment.split("/");
+		    	posts += "<tr><td width='5%'>&nbsp;</td><td width='75%'><center><a href='" + attachedfile + "'><font color='#0000AA'><i>" + subattachedfileparts[subattachedfileparts.length - 1] + "</i></font></a></center></td></tr>";
+	    	    }
+		    posts += "<tr><td width='5%'>&nbsp;</td><td width='70%'>" + subpostrecord[0] + "</td><tr></table>";
+		    posts += Array(50).join("--");
+		}
+		posts += "<br><br>";
+                posts += "<a href='#/' id='replyanchor" + post[7] + "' onClick='javascript:showreplyscreen(" + post[7] + ");'><i><font color='#0000AA' style='font-weight:bold;'>Join the Discussion</font></i></a>";
+		posts += "<br><div id='replydiv" + post[7] + "' style=''></div>";
 		posts += "<hr><br><br>";
 	    }
 	    posts += "</font>";
-	    if(postslist.length > 10){
-	    	posts += "<br><center><a href='#/' onClick='javascript:displaymore();'>Display More</a></center>";
+	    dispmorecontent = "";
+            if(postslist.length > 10){
+	    	dispmorecontent = "<br><center><a href='#/' onClick=javascript:displaymore('" + grpname + "','" + lastelem.toString() + "');>Display More</a></center>";
 	    }
 	    showdiv = document.getElementById("grouppostspanel");
-	    showdiv.innerHTML = posts;
+	    existingcontent = showdiv.innerHTML;
+	    showdiv.innerHTML = existingcontent + posts;
+	    dispmorediv = document.getElementById('displaymorediv');
+	    dispmorediv.innerHTML = dispmorecontent;
 	    anchor = document.getElementById('postsanchor');
-	    anchor.innerHTML = "Hide";
-	    anchor.setAttribute('onclick', 'hidegroupposts("' + grpname + '", "' + postslistenc + '");');
+	    anchor.innerHTML = " Hide";
+	    anchor.setAttribute('onclick', 'hidegroupposts("' + grpname + '", "' + postslistenc + '", "' + lastelem + '");');
+	}
+
+	// Function to display more message from the list of message posted to a group.
+	// Takes the name of the group as argument.
+	function displaymore(groupname, lastelem){
+	    nextfirst = parseInt(lastelem) + 1;
+	    nextlast = nextfirst + parseInt({{postsperpage}});
+    	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    showdiv = document.getElementById("grouppostspanel");
+	    postdata = "groupname=" + groupname + "&nextfirst=" + nextfirst.toString() + "&nextlast=" + nextlast.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+	    //alert(postdata);
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    postslistenc = xmlhttp.responseText;
+		    collapsiblegroupposts(groupname, postslistenc, nextlast);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{nextpostcontenturl}}', true);
+	    xmlhttp.send(postdata);
 	}
 
 
-	function hidegroupposts(grpname, postslistenc){
+	function hidegroupposts(grpname, postslistenc, lastelem){
 	    postsdiv = document.getElementById('grouppostspanel');
 	    postsdiv.innerHTML = "";
 	    anchor = document.getElementById('postsanchor');
-	    anchor.innerHTML = "Show";
-	    anchor.setAttribute('onclick', 'collapsiblegroupposts("' + grpname + '", "' + postslistenc + '");');
+	    anchor.innerHTML = " Show";
+	    anchor.setAttribute('onclick', 'collapsiblegroupposts("' + grpname + '", "' + postslistenc + '", ' + lastelem + ');');
 	}
 
 

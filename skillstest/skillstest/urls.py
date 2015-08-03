@@ -29,7 +29,7 @@ urlpatterns += patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^skillstest/admin/$', include(admin.site.urls)),
-                        
+
     url(r'^%s$'%mysettings.REGISTER_URL, 'skillstest.Auth.views.register', name='newuser'),
     url(r'^%s$'%mysettings.DASHBOARD_URL, 'skillstest.views.dashboard', name='dashboard'),
     url("%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login'),
@@ -88,5 +88,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SAVE_GROUP_JOIN_STATUS_URL, 'skillstest.Network.views.savegroupjoinstatus', name='savegroupjoinstatus'),
     url(r'%s$'%mysettings.CONNECTION_INVITE_HANDLER_URL, 'skillstest.Network.views.handleconnectinvitation', name='handleconnectinvitation'),
     url(r'%s$'%mysettings.POST_MESSAGE_CONTENT_URL, 'skillstest.Network.views.postmessagecontent', name='postmessagecontent'),
+    url(r'%s$'%mysettings.POST_REPLY_CONTENT_URL, 'skillstest.Network.views.postreplycontent', name='postreplycontent'),
+    url(r'%s$'%mysettings.NEXT_POST_LIST_URL, 'skillstest.Network.views.nextpostlist', name='nextpostlist'),
 )
 
