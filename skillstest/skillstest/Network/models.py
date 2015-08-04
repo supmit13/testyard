@@ -58,6 +58,8 @@ class Post(models.Model):
     hidden = models.BooleanField(default=False)
     stars = models.IntegerField(default=0)
     createdon = models.DateTimeField(auto_now=True,default=None)
+    newmsg = models.BooleanField(default=False) # This is relevant only if the 'posttargettype' field has 'user' as its value.
+    # If a message is not opened yet, this will be True.
 
     class Meta:
         verbose_name = "Posts Table"

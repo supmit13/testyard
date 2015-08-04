@@ -1367,6 +1367,79 @@
 	function manageconnection(connid){
 	}
 
+	function closemessagescreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.innerHTML = "";
+	    screendiv.style.display = 'none';
+	}
+
+	// Display all messages to the user - Inbox in the right panel.
+	function showmessages(messagesdictenc){
+	    messagesdictstr = Base64.decode(messagesdictenc);
+	    messagesdict = JSON.parse(messagesdictstr);
+	    screendiv = document.getElementById("transscreens");
+	    screendiv.style.display = "";
+	    html = "<center><font color='#0000FF' style='font-weight:bold;' size=+1>Message Inbox &nbsp;&nbsp;</font><a href='#/' onClick='javascript:closemessagescreen();'><font color='#0000FF' style='font-weight:bold;' size=-1>close<img src='static/images/redcross.jpg' height='18px' width='18px'></font></a></center>";
+	    html += "<center><table border='0' cellspacing='3' cellpadding='3'>";
+	    for (id in messagesdict){
+		if(messagesdict.hasOwnProperty(id)){
+		    messagedata = messagesdict[id]
+		    messageparts = messagedata.split("##");
+		    if(messageparts[0] == 'new'){
+			shortmessage = messageparts[5].substring(0, 40) + " ...";
+			msgtag = messageparts[4]
+			if(!messageparts[2] || messageparts[2] == 'None'){
+			    messageparts[2] = "";
+			}
+			msgparts2parts = messageparts[2].split("+");
+			messageparts[2] = msgparts2parts[0];
+			msgcontentenc = Base64.encode(messageparts[5]);
+			if(msgtag){
+	    	            html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[1] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[2] + "</font></td><td width='70%'><img src='static/images/new.png' height='30px' width='30px'><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\");'><font color='#FFFFFF' style='font-weight:bold;' size=-1>" + shortmessage + " (" + msgtag + ")</font></a></font><div id='msgdisp" + id + "' style='display:none;'></div></td><tr>";
+			}
+			else{
+			    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[1] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[2] + "</font></td><td width='70%'><img src='static/images/new.png' height='30px' width='30px'><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\");'><font color='#FFFFFF' style='font-weight:bold;' size=-1>" + shortmessage + "</font></a></font><div id='msgdisp" + id + "' style='display:none;'></div></td><tr>";
+			}
+		    }
+		    else{
+			shortmessage = messageparts[4].substring(0, 40) + " ...";
+			msgtag = messageparts[3]
+			if(!messageparts[1] || messageparts[1] == 'None'){
+			    messageparts[1] = "";
+			}
+			msgparts1parts = messageparts[1].split("+");
+			messageparts[1] = msgparts1parts[0];
+			msgcontentenc = Base64.encode(messageparts[4]);
+			if(msgtag){
+			    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[0] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[1] + "</font></td><td width='70%'><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\");'><font color='#FFFFFF' style='font-weight:bold;' size=-1>" + shortmessage + " (" + msgtag + ")</font></a><div id='msgdisp" + id + "' style='display:none;'></div></td><tr>";
+			}
+			else{
+			    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[0] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[1] + "</font></td><td width='70%'><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\");'><font color='#FFFFFF' style='font-weight:bold;' size=-1>" + shortmessage + "</font></a><div id='msgdisp" + id + "' style='display:none;'></div></td><tr>";
+			}
+		    }
+		}
+	    }
+	    html += "</table></center>";
+    	    screendiv.innerHTML = html;
+	}
+
+	// Display message content at the bottom of the entry in listing.
+	function displaymessage(postid, msgcontentenc){
+	    msgcontent = Base64.decode(msgcontentenc);
+	    //alert(msgcontent);
+	    displaydivid = "msgdisp" + postid;
+	    displaydiv = document.getElementById(displaydivid);
+	    displaydiv.style.display = "";
+	    divhtml = "<br><span width='80%'>" + msgcontent + "</span>";
+	    divhtml += "<br><br><a href='#/' onClick='javascript:showresponseform();'><font color='#0000FF' style='font-weight:bold;' size=-1>Reply</font></a><br><div id='respdiv'></div>";
+	    displaydiv.innerHTML = divhtml;
+	}
+
+
+	// Function to display the response form for the message displayed by the above 2 functions 
+	// (named 'displaymessage' and 'showmessages').
+	function showresponseform(){
+	}
 
 	</script>
 	

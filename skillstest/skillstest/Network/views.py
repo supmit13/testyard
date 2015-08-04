@@ -111,6 +111,7 @@ def network(request):
     testtakersdict = {}
     contactsdict = {}
     connectinvitesdict = {}
+    messagesdict = {}
     for contact in contactsqset:
         contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a> - <a href='#/' onClick='javascript:manageconnection(%s);'>manage</a>"%(contact.id, contact.connectedto.displayname, contact.id)
         contacts.append(contactlink)
@@ -134,6 +135,13 @@ def network(request):
     for topicobj in dyntopicsqset:
         topicunderscored = topicobj.topicname.replace(" ", "_")
         alltopicsdict[topicunderscored] = topicobj.topicname
+    messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj)
+    for messageobj in messagesqset:
+        messagesdict[messageobj.id] = messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + str(messageobj.attachmentfile) + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent
+        if messageobj.newmsg is True:
+            messagesdict[messageobj.id] = "new##" + messagesdict[messageobj.id]
+    messagesdictstr = json.dumps(messagesdict)
+    messagesdictenc = base64.b64encode(messagesdictstr)
     for conninvite in connectioninvitationsqset:
         fromuser = conninvite.fromuser
         fromusername = fromuser.displayname
@@ -163,6 +171,8 @@ def network(request):
     contextdict['testtakersdict'] = testtakersdict
     contextdict['contactsdict'] = contactsdict
     contextdict['connectinvitesdict'] = connectinvitesdict
+    contextdict['messagesdict'] = messagesdict
+    contextdict['messagesdictenc'] = messagesdictenc
     # Now create and render the template here
     tmpl = get_template("network/network.html")
     contextdict.update(csrf(request))
@@ -1836,6 +1846,7 @@ def postmessagecontent(request):
             post.postcontent = postcontent
             post.scope = 'public'
             post.attachmentfile = attachmentfile
+            post.newmsg = True
             try:
                 post.save()
             except:
@@ -1857,6 +1868,7 @@ def postmessagecontent(request):
             post.postcontent = postcontent
             post.scope = 'public'
             post.attachmentfile = attachmentfile
+            post.newmsg = True
             try:
                 post.save()
             except:
