@@ -56,6 +56,9 @@ def get_network_template_vars(userobj):
     templatevars['postreplyurl'] = mysettings.POST_REPLY_CONTENT_URL
     templatevars['nextpostcontenturl'] = mysettings.NEXT_POST_LIST_URL
     templatevars['postsperpage'] = mysettings.MAX_POSTS_IN_PAGE
+    templatevars['newmessagereadurl'] = mysettings.NEW_MESSAGE_READ_URL
+    templatevars['sendmessageresponseurl'] = mysettings.SEND_MSG_RESPONSE_URL
+    templatevars['messagesearchurl'] = mysettings.MESSAGE_SEARCH_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -112,11 +115,14 @@ def network(request):
     contactsdict = {}
     connectinvitesdict = {}
     messagesdict = {}
+    uobjlist = []
     for contact in contactsqset:
         contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a> - <a href='#/' onClick='javascript:manageconnection(%s);'>manage</a>"%(contact.id, contact.connectedto.displayname, contact.id)
         contacts.append(contactlink)
         if not contactsdict.has_key(str()):
             contactsdict[str(contact.id)] = contact.connectedto.displayname
+            uobj = User.objects.get(displayname=contact.connectedto.displayname)
+            uobjlist.append(uobj)
         else:
             pass
     for groupmember in groupmembersqset:
@@ -135,11 +141,52 @@ def network(request):
     for topicobj in dyntopicsqset:
         topicunderscored = topicobj.topicname.replace(" ", "_")
         alltopicsdict[topicunderscored] = topicobj.topicname
-    messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj)
+    messageiduseddict = {};
+    messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
     for messageobj in messagesqset:
-        messagesdict[messageobj.id] = messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + str(messageobj.attachmentfile) + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent
+        if messageobj.attachmentfile:
+            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'>Attachment</a>")
+        else:
+            attachtag = ""
+        messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
         if messageobj.newmsg is True:
-            messagesdict[messageobj.id] = "new##" + messagesdict[messageobj.id]
+            messagesdict[messageobj.id] = ["new##" + messagesdict[messageobj.id][0], ]
+        if not messageiduseddict.has_key(messageobj.id):
+            messageiduseddict[messageobj.id] = 1
+        else:
+            pass
+        subpostsqset1 = Post.objects.filter(posttargettype='user', poster=userobj, relatedpost_id=messageobj.id).order_by('-createdon')
+        subpostsqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=messageobj.id).order_by('-createdon')
+        subpostsqset = list(chain(subpostsqset1, subpostsqset2))
+        subpostslist = []
+        for subpost in subpostsqset:
+            if not messageiduseddict.has_key(subpost.id):
+                messageiduseddict[subpost.id] = 1
+            else:
+                pass
+            poststr = ""
+            if subpost.newmsg is True:
+                poststr = "new##"
+            if subpost.attachmentfile:
+                attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'>Attachment</a>")
+            else:
+                attachtag = ""
+            poststr += str(subpost.id) + "##" + subpost.poster.displayname + "##" + str(subpost.createdon) + "##" + attachtag + "##" + subpost.postmsgtag + "##" + subpost.postcontent
+            subpostslist.append(poststr)
+        messagesdict[messageobj.id].append(subpostslist)
+    messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')
+    for messageobj in messagesqset2:
+        if not messageiduseddict.has_key(messageobj.id):
+            messageiduseddict[messageobj.id] = 1
+        else:
+            pass
+        if messageobj.attachmentfile:
+            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'>Attachment</a>")
+        else:
+            attachtag = ""
+        messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
+        if messageobj.newmsg is True:
+            messagesdict[messageobj.id] = ["new##" + messagesdict[messageobj.id][0], ]
     messagesdictstr = json.dumps(messagesdict)
     messagesdictenc = base64.b64encode(messagesdictstr)
     for conninvite in connectioninvitationsqset:
@@ -1885,6 +1932,9 @@ def postmessagecontent(request):
     return response
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def postreplycontent(request):
     if request.method != 'POST':
         message = error_msg('1004')
@@ -1944,5 +1994,144 @@ def postreplycontent(request):
     response = HttpResponse(message)
     return response
     
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def newmessageread(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    postid = -1
+    if request.POST.has_key('postid'):
+        postid = request.POST['postid']
+    else:
+        message = error_msg('1133')
+        response = HttpResponse(message)
+        return response
+    postobj = Post.objects.get(id=postid)
+    postobj.newmsg = False
+    postobj.save() # Saved the record with newmsg set to False, meaning that the post is no longer new.
+    response = HttpResponse(message)
+    return response # We won't be using this response anywhere, but we need to send it since django views should send back an HttpResponse object.
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def sendmsgresponse(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    responsemsgfile = ""
+    txtresponse = ""
+    postid = 0
+    if request.POST.has_key('postid'):
+        postid = request.POST['postid']
+    if request.POST.has_key('responsemsgfile' + postid):
+        responsemsgfile = request.POST['responsemsgfile' + postid]
+    if request.POST.has_key('txtresponse' + postid):
+        txtresponse = request.POST['txtresponse' + postid]
+    parentpostobj = None
+    try:
+        parentpostobj = Post.objects.get(id=postid)
+    except:
+        message = error_msg('1137')
+        response = HttpResponse(message)
+        return response
+    responseattachmentfile = ""
+    if request.FILES.has_key('responsemsgfile' + postid):
+        responseattachmentpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "posts" + os.path.sep
+        responseattachmentfilename = request.FILES['responsemsgfile' + postid].name.split(".")[0]
+        fpath, message, responseattachmentfile = skillutils.handleuploadedfile2(request.FILES['responsemsgfile' + postid], responseattachmentpath, responseattachmentfilename)
+    postmsgtag = parentpostobj.postmsgtag
+    childpostobj = Post()
+    childpostobj.postmsgtag = postmsgtag
+    childpostobj.postcontent = txtresponse
+    childpostobj.poster = userobj
+    childpostobj.posttargettype = 'user'
+    childpostobj.posttargetuser = parentpostobj.poster
+    childpostobj.scope = 'public'
+    childpostobj.relatedpost_id = parentpostobj.id
+    childpostobj.newmsg = True
+    childpostobj.attachmentfile = responseattachmentfile
+    childpostobj.save()
+    message = "Successfully posted the response message."
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def msgsearch(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    searchphrase = ""
+    if request.POST.has_key('searchphrase'):
+        searchphrase = request.POST['searchphrase']
+    else:
+        message = error_msg('1138')
+        response = HttpResponse(message)
+        return response
+    grpmemberqset = GroupMember.objects.filter(member=userobj, status=True, removed=False)
+    groupslist = []
+    for grpmemberobj in grpmemberqset:
+        group = grpmemberobj.group
+        groupslist.append(group)
+    # Find all messages pertaining to this user. This will include:
+    # 1. All messages received by the user.
+    # 2. All messages sent by the user.
+    # 3. All messages posted on the set of groups of which the concerned user is a member.
+    # 4. All messages exchanged by the user with respect to the tests that the user has taken or associated with.
+    # Note: The point #4 will be implemented later. Currently we will implement the first 3 points only.
+    postsrecvdqset = Post.objects.filter(posttargetuser=userobj, posttargettype='user')
+    postssentqset = Post.objects.filter(posttargettype='user', poster=userobj)
+    postsgroupsqset = Post.objects.filter(posttargettype='group', posttargetgroup__in=groupslist)
+    allpostslist = list(chain(postsrecvdqset, postssentqset, postsgroupsqset))
+    #allpostslist = list(chain(postsrecvdqset, postssentqset))
+    messagesdict = {}
+    searchpattern = re.compile(searchphrase, re.IGNORECASE|re.DOTALL)
+    for postobj in allpostslist:
+        postcontent = postobj.postcontent
+        postmsgtag = postobj.postmsgtag
+        attachfilename = postobj.attachmentfile
+        postername = postobj.poster.displayname
+        # Currently, we are handling only 4 fields to search: postcontent, postmsgtag, attachmentfile and poster's displayname
+        msgtagmatch = searchpattern.search(postmsgtag)
+        postcontentmatch = searchpattern.search(postcontent)
+        attachedfilematch = searchpattern.search(attachfilename)
+        posternamematch = searchpattern.search(postername)
+        searchrecord = ""
+        if msgtagmatch or postcontentmatch or attachedfilematch or posternamematch:
+            newflag = postobj.newmsg
+            if newflag:
+                searchrecord += "new##"
+            attachtag = "<a href='" + "media/" + postobj.poster.displayname + "/posts/" + attachfilename + "'>" + attachfilename + "</a>"
+            searchrecord += postobj.poster.displayname + "##" + str(postobj.createdon) + "##" + attachtag + "##" + postmsgtag + "##" + postcontent + "##searchphrase=" + searchphrase
+            postid = postobj.id
+            messagesdict[postid] = [searchrecord, ]
+    messagesdictstr = json.dumps(messagesdict)
+    messagesdictenc = base64.b64encode(messagesdictstr)
+    response = HttpResponse(messagesdictenc)
+    return response
+
+
 
 

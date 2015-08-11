@@ -132,6 +132,8 @@ error_codes = { \
         '1134' : 'Could not post your message due to some technical issue. Contact our support to resolve this.',\
         '1135' : 'Could not open a related post due to a technical error.',\
         '1136' : 'One or more parameters are missing or has invalid value.',\
+        '1137' : 'Post with the given Id does not exist.',\
+        '1138' : 'No search phrase or term was found in request',\
     }
 
 def error_msg(code):

@@ -143,6 +143,9 @@ CONNECTION_INVITE_HANDLER_URL = "skillstest/network/connect/handleinvitation/"
 POST_MESSAGE_CONTENT_URL = "skillstest/network/postcontent/"
 POST_REPLY_CONTENT_URL = "skillstest/network/postreply/"
 NEXT_POST_LIST_URL = "skillstest/network/posts/paginatedcontent/"
+NEW_MESSAGE_READ_URL = "skillstest/network/posts/newmsgread/"
+SEND_MSG_RESPONSE_URL = "skillstest/network/posts/sendmsgresponse/"
+MESSAGE_SEARCH_URL = "skillstest/network/posts/msgsearch/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

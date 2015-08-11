@@ -90,5 +90,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.POST_MESSAGE_CONTENT_URL, 'skillstest.Network.views.postmessagecontent', name='postmessagecontent'),
     url(r'%s$'%mysettings.POST_REPLY_CONTENT_URL, 'skillstest.Network.views.postreplycontent', name='postreplycontent'),
     url(r'%s$'%mysettings.NEXT_POST_LIST_URL, 'skillstest.Network.views.nextpostlist', name='nextpostlist'),
+    url(r'%s$'%mysettings.NEW_MESSAGE_READ_URL, 'skillstest.Network.views.newmessageread', name='newmessageread'),
+    url(r'%s$'%mysettings.SEND_MSG_RESPONSE_URL, 'skillstest.Network.views.sendmsgresponse', name='sendmsgresponse'),
+    url(r'%s$'%mysettings.MESSAGE_SEARCH_URL, 'skillstest.Network.views.msgsearch', name='msgsearch'),
 )
 
