@@ -1373,6 +1373,7 @@
 	    screendiv.style.display = 'none';
 	}
 
+
 	// Method initiator to search messages
 	function messagesearch(){
 	    searchphrase = document.getElementById('msgsearch').value;
@@ -1607,7 +1608,79 @@
 	}
 
 
+	function sendtesttogroups(){
+	    testid = document.frmtesttogroups.test.options[document.frmtesttogroups.test.options.selectedIndex].value;
+	    var postdata = "testid=" + testid;
+	    var groupidlist = "";
+	    for(i=0;i < document.frmtesttogroups.groups.length; i++){
+		if(document.frmtesttogroups.groups[i].selected == true){
+		    groupidlist = groupidlist + document.frmtesttogroups.groups[i].value + "##";
+		}
+	    }
+	    // Chip out the last 2 '##' chars ...
+	    glen = groupidlist.length;
+	    groupidlist = groupidlist.slice(0, glen - 2);
+	    // ... with those gone, form the postdata string
+	    postdata += "&groups=" + groupidlist;
+	    postdata += "&csrfmiddlewaretoken=" + document.frmtesttogroups.csrfmiddlewaretoken.value;
+	    actionurl = document.frmtesttogroups.action;
+	    var xmlhttp;
+   	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    closescreen2();
+		}
+	    };
+	    xmlhttp.open('POST', actionurl, true);
+	    xmlhttp.send(postdata);
+	}
+
+
 	function givetesttogroups(){
+	    transdiv = document.getElementById('transscreens2');
+	    transdiv.style.display = "";
+	    var xmlhttp;
+	    var fmt = "json";
+	    postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    html = "<center><form name='frmtesttogroups' id='frmtesttogroups' method='POST' action='{{testtogroupsurl}}'><table border=0 width='70%'>";
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    responsedict = JSON.parse(xmlhttp.responseText);
+		    testsdict = responsedict.tests
+		    groupsdict = responsedict.groups
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test'>";
+		    for (testname in testsdict){
+			testid = testsdict[testname];
+			html += "<option value='" + testid + "'>" + testname + "</option>";
+		    }
+	    	    html += "</select></td></tr>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' multiple>";
+		    for (groupname in groupsdict){
+			groupid = groupsdict[groupname];
+			html += "<option value='" + groupid + "'>" + groupname + "</option>";
+		    }
+		    html += "</select></td></tr>";
+		    html += "<tr><td colspan='2' align='center'><input type='button' name='btngive' value='Send Test' onClick='javascript:sendtesttogroups();'>&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Screen' onClick='javascript:closescreen2();'></td></tr>";
+	    	    html += "</table>{% csrf_token %}</form></center>";
+		    transdiv.innerHTML = html;
+		}
+	    };
+	    xmlhttp.open('POST', '{{gettestgroupsurl}}', true);
+	    xmlhttp.send(postdata);
 	}
 
 	</script>

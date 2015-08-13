@@ -93,5 +93,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.NEW_MESSAGE_READ_URL, 'skillstest.Network.views.newmessageread', name='newmessageread'),
     url(r'%s$'%mysettings.SEND_MSG_RESPONSE_URL, 'skillstest.Network.views.sendmsgresponse', name='sendmsgresponse'),
     url(r'%s$'%mysettings.MESSAGE_SEARCH_URL, 'skillstest.Network.views.msgsearch', name='msgsearch'),
+    url(r'%s$'%mysettings.TEST_TO_GROUPS_URL, 'skillstest.Network.views.givetesttogroups', name='givetesttogroups'),
+    url(r'%s$'%mysettings.GET_TEST_GROUPS_URL, 'skillstest.Network.views.gettestsandgroups', name='gettestsandgroups'),
 )
 

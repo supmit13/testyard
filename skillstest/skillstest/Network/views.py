@@ -11,6 +11,7 @@ from django.utils.http import base36_to_int, is_safe_url
 from django.template import Template, Context
 from django.template.loader import get_template
 from django.contrib.sites.models import get_current_site
+from django.core.mail import send_mail
 from django.contrib.sessions.backends.db import SessionStore
 
 # Standard libraries...
@@ -22,6 +23,7 @@ import simplejson as json
 import socket
 import base64
 from itertools import chain
+from threading import Thread
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -59,6 +61,8 @@ def get_network_template_vars(userobj):
     templatevars['newmessagereadurl'] = mysettings.NEW_MESSAGE_READ_URL
     templatevars['sendmessageresponseurl'] = mysettings.SEND_MSG_RESPONSE_URL
     templatevars['messagesearchurl'] = mysettings.MESSAGE_SEARCH_URL
+    templatevars['testtogroupsurl'] = mysettings.TEST_TO_GROUPS_URL
+    templatevars['gettestgroupsurl'] = mysettings.GET_TEST_GROUPS_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -1845,6 +1849,7 @@ def postmessagecontent(request):
         message = error_msg('1131')
         response = HttpResponse(message)
         return response
+    postcontent = postcontent.replace("\n", "<br>")
     targetgroupids = targetgroups
     targetconnectionids = targetconnections
     targettestids = targettests
@@ -1953,6 +1958,7 @@ def postreplycontent(request):
         return response
     postobj = Post.objects.get(id=postid)
     replycontent = request.POST['replycontent']
+    replycontent = replycontent.replace("\n", "<br>")
     replyattachmentfile = ""
     if request.FILES.has_key('replyattachment'):
         replyattachmentpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "posts" + os.path.sep
@@ -2133,5 +2139,135 @@ def msgsearch(request):
     return response
 
 
+"""
+This function creates an HTTP request at the background and sends it to the method that emails a test to a set of users.
+"""
+def sendtestemails(request, testid, emailidlist):
+    postdata = { "testid" : testid, }
+    baseurl = skillutils.gethosturl(request)
+    txtemailslist = ",".join(emailidlist)
+    postdata['baseurl'] = baseurl
+    postdata['txtemailslist'] = txtemailslist
+    curtime = datetime.datetime.now()
+    yyyy = str(curtime.year)
+    mon = str(curtime.month)
+    dd = str(curtime.day)
+    hh = str(curtime.hour)
+    mm = str(curtime.minute)
+    ss = str(curtime.second)
+    if mon.__len__() < 2:
+        mon = '0' + mon
+    if dd.__len__() < 2:
+        dd = '0' + dd
+    if hh.__len__() < 2:
+        hh = '0' + hh
+    if mm.__len__() < 2:
+        mm = '0' + mm
+    if hh.__len__() < 2:
+        hh = '0' + hh
+    validfrom = dd + "-" + mon + "-" + yyyy + " " + hh + ":" + mm + ":" + ss
+    csrftoken = request.POST['csrfmiddlewaretoken']
+    postdata['validfrom'] = validfrom
+    postdata['validtill'] = ""
+    postdata['csrfmiddlewaretoken'] = csrftoken
+    opener = urllib2.build_opener(urllib2.HTTPHandler, urllib2.HTTPSHandler)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    postdata = urllib.urlencode(postdata) 
+    headers = {'Cookie' : "sessioncode=" + sesscode + ";usertype=" + usertype + ";csrftoken=" + csrftoken}
+    postrequest = urllib2.Request(baseurl + "/skillstest/test/sendtestinvitations/", postdata, headers)
+    try:
+        opener.open(postrequest)
+        message = "Successfully sent the test email to %s members."%emailidlist.__len__()
+    except:
+        message = "Could not send emails for test identified by Id %s to all identified users: %s"%(testid, sys.exc_info()[1].__str__())
+    # Send an email with 'message' to the user identified in 'userobj'
+    subject = "Sent test to members of the selected group(s)"
+    fromaddr = userobj.emailid
+    email = fromaddr
+    try:
+        retval = send_mail(subject, message, fromaddr, [email,], False)
+    except:
+        message = error_msg('1141')
+        print message
+    return None
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def givetesttogroups(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = "";
+    testid, groupidstr, groupidlist = "", "", []
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    if request.POST.has_key('groups'):
+        groupidstr = request.POST['groups']
+    if not testid or not groupidstr:
+        message = error_msg('1139')
+        response = HttpResponse(message)
+        return response
+    groupidlist = groupidstr.split("##")
+    # Extract unique email Ids from all the selected groups
+    uniqueemailids = {}
+    for grpid in groupidlist:
+        groupobj = Group.objects.get(id=grpid)
+        grpmemberqset = GroupMember.objects.filter(group=groupobj)
+        for grpmemberobj in grpmemberqset:
+            memberobj = grpmemberobj.member
+            memberemail = memberobj.emailid
+            uniqueemailids[memberemail] = 1
+    uniqueemailslist = uniqueemailids.keys()
+    # Send an internal HTTP request to 'Tests.views.sendtestinvitations'. Create a background thread to do that.
+    thread = Thread(target=sendtestemails, args = (request, testid, uniqueemailslist))
+    thread.start()
+    response = HttpResponse(error_msg('1140'))
+    #thread.join()
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def gettestsandgroups(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    fmt = request.POST.get('format', 'json') # default format is 'json'. At present we will serve data as json encoded text only.
+    testsqset = Test.objects.filter(creator=userobj)
+    testsdict = {}
+    for testobj in testsqset:
+        testid = testobj.id
+        testname = testobj.testname
+        testsdict[testname] = testid
+    groupsdict = {}
+    groupsqset = Group.objects.filter(owner=userobj)
+    for groupobj in groupsqset:
+        groupid = groupobj.id
+        groupname = groupobj.groupname
+        groupsdict[groupname] = groupid
+    respdict = { 'groups' : groupsdict, 'tests' : testsdict }
+    respstr = json.dumps(respdict)
+    response = HttpResponse(respstr)
+    return response
 
 

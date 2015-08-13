@@ -134,6 +134,9 @@ error_codes = { \
         '1136' : 'One or more parameters are missing or has invalid value.',\
         '1137' : 'Post with the given Id does not exist.',\
         '1138' : 'No search phrase or term was found in request',\
+        '1139' : 'No test Id or groups has been specified in request.',\
+        '1140' : 'The test is being sent to all members of the selected group(s). An email specfying the number of users to whom the test has been sent to will be dispatched to your registered email address once the process completes. It might take a while depending on the number of users the test is being sent.',\
+        '1141' : 'Failed to send the confirmation email to the test owner.',\
     }
 
 def error_msg(code):

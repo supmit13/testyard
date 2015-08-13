@@ -146,6 +146,8 @@ NEXT_POST_LIST_URL = "skillstest/network/posts/paginatedcontent/"
 NEW_MESSAGE_READ_URL = "skillstest/network/posts/newmsgread/"
 SEND_MSG_RESPONSE_URL = "skillstest/network/posts/sendmsgresponse/"
 MESSAGE_SEARCH_URL = "skillstest/network/posts/msgsearch/"
+TEST_TO_GROUPS_URL = "skillstest/network/testtogroups/"
+GET_TEST_GROUPS_URL = "skillstest/network/gettests/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

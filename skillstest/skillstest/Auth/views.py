@@ -344,6 +344,6 @@ def acctactivation(request):
         activehtml = tmpl.render(cxt)
         return HttpResponse(activehtml)
     except:
-        return HttpResponse("Email could not be validated.\n")
+        return HttpResponse("Email could not be validated - %s.\n"%sys.exc_info()[1].__str__())
 
 

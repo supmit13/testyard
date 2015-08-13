@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'skillstest.Auth',
     'skillstest.Tests',
     'skillstest.Subscription',
+    'skillstest.Network',
 )
 
 # A sample logging configuration. The only tangible logging

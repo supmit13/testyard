@@ -109,7 +109,6 @@ function uploader(viewurl, csrftoken){
 function uploadimage(){
   var targeturl = document.profimageuploadform.action;
   var postdata = new FormData(document.forms.namedItem("profimageuploadform"));
-  //alert(postdata);
   var xmlhttp;
   if (window.XMLHttpRequest){
     xmlhttp=new XMLHttpRequest();
@@ -141,11 +140,127 @@ function uploadimage(){
 function checknumeric(field){
   fieldval = field.value.trim();
   if(isNaN(+fieldval) || !isFinite(fieldval)){
-    alert("This field cannot be non-numeric");
+    alert(field.name + " field cannot be non-numeric");
     field.value = "";
     field.focus();
     return false;
   }
   return true;
 }
+
+function showworking(){
+  var workstatusdiv = document.getElementById('workstatus');
+  workstatusdiv.style.display = "";
+  workstatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+}
+
+
+function checkbrowser(){
+    var nVer = navigator.appVersion;
+    var nAgt = navigator.userAgent;
+    var browserName  = navigator.appName;
+    var fullVersion  = ''+parseFloat(navigator.appVersion); 
+    var majorVersion = parseInt(navigator.appVersion,10);
+    var nameOffset,verOffset,ix;
+
+    minsupportedversiondict = {};
+    minsupportedversiondict['Chrome'] = 26;
+    minsupportedversiondict['Firefox'] = 37;
+    minsupportedversiondict['Microsoft Internet Explorer'] = 37;
+    minsupportedversiondict['Opera'] = 29;
+    minsupportedversiondict['Safari'] = 37;
+
+    // In Opera 15+, the true version is after "OPR/" 
+    if ((verOffset=nAgt.indexOf("OPR/"))!=-1) {
+	browserName = "Opera";
+	fullVersion = nAgt.substring(verOffset+4);
+    }
+    // In older Opera, the true version is after "Opera" or after "Version"
+    else if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
+        browserName = "Opera";
+        fullVersion = nAgt.substring(verOffset+6);
+    	if ((verOffset=nAgt.indexOf("Version"))!=-1){
+            fullVersion = nAgt.substring(verOffset+8);
+	}
+    }
+    // In MSIE, the true version is after "MSIE" in userAgent
+    else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
+        browserName = "Microsoft Internet Explorer";
+        fullVersion = nAgt.substring(verOffset+5);
+    }
+    // In Chrome, the true version is after "Chrome" 
+    else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
+ 	browserName = "Chrome";
+ 	fullVersion = nAgt.substring(verOffset+7);
+    }
+    // In Safari, the true version is after "Safari" or after "Version" 
+    else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
+ 	browserName = "Safari";
+ 	fullVersion = nAgt.substring(verOffset+7);
+ 	if ((verOffset=nAgt.indexOf("Version"))!=-1){
+   	     fullVersion = nAgt.substring(verOffset+8);
+	}
+    }
+    // In Firefox, the true version is after "Firefox" 
+    else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
+ 	browserName = "Firefox";
+ 	fullVersion = nAgt.substring(verOffset+8);
+    }
+    // In most other browsers, "name/version" is at the end of userAgent 
+    else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) < (verOffset=nAgt.lastIndexOf('/')) ){
+        browserName = nAgt.substring(nameOffset,verOffset);
+ 	fullVersion = nAgt.substring(verOffset+1);
+ 	if (browserName.toLowerCase()==browserName.toUpperCase()) {
+  	    browserName = navigator.appName;
+ 	}
+    }
+    // trim the fullVersion string at semicolon/space if present
+    if ((ix=fullVersion.indexOf(";"))!=-1){
+   	fullVersion=fullVersion.substring(0,ix);
+    }
+    if ((ix=fullVersion.indexOf(" "))!=-1){
+   	fullVersion=fullVersion.substring(0,ix);
+    }
+    majorVersion = parseInt(''+fullVersion,10);
+    if (isNaN(majorVersion)) {
+ 	fullVersion  = ''+parseFloat(navigator.appVersion); 
+ 	majorVersion = parseInt(navigator.appVersion,10);
+    }
+    //alert(majorVersion);
+    if(browserName != "Microsoft Internet Explorer" && browserName != "Chrome" && browserName != "Firefox" && browserName != "Safari" && browserName != "Opera"){
+	document.write("<center><font color='#AA0000' style='font-weight:bold;'>The browser you are using is not supported by this application. Hence, some functions available on this website might not work as expected.<br />To surpass this issue, please download the latest version of one of the following browsers: Mozilla Firefox, Microsoft Internet Explorer, Opera, Google Chrome, Safari.</font></center>");
+	return (false);
+    }
+    if(browserName == "Chrome" && majorVersion < minsupportedversiondict[browserName]){
+	document.write("<center><font color='#AA0000' style='font-weight:bold;'>The version of Chrome you are using is not supported by this website. Hence, some functions available on this website might not work as expected.<br />To surpass this issue, please download the latest version of Chrome.</font></center>");
+	return(false);
+    }
+    else if(browserName == "Firefox" && majorVersion < minsupportedversiondict[browserName]){
+        document.write("<center><font color='#AA0000' style='font-weight:bold;'>The version of Firefox you are using is not supported by this website. Hence, some functions available on this website might not work as expected.<br />To surpass this issue, please download the latest version of Firefox.</font></center>");
+	return(false);
+    }
+    else if(browserName == "Microsoft Internet Explorer" && majorVersion < minsupportedversiondict[browserName]){
+	document.write("<center><font color='#AA0000' style='font-weight:bold;'>The version of Internet Explorer you are using is not supported by this website. Hence, some functions available on this website might not work as expected.<br />To surpass this issue, please download the latest version of Internet Explorer.</font></center>");
+	return(false);
+    }
+    else if(browserName == "Opera" && majorVersion < minsupportedversiondict[browserName]){
+	document.write("<center><font color='#AA0000' style='font-weight:bold;'>The version of Opera you are using is not supported by this website. Hence, some functions available on this website might not work as expected.<br />To surpass this issue, please download the latest version of Opera.</font></center>");
+	return(false);
+    }
+    else if(browserName == "Safari" && majorVersion < minsupportedversiondict[browserName]){
+	document.write("<center><font color='#AA0000' style='font-weight:bold;'>The version of Safari you are using is not supported by this website. Hence, some functions available on this website might not work as expected.<br />To surpass this issue, please download the latest version of Safari.</font></center>");
+	return(false);
+    }
+    return (true);
+}
+
+// Utility routine, mostly used for dumping large amount of data to a file.
+function WriteFile(textcontent){
+    var fso  = new ActiveXObject("Scripting.FileSystemObject"); 
+    var fh = fso.CreateTextFile("/home/supriyo/work/testyard/dump.txt", true); 
+    fh.WriteLine(textcontent); 
+    fh.Close(); 
+}
+
+
 
