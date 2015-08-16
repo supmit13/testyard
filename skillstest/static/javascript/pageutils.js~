@@ -263,4 +263,28 @@ function WriteFile(textcontent){
 }
 
 
+// Function to execute <script> tags in innerHTML
+function stripandexecutescript(text){
+    var scripts = '';
+    var cleaned = text.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, function(){
+        scripts += arguments[1] + '\n';
+        return '';
+    });
+    if (window.execScript){
+        window.execScript(scripts);
+    } 
+    else {
+        var head = document.getElementsByTagName('head')[0];
+        var scriptElement = document.createElement('script');
+        scriptElement.setAttribute('type', 'text/javascript');
+        scriptElement.innerText = scripts;
+        head.appendChild(scriptElement);
+	alert(scripts);
+        head.removeChild(scriptElement);
+    }
+    return cleaned;
+}
+
+
+
 
