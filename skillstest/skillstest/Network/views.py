@@ -149,7 +149,7 @@ def network(request):
     messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
     for messageobj in messagesqset:
         if messageobj.attachmentfile:
-            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'>Attachment</a>")
+            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
         else:
             attachtag = ""
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
@@ -172,7 +172,7 @@ def network(request):
             if subpost.newmsg is True:
                 poststr = "new##"
             if subpost.attachmentfile:
-                attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'>Attachment</a>")
+                attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
             else:
                 attachtag = ""
             poststr += str(subpost.id) + "##" + subpost.poster.displayname + "##" + str(subpost.createdon) + "##" + attachtag + "##" + subpost.postmsgtag + "##" + subpost.postcontent
@@ -185,7 +185,7 @@ def network(request):
         else:
             pass
         if messageobj.attachmentfile:
-            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'>Attachment</a>")
+            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
         else:
             attachtag = ""
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
@@ -2142,7 +2142,7 @@ def msgsearch(request):
 """
 This function creates an HTTP request at the background and sends it to the method that emails a test to a set of users.
 """
-def sendtestemails(request, testid, emailidlist):
+def sendtestemails(request, testid, forcefreshurl, emailidlist):
     postdata = { "testid" : testid, }
     baseurl = skillutils.gethosturl(request)
     txtemailslist = ",".join(emailidlist)
@@ -2169,6 +2169,7 @@ def sendtestemails(request, testid, emailidlist):
     csrftoken = request.POST['csrfmiddlewaretoken']
     postdata['validfrom'] = validfrom
     postdata['validtill'] = ""
+    postdata['forcefreshurl'] = forcefreshurl
     postdata['csrfmiddlewaretoken'] = csrftoken
     opener = urllib2.build_opener(urllib2.HTTPHandler, urllib2.HTTPSHandler)
     sesscode = request.COOKIES['sessioncode']
@@ -2213,10 +2214,13 @@ def givetesttogroups(request):
     userobj = sessionobj[0].user
     message = "";
     testid, groupidstr, groupidlist = "", "", []
+    forcefreshurl = 0
     if request.POST.has_key('testid'):
         testid = request.POST['testid']
     if request.POST.has_key('groups'):
         groupidstr = request.POST['groups']
+    if request.POST.has_key('forcefreshurl'):
+        forcefreshurl = request.POST['forcefreshurl']
     if not testid or not groupidstr:
         message = error_msg('1139')
         response = HttpResponse(message)
@@ -2233,7 +2237,7 @@ def givetesttogroups(request):
             uniqueemailids[memberemail] = 1
     uniqueemailslist = uniqueemailids.keys()
     # Send an internal HTTP request to 'Tests.views.sendtestinvitations'. Create a background thread to do that.
-    thread = Thread(target=sendtestemails, args = (request, testid, uniqueemailslist))
+    thread = Thread(target=sendtestemails, args = (request, testid, forcefreshurl, uniqueemailslist))
     thread.start()
     response = HttpResponse(error_msg('1140'))
     #thread.join()

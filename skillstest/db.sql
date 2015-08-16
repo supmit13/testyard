@@ -579,4 +579,21 @@ alter table Network_post add column createdon datetime not NULL;
 
 alter table Network_post add column newmsg boolean default false;
 
+create table Tests_emailfailure (
+    id int(11) NOT NULL AUTO_INCREMENT,
+    user_id int(11) NOT NULL,
+    sessionid varchar(50) NOT NULL,
+    failedemailid varchar(100) NOT NULL,
+    script varchar(100) default '',
+    failuredatetime datetime NOT NULL,
+    failurereason text default '',
+    tryagain int(11) default 0,
+    primary key (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
+)ENGINE=Innodb;
+
+alter table Tests_emailfailure modify sessionid varchar(100) NOT NULL;
+
+alter table Tests_challenge convert to character set utf8mb4;
+
 COMMIT;

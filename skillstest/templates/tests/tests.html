@@ -5,9 +5,6 @@
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script>
 	 
-
-	<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
-	
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -22,7 +19,6 @@
 	</style>
 
 	<script language='javascript'>
-        
 
 	{{ assocevalgrps }}
 	var draggableevalgrps = function () {
@@ -58,7 +54,7 @@
         #content{height: 400px;width: 650px;}
 
         
-}
+
 	</style> 
 	<!-- Code pertaining to drag/drop evaluator group names ends here -->
 	
@@ -665,7 +661,8 @@
 		      }
 		      var thediv=document.getElementById('createtestdiv');
 		      thediv.style.display = "";
-		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      thediv.innerHTML = xmlhttp.responseText;
+		      //stripandexecutescript(thediv.innerHTML); // Execute the javascript code in script tags.
 		      return(false);
   		    }
   		  };
@@ -989,7 +986,7 @@
   		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		    var thediv=document.getElementById('createtestdiv');
 		    thediv.style.display = "";
-		    thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		    thediv.innerHTML = xmlhttp.responseText;
   		  }
   		  };
 		  //alert('{{hosturl}}/{{ testsummaryurl }}?test_id=' + testid);
@@ -1848,7 +1845,8 @@
   	 	  validfrom = document.getElementById('validfrom' + testid.toString());
 		  validtill = document.getElementById('validtill' + testid.toString());
    		  baseurl = document.getElementById('baseurl' + testid.toString());
-		  postdata = postdata + "&csrfmiddlewaretoken=" + csrftoken.value + "&txtemailslist=" + emailslist.value + "&validfrom=" + validfrom.value + "&validtill=" + validtill.value + "&baseurl=" + baseurl.value;
+  	 	  forcefreshurl = document.getElementById('forcefreshurl').value;
+		  postdata = postdata + "&csrfmiddlewaretoken=" + csrftoken.value + "&txtemailslist=" + emailslist.value + "&validfrom=" + validfrom.value + "&validtill=" + validtill.value + "&baseurl=" + baseurl.value + "&forcefreshurl=" + forcefreshurl;
 		  xmlhttp.onreadystatechange = function(){
 		    //alert(xmlhttp.responseText);
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -1926,7 +1924,7 @@
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<!-- Tests HTML goes here. -->
-			<div id='createtestdiv' style='display: none;'></div>
+			<div id='createtestdiv' style='display:none;'></div>
 			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
 			<h3><font color='#00BB00'>Alternatively, you may upload a new test from the screen pointed to by this link: {{ uploadlink }}</font></h3>
 			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>

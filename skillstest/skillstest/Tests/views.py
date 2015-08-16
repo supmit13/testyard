@@ -16,6 +16,7 @@ from django.contrib.sites.models import get_current_site
 from django.contrib.sessions.backends.db import SessionStore
 from django.core.mail import send_mail
 from passlib.hash import pbkdf2_sha256 # To create hash of passwords
+from django.utils.encoding import smart_text
 
 # Standard libraries...
 import os, sys, re, time, datetime
@@ -33,7 +34,7 @@ import xml.etree.ElementTree as et
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -262,6 +263,8 @@ in mysql compatible form : yyyy-mm-dd hh:min:ss
 """
 def get_next_date(curtestdate, attemptsinterval, attemptsintervalunit):
     datepart, timepart = curtestdate.split(" ")
+    timepartslist = timepart.split("+")
+    timepart = timepartslist[0]
     YYYY, MM, DD = datepart.split("-")
     hh, mm, ss = timepart.split(":")
     if attemptsintervalunit == 'h':
@@ -502,7 +505,7 @@ def manage(request):
                 next_test_date = "Not Applicable"
             else:
                 if test_taken_on:
-                    next_test_date = get_next_date(test_taken_on, attemptsinterval, attemptsintervalunit)
+                    next_test_date = get_next_date(str(test_taken_on), attemptsinterval, attemptsintervalunit)
                 else:
                     next_test_date = "Anytime" # If no usertest object exists then the user would be able to take the test anytime.
             visibility = utobj.visibility
@@ -874,7 +877,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     edit_challenge_dict = { 'lastchallengectr' : lastchallengectr, 'testlinkid' : testlinkid, 'multimediareqd' : multimediareqd, 'totalscore' : totalscore, 'challengedurationseconds' : challengedurationseconds, 'testtype' : testtype }
     edit_challenge_dict['answeringoptions'] = ""
     if testtype == 'COMP':
-        challengetypeslist = "<b>Select Challenge Type</b><select name='challengetype' onchange='javascript:displayoptions();'>"
+        challengetypeslist = "<font color='#0000AA' style='font-weight:bold;'>Select Challenge Type</font><select name='challengetype' onchange='javascript:displayoptions();'>"
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
             if ttcode == 'SUBJ':
@@ -883,24 +886,24 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
                 continue # A challenge cannot be composite
             else:
                 challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
-        challengetypeslist += "</select><br /><div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</b>(leave empty for no limit)</p></div>"
+        challengetypeslist += "</select><br /><div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</font>(leave empty for no limit)</p></div>"
         edit_challenge_dict['challengetypeslist'] = challengetypeslist
     elif testtype == 'MULT' or testtype == 'FILB': # For 'CODN', 'ALGO' and 'SUBJ' type challenges, we need not provide any answering options.
         edit_challenge_dict['answeringoptions'] = "<p>"
         if testtype == 'MULT':
-            edit_challenge_dict['answeringoptions'] += "<b>Can there be more than one correct option:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' onchange='javascript:displayresponsekeycontrols();'>No<br />"
-            edit_challenge_dict['answeringoptions'] += "<b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br />"
+            edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Can there be more than one correct option:</font>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' onchange='javascript:displayresponsekeycontrols();'>No<br />"
+            edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Please enter the options you want to be made available for this challenge/question.(max 8 options) </font><br />"
             edit_challenge_dict['answeringoptions'] += "<i>Option #a:</i> <input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #b</i>: <input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #c:</i> <input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #d:</i> <input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #e:</i> <input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #f:</i> <input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #g:</i> <input type='text' name='choice7' value='' onblur='javascript:displayresponsekeycontrols();'><br /><i>Option #h:</i> <input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p>"
-            edit_challenge_dict['responsekeyscontrolslist'] = "<b>Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br />"
+            edit_challenge_dict['responsekeyscontrolslist'] = "<font color='#0000AA' style='font-weight:bold;'>Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</font><br />"
             # Since the default value for 'oneormore' is yes, we will initialize the 'responsekeyscontrolslist' with checkbox controls.
             edit_challenge_dict['responsekeyscontrolslist'] += "<i>Option #a: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #b: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #c: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #d: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #e: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #f: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #g: <input type='checkbox' name='responsekey[]' value=''></i><br /><i>Option #h: <input type='checkbox' name='responsekey[]' value=''></i><br />"
         else:
             edit_challenge_dict['answeringoptions'] += "<input type='hidden' name='oneormore' value='no'>"
-            edit_challenge_dict['responsekeyscontrolslist'] = "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='' size='10' maxlength='250'><br />"
+            edit_challenge_dict['responsekeyscontrolslist'] = "<font color='#0000AA' style='font-weight:bold;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</font><input type='text' name='responsekey' value='' size='10' maxlength='250'><br />"
     elif testtype == 'CODN' or testtype == 'ALGO': # For these testtypes user may want some constraints on the size of the response.
-        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p>"
+        edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </font>(leave empty for no limit.)</p>"
     elif testtype == 'SUBJ':
-        edit_challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</b>(leave empty for no limit)</p>"
+        edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</font>(leave empty for no limit)</p>"
     lastchallengectr = int(lastchallengectr) + 1
     edit_challenge_dict['testlinkid'] = testlinkid
     edit_challenge_dict['test_id'] = testobj.id
@@ -983,7 +986,7 @@ def edit(request):
     if request.POST.has_key('testlinkid'):
         challengeobj.testlinkid = request.POST['testlinkid']
     if request.POST.has_key('statement'):
-        challengeobj.statement = request.POST['statement']
+        challengeobj.statement = smart_text(request.POST['statement'], encoding='utf-8')
     if request.POST.has_key('challengetype'):
         challengeobj.challengetype = request.POST['challengetype']
     else:
@@ -1069,7 +1072,7 @@ def edit(request):
             ctrlcounter = fld.groups()[0]
             if not request.POST[controlname] or request.POST[controlname].strip() == "":
                 continue
-            challengeobj.__dict__['option%s'%ctrlcounter] = request.POST[controlname].strip()
+            challengeobj.__dict__['option%s'%ctrlcounter] = smart_text(request.POST[controlname].strip(), encoding='utf-8')
     # Store the responsekey if challengetype value is 'FILB' or 'MULT'
     # A note on the format used to store responsekey(s): For challengetype
     # value of 'FILB', the responsekey will be a single entry and will be
@@ -1080,15 +1083,15 @@ def edit(request):
     # using the string '#||#'.
     challengeobj.responsekey = None
     if challengeobj.challengetype == 'FILB' and request.POST.has_key('responsekey'):
-        challengeobj.responsekey = request.POST['responsekey']
+        challengeobj.responsekey = smart_text(request.POST['responsekey'], encoding='utf-8')
     elif challengeobj.challengetype == 'MULT' and request.POST.has_key('responsekey') or request.POST.has_key('responsekey[]'):
         if oneormore == "no": # Only a single option will be correct
-            challengeobj.responsekey = request.POST['responsekey']
+            challengeobj.responsekey = smart_text(request.POST['responsekey'], encoding='utf-8')
             challengeobj.oneormore = False
         elif oneormore == "yes": # Multiple options may be checked
             responses = request.POST.getlist('responsekey[]')
             challengeobj.oneormore = True
-            challengeobj.responsekey = '#||#'.join(responses)
+            challengeobj.responsekey = smart_text('#||#'.join(responses), encoding='utf-8')
     # ... and finally save the challenge object.
     challengeobj.save()
     savedchallengesqset = Challenge.objects.filter(test=testobj)
@@ -1951,7 +1954,7 @@ def editchallenge(request):
             challenge_dict['skillqualitylist'] += "<option value='%s'>%s</option>"%(skillqual, mysettings.SKILL_QUALITY[skillqual])
     challengetypeslist = ''
     if challenge_dict['testtype'] == 'COMP':
-        challengetypeslist += "<b>Select Challenge Type</b><select name='challengetype' onchange='javascript:displayoptions();'>"
+        challengetypeslist += "<font color='#0000AA' style='font-weight:bold;'>Select Challenge Type</font><select name='challengetype' onchange='javascript:displayoptions();'>"
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
             if ttcode == challengeobj.challengetype:
@@ -1962,54 +1965,54 @@ def editchallenge(request):
                 challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
         challengetypeslist += "</select><br />"
         if challengeobj.challengetype == 'SUBJ':
-            challengetypeslist += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> words</b>(leave empty for no limit)</p></div>"%(challenge_dict['maxsizeallowable'].__str__())
+            challengetypeslist += "<div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> words</font><font color='#0000AA'>(leave empty for no limit)</font></p></div>"%(challenge_dict['maxsizeallowable'].__str__())
         elif challengeobj.challengetype == 'CODN' or challengeobj.challengetype == 'ALGO':
-            challengetypeslist += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6'> lines</b>(leave empty for no limit)</p></div>"%(challenge_dict['maxsizeallowable'].__str__())
+            challengetypeslist += "<div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6'> lines</font><font color='#0000AA'>(leave empty for no limit)</font></p></div>"%(challenge_dict['maxsizeallowable'].__str__())
         else:
             pass
     challenge_dict['challengetypeslist'] = challengetypeslist
     challenge_dict['responsekeyscontrolslist'] = ''
     challenge_dict['answeringoptions'] = ''
     if challengeobj.challengetype == 'MULT':
-        challenge_dict['responsekeyscontrolslist'] += "<b>Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>"
+        challenge_dict['responsekeyscontrolslist'] += "<font color='#0000AA' style='font-weight:bold;'>Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</font><br>"
         if challenge_dict['oneormore']:
-            challenge_dict['answeringoptions'] += "<p><b>Can there be more than one correct option:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' onchange='javascript:displayresponsekeycontrols();'>No<br />"
+            challenge_dict['answeringoptions'] += "<p><font color='#0000AA' style='font-weight:bold;'>Can there be more than one correct option:</font>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true onchange='javascript:displayresponsekeycontrols();'><font color='#0000AA' size=-1>Yes</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' onchange='javascript:displayresponsekeycontrols();'><font color='#0000AA' size=-1>No</font><br />"
         else:
-            challenge_dict['answeringoptions'] += "<p><b>Can there be more than one correct option:</b>&nbsp;<input type='radio' name='oneormore' value='yes' onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' checked=true onchange='javascript:displayresponsekeycontrols();'>No<br />"
-        challenge_dict['answeringoptions'] += "<b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br />"
+            challenge_dict['answeringoptions'] += "<p><font color='#0000AA' style='font-weight:bold;'>Can there be more than one correct option:</font>&nbsp;<input type='radio' name='oneormore' value='yes' onchange='javascript:displayresponsekeycontrols();'><font color='#0000AA' size=-1>Yes</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no' checked=true onchange='javascript:displayresponsekeycontrols();'><font color='#0000AA' size=-1>No</font><br />"
+        challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Please enter the options you want to be made available for this challenge/question.(max 8 options) </font><br />"
         #print challenge_dict['options'][4]
         if challenge_dict['options'].__len__() > 0 and challenge_dict['options'][0]:
-            challenge_dict['answeringoptions'] += "<i>Option #a:</i> <input type='text' name='choice1' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][0])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #a:</font></i> <input type='text' name='choice1' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][0])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #a:</i> <input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #a:</font></i> <input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 1 and challenge_dict['options'][1]:
-            challenge_dict['answeringoptions'] += "<i>Option #b</i>: <input type='text' name='choice2' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][1])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #b:</font></i> <input type='text' name='choice2' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][1])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #b</i>: <input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #b:</font></i> <input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 2 and challenge_dict['options'][2]:
-            challenge_dict['answeringoptions'] += "<i>Option #c:</i> <input type='text' name='choice3' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][2])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #c:</font></i> <input type='text' name='choice3' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][2])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #c:</i> <input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #c:</font></i> <input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 3 and challenge_dict['options'][3]:
-            challenge_dict['answeringoptions'] += "<i>Option #d:</i> <input type='text' name='choice4' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][3])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #d:</font></i> <input type='text' name='choice4' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][3])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #d:</i> <input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #d:</font></i> <input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 4 and challenge_dict['options'][4]:
-            challenge_dict['answeringoptions'] += "<i>Option #e:</i> <input type='text' name='choice5' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][4])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #e:</font></i> <input type='text' name='choice5' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][4])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #e:</i> <input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #e:</font></i> <input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 5 and challenge_dict['options'][5]:
-            challenge_dict['answeringoptions'] += "<i>Option #f:</i> <input type='text' name='choice6' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][5])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #f:</font></i> <input type='text' name='choice6' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][5])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #f:</i> <input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #f:</font></i> <input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 6 and challenge_dict['options'][6]:
-            challenge_dict['answeringoptions'] += "<i>Option #g:</i> <input type='text' name='choice7' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][6])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #g:</font></i> <input type='text' name='choice7' value='%s' onblur='javascript:displayresponsekeycontrols();'><br />"%(challenge_dict['options'][6])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #g:</i> <input type='text' name='choice7' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #g:</font></i> <input type='text' name='choice7' value='' onblur='javascript:displayresponsekeycontrols();'><br />"
         if challenge_dict['options'].__len__() > 7 and challenge_dict['options'][7]:
-            challenge_dict['answeringoptions'] += "<i>Option #h:</i> <input type='text' name='choice8' value='%s' onblur='javascript:displayresponsekeycontrols();'></p>"%(challenge_dict['options'][7])
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #h:</font></i> <input type='text' name='choice8' value='%s' onblur='javascript:displayresponsekeycontrols();'></p>"%(challenge_dict['options'][7])
         else:
-            challenge_dict['answeringoptions'] += "<i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p>"
+            challenge_dict['answeringoptions'] += "<i><font color='#0000AA' size=-1>Option #h:</font></i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p>"
         if challenge_dict['oneormore']:
             for option in challenge_dict['options']:
                 if option  in challenge_dict['responsekey']:
@@ -2023,7 +2026,7 @@ def editchallenge(request):
                 else:
                     challenge_dict['responsekeyscontrolslist'] += "<i><input type='radio' name='responsekey' value='" + option + "'>" + option + "</i><br>"
     elif challengeobj.challengetype == 'FILB':
-         challenge_dict['responsekeyscontrolslist'] += "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='%s' size='10' maxlength='250'><br>"%(challenge_dict['responsekey'][0])
+         challenge_dict['responsekeyscontrolslist'] += "<font color='#0000AA' style='font-weight:bold;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</font><input type='text' name='responsekey' value='%s' size='10' maxlength='250'><br>"%(challenge_dict['responsekey'][0])
          challenge_dict['answeringoptions'] += "<input type='hidden' name='oneormore' value='no'>"
     elif challengeobj.challengetype == 'CODN' or challengeobj.challengetype == 'ALGO':
         pass
@@ -2520,15 +2523,15 @@ def sendtestdata(request):
         userresponseobj.challenge = Challenge.objects.filter(id=challengeid)[0]
         userresponseobj.emailaddr = useremail
         if challengetype == 'CODN' or challengetype == 'ALGO' or challengetype == 'SUBJ':
-            userresponseobj.answer = resptext
+            userresponseobj.answer = smart_text(resptext, encoding='utf-8')
         elif challengetype == 'MULT':
             if oneormore == 'true': # checkboxes
                 selectedoptionstring = "#||#".join(chkboxselectedoptions)
-                userresponseobj.answer = selectedoptionstring
+                userresponseobj.answer = smart_text(selectedoptionstring, encoding='utf-8')
             else:
-                userresponseobj.answer = urllib.unquote(radioselection)
+                userresponseobj.answer = smart_text(urllib.unquote(radioselection), encoding='utf-8')
         elif challengetype == 'FILB':
-            userresponseobj.answer = filbtext
+            userresponseobj.answer = smart_text(filbtext, encoding='utf-8')
         userresponseobj.candidate_comment = ""
         userresponseobj.tabref = tabref
         userresponseobj.tabid = tabid
@@ -2639,6 +2642,11 @@ def sendtestinvitations(request):
     testid = request.POST['testid']
     baseurl = request.POST['baseurl']
     emailsliststr = request.POST['txtemailslist']
+    forcefreshurl = 0
+    if request.POST.has_key('forcefreshurl'):
+        forcefreshurl = request.POST['forcefreshurl']
+    if forcefreshurl == '':
+        forcefreshurl = 0
     joingroupflag = request.POST.get('joingroupflag', None)
     emailsliststr = re.sub(re.compile(r"%20", re.MULTILINE|re.DOTALL), mysettings.HEXCODE_CHAR_MAP['%20'], emailsliststr) # replace for whitespace
     emailsliststr = re.sub(re.compile(r"%2C", re.MULTILINE|re.DOTALL), ",", emailsliststr) # replace for comma
@@ -2743,6 +2751,7 @@ def sendtestinvitations(request):
     # user to sign up in order to take the test. Once the user signs up, a
     # record pertaining to the user and test will be entered in Tests_usertest
     # and the record in 'wouldbeuser' will be deleted.
+    error_emails_list = [] # This will contain all those email ids to which the test invitation email could not be sent.
     for email in emailslist:
         """ This email should not be the test creator's or one of the evaluator's emails."""
         if email == testobj.creator.emailid or email in testevalemailidlist:
@@ -2759,7 +2768,7 @@ def sendtestinvitations(request):
             # If so, we will use the URL created that time. A new record
             # will be inserted in the appropriate table.
             checkexistsusrtestobj = UserTest.objects.filter(test = testobj).filter(emailaddr = uobj.emailid)
-            if checkexistsusrtestobj and checkexistsusrtestobj.__len__() > 0:
+            if checkexistsusrtestobj and checkexistsusrtestobj.__len__() > 0 and forcefreshurl == 0:
                 usertestobj = UserTest()
                 testlink = checkexistsusrtestobj[0].testurl
                 usertestobj.testurl = testlink
@@ -2783,7 +2792,7 @@ def sendtestinvitations(request):
             # Check if we had sent a URL to this user for this test already.
             # If so, we will use the URL created that time.
             wouldbeuserobj = WouldbeUsers()
-            if checkexistswldbeobj and checkexistswldbeobj.__len__() > 0:
+            if checkexistswldbeobj and checkexistswldbeobj.__len__() > 0 and forcefreshurl == 0:
                 testlink = checkexistswldbeobj[0].testurl
                 wouldbeuserobj.testurl = testlink
                 wouldbeuserobj.emailaddr = email
@@ -2836,9 +2845,26 @@ def sendtestinvitations(request):
             if mysettings.DEBUG:
                 print "Error: sendemail failed for %s - %s\n"%(email, sys.exc_info()[1].__str__())
             message = "Error: sendemail failed for %s - %s\n"%(email, sys.exc_info()[1].__str__())
-            response = HttpResponse(message)
-            return response
+            error_emails_list.append(email)
+            #response = HttpResponse(message)
+            #return response
+            continue # Continue processing the rest of the emails in the list.
     message = "Success! All candidates have been emailed with the link."
+    # Dump all emails Ids to which email could not be sent
+    for error_email in error_emails_list:
+        print error_email
+        emailfail = EmailFailure()
+        emailfail.user = userobj
+        emailfail.sessionid = sesscode
+        emailfail.failedemailid = error_email
+        emailfail.script = 'Tests.views.sendtestinvitations'
+        emailfail.failurereason = sys.exc_info()[1].__str__()
+        emailfail.tryagain = 1
+        try:
+            emailfail.save()
+        except:
+            message = sys.exc_info()[1].__str__()
+            print message
     response = HttpResponse(message)
     return(response)
 

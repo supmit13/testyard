@@ -334,7 +334,25 @@ class WouldbeUsers(models.Model):
     """
     def __unicode__(self):
         return "%s ==>> %s"%(self.test.testname, self.emailaddr)
-
     """
+
+
+"""
+Model to store failures in sending test invitation emails
+"""
+class EmailFailure(models.Model):
+    user = models.ForeignKey(User, related_name="+", null=False, blank=False) # User who tried sending the email
+    sessionid = models.CharField(max_length=100)
+    failedemailid = models.CharField(max_length=100) # This is the email Id to which email could not be sent
+    script = models.CharField(max_length=100, default='') # This will contain the name of the script that tried to send the email.
+    failuredatetime = models.DateTimeField(auto_now=True, null=False, blank=False)
+    failurereason = models.TextField(default='', null=True, blank=True)
+    tryagain = models.IntegerField(default=0) # 0 means it should NOT retry sending the email automatically. 
+    # **Note: Automatic sending/resending of emails has to be implemented later.
+
+    class Meta:
+        verbose_name = "emailfailure Table"
+        db_table = 'Tests_emailfailure'
+
 
 
