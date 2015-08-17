@@ -279,7 +279,7 @@ function stripandexecutescript(text){
         scriptElement.setAttribute('type', 'text/javascript');
         scriptElement.innerText = scripts;
         head.appendChild(scriptElement);
-	alert(scripts);
+	//alert(scripts);
         head.removeChild(scriptElement);
     }
     return cleaned;

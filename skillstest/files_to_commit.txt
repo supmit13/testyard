@@ -1147,5 +1147,11 @@ Mon, 17 Aug 2015, 01:59 HRS (IST).
 29.static/tinymce/*
 30.static/typeit/*
 31.files_to_commit.txt
+=========================================
 
+Tue, 18 Aug 2015, 02:38 HRS (IST).
+----------------------------------
+1. static/javascript/pageutils.js
+2. templates/tests/tests.html
+3. files_to_commit.txt
 
