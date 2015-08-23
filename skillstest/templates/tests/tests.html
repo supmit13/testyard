@@ -1922,32 +1922,68 @@
   		    xmlhttp.send(postdata);
 		}
 
-	function opencanvas(){
+
+	function opencanvas(testid, challengeid){
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	    	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    canvashtml = xmlhttp.responseText;
+		    //alert(canvashtml);
+		    cnvshndl = window.open("", "canvaswindow", "width=800, height=500, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
+		    cnvshndl.document.write(canvashtml);
+	    	}
+	    };
+	    xmlhttp.open("GET", '{{ getcanvasurl }}' + "?testid=" + testid + "&challengeid=" + challengeid, true);
+	    xmlhttp.send();
+	}
+
+
+	function opencanvas_ver1(){
 	    drawdiv = document.getElementById('drawcanvas');
 	    drawhtml = "<div class='container'><canvas id='drawingcanvas' class='imageView' width='400' height='300'><p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p><p>Supported browsers: <a href='http://www.opera.com'>Opera</a>, <a href='http://www.mozilla.com'>Firefox</a>, <a href='http://www.apple.com/safari'>Safari</a>, and <a href='http://www.konqueror.org'>Konqueror</a>.</p></canvas></div><a href='#/' onClick='javascript:removecanvas();'><font color='#AA0000' size=-1><i>Remove canvas (and discard drawing).</i></font></a>";
 	    // Add a script block in head
-	    var scripttag = document.createElement("script");
-	    scripttag.type = "text/javascript";
- 	    scripttag.src = "static/javascript/drawing.js";
-	    document.head.appendChild(scripttag);
-	    var event;
-	    if (document.createEvent) {
-    		event = document.createEvent("HTMLEvents");
-    		event.initEvent("divloaded", true, true);
-  	    } 
-	    else{
-    		event = document.createEventObject();
-    		event.eventType = "divloaded";
-  	    }
-	    event.eventName = "divloaded";
+	    // Check if we have a script tag with source pointed to drawing.js
+	    drawingpattern = new RegExp("drawing\.js");
+    	    allscripttags = document.getElementsByTagName('script');
+	    drawingfound = 0;
+	    for(var i=0; i < allscripttags.length; i++){
+		scripttag = allscripttags[i];
+		if(scripttag.src && drawingpattern.test(scripttag.src)){
+		    drawingfound = 1;
+		    break;
+		}
+	    }
+	    if(!drawingfound){ // Create the script tag with src pointing to drawing.js only if we don't already have one.
+	        var scripttag = document.createElement("script");
+	        scripttag.type = "text/javascript";
+	        scripttag.async = true;
+	        document.head.appendChild(scripttag);
+	    	scripttag.src = "static/javascript/drawing.js";
+	    }
 	    drawdiv.innerHTML = drawhtml;
+	    drawdiv.style.display = "";
+	    var evt;
 	    if (document.createEvent) {
-    		drawdiv.dispatchEvent(event);
+    		evt = document.createEvent("MutationEvents");
+    		evt.initEvent("divloaded", true, true);
   	    } 
 	    else{
-    		drawdiv.fireEvent("on" + event.eventType, event);
+    		evt = document.createEventObject();
+    		evt.eventType = "divloaded";
   	    }
-	    drawdiv.dispatchEvent(event);
+	    evt.eventName = "divloaded";
+	    if (document.createEvent){
+    		drawdiv.dispatchEvent(evt);
+  	    }
+	    else{
+    		drawdiv.fireEvent("on" + evt.eventType, evt);
+  	    }
 	}
 
 	

@@ -124,6 +124,8 @@ GET_CURRENT_EVALUATION_DATA_URL = "skillstest/test/getcurrentevaldata/"
 TEST_BULK_UPLOAD_URL = "skillstest/test/bulkupload/"
 SHOW_TEST_INFO_URL = "skillstest/test/showtestinfo/"
 SET_VISIBILITY_URL = "skillstest/test/visibility/"
+GET_CANVAS_URL = "skillstest/test/getcanvas/"
+SAVE_DRAWING_URL = "skillstest/test/savedrawing/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"

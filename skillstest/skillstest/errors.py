@@ -137,6 +137,7 @@ error_codes = { \
         '1139' : 'No test Id or groups has been specified in request.',\
         '1140' : 'The test is being sent to all members of the selected group(s). An email specfying the number of users to whom the test has been sent to will be dispatched to your registered email address once the process completes. It might take a while depending on the number of users the test is being sent.',\
         '1141' : 'Failed to send the confirmation email to the test owner.',\
+        '1142' : 'This image is not connected to any test. You first need to create a test or edit an existing one to save this image.',\
     }
 
 def error_msg(code):

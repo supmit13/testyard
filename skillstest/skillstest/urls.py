@@ -71,6 +71,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.TEST_BULK_UPLOAD_URL, 'skillstest.Tests.views.createtestbulkupload', name='createtestbulkupload'),
     url(r'%s$'%mysettings.SHOW_TEST_INFO_URL, 'skillstest.Tests.views.showtestinfo', name='showtestpage'),
     url(r'%s$'%mysettings.SET_VISIBILITY_URL, 'skillstest.Tests.views.setvisibility', name='setvisibility'),
+    url(r'%s$'%mysettings.GET_CANVAS_URL, 'skillstest.Tests.views.getcanvas', name='getcanvas'),
+    url(r'%s$'%mysettings.SAVE_DRAWING_URL, 'skillstest.Tests.views.savedrawing', name='savedrawing'),
 
     url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
     url(r'%s$'%mysettings.CHECK_GRPNAME_AVAIL_URL, 'skillstest.Network.views.checkgrpnameavailability', name='creategroup'),

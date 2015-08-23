@@ -49,7 +49,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -200,6 +200,8 @@ def get_user_tests(request):
     tests_user_dict['evaluateresponseurl'] = skillutils.gethosturl(request) + "/" + evaluateresponseurl
     tests_user_dict['getevaluationdetailsurl'] = skillutils.gethosturl(request) + "/" + getevaluationdetailsurl
     tests_user_dict['settestvisibilityurl'] = skillutils.gethosturl(request) + "/" + settestvisibilityurl
+    tests_user_dict['getcanvasurl'] = skillutils.gethosturl(request) + "/" + getcanvasurl
+    tests_user_dict['savedrawingurl'] = skillutils.gethosturl(request) + "/" + savedrawingurl
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
@@ -1044,6 +1046,8 @@ def edit(request):
         username = userobj.displayname
         fpath, message, challengemedia = skillutils.handleuploadedfile(request.FILES['mediafile'], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__(), mediafilename)
         challengeobj.mediafile = request.FILES['mediafile'].name
+    #if request.POST.has_key('imagecreatedfile') and request.POST['imagecreatedfile'] != '':
+    #    challengeobj.mediafile = request.POST['imagecreatedfile'] # An image drawn on canvas by the user overrides an image uploaded by the user.
     challengeobj.maxresponsesizeallowable = -1
     if request.POST.has_key('maxsizewords'):
         challengeobj.maxresponsesizeallowable = request.POST['maxsizewords']
@@ -4289,4 +4293,100 @@ def showtestinfo(request):
     return HttpResponse(serialized_data)
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_exempt
+def getcanvas(request):
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid, challengeid = -1, -1
+    if request.GET.has_key('testid') and request.GET['testid'] != "":
+        testid = request.GET['testid']
+    if request.GET.has_key('challengeid') and request.GET['challengeid'] != "":
+        challengeid = request.GET['challengeid']
+    contextdict = { 'savedrawingurl' : mysettings.SAVE_DRAWING_URL, 'testid' : str(testid), 'challengeid' : str(challengeid) }
+    if request.method == 'GET':
+        tmpl = get_template("tests/canvas.html")
+        contextdict.update(csrf(request))
+        cxt = Context(contextdict)
+        canvashtml = tmpl.render(cxt)
+    return HttpResponse(canvashtml)
+
+
+"""
+This method returns back the image filename if the challenge is a new one that is being created. If it 
+is an existing challenge, then it returns back an empty string if successful. In all other cases of 
+errors, it returns back a string that starts with "Error: ", and the rest of the message describes the
+type of error encountered while processing the submitted image. Note: The mediafile created has a name
+composed of the Id of the test and the timestamp of the moment at which the image is saved.
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def savedrawing(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid, challengeid = -1, -1
+    if request.POST.has_key('testid') and request.POST['testid'] != '':
+        testid = request.POST['testid']
+    if testid == -1:
+        message = "Error: %s"%error_msg('1142')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = "Error: %s"%error_msg('1056')
+        response = HttpResponse(message)
+        return response
+    canvasdata = request.POST['canvasdata']
+    canvasdata = base64.b64decode(canvasdata)
+    imageheader = "data:image/png;base64,"
+    canvasdata = canvasdata.replace(imageheader, "")
+    # Base64 decode it one more time to retrieve the binary data
+    canvasdata = base64.b64decode(canvasdata)
+    mediafilename = "t" + testid + "_" + str(int(time.time())) + ".png"
+    mediapath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "tests" + os.path.sep + testid + os.path.sep + mediafilename
+    returnval = ""
+    try:
+        fp = open(mediapath, "wb+")
+        fp.write(canvasdata)
+        fp.close()
+    except:
+        returnval = "Error: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(returnval)
+        return response
+    if request.POST.has_key('challengeid') and request.POST['challengeid'] != '' and request.POST['challengeid'] != '-1':
+        challengeid = request.POST['challengeid']
+        challengeobj = Challenge.objects.get(id=challengeid)
+        challengeobj.mediafile = mediafilename
+        challengeobj.save()
+        response = HttpResponse(returnval)
+        return response
+    else: # The challenge is not yet created, but is in the process of being created. So return back the filename so that the user may submit it while creating the challenge.
+        response = HttpResponse(mediafilename)
+        return response
+
+
+    
 
