@@ -1922,6 +1922,33 @@
   		    xmlhttp.send(postdata);
 		}
 
+	var popupBlockerChecker = {
+        check: function(popup_window){
+            var _scope = this;
+            if (popup_window) {
+                if(/chrome/.test(navigator.userAgent.toLowerCase())){
+                    setTimeout(function () {
+                        _scope._is_popup_blocked(_scope, popup_window);
+                     },200);
+                }
+		else{
+                    popup_window.onload = function () {
+                        _scope._is_popup_blocked(_scope, popup_window);
+                    };
+                }
+            }
+	    else{
+                _scope._displayError();
+            }
+	},
+	_is_popup_blocked: function(scope, popup_window){
+	    if ((popup_window.innerHeight > 0)==false){ scope._displayError(); }
+	},
+	_displayError: function(){
+	    alert("Popup Blocker is enabled! Please add this site to your exception list and click on the 'click here to draw' link once again. We regret this inconvenience.");
+	}
+    	};
+
 
 	function opencanvas(testid, challengeid){
 	    var xmlhttp;
@@ -1936,6 +1963,7 @@
 		    canvashtml = xmlhttp.responseText;
 		    //alert(canvashtml);
 		    cnvshndl = window.open("", "canvaswindow", "width=800, height=500, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
+		    popupBlockerChecker.check(cnvshndl);
 		    cnvshndl.document.write(canvashtml);
 	    	}
 	    };

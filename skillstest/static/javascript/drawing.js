@@ -3,7 +3,6 @@
 if(window.addEventListener){
 window.addEventListener('dblclick', function (){
   var canvas, context, canvaso, contexto;
-
   // The active tool instance.
   var tool;
   var tool_default = 'line';
@@ -382,7 +381,7 @@ window.addEventListener('dblclick', function (){
   tools.text = function (){
     var tool = this;
     this.started = false;
-    this.mousedown = function (ev) {
+    this.mousedown = function (ev){
       textcontent = document.getElementById('canvastext').value;
       tool.started = true;
       tool.x0 = ev._x;
@@ -392,14 +391,110 @@ window.addEventListener('dblclick', function (){
       context.stroke();
     };
 
-    this.mouseup = function (ev) {
-      if (tool.started) {
-        tool.mousemove(ev);
+    this.mouseup = function (ev){
+      if (tool.started){
         tool.started = false;
         img_update();
       }
     };
   };
+
+  // Eraser tool
+  tools.eraser = function (){
+    var tool = this;
+    this.started = false;
+    strokestyle_orig = context.strokeStyle;
+    this.mousedown = function (ev){
+        context.beginPath();
+        context.moveTo(ev._x, ev._y);
+        tool.started = true;
+    };
+
+    this.mousemove = function (ev) {
+      if (tool.started) {
+      	context.lineWidth = 20;
+        context.lineTo(ev._x, ev._y);
+	context.strokeStyle = '#669999';
+        context.stroke();
+      }
+    };
+
+    this.mouseup = function (ev) {
+      if (tool.started) {
+        tool.mousemove(ev);
+        tool.started = false;
+	// Restore the previous settings.
+	context.lineWidth = 1;
+	context.strokeStyle = strokestyle_orig;
+	img_update();
+      }
+    };
+  };
+
+  // Arrow Tool
+  tools.arrow = function (){
+    var tool = this;
+    this.started = false;
+    reversedirection = false;
+    this.mousedown = function (ev) {
+      tool.started = true;
+      tool.x0 = ev._x;
+      tool.y0 = ev._y;
+    };
+
+    this.mousemove = function (ev) {
+      if (!tool.started){
+        return;
+      }
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.beginPath();
+      context.fillStyle = "rgba(0, 0, 0,1)";
+      context.moveTo(tool.x0, tool.y0);
+      context.quadraticCurveTo(tool.x0, tool.y0, ev._x, ev._y);
+      if(tool.x0 > ev._x){
+	  reversedirection = true;
+      }
+      context.stroke();
+    };
+
+    this.mouseup = function (ev){
+      if (tool.started){
+	tool.mousemove(ev);
+	var ang = findAngle(tool.x0, tool.y0, ev._x, ev._y);
+	if(reversedirection){
+	    ang = findAngle(ev._x, ev._y, tool.x0, tool.y0);
+	}
+	context.fillRect(ev._x, ev._y, 2, 2);
+ 	drawArrowhead(context, ev._x, ev._y, ang, 12, 12);
+        tool.started = false;
+        img_update();
+      }
+    };
+  };
+  
+    function drawArrowhead(ctx, locx, locy, angle, sizex, sizey){
+        var hx = sizex / 2;
+        var hy = sizey / 2;
+        
+	ctx.translate((locx ), (locy));
+        ctx.rotate(angle);
+        ctx.translate(-hx,-hy);
+        ctx.beginPath();
+        ctx.moveTo(0,0);
+        ctx.lineTo(0,1*sizey);    
+        ctx.lineTo(1*sizex,1*hy);
+        ctx.closePath();
+        ctx.fill();
+	// Do the reverse of what we did to draw the arrowhead
+	ctx.translate(hx,hy);
+	ctx.rotate(-angle);
+	ctx.translate((-locx ), (-locy));
+    }
+    
+    // returns radians
+    function findAngle(sx, sy, ex, ey) {
+        return Math.atan((ey - sy) / (ex - sx));
+    }
 
   init();
 
