@@ -117,6 +117,7 @@ window.addEventListener('dblclick', function (){
     this.mousemove = function (ev) {
       if (tool.started) {
         context.lineTo(ev._x, ev._y);
+	//context.strokeStyle = strokestyle;
         context.stroke();
       }
     };
@@ -157,7 +158,7 @@ window.addEventListener('dblclick', function (){
       if (!w || !h) {
         return;
       }
-
+      //context.strokeStyle = strokestyle;
       context.strokeRect(x, y, w, h);
     };
 
@@ -191,6 +192,7 @@ window.addEventListener('dblclick', function (){
       context.beginPath();
       context.moveTo(tool.x0, tool.y0);
       context.lineTo(ev._x,   ev._y);
+      //context.strokeStyle = strokestyle;
       context.stroke();
       context.closePath();
     };
@@ -238,6 +240,7 @@ window.addEventListener('dblclick', function (){
     context.bezierCurveTo(tool.x0, tool.y0, x, tool.y0, x, tool.y0 + (y - tool.y0) / 2);
     context.bezierCurveTo(x, y, tool.x0, y, tool.x0, tool.y0 + (y - tool.y0) / 2);
     context.closePath();
+    //context.strokeStyle = strokestyle;
     context.stroke();
   }
 
@@ -298,6 +301,7 @@ window.addEventListener('dblclick', function (){
     ctx.lineTo(x, y + radius);
     ctx.quadraticCurveTo(x, y, x + radius, y);
     ctx.closePath();
+    //context.strokeStyle = strokestyle;
     ctx.stroke();
   }
 
@@ -374,6 +378,7 @@ window.addEventListener('dblclick', function (){
     context.bezierCurveTo(x1, y1, x2, y2, xf, yf);
 
     context.strokeStyle = 'black';
+    //context.strokeStyle = strokestyle;
     context.stroke();
   }
 
@@ -388,6 +393,7 @@ window.addEventListener('dblclick', function (){
       tool.y0 = ev._y;
       context.font = 'italic 18px Arial';
       context.fillText(textcontent, tool.x0, tool.y0);
+      //context.strokeStyle = strokestyle;
       context.stroke();
     };
 
@@ -440,6 +446,7 @@ window.addEventListener('dblclick', function (){
       tool.started = true;
       tool.x0 = ev._x;
       tool.y0 = ev._y;
+      reversedirection = false;
     };
 
     this.mousemove = function (ev) {
@@ -451,19 +458,17 @@ window.addEventListener('dblclick', function (){
       context.fillStyle = "rgba(0, 0, 0,1)";
       context.moveTo(tool.x0, tool.y0);
       context.quadraticCurveTo(tool.x0, tool.y0, ev._x, ev._y);
-      if(tool.x0 > ev._x){
-	  reversedirection = true;
-      }
+      //context.strokeStyle = strokestyle;
       context.stroke();
     };
 
     this.mouseup = function (ev){
       if (tool.started){
 	tool.mousemove(ev);
-	var ang = findAngle(tool.x0, tool.y0, ev._x, ev._y);
-	if(reversedirection){
-	    ang = findAngle(ev._x, ev._y, tool.x0, tool.y0);
-	}
+	if(tool.x0 > ev._x){
+	    reversedirection = true;
+        }
+	var ang = findAngle(tool.x0, tool.y0, ev._x, ev._y,reversedirection);
 	context.fillRect(ev._x, ev._y, 2, 2);
  	drawArrowhead(context, ev._x, ev._y, ang, 12, 12);
         tool.started = false;
@@ -471,29 +476,34 @@ window.addEventListener('dblclick', function (){
       }
     };
   };
-  
+
+ 
     function drawArrowhead(ctx, locx, locy, angle, sizex, sizey){
         var hx = sizex / 2;
         var hy = sizey / 2;
-        
 	ctx.translate((locx ), (locy));
         ctx.rotate(angle);
-        ctx.translate(-hx,-hy);
+        ctx.translate(-hx, -hy);
         ctx.beginPath();
-        ctx.moveTo(0,0);
-        ctx.lineTo(0,1*sizey);    
-        ctx.lineTo(1*sizex,1*hy);
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, 1*sizey);    
+        ctx.lineTo(1*sizex, 1*hy);
         ctx.closePath();
         ctx.fill();
 	// Do the reverse of what we did to draw the arrowhead
-	ctx.translate(hx,hy);
+	ctx.translate(hx, hy);
 	ctx.rotate(-angle);
 	ctx.translate((-locx ), (-locy));
     }
     
     // returns radians
-    function findAngle(sx, sy, ex, ey) {
-        return Math.atan((ey - sy) / (ex - sx));
+    function findAngle(sx, sy, ex, ey, reversedirection) {
+	if(!reversedirection){
+            return Math.atan((ey - sy) / (ex - sx));
+	}
+	else{
+	    return Math.PI + Math.atan((ey - sy) / (ex - sx));
+	}
     }
 
   init();

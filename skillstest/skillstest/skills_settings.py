@@ -150,6 +150,10 @@ SEND_MSG_RESPONSE_URL = "skillstest/network/posts/sendmsgresponse/"
 MESSAGE_SEARCH_URL = "skillstest/network/posts/msgsearch/"
 TEST_TO_GROUPS_URL = "skillstest/network/testtogroups/"
 GET_TEST_GROUPS_URL = "skillstest/network/gettests/"
+GET_CONNECTION_INFO_URL = "skillstest/network/connection/info/"
+GET_GROUPS_OWNED_URL = "skillstest/network/groups/owned/"
+GET_GROUPS_MEMBER_URL = "skillstest/network/groups/member/"
+GET_CONN_DICT_URL = "skillstest/network/connection/conn/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

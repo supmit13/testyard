@@ -97,5 +97,9 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MESSAGE_SEARCH_URL, 'skillstest.Network.views.msgsearch', name='msgsearch'),
     url(r'%s$'%mysettings.TEST_TO_GROUPS_URL, 'skillstest.Network.views.givetesttogroups', name='givetesttogroups'),
     url(r'%s$'%mysettings.GET_TEST_GROUPS_URL, 'skillstest.Network.views.gettestsandgroups', name='gettestsandgroups'),
+    url(r'%s$'%mysettings.GET_CONNECTION_INFO_URL, 'skillstest.Network.views.getconnectioninfo', name='getconnectioninfo'),
+    url(r'%s$'%mysettings.GET_GROUPS_OWNED_URL, 'skillstest.Network.views.getgroupsownedinfo', name='getgroupsownedinfo'),
+    url(r'%s$'%mysettings.GET_GROUPS_MEMBER_URL, 'skillstest.Network.views.getgroupsmemberinfo', name='getgroupsmemberinfo'),
+    url(r'%s$'%mysettings.GET_CONN_DICT_URL, 'skillstest.Network.views.getconnectioninfolevel2', name='getconnectioninfolevel2'),
 )
 

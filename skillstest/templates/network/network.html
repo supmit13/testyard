@@ -1362,7 +1362,29 @@
 
 
 	function showconnectionsprofile(connid){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "";
+	    postdata = "connid=" + connid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    html += xmlhttp.responseText;
+		    //alert(html);
+		    screendiv.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{getconnectioninfourl}}', true);
+	    xmlhttp.send(postdata);
 	}
+
 
 	function manageconnection(connid){
 	}
@@ -1689,6 +1711,125 @@
 	    xmlhttp.open('POST', '{{gettestgroupsurl}}', true);
 	    xmlhttp.send(postdata);
 	}
+
+	//////// userprofile.html javascript ////////
+	function sendamessage(useremail){
+	}
+
+
+	function blockuser(){
+	}
+
+	function removeconn(){
+	}
+
+
+	function expandownedgroups(connectedtoid){
+	    var xmlhttp;
+	    postdata = "connectedtoid=" + connectedtoid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    groupsownedjson = xmlhttp.responseText;
+		    groupsownedinfo = JSON.parse(groupsownedjson);
+		    html = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideownedgroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
+		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
+		    for (ownedgroupname in groupsownedinfo){
+			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font></span></td></tr>";
+		    }
+		    html += "</table>";
+		    owneddivtag = document.getElementById('owneddiv');
+		    owneddivtag.innerHTML = html;
+		    owneddivtag.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{getgroupowneddicturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function hideownedgroups(connectedtoid){
+	    owneddivtag = document.getElementById('owneddiv');
+	    owneddivtag.innerHTML = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandownedgroups('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
+	}
+
+
+	function expandmembergroups(connectedtoid){
+	    var xmlhttp;
+	    postdata = "connectedtoid=" + connectedtoid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    groupsmemberjson = xmlhttp.responseText;
+		    groupsmemberinfo = JSON.parse(groupsmemberjson);
+		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hidemembergroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
+		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
+		    for (membergroupname in groupsmemberinfo){
+			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font></span></td></tr>";
+		    }
+		    html += "</table>";
+		    memberdivtag = document.getElementById('memberdiv');
+		    memberdivtag.innerHTML = html;
+		    memberdivtag.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{getgroupmemberdicturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+        function hidemembergroups(connectedtoid){
+	    memberdivtag = document.getElementById('memberdiv');
+	    memberdivtag.innerHTML = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandmembergroups('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
+	}
+
+
+        function expandconnections(connectedtoid){
+	    var xmlhttp;
+	    postdata = "connectedtoid=" + connectedtoid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    connectionsjson = xmlhttp.responseText;
+		    connectionsinfo = JSON.parse(connectionsjson);
+		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>All Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideconnections('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
+		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
+		    for (conn in connectionsinfo){
+			html += "<tr><td nowrap><span title='" + connectionsinfo[conn][1] + "'><font color='#0000AA'>" + conn + " - " + connectionsinfo[conn][0] + "</font></span></td></tr>";
+		    }
+		    html += "</table>";
+		    conndivtag = document.getElementById('connectiondiv');
+		    conndivtag.innerHTML = html;
+		    conndivtag.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{getconnectionsdicturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+  	function hideconnections(connectedtoid){
+	    connectiondiv = document.getElementById('connectiondiv');
+	    connectiondiv.innerHTML = "<font color='#0000AA' style='font-weight: bold' size=-1>Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandconnections('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
+	}
+
 
 	</script>
 	

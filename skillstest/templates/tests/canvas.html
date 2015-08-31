@@ -57,7 +57,7 @@
 	textspan = document.getElementById('textctrlspan');
 	if(document.frmdrawing.dtool.options[document.frmdrawing.dtool.options.selectedIndex].value == 'text'){
 	    textspan.style = "";
-	    textspan.innerHTML = "<input type='text' name='canvastext' id='canvastext' value=''>";
+	    textspan.innerHTML = "<br /><font color='#0000AA' style='font-weight:bold;' size=-1>Enter text: </font><input type='text' name='canvastext' id='canvastext' value=''>";
 	}
 	else{ // Hide the text control if it is visible.
 	    textspan.innerHTML = "";
@@ -71,6 +71,7 @@
     <center><font color='#0000AA' style='font-weight:bold;'>Double-click on the bounded area below to start drawing</font></center><br />
     <form name='frmdrawing' id='frmdrawing' method='POST' action='{{savedrawingurl}}'>
     <center><font color='#AA0000' style='font-weight:bold;' size=-1><i>You can create and upload an image using the given canvas only after you have created and saved a  challenge. You should try this only while editing an already existing challenge. Please ignore this message if you are actually doing so.</i></font></center>
+    <span width='70%'>
     <p><font color='#0000AA' style='font-weight:bold;' size=-1>Drawing tool:</font>
     <select id="dtool" name='dtool' onchange='javascript:handleaction();'>
         <option value="line">Line</option>
@@ -84,7 +85,17 @@
 	<option value="eraser">Eraser</option>
 	<option value="arrow">Arrow</option>
     </select>&nbsp;&nbsp;
-    <span width='50%' id='textctrlspan'></span></p>
+    <!-- <font color='#0000AA' style='font-weight:bold;' size=-1>Enter Color Code:</font>
+    <input type='text' name='colorcode' id='colorcode' value='#000000'>&nbsp;&nbsp;
+    <font color='#0000AA' style='font-weight:bold;' size=-1>Select Line Width: </font>
+    <select name='linewidth' id='linewidth'>
+        <option value='1' selected> -- 1 -- </option>
+	<option value='2'> -- 2 -- </option>
+	<option value='3'> -- 3 -- </option>
+    </select> -->
+    </span>
+    <span width='30%' id='textctrlspan'></span>
+    </p>
     <div id="container">
       <canvas id="imageView" width="800" height="600" style="border:2px solid #0000AA;">
         <p>Unfortunately, your browser is currently unsupported by our web

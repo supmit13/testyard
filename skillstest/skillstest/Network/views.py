@@ -63,6 +63,10 @@ def get_network_template_vars(userobj):
     templatevars['messagesearchurl'] = mysettings.MESSAGE_SEARCH_URL
     templatevars['testtogroupsurl'] = mysettings.TEST_TO_GROUPS_URL
     templatevars['gettestgroupsurl'] = mysettings.GET_TEST_GROUPS_URL
+    templatevars['getconnectioninfourl'] = mysettings.GET_CONNECTION_INFO_URL
+    templatevars['getgroupowneddicturl'] = mysettings.GET_GROUPS_OWNED_URL
+    templatevars['getgroupmemberdicturl'] = mysettings.GET_GROUPS_MEMBER_URL
+    templatevars['getconnectionsdicturl'] = mysettings.GET_CONN_DICT_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -2273,5 +2277,267 @@ def gettestsandgroups(request):
     respstr = json.dumps(respdict)
     response = HttpResponse(respstr)
     return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getconnectioninfo(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    if not request.POST.has_key('connid'):
+        message = error_msg('1143')
+        response = HttpResponse(message)
+        return response
+    connid = request.POST['connid']
+    connobj = None
+    try:
+        connobj = Connection.objects.get(id=connid)
+    except:
+        message = error_msg('1144')
+        response = HttpResponse(message)
+        return response
+    connecteduser = connobj.connectedto
+    # Get '{{displayname}}', '{{profileimage}}', 
+    displayname = connecteduser.displayname
+    profileimage = connecteduser.userpic
+    useremail = connecteduser.emailid
+    goodname = connecteduser.firstname + " " + connecteduser.middlename + " " + connecteduser.lastname
+    useractive = connecteduser.active
+    usertestqset = UserTest.objects.filter(user=connecteduser).filter(visibility__in=[1, 2]).filter(cancelled=False) 
+    # Tests with visibility set to 'Public' and 'Protected' are only displayed to connections.
+    usertests = {'taken' : [], 'nottaken' : [], 'taking' : []}
+    taken, nottaken, taking = [], [], []
+    for usertestobj in usertestqset:
+        testname = usertestobj.test.testname
+        testscore = usertestobj.score
+        testoutcome = usertestobj.outcome
+        teststarttime = usertestobj.starttime
+        testendtime = usertestobj.endtime
+        if not usertestobj.first_eval_timestamp:
+            usertestobj.first_eval_timestamp = 0
+        evaluationtime = datetime.datetime.fromtimestamp(int(usertestobj.first_eval_timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+        testvalidfrom = usertestobj.validfrom
+        testvalidtill = usertestobj.validtill
+        testdict = { 'testname' : testname, 'testscore' : testscore, 'testoutcome' : testoutcome, 'teststarttime' : teststarttime, 'testendtime' : testendtime, 'evaluationtime' : evaluationtime, 'testvalidfrom' : testvalidfrom, 'testvalidtill' : testvalidtill }
+        if int(usertestobj.status) == 2: # Test taken
+            taken.append(testdict)
+        elif int(usertestobj.status) == 1: # Test being taken
+            taking.append(testdict)
+        elif int(usertestobj.status) == 0: # Test not yet taken
+            nottaken.append(testdict)
+    usertests['taken'] = taken
+    usertests['nottaken'] = nottaken
+    usertests['taking'] = taking
+    # Now get the tests owned by this user
+    ownedtestsqset = Test.objects.filter(creator=connecteduser).filter(scope__in=['public', 'protected'])
+    ownedtests = []
+    for testobj in ownedtestsqset:
+        testname = testobj.testname
+        topicname = testobj.topicname
+        if topicname == "":
+            topicname = testobj.topic
+        testtype = testobj.testtype
+        publishdate = testobj.publishdate
+        maxscore = testobj.maxscore
+        passscore = testobj.passscore
+        testlinkid = testobj.testlinkid
+        testgivenqset = UserTest.objects.filter(test=testobj).filter(cancelled=False).filter(active=True)
+        wouldbeusersqset = WouldbeUsers.objects.filter(test=testobj).filter(cancelled=False).filter(active=True)
+        # Count of users who have taken this test
+        countuserstaken = testgivenqset.__len__() + wouldbeusersqset.__len__()
+        evaluators = []
+        evalgroupname = testobj.evaluator.evalgroupname
+        if testobj.evaluator.groupmember1 and testobj.evaluator.groupmember1.displayname:
+            evaluators.append(testobj.evaluator.groupmember1.displayname)
+        if testobj.evaluator.groupmember2 and testobj.evaluator.groupmember2.displayname:
+            evaluators.append(testobj.evaluator.groupmember2.displayname)
+        if testobj.evaluator.groupmember3 and testobj.evaluator.groupmember3.displayname:
+            evaluators.append(testobj.evaluator.groupmember3.displayname)
+        if testobj.evaluator.groupmember4 and testobj.evaluator.groupmember4.displayname:
+            evaluators.append(testobj.evaluator.groupmember4.displayname)
+        if testobj.evaluator.groupmember5 and testobj.evaluator.groupmember5.displayname:
+            evaluators.append(testobj.evaluator.groupmember5.displayname)
+        if testobj.evaluator.groupmember6 and testobj.evaluator.groupmember6.displayname:
+            evaluators.append(testobj.evaluator.groupmember6.displayname)
+        if testobj.evaluator.groupmember7 and testobj.evaluator.groupmember7.displayname:
+            evaluators.append(testobj.evaluator.groupmember7.displayname)
+        if testobj.evaluator.groupmember8 and testobj.evaluator.groupmember8.displayname:
+            evaluators.append(testobj.evaluator.groupmember8.displayname)
+        if testobj.evaluator.groupmember9 and testobj.evaluator.groupmember9.displayname:
+            evaluators.append(testobj.evaluator.groupmember9.displayname)
+        if testobj.evaluator.groupmember10 and testobj.evaluator.groupmember10.displayname:
+            evaluators.append(testobj.evaluator.groupmember10.displayname)
+        evaluators_str = ",".join(evaluators)
+        testsdict = {'testname' : testname, 'topicname' : topicname, 'testtype' : testtype, 'publishdate' : publishdate, 'maxscore' : maxscore, 'passscore' : passscore, 'testlinkid' : testlinkid, 'evaluators' : evaluators_str, 'countuserstaken' : countuserstaken}
+        ownedtests.append(testsdict)
+    # Get tests evaluated by this user. To do this, first find evaluator group names in which this user is a member
+    evalgroupslist = []
+    evaluatorsqset = Evaluator.objects.filter() # Get all evaluator groups
+    for evaluatorobj in evaluatorsqset:
+        if evaluatorobj.groupmember1 and evaluatorobj.groupmember1.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember2 and evaluatorobj.groupmember2.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember3 and evaluatorobj.groupmember3.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember4 and evaluatorobj.groupmember4.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember5 and evaluatorobj.groupmember5.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember6 and evaluatorobj.groupmember6.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember7 and evaluatorobj.groupmember7.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember8 and evaluatorobj.groupmember8.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember9 and evaluatorobj.groupmember9.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+        elif evaluatorobj.groupmember10 and evaluatorobj.groupmember10.displayname == connecteduser.displayname:
+            evalgroupslist.append(evaluatorobj)
+    evaluatedtests = []
+    for evalgrp in evalgroupslist:
+        testqset = Test.objects.filter(evaluator=evalgrp)
+        for testobj in testqset:
+            testname = testobj.testname
+            topicname = testobj.topicname
+	    if topicname == "":
+	        topicname = testobj.topic
+	    testtype = testobj.testtype
+	    publishdate = testobj.publishdate
+	    maxscore = testobj.maxscore
+	    passscore = testobj.passscore
+	    testlinkid = testobj.testlinkid
+	    testgivenqset = UserTest.objects.filter(test=testobj).filter(cancelled=False).filter(active=True)
+	    wouldbeusersqset = WouldbeUsers.objects.filter(test=testobj).filter(cancelled=False).filter(active=True)
+	    # Count of users who have taken this test
+	    countuserstaken = testgivenqset.__len__() + wouldbeusersqset.__len__()
+            testdict = {'testname' : testname, 'topicname' : topicname, 'testtype' : testtype, 'publishdate' : publishdate, 'maxscore' : maxscore, 'passscore' : passscore, 'testlinkid' : testlinkid, 'countuserstaken' : countuserstaken}
+            evaluatedtests.append(testdict)
+    # Now we have all our data, so we populate the template and return it as response
+    contextdict = {'usertests' : usertests, 'ownedtests' : ownedtests, 'evaluatedtests' : evaluatedtests, 'displayname' : displayname, 'profileimage' : profileimage, 'useremail' : useremail, 'goodname' : goodname, 'useractive' : useractive, 'connectedid' : connecteduser.id }
+    tmpl = get_template("network/userprofile.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    userprofhtml = tmpl.render(cxt)
+    response = HttpResponse(userprofhtml)
+    return response
+    
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getgroupsownedinfo(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    connectedtoid = 0
+    if request.POST.has_key('connectedtoid'):
+        connectedtoid = request.POST['connectedtoid']
+    else:
+        message = "Error: %s"%error_msg('1145')
+        response = HttpResponse(message)
+        return response
+    connecteduser = User.objects.get(id=connectedtoid)
+    groupsownedqset = Group.objects.filter(owner=connecteduser).filter(status=True)
+    groupsdict = {}
+    for ownedgroupobj in groupsownedqset:
+        groupname = ownedgroupobj.groupname
+        groupdesc = ownedgroupobj.description
+        memberscount = ownedgroupobj.memberscount
+        basedontopic = ownedgroupobj.basedontopic
+        entryfee = ownedgroupobj.entryfee
+        currency = ownedgroupobj.currency
+        groupsdict[groupname] = [groupdesc, memberscount, basedontopic, entryfee, currency ]
+    groupsjson = json.dumps(groupsdict)
+    response = HttpResponse(groupsjson)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getgroupsmemberinfo(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    connectedtoid = 0
+    if request.POST.has_key('connectedtoid'):
+        connectedtoid = request.POST['connectedtoid']
+    else:
+        message = "Error: %s"%error_msg('1145')
+        response = HttpResponse(message)
+        return response
+    groupsdict = {}
+    connecteduser = User.objects.get(id=connectedtoid)
+    groupsmemberqset = GroupMember.objects.filter(member=connecteduser).filter(status=True).filter(removed=False).filter(blocked=False)
+    for membergroupobj in groupsmemberqset:
+        groupname = membergroupobj.group.groupname
+        groupdesc = membergroupobj.group.description
+        basedontopic = membergroupobj.group.basedontopic
+        membersince = membergroupobj.membersince
+        membersince_str = str(membersince.year) + "-" + str(membersince.month) + "-" + str(membersince.day) + " " + str(membersince.hour) + ":" + str(membersince.minute) + ":" + str(membersince.second)
+        ispaid = membergroupobj.group.ispaid
+        groupsdict[groupname] = [groupdesc, basedontopic, membersince_str, ispaid ]
+    groupsjson = json.dumps(groupsdict)
+    response = HttpResponse(groupsjson)
+    return response
+        
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getconnectioninfolevel2(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    connectedtoid = 0
+    if request.POST.has_key('connectedtoid'):
+        connectedtoid = request.POST['connectedtoid']
+    else:
+        message = "Error: %s"%error_msg('1145')
+        response = HttpResponse(message)
+        return response
+    connecteduser = User.objects.get(id=connectedtoid)
+    # Get all connections made by this user
+    connectionsdict = {}
+    connectionsqset = Connection.objects.filter(focususer=connecteduser).filter(deleted=False)
+    for connobj in connectionsqset:
+        connectedusername = connobj.connectedto.displayname
+        connectedgoodname = connobj.connectedto.firstname + " " + connobj.connectedto.middlename + " " + connobj.connectedto.lastname
+        connectedfrom = connobj.connectedfrom
+        connectedfrom_str = str(connectedfrom.year) + "-" + str(connectedfrom.month) + "-" + str(connectedfrom.day) + " " + str(connectedfrom.hour) + ":" + str(connectedfrom.minute) + ":" + str(connectedfrom.second)
+        blocked = connobj.blocked
+        connectedthru = connobj.connectedthru
+        connlevel = '2' # Second level connection w.r.t loggedin user 'userobj'
+        connectionsdict[connectedusername] = [ connectedgoodname, connectedfrom_str, blocked, connectedthru, connlevel ]
+    connectionsinfojson = json.dumps(connectionsdict)
+    response = HttpResponse(connectionsinfojson)
+    return response
+
+
+
+
 
 
