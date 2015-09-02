@@ -2537,7 +2537,3 @@ def getconnectioninfolevel2(request):
     return response
 
 
-
-
-
-

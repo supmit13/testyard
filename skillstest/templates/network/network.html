@@ -1741,7 +1741,7 @@
 		    html = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideownedgroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (ownedgroupname in groupsownedinfo){
-			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><a href='#/' onClick=showgroupprofile('" + ownedgroupname + "');><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font></a></span></td></tr>";
 		    }
 		    html += "</table>";
 		    owneddivtag = document.getElementById('owneddiv');
@@ -1777,7 +1777,7 @@
 		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hidemembergroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (membergroupname in groupsmemberinfo){
-			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><a href='#/' onClick=showgroupprofile('" + membergroupname + "');><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font></a></span></td></tr>";
 		    }
 		    html += "</table>";
 		    memberdivtag = document.getElementById('memberdiv');
@@ -1812,7 +1812,7 @@
 		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>All Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideconnections('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (conn in connectionsinfo){
-			html += "<tr><td nowrap><span title='" + connectionsinfo[conn][1] + "'><font color='#0000AA'>" + conn + " - " + connectionsinfo[conn][0] + "</font></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + connectionsinfo[conn][1] + "'><a href='#/' onClick=showconnpublicprofile('" + conn + "');><font color='#0000AA'>" + conn + " - " + connectionsinfo[conn][0] + "</font></a></span></td></tr>";
 		    }
 		    html += "</table>";
 		    conndivtag = document.getElementById('connectiondiv');
@@ -1830,6 +1830,16 @@
 	    connectiondiv.innerHTML = "<font color='#0000AA' style='font-weight: bold' size=-1>Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandconnections('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
 	}
 
+	// Function to display the group's profile page. This will serve only public values of the group unless this group is 
+	// also subscribed by the user for whom we are serving data (focususer).
+	function showgroupprofile(groupname){
+	}
+
+	// Function to display user profile of users who are connections of the 'connectedto' user.
+	// This will only serve public data unless this user is also a connection of the user as whom
+	// we are logged in.
+	function showconnpublicprofile(connection){
+	}
 
 	</script>
 	
