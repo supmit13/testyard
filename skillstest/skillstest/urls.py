@@ -101,5 +101,9 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.GET_GROUPS_OWNED_URL, 'skillstest.Network.views.getgroupsownedinfo', name='getgroupsownedinfo'),
     url(r'%s$'%mysettings.GET_GROUPS_MEMBER_URL, 'skillstest.Network.views.getgroupsmemberinfo', name='getgroupsmemberinfo'),
     url(r'%s$'%mysettings.GET_CONN_DICT_URL, 'skillstest.Network.views.getconnectioninfolevel2', name='getconnectioninfolevel2'),
+    url(r'%s$'%mysettings.BLOCK_USER_URL, 'skillstest.Network.views.blockuser', name='blockuser'),
+    url(r'%s$'%mysettings.UNBLOCK_USER_URL, 'skillstest.Network.views.unblockuser', name='unblockuser'),
+    url(r'%s$'%mysettings.REMOVE_USER_URL, 'skillstest.Network.views.removeuser', name='removeuser'),
+    url(r'%s$'%mysettings.SEND_MESSAGE_URL, 'skillstest.Network.views.sendmessage', name='sendmessage'),
 )
 

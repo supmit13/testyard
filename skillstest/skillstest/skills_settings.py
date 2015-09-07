@@ -154,6 +154,10 @@ GET_CONNECTION_INFO_URL = "skillstest/network/connection/info/"
 GET_GROUPS_OWNED_URL = "skillstest/network/groups/owned/"
 GET_GROUPS_MEMBER_URL = "skillstest/network/groups/member/"
 GET_CONN_DICT_URL = "skillstest/network/connection/conn/"
+BLOCK_USER_URL = "skillstest/network/connection/block/"
+UNBLOCK_USER_URL = "skillstest/network/connection/unblock/"
+REMOVE_USER_URL = "skillstest/network/connection/remove/"
+SEND_MESSAGE_URL = "skillstest/network/connection/sendmessage/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

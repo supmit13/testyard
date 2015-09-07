@@ -141,6 +141,15 @@ error_codes = { \
         '1143' : 'Could not find a valid connection Id in the request',\
         '1144' : 'Could not create a connection object from the given connection Id',\
         '1145' : 'Could not find a connected user Id from request',\
+        '1146' : 'Could not find a target user (connection) from the request.',\
+        '1147' : 'Could not find the user identified by the given displayname',\
+        '1148' : 'Could not find the action to perform from the POST request',\
+        '1149' : 'Could not find a valid contact Id from the request',\
+        '1150' : 'Could not find an action in the request or the action value is invalid',\
+        '1151' : 'User with the given display name does not exist.',\
+        '1152' : 'Could not find the email Id of the recipient in the POST request',\
+        '1153' : 'Could not find any message content in the POST request',\
+        '1154' : 'Could not find the user object with the specified email address',\
     }
 
 def error_msg(code):

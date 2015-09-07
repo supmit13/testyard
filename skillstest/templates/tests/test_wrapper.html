@@ -6,7 +6,9 @@
 <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 <title>TestYard Test Taker</title>
 <link rel="stylesheet" type="text/css" href="static/css/style.css" />
-
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width">
 {% autoescape on %}
 <style>
 	.semitranstesttaker {
@@ -100,10 +102,11 @@ div.sec {
 <!-- Prevent usage of 'Back' and 'Refresh' buttons -->
 <script language='JavaScript'>
   history.pushState(null, null, 'test_wrapper');
-    window.addEventListener('popstate', function(event) {
+    window.addEventListener('popstate', function(event){
     history.pushState(null, null, 'test_wrapper');
     });
 
+  
   // Code to disable 'Refresh' or 'Reload' button as well as ctrl+F5 and ctrl+R functionality.
   function disableF5(e) { if ((e.which || e.keyCode) == 116 || (e.which || e.keyCode) == 82) e.preventDefault(); };
   // To disable f5
@@ -246,7 +249,7 @@ function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages
     skillqualitydict = JSON.parse(skillqualityjson);
     qareadiv = document.getElementById('qarea');
     qareadiv.innerHTML = "";
-    qareadiv.innerHTML += "<center>" + scrollclockhtml() + "</center><br />";
+    qareadiv.innerHTML += "<center>" + scrollclockhtml() + "</center>&nbsp;&nbsp;<iframe src='static/stopwatch/stopwatch.html' style='width:700px;height:120px;'></iframe><br />";
     qareadiv.innerHTML += "<br /><center><h2>" + jsonobj.testname + "</h2></center><br /><br />";
     qareadiv.innerHTML += "<h3>Rules:</h3><br />";
     ruleslist = rules.split(",");
