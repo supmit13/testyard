@@ -1258,3 +1258,14 @@ Tue, 01 Sep 2015, 2:53 HRS (IST).
 29.static/typeit/*
 30.files_to_commit.txt
 =========================================
+
+Tue, 01 Sep 2015, 2:53 HRS (IST).
+----------------------------------
+1. static/stopwatch/stopwatch.html
+2. static/stopwatch/js/stopwatch.min.js
+3. static/stopwatch/js/stopwatch.js
+4. static/stopwatch/js/main.js
+5. static/stopwatch/js/circle.min.js
+6. static/stopwatch/css/style.css
+7. files_to_commit.txt
+=========================================
