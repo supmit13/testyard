@@ -90,7 +90,7 @@ function managemoremembers(groupname, from, to){
 	<td nowrap><font color='#0000AA'>{{paramslist.4}}</font></td><td><input type='button' name='savebutton' value='Save' onClick="javascript:saverecord('{{member}}', '{{groupname}}');"></td>
 	</tr>
 {% endfor %}
-{% if grpmemberscount >= 1 %}
+{% if grpmemberscount >= 100 %}
 <tr>
 <td colspan=6 nowrap><a href='#/' onClick="javascript:managemoremembers('{{groupname}}', '{{fromctr}}', '{{toctr}}');"><font color='#0000AA' size=-1>Display more</font></a></td>
 </tr>
