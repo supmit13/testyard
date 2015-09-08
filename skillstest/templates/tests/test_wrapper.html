@@ -249,7 +249,7 @@ function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages
     skillqualitydict = JSON.parse(skillqualityjson);
     qareadiv = document.getElementById('qarea');
     qareadiv.innerHTML = "";
-    qareadiv.innerHTML += "<center>" + scrollclockhtml() + "</center>&nbsp;&nbsp;<iframe src='static/stopwatch/stopwatch.html' style='width:700px;height:120px;'></iframe><br />";
+    qareadiv.innerHTML += "<center>" + scrollclockhtml() + "</center><br />";
     qareadiv.innerHTML += "<br /><center><h2>" + jsonobj.testname + "</h2></center><br /><br />";
     qareadiv.innerHTML += "<h3>Rules:</h3><br />";
     ruleslist = rules.split(",");
@@ -291,7 +291,7 @@ function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "This test falls in the '" + topicname + "' category.<br /><br />";
     qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you.</u></font><br /><br />";
-    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center>";
+    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
     clock();
     postdata = encodeURI("mode=7&starttest=1&starttime=" + starttime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}') + "&tabref=" + tabref + "&tabid=" + tabid);
     // alert(postdata);

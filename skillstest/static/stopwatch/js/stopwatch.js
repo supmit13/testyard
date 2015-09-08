@@ -3,8 +3,8 @@ var Stopwatch = function(id) {
     var element = document.getElementById(id);
     element.innerHTML = "<span id='hour'></span>" +
         "<span id='minute'></span>" +
-        "<span id='second'></span>" +
-        "<span id='centisecond'></span>";
+        "<span id='second'></span>";// +
+        //"<span id='centisecond'></span>";
 
     var startAt = 0; // Last time. (0 if not running)
     var lapTime = 0; // Time on the clock when last stopped in milliseconds
@@ -14,7 +14,7 @@ var Stopwatch = function(id) {
     //to update the circles
     this.update = function(isOnce) {
         if (running || isOnce) {
-            var h = m = s = ms = 0;
+            var h = m = s = 0;
             var newTime = '';
             var time = this.time();
 
@@ -23,8 +23,8 @@ var Stopwatch = function(id) {
             m = Math.floor(time / (60 * 1000));
             time = time % (60 * 1000);
             s = Math.floor(time / 1000);
-            cs = time % 100;
-            drawCircles(h, m, s, cs);
+            //cs = time % 100;
+            drawCircles(h, m, s);
         }
     };
 
@@ -58,15 +58,15 @@ var Stopwatch = function(id) {
         return lapTime + (startAt ? now() - startAt : 0);
     };
 
-    drawCircles(0, 0, 0, 0);
+    drawCircles(0, 0, 0);
     this.update(true);
 };
 
-function drawCircles(hour, minute, second, centisecond) {
+function drawCircles(hour, minute, second) {
     drawCircle("hour", "#9C2B61", hour, 24);
     drawCircle("minute", "#BD0D0D", minute, 60);
     drawCircle("second", "#496D8D", second, 60);
-    drawCircle("centisecond", "#569120", centisecond, 100);
+    //drawCircle("centisecond", "#569120", centisecond, 100);
 }
 
 function drawCircle(id, color, curVal, maxVal) {
@@ -75,12 +75,12 @@ function drawCircle(id, color, curVal, maxVal) {
     return new Circle({
         id: myId,
         width: 3,
-        radius: 50,
+        radius: 25,
         text: doPadding(curVal, 2),
         shadow: 5,
-        fontsize: 60,
+        fontsize: 30,
         fontcolor: myColor,
-        lineheight: 110,
+        lineheight: 55,
         values: [{
             percent: 100 * (1 - curVal / maxVal),
             color: myColor

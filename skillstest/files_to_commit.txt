@@ -1269,10 +1269,38 @@ Tue, 01 Sep 2015, 2:53 HRS (IST).
 6. static/stopwatch/css/style.css
 7. templates/tests/test_wrapper.html
 8. templates/tests/tests.html
-9. templates/network/canvas.html
+9. templates/tests/canvas.html
 10.skillstest/errors.py
 11.skillstest/utils.py
 12.skillstest/urls.py
 13.skillstest/skills_settings.py
 14.files_to_commit.txt
 =========================================
+
+Tue, 08 Sep 2015, 14:03 HRS (IST).
+----------------------------------
+1. static/stopwatch/stopwatch.html
+2. static/stopwatch/js/stopwatch.min.js
+3. static/stopwatch/js/stopwatch.js
+4. static/stopwatch/js/main.js
+5. static/stopwatch/js/circle.min.js
+6. static/stopwatch/css/style.css
+7. templates/tests/test_wrapper.html
+8. templates/tests/tests.html
+9. templates/tests/canvas.html
+10.skillstest/errors.py
+11.skillstest/utils.py
+12.skillstest/urls.py
+13.skillstest/skills_settings.py
+14.skillstest/Network/models.py
+15.skillstest/Network/views.py
+16.skillstest/Tests/views.py
+17.skillstest/Tests/models.py
+18.templates/network/network.html
+19.templates/network/groupmembers.html
+20.uwsgi_params
+21.skillstest_nginx.conf
+22.files_to_commit.txt
+=======================================
+
+

@@ -150,6 +150,8 @@ error_codes = { \
         '1152' : 'Could not find the email Id of the recipient in the POST request',\
         '1153' : 'Could not find any message content in the POST request',\
         '1154' : 'Could not find the user object with the specified email address',\
+        '1155' : 'You are not the owner of this group. Hence you are not entitled to view the manage members screen for this group.',\
+        '1156' : 'User with the given username does not belong to this group.',\
     }
 
 def error_msg(code):

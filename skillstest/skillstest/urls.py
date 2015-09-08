@@ -105,5 +105,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.UNBLOCK_USER_URL, 'skillstest.Network.views.unblockuser', name='unblockuser'),
     url(r'%s$'%mysettings.REMOVE_USER_URL, 'skillstest.Network.views.removeuser', name='removeuser'),
     url(r'%s$'%mysettings.SEND_MESSAGE_URL, 'skillstest.Network.views.sendmessage', name='sendmessage'),
+    url(r'%s$'%mysettings.MANAGE_GROUP_MEMBERS_URL, 'skillstest.Network.views.managegroupmembers', name='managegroupmembers'),
+    url(r'%s$'%mysettings.SAVE_GROUP_MEMBERS_URL, 'skillstest.Network.views.savegroupmembers', name='savegroupmembers'),
 )
 

@@ -626,7 +626,9 @@
 	}
 
 
-        function showuserprofile(userid){
+        function showuserprofile(dispname){
+	    // Simply call 'showconnpublicprofile' with dispname (displayname of user) as argument.
+	    showconnpublicprofile(dispname);
 	}
 
 
@@ -637,6 +639,7 @@
  	    postdata += "targetusername=" + document.frmSearchUser.targetusername.value + "&";
 	    postdata += "teststaken=" + document.frmSearchUser.teststaken.value + "&";
 	    postdata += "csrfmiddlewaretoken=" + document.frmSearchUser.csrfmiddlewaretoken.value;
+	    //alert(postdata);
 	    uriencodeddata = encodeURI(postdata);
             searchdiv = document.getElementById('usersearchdiv');
    	    var xmlhttp;
@@ -653,7 +656,7 @@
 		    alldispnames = Object.keys(jsonresult);
 		    html = "<center><table border=0 cellspacing=3 cellpadding=4 width='80%'>";
 		    if(alldispnames.length == 0){
-			html = "<tr><td colspan=4 align='center'><i><b>No record were found</b></i></td></tr>";
+			html = "<tr><td colspan=4 align='center'><i><b><font color='#AA0000'>No record were found</font></b></i></td></tr>";
 		    }
 		    else{
 			ctr = 0;
@@ -666,7 +669,7 @@
 			    name = d['name'];
 			    profilepic = d['profileimage'];
 			    userid = d['uid'];
-			    html += "<tr><td nowrap align='right'><a href='#/' onClick='javascript:showuserprofile(" + userid + ");' title='public profile'><font color='#FFFFFF'>" + alldispnames[dispname] + "</font></a></td><td nowrap>" + name + "</td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");'><span id='userwaiter_" + ctr + "'></span></td></tr>";
+			    html += "<tr><td nowrap align='right'><a href='#/' onClick=showuserprofile('" + alldispnames[dispname] + "'); title='public profile'><font color='#0000AA'>" + alldispnames[dispname] + "</font></a></td><td nowrap><font color='#0000AA'>" + name + "</font></td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");'><span id='userwaiter_" + ctr + "'></span></td></tr>";
 			    ctr++;
 		        }
 		    }
@@ -852,7 +855,7 @@
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
-		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td></tr>";
+		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick=javascript:managegroupmembers('" + grpname + "');><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
 		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
 		paramspaneldiv.style.display = "";
 	 	paramspaneldiv.innerHTML = html;
@@ -862,6 +865,29 @@
 		paramspaneldiv.innerHTML = "";
 		paramspaneldiv.style.display = "none";
 	    }
+	}
+
+
+    	function managegroupmembers(groupname, from, to){
+	    from = from || 0;
+	    to = to || 100;
+	    grpmemberspopup = window.open("", "grpmemberswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=yes, status=no");
+	    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    grpmemberspopup.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open('POST', '{{managemembersurl}}', true);
+	    xmlhttp.send(postdata)
 	}
 
 
@@ -1713,14 +1739,105 @@
 	}
 
 	//////// userprofile.html javascript ////////
-	function sendamessage(useremail){
+	function entermessage(useremail){
+	    emailspantag = document.getElementById('emailspan');
+	    html = "<br /><form name='frmemail' id='frmemail' method='POST' action=''>";
+	    html += "<table border='0' cellspacing='2' cellpadding='2'>";
+	    html += "<tr><td>&nbsp;</td><td nowrap align='left'><font color='#0000AA' style='font-weight:bold;' size=-1>To: " + useremail + "</font><br /></td></tr>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold;' size=-1>Enter Message Content</font></td><td align='left'><textarea name='txtemailcontent' id='txtemailcontent' value='' numrows='5' numcols='25' style='height:100px;width:400px;'></textarea></td></tr>";
+	    html += "<tr><td colspan='2' align='center'><input type='button' name='btnsendmessage' id='btnsendmessage' value='Send Message' onClick='javascript:submitmessage();'><span id='waitspan' style='display:'></span>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Discard Message' onClick='javascript:discardmessage();'></td></tr></table>";
+	    html += "{% csrf_token %}<input type='hidden' name='targetuser' id='targetuser' value='" + useremail + "'></form>";
+	    emailspantag.innerHTML = html;
+	    emailspantag.style.display = "";
+	}
+
+
+	function discardmessage(){
+	    yesno = confirm("Discard all changes made to the email?");
+	    if(!yesno){
+		return(0);
+	    }
+	    emailspantag = document.getElementById('emailspan');	
+	    emailspantag.innerHTML = "";
+	    emailspantag.style.display = "";
+	    return(0);
+	}
+
+
+	function submitmessage(){
+	    var xmlhttp;
+	    postdata = "messagecontent=" + document.frmemail.txtemailcontent.value + "&csrfmiddlewaretoken=" + document.frmemail.csrfmiddlewaretoken.value + "&targetuser=" + document.frmemail.targetuser.value;
+	    waitspantag = document.getElementById('waitspan');
+	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    emailspantag = document.getElementById('emailspan');	
+	    	    emailspantag.innerHTML = "";
+	    	    emailspantag.style.display = "";
+		    waitspantag.innerHTML = "";
+		    waitspantag.style.display = "none";
+		}
+	    };
+	    xmlhttp.open('POST', '{{sendmessageurl}}', true);
+	    encodeddata = encodeURI(postdata);
+	    //alert(encodeddata);
+	    xmlhttp.send(encodeddata);
+	    waitspantag.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    waitspantag.style.display = "";
 	}
 
 
 	function blockuser(){
+	    yesno = confirm("Continuing with this action will block the user from your profile. You may unblock the user later on. Do you want to continue?");
+   	    if(!yesno){
+		return(false);
+	    }
+	    displayname = document.ctrlfrm.targetusername.value;
+	    csrftoken = document.ctrlfrm.csrfmiddlewaretoken.value;
+	    postdata = "targetuser=" + displayname + "&csrfmiddlewaretoken=" + csrftoken + "&blocked=1"; // blocked=1 means block user
+  	    //alert(postdata);
+	    senddataasync(postdata, 'POST', '{{blockuserurl}}');
+	    var curloc = window.location.href;
+	    window.location.href=curloc;
 	}
 
+
+	function unblock(contactid){
+	    yesno = confirm("You are about to unblock this user. Do you want to continue?");
+	    if(!yesno){
+		return(false);
+	    }
+	    postdata = "contactid=" + contactid.toString() + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value + "&blocked=0";
+	    //alert(postdata);
+	    senddataasync(postdata, 'POST', '{{unblockuserurl}}');
+	    var curloc = window.location.href; // Bug: since data is posted asynchronously, sometimes the page refreshes earlier than the
+	    // alert displaying the result of the action performed. So, in such cases the alert message for the result of the operation
+	    // does not appear.
+	    //window.location.href=curloc;
+	    setTimeout(function () {
+        	window.location.reload()
+    	    }, 60);
+	}
+
+
 	function removeconn(){
+	    yesno = confirm("Continuing with this action will remove the user from your profile. A connection, once removed, cannot be restored back. The only way to add the user in your connection list is by re-inviting her/him to connect with you. Do you want to continue?");
+   	    if(!yesno){
+		return(false);
+	    }
+	    displayname = document.ctrlfrm.targetusername.value;
+	    csrftoken = document.ctrlfrm.csrfmiddlewaretoken.value;
+	    postdata = "targetuser=" + displayname + "&csrfmiddlewaretoken=" + csrftoken + "&removed=1"; // blocked=1 means block user
+  	    //alert(postdata);
+	    senddataasync(postdata, 'POST', '{{removeuserurl}}');
+	    var curloc = window.location.href;
+	    window.location.href=curloc;
 	}
 
 
@@ -1741,7 +1858,7 @@
 		    html = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideownedgroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (ownedgroupname in groupsownedinfo){
-			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><a href='#/' onClick=showgroupprofile('" + ownedgroupname + "');><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font></a></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><!-- <a href='#/' onClick=\"showgroupprofile('" + ownedgroupname + "', '" + groupsownedinfo[ownedgroupname][5] + "', '" + groupsownedinfo[ownedgroupname][4] + "');\"> --><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font><!-- </a> --></span></td></tr>";
 		    }
 		    html += "</table>";
 		    owneddivtag = document.getElementById('owneddiv');
@@ -1777,7 +1894,7 @@
 		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hidemembergroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (membergroupname in groupsmemberinfo){
-			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><a href='#/' onClick=showgroupprofile('" + membergroupname + "');><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font></a></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><!-- <a href='#/' onClick=\"showgroupprofile('" + membergroupname + "', '" + groupsmemberinfo[membergroupname][4] + "', '');\"> --><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font><!-- </a> --></span></td></tr>";
 		    }
 		    html += "</table>";
 		    memberdivtag = document.getElementById('memberdiv');
@@ -1832,14 +1949,58 @@
 
 	// Function to display the group's profile page. This will serve only public values of the group unless this group is 
 	// also subscribed by the user for whom we are serving data (focususer).
-	function showgroupprofile(groupname){
+	function showgroupprofile(groupname, userdisplayname, currency){
+	    if(currency == ''){
+		currency = 'INR';
+	    }
+	    postdata = "membername=" + userdisplayname + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency;
+	    encodedpostdata = encodeURI(postdata);
+	    var xmlhttp;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    closemessagescreen();
+		    screendiv = document.getElementById('transscreens');
+		    groupdatahtml = xmlhttp.responseText;
+		    //alert(groupdatahtml);
+		    screendiv.innerHTML = groupdatahtml;
+		    screendiv.style.display = "";
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
+	    xmlhttp.send(encodedpostdata);
 	}
 
 	// Function to display user profile of users who are connections of the 'connectedto' user.
 	// This will only serve public data unless this user is also a connection of the user as whom
 	// we are logged in.
 	function showconnpublicprofile(connection){
-	}
+            var postdata = "conndisplayname=" + connection + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;        
+	    transdiv = document.getElementById('transscreens');
+            transdiv.style.display = "";
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    closemessagescreen();
+                    transdiv.innerHTML = xmlhttp.responseText;
+		    transdiv.style.display = "";
+                }
+            };
+            xmlhttp.open('POST', '{{getconnectioninfourl}}', true);
+            xmlhttp.send(postdata);
+        }
+
 
 	</script>
 	

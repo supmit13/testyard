@@ -158,6 +158,8 @@ BLOCK_USER_URL = "skillstest/network/connection/block/"
 UNBLOCK_USER_URL = "skillstest/network/connection/unblock/"
 REMOVE_USER_URL = "skillstest/network/connection/remove/"
 SEND_MESSAGE_URL = "skillstest/network/connection/sendmessage/"
+MANAGE_GROUP_MEMBERS_URL = "skillstest/network/group/managemembers/"
+SAVE_GROUP_MEMBERS_URL = "skillstest/network/group/savemembersinfo/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

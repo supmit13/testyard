@@ -67,6 +67,11 @@ def get_network_template_vars(userobj):
     templatevars['getgroupowneddicturl'] = mysettings.GET_GROUPS_OWNED_URL
     templatevars['getgroupmemberdicturl'] = mysettings.GET_GROUPS_MEMBER_URL
     templatevars['getconnectionsdicturl'] = mysettings.GET_CONN_DICT_URL
+    templatevars['blockuserurl'] = mysettings.BLOCK_USER_URL
+    templatevars['unblockuserurl'] = mysettings.UNBLOCK_USER_URL
+    templatevars['removeuserurl'] = mysettings.REMOVE_USER_URL
+    templatevars['sendmessageurl'] = mysettings.SEND_MESSAGE_URL
+    templatevars['managemembersurl'] = mysettings.MANAGE_GROUP_MEMBERS_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -113,7 +118,7 @@ def network(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
     # Display contacts and groups associated with the user.
-    contactsqset = Connection.objects.filter(focususer=userobj, deleted=False, blocked=False)
+    contactsqset = Connection.objects.filter(focususer=userobj, deleted=False)
     groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False)
     connectioninvitationsqset = ConnectionInvitation.objects.filter(touser=userobj, invitationstatus='open').order_by('invitationdate')
     contacts = []
@@ -125,7 +130,9 @@ def network(request):
     messagesdict = {}
     uobjlist = []
     for contact in contactsqset:
-        contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a> - <a href='#/' onClick='javascript:manageconnection(%s);'>manage</a>"%(contact.id, contact.connectedto.displayname, contact.id)
+        contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'>%s</a><!-- - <a href='#/' onClick='javascript:manageconnection(%s);'>manage</a> -->"%(contact.id, contact.connectedto.displayname, contact.id)
+        if contact.blocked:
+            contactlink = "<a href='#/' onClick='javascript:showconnectionsprofile(&quot;%s&quot;);'><font color='#AA0000'>%s</font></a> - <a href='#/' onClick='javascript:unblock(%s);'><font color='#AA0000' size=-1>[Unblock]</font></a>"%(contact.id, contact.connectedto.displayname, contact.id)
         contacts.append(contactlink)
         if not contactsdict.has_key(str()):
             contactsdict[str(contact.id)] = contact.connectedto.displayname
@@ -1494,10 +1501,10 @@ def searchuser(request):
     userqset = User.objects.all()
     if emailid and emailid != "":
         emailid = emailid.strip()
-        userqset = userqset.filter(emailid__contains=emailid)
+        userqset = userqset.filter(emailid__icontains=emailid)
     if targetusername and targetusername != "":
         targetusername = targetusername.strip()
-        userqset = userqset.filter(displayname__contains=targetusername)
+        userqset = userqset.filter(displayname__icontains=targetusername)
     if teststaken and teststaken != "":
         teststaken = teststaken.strip()
         testslist = teststaken.split(",")
@@ -1874,6 +1881,14 @@ def postmessagecontent(request):
         for tgid in targetgroupids:
             post = Post()
             targetgroup = Group.objects.get(id=tgid)
+            # Check if the user is blocked from posting to the group. If so, continue with the next group.
+            grpmemqset = GroupMember.objects.filter(group=targetgroup, member=userobj)
+            if grpmemqset.__len__() == 0: # user is not a member of this group, hence she can't post.
+                continue
+            if grpmemqset.__len__() > 0:
+                grpmemobj = grpmemqset[0]
+                if grpmemobj.blocked or grpmemobj.removed: # If the group member is blocked or removed, she can't post either.
+                    continue
             post.posttargettype = 'group'
             post.posttargetgroup = targetgroup
             post.postmsgtag = msgtag
@@ -1893,8 +1908,11 @@ def postmessagecontent(request):
         return response
     if targetconnectionids.__len__() > 0:
         for tconnid in targetconnectionids:
-            post = Post()
             targetconnection = Connection.objects.get(id=tconnid)
+            # Check if the connection has blocked this user. If so, continue with the next connection in the list.
+            if targetconnection.blocked or targetconnection.deleted:
+                continue
+            post = Post()
             post.posttargettype = 'user'
             post.posttargetuser = targetconnection.connectedto
             post.postmsgtag = msgtag
@@ -1968,6 +1986,7 @@ def postreplycontent(request):
         replyattachmentpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "posts" + os.path.sep
         replyattachmentfilename = request.FILES['replyattachment'].name.split(".")[0]
         fpath, message, replyattachmentfile = skillutils.handleuploadedfile2(request.FILES['replyattachment'], replyattachmentpath, replyattachmentfilename)
+    # Point to note: A user blocked by another user can send a response to a message initiated by the user who has blocked the current user.
     postmsgtag = postobj.postmsgtag
     posttargettype = postobj.posttargettype
     posttargetuser = postobj.posttargetuser
@@ -2291,26 +2310,54 @@ def getconnectioninfo(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
-    if not request.POST.has_key('connid'):
+    visibility = 'public'
+    if not request.POST.has_key('connid') and not request.POST.has_key('conndisplayname'):
         message = error_msg('1143')
         response = HttpResponse(message)
         return response
-    connid = request.POST['connid']
     connobj = None
-    try:
-        connobj = Connection.objects.get(id=connid)
-    except:
-        message = error_msg('1144')
-        response = HttpResponse(message)
-        return response
-    connecteduser = connobj.connectedto
+    directconnectionflag = False
+    connecteduser = None
+    if request.POST.has_key('connid'):
+        connid = request.POST['connid']
+        try:
+            connobj = Connection.objects.get(id=connid)
+        except:
+            message = error_msg('1144')
+            response = HttpResponse(message)
+            return response
+        connecteduser = connobj.connectedto
+        visibility = 'protected'
+        directconnectionflag = True # Direct connection exists between userobj and connecteduser
+    elif request.POST.has_key('conndisplayname'):
+        conndisplayname = request.POST['conndisplayname']
+        try:
+            connecteduser = User.objects.get(displayname=conndisplayname)
+        except:
+            message = error_msg('1151')
+            response = HttpResponse(message)
+            return response
+        # Check if a connection exists between userobj and connecteduser
+        conqset = Connection.objects.filter(focususer=userobj).filter(connectedto=connecteduser)
+        if conqset.__len__() > 0:
+            visibility = 'protected' # protected visibility implicitly includes public visibility
+            directconnectionflag = True
+        else:
+            visibility = 'public'
+            directconnectionflag = False
     # Get '{{displayname}}', '{{profileimage}}', 
     displayname = connecteduser.displayname
     profileimage = connecteduser.userpic
     useremail = connecteduser.emailid
     goodname = connecteduser.firstname + " " + connecteduser.middlename + " " + connecteduser.lastname
     useractive = connecteduser.active
-    usertestqset = UserTest.objects.filter(user=connecteduser).filter(visibility__in=[1, 2]).filter(cancelled=False) 
+    usertestqset = []
+    if visibility == 'protected':
+        usertestqset = UserTest.objects.filter(user=connecteduser).filter(visibility__in=[1, 2]).filter(cancelled=False)
+    elif visibility == 'public':
+        usertestqset = UserTest.objects.filter(user=connecteduser).filter(visibility=2).filter(cancelled=False)
+    else:
+        pass
     # Tests with visibility set to 'Public' and 'Protected' are only displayed to connections.
     usertests = {'taken' : [], 'nottaken' : [], 'taking' : []}
     taken, nottaken, taking = [], [], []
@@ -2318,6 +2365,8 @@ def getconnectioninfo(request):
         testname = usertestobj.test.testname
         testscore = usertestobj.score
         testoutcome = usertestobj.outcome
+        maxscore = usertestobj.test.maxscore
+        passscore = usertestobj.test.passscore
         teststarttime = usertestobj.starttime
         testendtime = usertestobj.endtime
         if not usertestobj.first_eval_timestamp:
@@ -2325,7 +2374,7 @@ def getconnectioninfo(request):
         evaluationtime = datetime.datetime.fromtimestamp(int(usertestobj.first_eval_timestamp)).strftime('%Y-%m-%d %H:%M:%S')
         testvalidfrom = usertestobj.validfrom
         testvalidtill = usertestobj.validtill
-        testdict = { 'testname' : testname, 'testscore' : testscore, 'testoutcome' : testoutcome, 'teststarttime' : teststarttime, 'testendtime' : testendtime, 'evaluationtime' : evaluationtime, 'testvalidfrom' : testvalidfrom, 'testvalidtill' : testvalidtill }
+        testdict = { 'testname' : testname, 'testscore' : testscore, 'testoutcome' : testoutcome, 'teststarttime' : teststarttime, 'testendtime' : testendtime, 'evaluationtime' : evaluationtime, 'testvalidfrom' : testvalidfrom, 'testvalidtill' : testvalidtill, 'maxscore' : maxscore, 'passscore' : passscore}
         if int(usertestobj.status) == 2: # Test taken
             taken.append(testdict)
         elif int(usertestobj.status) == 1: # Test being taken
@@ -2336,7 +2385,11 @@ def getconnectioninfo(request):
     usertests['nottaken'] = nottaken
     usertests['taking'] = taking
     # Now get the tests owned by this user
-    ownedtestsqset = Test.objects.filter(creator=connecteduser).filter(scope__in=['public', 'protected'])
+    ownedtestsqset = []
+    if visibility == 'protected':
+        ownedtestsqset = Test.objects.filter(creator=connecteduser).filter(scope__in=['public', 'protected'])
+    elif visibility == 'public':
+        ownedtestsqset = Test.objects.filter(creator=connecteduser).filter(scope='public')
     ownedtests = []
     for testobj in ownedtestsqset:
         testname = testobj.testname
@@ -2421,7 +2474,7 @@ def getconnectioninfo(request):
             testdict = {'testname' : testname, 'topicname' : topicname, 'testtype' : testtype, 'publishdate' : publishdate, 'maxscore' : maxscore, 'passscore' : passscore, 'testlinkid' : testlinkid, 'countuserstaken' : countuserstaken}
             evaluatedtests.append(testdict)
     # Now we have all our data, so we populate the template and return it as response
-    contextdict = {'usertests' : usertests, 'ownedtests' : ownedtests, 'evaluatedtests' : evaluatedtests, 'displayname' : displayname, 'profileimage' : profileimage, 'useremail' : useremail, 'goodname' : goodname, 'useractive' : useractive, 'connectedid' : connecteduser.id }
+    contextdict = {'usertests' : usertests, 'ownedtests' : ownedtests, 'evaluatedtests' : evaluatedtests, 'displayname' : displayname, 'profileimage' : profileimage, 'useremail' : useremail, 'goodname' : goodname, 'useractive' : useractive, 'connectedid' : connecteduser.id, 'directconnectionflag' : directconnectionflag }
     tmpl = get_template("network/userprofile.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
@@ -2459,7 +2512,7 @@ def getgroupsownedinfo(request):
         basedontopic = ownedgroupobj.basedontopic
         entryfee = ownedgroupobj.entryfee
         currency = ownedgroupobj.currency
-        groupsdict[groupname] = [groupdesc, memberscount, basedontopic, entryfee, currency ]
+        groupsdict[groupname] = [groupdesc, memberscount, basedontopic, entryfee, currency, connecteduser.displayname ]
     groupsjson = json.dumps(groupsdict)
     response = HttpResponse(groupsjson)
     return response
@@ -2494,7 +2547,7 @@ def getgroupsmemberinfo(request):
         membersince = membergroupobj.membersince
         membersince_str = str(membersince.year) + "-" + str(membersince.month) + "-" + str(membersince.day) + " " + str(membersince.hour) + ":" + str(membersince.minute) + ":" + str(membersince.second)
         ispaid = membergroupobj.group.ispaid
-        groupsdict[groupname] = [groupdesc, basedontopic, membersince_str, ispaid ]
+        groupsdict[groupname] = [groupdesc, basedontopic, membersince_str, ispaid, connecteduser.displayname ]
     groupsjson = json.dumps(groupsdict)
     response = HttpResponse(groupsjson)
     return response
@@ -2535,5 +2588,285 @@ def getconnectioninfolevel2(request):
     connectionsinfojson = json.dumps(connectionsdict)
     response = HttpResponse(connectionsinfojson)
     return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def blockuser(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    targetuser = None
+    if not request.POST.has_key('targetuser'):
+        message = error_msg('1146')
+        response = HttpResponse(message)
+        return response
+    targetuserdispname = request.POST['targetuser']
+    try:
+        targetuser = User.objects.get(displayname=targetuserdispname)
+    except:
+        message = error_msg('1147')
+        response = HttpResponse(message)
+        return response
+    connobj = Connection.objects.get(focususer=userobj, connectedto=targetuser)
+    if request.POST.has_key('blocked') and int(request.POST['blocked']) == 1: # Block this user from accessing attributes of userobj
+        connobj.blocked = True
+        message = "Successfully blocked user identified by '%s'"%targetuserdispname
+    elif request.POST.has_key('blocked') and int(request.POST['blocked']) == 0:
+        connobj.blocked = False
+        message = "Successfully unblocked user identified by '%s'"%targetuserdispname
+    else:
+        message = error_msg('1148')
+    connobj.save()
+    response = HttpResponse(message)
+    return response
+    
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def unblockuser(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    contactid = 0
+    if request.POST.has_key('contactid'):
+        contactid = request.POST['contactid']
+    if not contactid:# We still did not get a valid contactid
+        message = error_msg('1149')
+        response = HttpResponse(message)
+        return response
+    try:
+        contactobj = Connection.objects.get(id=contactid)
+    except:
+        message = error_msg('1144')
+        response = HttpResponse(message)
+        return response
+    contactobj.blocked = False
+    contactobj.save()
+    message = "Successfully unblocked the user identified by '%s'"%contactobj.connectedto.displayname
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def removeuser(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    targetuser = None
+    if not request.POST.has_key('targetuser'):
+        message = error_msg('1146')
+        response = HttpResponse(message)
+        return response
+    targetuserdispname = request.POST['targetuser']
+    try:
+        targetuser = User.objects.get(displayname=targetuserdispname)
+    except:
+        message = error_msg('1147')
+        response = HttpResponse(message)
+        return response
+    connobj = Connection.objects.get(focususer=userobj, connectedto=targetuser)
+    if request.POST.has_key('removed') and int(request.POST['removed']) == 1: # Delete this connection
+        connobj.deleted = True
+        message = "Successfully deleted user identified by '%s'"%targetuserdispname
+    elif request.POST.has_key('removed') and int(request.POST['removed']) == 0:
+        connobj.deleted = False
+        message = "Successfully restored user identified by '%s'"%targetuserdispname
+    else:
+        message = error_msg('1150')
+    connobj.save()
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def sendmessage(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    targetemail = ""
+    emailmessage = ""
+    if not request.POST.has_key('targetuser'):
+        message = error_msg('1152')
+        response = HttpResponse(message)
+        return response
+    targetemail = request.POST['targetuser']
+    targetuserobj = None
+    try:
+        targetuserobj = User.objects.get(emailid=targetemail)
+    except:
+        message = error_msg('1154')
+        response = HttpResponse(message)
+        return response
+    if not request.POST.has_key('messagecontent'):
+        message = error_msg('1153')
+        response = HttpResponse(message)
+        return response
+    emailmessage = request.POST['messagecontent']
+    fromemail = userobj.emailid
+    subject = emailmessage[:20] + "..." # First 20 characters will be the subject.
+    subject = subject.replace("\n", " ")
+    retval = skillutils.sendemail(targetuserobj, subject, emailmessage, fromemail)
+    if retval > 0:
+        message = "Successfully sent email to user with email Id '%s'"%targetemail
+    else:
+        message = "Could not send email to user with email Id '%s'"%targetemail
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def managegroupmembers(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    groupname = None
+    groupobj = None
+    groupqset = []
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    if groupname:
+        groupqset = Group.objects.filter(groupname=groupname)
+    if groupqset.__len__() == 0:
+        message = error_msg('1088')
+        response = HttpResponse(message)
+        return response
+    fromctr, toctr = 0, 1
+    if request.POST.has_key('fromctr'):
+        fromctr = request.POST['fromctr']
+    if request.POST.has_key('toctr'):
+        toctr = request.POST['toctr']
+    # Check if the user is the owner of the group. If not, return a error response.
+    groupobj = groupqset[0]
+    if groupobj.owner != userobj:
+        message = error_msg('1155')
+        response = HttpResponse("<font color='FF0000' style='font-weight:bold'>%s</font>"%message)
+        return response
+    # Get all members of the group along with their blocked/unblocked status.
+    groupmembers = GroupMember.objects.filter(group=groupobj)[fromctr:toctr]
+    groupmembersdict = {}
+    savemembersurl = mysettings.SAVE_GROUP_MEMBERS_URL
+    managemembersurl = mysettings.MANAGE_GROUP_MEMBERS_URL
+    grpmemberscount = 0
+    for grpmember in groupmembers:
+        displayname = grpmember.member.displayname
+        fullname = grpmember.member.firstname + " " + grpmember.member.middlename + " " + grpmember.member.lastname
+        blocked = grpmember.blocked
+        removed = grpmember.removed
+        status = grpmember.status
+        removeagent = grpmember.removeagent
+        groupmembersdict[displayname] = [ fullname, blocked, removed, status, removeagent ]
+        grpmemberscount += 1
+    fromctr = toctr + 1
+    toctr = toctr + 1
+    contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : fromctr, 'toctr' : toctr, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount }
+    tmpl = get_template("network/groupmembers.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    grpmembershtml = tmpl.render(cxt)
+    response = HttpResponse(grpmembershtml)
+    return response
+
+
+# Should handle pagination.
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def savegroupmembers(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    groupname = None
+    membername = None
+    blocked = None
+    removed = None
+    status = None
+    if request.POST.has_key('membername'):
+        membername = request.POST['membername']
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    if request.POST.has_key('blockstatus'):
+        blockstatus = request.POST['blockstatus']
+    if request.POST.has_key('removedstatus'):
+        removedstatus = request.POST['removedstatus']
+    if request.POST.has_key('status'):
+        status = request.POST['status']
+    # First check if the user is the owner of the group
+    groupobj = Group.objects.get(groupname=groupname)
+    if groupobj.owner != userobj:
+        message = error_msg('1155')
+        response = HttpResponse(message)
+        return response
+    memberobj = None
+    try:
+        memberobj = User.objects.get(displayname=membername)
+    except:
+        message = error_msg('1156')
+        response = HttpResponse(message)
+        return response
+    groupmemberqset = GroupMember.objects.filter(group=groupobj, member=memberobj)
+    if groupmemberqset.__len__() == 0:
+        message = error_msg('1156')
+        response = HttpResponse(message)
+        return response
+    groupmemberobj = groupmemberqset[0]
+    if blockstatus == "":
+        groupmemberobj.blocked = False
+    else:
+        groupmemberobj.blocked = True
+    if removedstatus == "":
+        groupmemberobj.removedstatus = False
+    else:
+        groupmemberobj.removedstatus = True
+    if status == "":
+        groupmemberobj.status = False
+    else:
+        groupmemberobj.status = True
+    groupmemberobj.save()
+    message = "Successfully updated member info."
+    response = HttpResponse(message)
+    return response
+
+
+
+
+
+
 
 
