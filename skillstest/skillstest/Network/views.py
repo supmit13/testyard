@@ -2763,11 +2763,11 @@ def managegroupmembers(request):
         message = error_msg('1088')
         response = HttpResponse(message)
         return response
-    fromctr, toctr = 0, 100
+    fromctr, toctr = 0, 1
     if request.POST.has_key('fromctr'):
-        fromctr = request.POST['fromctr']
+        fromctr = int(request.POST['fromctr'])
     if request.POST.has_key('toctr'):
-        toctr = request.POST['toctr']
+        toctr = int(request.POST['toctr'])
     # Check if the user is the owner of the group. If not, return a error response.
     groupobj = groupqset[0]
     if groupobj.owner != userobj:
@@ -2789,8 +2789,8 @@ def managegroupmembers(request):
         removeagent = grpmember.removeagent
         groupmembersdict[displayname] = [ fullname, blocked, removed, status, removeagent ]
         grpmemberscount += 1
-    fromctr = toctr + 1
-    toctr = toctr + 100
+    fromctr = int(toctr) + 1
+    toctr = int(toctr) + 2
     contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : fromctr, 'toctr' : toctr, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount }
     tmpl = get_template("network/groupmembers.html")
     contextdict.update(csrf(request))
