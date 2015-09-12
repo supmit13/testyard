@@ -6,7 +6,8 @@ from django.http import HttpResponseBadRequest, HttpResponse, HttpResponseRedire
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson
+#from django.utils import simplejson
+import simplejson
 from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url

@@ -870,9 +870,9 @@
 
     	function managegroupmembers(groupname, from, to){
 	    from = from || 0;
-	    to = to || 1;
+	    to = to || 100;
 	    grpmemberspopup = window.open("", "grpmemberswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=yes, status=no");
-	    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value + "&fromctr=0&toctr=100";
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();

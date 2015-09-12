@@ -1,0 +1,23 @@
+<table cellspacing='2' cellpadding='2' border=0 width='100%'>
+{% for member, paramslist in groupmembersdict.iteritems %}
+	<tr>
+	<td nowrap><font color='#0000AA'>{{member}}</font></td><td nowrap><font color='#0000AA'>{{paramslist.0}}</font></td>
+	{% if paramslist.1 %}	
+	<td nowrap><input type='checkbox' name='chkblocked_{{member}}_{{groupname}}' id='chkblocked_{{member}}_{{groupname}}' value=1 checked=checked></td>
+	{% else %}
+	<td nowrap><input type='checkbox' name='chkblocked_{{member}}_{{groupname}}' id='chkblocked_{{member}}_{{groupname}}' value=1></td>
+	{% endif %}
+	{% if paramslist.2 %}	
+	<td nowrap><input type='checkbox' name='chkremoved_{{member}}_{{groupname}}' id='chkremoved_{{member}}_{{groupname}}' value=1 checked=checked></td>
+	{% else %}
+	<td nowrap><input type='checkbox' name='chkremoved_{{member}}_{{groupname}}' id='chkremoved_{{member}}_{{groupname}}' value=1></td>
+	{% endif %}
+	{% if paramslist.3 %}	
+	<td nowrap><input type='checkbox' name='chkstatus_{{member}}_{{groupname}}' id='chkstatus_{{member}}_{{groupname}}' value=1 checked=checked></td>
+	{% else %}
+	<td nowrap><input type='checkbox' name='chkstatus_{{member}}_{{groupname}}' id='chkstatus_{{member}}_{{groupname}}' value=1></td>
+	{% endif %}
+	<td nowrap><font color='#0000AA'>{{paramslist.4}}</font></td><td><input type='hidden' name='fromctr' value='{{fromctr}}'><input type='hidden' name='toctr' value='{{toctr}}'><input type='button' name='savebutton' value='Save' onClick="javascript:saverecord('{{member}}', '{{groupname}}');"></td>
+	</tr>
+{% endfor %}
+</table>

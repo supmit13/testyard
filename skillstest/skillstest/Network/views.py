@@ -2763,11 +2763,15 @@ def managegroupmembers(request):
         message = error_msg('1088')
         response = HttpResponse(message)
         return response
-    fromctr, toctr = 0, 1
-    if request.POST.has_key('fromctr'):
+    fromctr, toctr = 0, 100
+    if request.POST.has_key('fromctr') and request.POST['fromctr'] != '':
         fromctr = int(request.POST['fromctr'])
-    if request.POST.has_key('toctr'):
+    else:
+        return HttpResponse("")
+    if request.POST.has_key('toctr') and request.POST['toctr'] != '':
         toctr = int(request.POST['toctr'])
+    else:
+        return HttpResponse("")
     # Check if the user is the owner of the group. If not, return a error response.
     groupobj = groupqset[0]
     if groupobj.owner != userobj:
@@ -2789,14 +2793,19 @@ def managegroupmembers(request):
         removeagent = grpmember.removeagent
         groupmembersdict[displayname] = [ fullname, blocked, removed, status, removeagent ]
         grpmemberscount += 1
-    fromctr = int(toctr) + 1
-    toctr = int(toctr) + 2
-    contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : fromctr, 'toctr' : toctr, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount }
-    tmpl = get_template("network/groupmembers.html")
-    contextdict.update(csrf(request))
-    cxt = Context(contextdict)
-    grpmembershtml = tmpl.render(cxt)
-    response = HttpResponse(grpmembershtml)
+    contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : int(toctr), 'toctr' : int(toctr) + 100, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount }
+    if fromctr == 0:
+        tmpl = get_template("network/groupmembers.html")
+        contextdict.update(csrf(request))
+        cxt = Context(contextdict)
+        grpmembershtml = tmpl.render(cxt)
+        response = HttpResponse(grpmembershtml)
+    elif fromctr > 0:
+        tmpl = get_template("network/groupmemberrows.html")
+        contextdict.update(csrf(request))
+        cxt = Context(contextdict)
+        grpmembershtml = tmpl.render(cxt)
+        response = HttpResponse(grpmembershtml)
     return response
 
 
@@ -2851,9 +2860,9 @@ def savegroupmembers(request):
     else:
         groupmemberobj.blocked = True
     if removedstatus == "":
-        groupmemberobj.removedstatus = False
+        groupmemberobj.removed = False
     else:
-        groupmemberobj.removedstatus = True
+        groupmemberobj.removed = True
     if status == "":
         groupmemberobj.status = False
     else:

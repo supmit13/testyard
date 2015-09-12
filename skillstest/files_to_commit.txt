@@ -1303,4 +1303,25 @@ Tue, 08 Sep 2015, 14:03 HRS (IST).
 22.files_to_commit.txt
 =======================================
 
+Sat, 12 Sep 2015, 09:19 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. templates/tests/tests.html
+3. templates/tests/canvas.html
+4. skillstest/errors.py
+5. skillstest/utils.py
+6. skillstest/urls.py
+7. skillstest/skills_settings.py
+8. skillstest/Network/models.py
+9. skillstest/Network/views.py
+10.skillstest/Tests/views.py
+11.skillstest/Tests/models.py
+12.templates/network/network.html
+13.templates/network/groupmembers.html
+14.uwsgi_params
+15.skillstest_nginx.conf
+16.templates/network/groupmemberrows.html
+17.files_to_commit.txt
+=======================================
+
 
