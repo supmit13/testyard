@@ -2783,6 +2783,7 @@ def managegroupmembers(request):
     groupmembersdict = {}
     savemembersurl = mysettings.SAVE_GROUP_MEMBERS_URL
     managemembersurl = mysettings.MANAGE_GROUP_MEMBERS_URL
+    membersearchurl = mysettings.MEMBER_SEARCH_URL
     grpmemberscount = 0
     for grpmember in groupmembers:
         displayname = grpmember.member.displayname
@@ -2793,7 +2794,7 @@ def managegroupmembers(request):
         removeagent = grpmember.removeagent
         groupmembersdict[displayname] = [ fullname, blocked, removed, status, removeagent ]
         grpmemberscount += 1
-    contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : int(toctr), 'toctr' : int(toctr) + 100, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount }
+    contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : int(toctr), 'toctr' : int(toctr) + 100, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount, 'membersearchurl' : membersearchurl }
     if fromctr == 0:
         tmpl = get_template("network/groupmembers.html")
         contextdict.update(csrf(request))
@@ -2870,6 +2871,78 @@ def savegroupmembers(request):
     groupmemberobj.save()
     message = "Successfully updated member info."
     response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def searchmember(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    displayname, firstname, lastname, groupname = "", "", "", ""
+    if request.POST.has_key('displayname'):
+        displayname = request.POST['displayname']
+    if request.POST.has_key('firstname'):
+        firstname = request.POST['firstname']
+    if request.POST.has_key('lastname'):
+        lastname = request.POST['lastname']
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    groupqset = Group.objects.filter(groupname=groupname)
+    if groupqset.__len__() == 0:
+        message = "Error: " + error_msg('1088')
+        response = HttpResponse(message)
+        return response
+    groupobj = groupqset[0]
+    # Check if logged in user is the owner of the group. If not, display a error message and return
+    if groupobj.owner != userobj:
+        message = "Error: " + error_msg('1155')
+        response = HttpResponse(message)
+        return response
+    fromctr, toctr = 0,100
+    if request.POST.has_key('fromctr'):
+        fromctr = request.POST['fromctr']
+    if request.POST.has_key('toctr'):
+        toctr = request.POST['toctr']
+    grpmemberqset = GroupMember.objects.filter(group=groupobj)
+    filteredset = GroupMember.objects.none()
+    if displayname == "" and firstname == "" and lastname == "":
+         filteredset = grpmemberqset
+    if displayname != "":
+         filteredset = filteredset | grpmemberqset.filter(member__displayname__icontains=displayname)
+    if firstname != "":
+         filteredset = filteredset | grpmemberqset.filter(member__firstname__icontains=firstname)
+    if lastname != "":
+         filteredset = filteredset | grpmemberqset.filter(member__lastname__icontains=lastname)
+    filteredset = filteredset.distinct() # Gives the distinct records.
+    # Now create the data structure.
+    groupmembersdict = {}
+    savemembersurl = mysettings.SAVE_GROUP_MEMBERS_URL
+    managemembersurl = mysettings.MANAGE_GROUP_MEMBERS_URL
+    membersearchurl = mysettings.MEMBER_SEARCH_URL
+    grpmemberscount = 0
+    # Now get the slice we want to show. Could not do so earlier as 'OR' operator doesn't work on sliced queryset.
+    for grpmember in filteredset[fromctr:toctr]:
+        displayname = grpmember.member.displayname
+        fullname = grpmember.member.firstname + " " + grpmember.member.middlename + " " + grpmember.member.lastname
+        blocked = grpmember.blocked
+        removed = grpmember.removed
+        status = grpmember.status
+        removeagent = grpmember.removeagent
+        groupmembersdict[displayname] = [ fullname, blocked, removed, status, removeagent ]
+        grpmemberscount += 1
+    contextdict = { 'groupmembersdict' : groupmembersdict, 'groupname' : groupname, 'savemembersurl' : savemembersurl, 'fromctr' : int(toctr), 'toctr' : int(toctr) + 100, 'managemembersurl' : managemembersurl, 'grpmemberscount' : grpmemberscount, 'membersearchurl' : membersearchurl }
+    tmpl = get_template("network/groupmemberrows.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    grpmembershtml = tmpl.render(cxt)
+    response = HttpResponse(grpmembershtml)
     return response
 
 

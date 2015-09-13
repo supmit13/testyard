@@ -63,9 +63,43 @@ function managemoremembers(groupname){
     xmlhttp.send(postdata)
 }
 
+
+function searchmember(){
+    displayname = document.frmmembersearch.txtsearchusername.value;
+    firstname = document.frmmembersearch.txtsearchfirstname.value;
+    lastname = document.frmmembersearch.txtsearchlastname.value;
+    csrftoken = document.frmmembersearch.csrfmiddlewaretoken.value;
+    groupname = document.frmmembersearch.groupname.value;
+    var postdata = "displayname=" + displayname + "&firstname=" + firstname + "&lastname=" + lastname + "&csrfmiddlewaretoken=" + csrftoken + "&groupname=" + groupname;
+    var xmlhttp;
+    divmembers = document.getElementById('memberrows');
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    divmembers.innerHTML = "";
+	    divmemberscontent = divmembers.innerHTML;
+	    divmemberscontent = divmemberscontent.replace(/<input\s+type=[\"\']hidden[\"\']\s+name=[\"\']fromctr[\"\']\s+[^>]+><input\s+type=[\"\']hidden[\"\']\s+name=[\"\']toctr[\"\']\s+[^>]+>/ig, '');
+	    divmemberscontentmore = xmlhttp.responseText;
+	    divmembers.innerHTML = divmemberscontentmore;
+	}
+    };
+    xmlhttp.open('POST', '{{membersearchurl}}', true);
+    xmlhttp.send(postdata)
+}
+
 </script>
 </head>
 <body bgcolor='#669999'>
+
+<div id='groupnamediv'>
+<span><center><font color='#0000AA' style='font-weight:bold;font-face:garmond'>{{groupname}}</font></center></span><br /><br /><span width='30%'><form name='frmmembersearch' method='POST' action=''><font color='#0000AA' style='font-weight:bold;'>Enter username:</font><input type='text' name='txtsearchusername' id='txtsearchusername' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;<font color='#0000AA' style='font-weight:bold;'>Enter Firstname:</font><input type='text' name='txtsearchfirstname' id='txtsearchfirstname' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;<font color='#0000AA' style='font-weight:bold;'>Enter Lastname:</font><input type='text' name='txtsearchlastname' id='txtsearchlastname' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;{%csrf_token%}<input type='hidden' name='groupname' value='{{groupname}}'><input type='button' name='btnsearchmember' id='btnsearchmember' value='Search' onClick='javascript:searchmember();'></form></span>
+</div>
+<hr>
 <div id='members'>
 <form name='frmgroupmembers' id='frmgroupmembers' method='POST' action=''>
 <table cellspacing='2' cellpadding='2' border=0 width='100%'>
