@@ -82,8 +82,6 @@ function searchmember(){
     xmlhttp.onreadystatechange = function(){
         if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 	    divmembers.innerHTML = "";
-	    divmemberscontent = divmembers.innerHTML;
-	    divmemberscontent = divmemberscontent.replace(/<input\s+type=[\"\']hidden[\"\']\s+name=[\"\']fromctr[\"\']\s+[^>]+><input\s+type=[\"\']hidden[\"\']\s+name=[\"\']toctr[\"\']\s+[^>]+>/ig, '');
 	    divmemberscontentmore = xmlhttp.responseText;
 	    divmembers.innerHTML = divmemberscontentmore;
 	}
@@ -95,7 +93,6 @@ function searchmember(){
 </script>
 </head>
 <body bgcolor='#669999'>
-
 <div id='groupnamediv'>
 <span><center><font color='#0000AA' style='font-weight:bold;font-face:garmond'>{{groupname}}</font></center></span><br /><br /><span width='30%'><form name='frmmembersearch' method='POST' action=''><font color='#0000AA' style='font-weight:bold;'>Enter username:</font><input type='text' name='txtsearchusername' id='txtsearchusername' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;<font color='#0000AA' style='font-weight:bold;'>Enter Firstname:</font><input type='text' name='txtsearchfirstname' id='txtsearchfirstname' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;<font color='#0000AA' style='font-weight:bold;'>Enter Lastname:</font><input type='text' name='txtsearchlastname' id='txtsearchlastname' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;{%csrf_token%}<input type='hidden' name='groupname' value='{{groupname}}'><input type='button' name='btnsearchmember' id='btnsearchmember' value='Search' onClick='javascript:searchmember();'></form></span>
 </div>
@@ -142,7 +139,6 @@ function searchmember(){
 <center><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='window.close();'></center>
 </form>
 </div>
-
 </body>
 </html>
 
