@@ -2745,9 +2745,11 @@ def sendmessage(request):
 @skillutils.session_location_match
 @csrf_protect
 def managegroupmembers(request):
-    if request.method != 'POST':
+    if request.method != 'POST' and request.method != 'GET':
         message = error_msg('1004')
         return HttpResponseBadRequest(message)
+    if request.method == 'GET': # Return empty string
+        return HttpResponse("")
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode)

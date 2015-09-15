@@ -1332,3 +1332,10 @@ Mon, 14 Sep 2015, 03:14 HRS (IST).
 4. files_to_commit.txt
 =======================================
 
+Tue, 15 Sep 2015, 07:16 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. files_to_commit.txt
+=======================================

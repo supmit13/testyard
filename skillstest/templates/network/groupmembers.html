@@ -35,14 +35,12 @@ function saverecord(membername, groupname){
     xmlhttp.send(postdata)
 }
 
-
 function managemoremembers(groupname){
     from = document.frmgroupmembers.fromctr.value;
     to = document.frmgroupmembers.toctr.value;
     postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + document.frmgroupmembers.csrfmiddlewaretoken.value;
     postdata += "&fromctr=" + from + "&toctr=" + to;
     divmembers = document.getElementById('memberrows');
-    //alert(postdata);
     var xmlhttp;
     if (window.XMLHttpRequest){
         xmlhttp=new XMLHttpRequest();
@@ -60,7 +58,7 @@ function managemoremembers(groupname){
 	}
     };
     xmlhttp.open('POST', '{{managemembersurl}}', true);
-    xmlhttp.send(postdata)
+    xmlhttp.send(postdata);
 }
 
 
@@ -131,7 +129,7 @@ function searchmember(){
 <table cellspacing='2' cellpadding='2' border=0 width='100%'>
 {% if grpmemberscount >= 1 %}
 <tr>
-<td colspan=6 nowrap><a href='#/' onClick="javascript:managemoremembers('{{groupname}}');"><font color='#0000AA' size=-1>Display More</font></a></td>
+<td colspan=6 nowrap><a href='javascript:void(0);' id='moremembersanchor' onClick="javascript:managemoremembers('{{groupname}}');"><font color='#0000AA' size=-1>Display More</font></a></td>
 </tr>
 {% endif %}
 </table>
