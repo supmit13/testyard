@@ -136,7 +136,6 @@ def get_user_tests(request):
                           test.evaluator.groupmember9, test.evaluator.groupmember10 ) # Basically we keep the creator as the first element. Rest are evaluators.
         tests_evaluator_ordered_createdate.append(testname)
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
-
     try:
         usertestqset = UserTest.objects.filter(user=userobj)
     except: # Can't say if we will find any records...
@@ -2349,6 +2348,7 @@ def showtestcandidatemode(request):
         challengesdict[statement]['challengequality'] = challenge.challengequality
         challengesdict[statement]['oneormore'] = challenge.oneormore
         challengesdict[statement]['chid'] = challenge.id
+        challengesdict[statement]['progenv'] = challenge.test.progenv
     testdict['challenges'] = challengesdict
     jsonstr = json.dumps(testdict)
     # Now, encrypt jsonstr...

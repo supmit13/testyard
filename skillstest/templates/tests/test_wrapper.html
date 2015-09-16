@@ -9,6 +9,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width">
+
+<!-- Coding window related scripts -->
+<script src="static/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="static/codemirror/lib/codemirror.css">
+<!-- Coding window related scripts end here -->
+
 {% autoescape on %}
 <style>
 	.semitranstesttaker {
@@ -1053,8 +1059,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         if(jsonobj.challenges[challenge].challengetype == 'SUBJ' || jsonobj.challenges[challenge].challengetype == 'ALGO'){
             pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
         }
-        else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from cloud9
+        else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
+	    pages[pagectr][0] += "<scr" + "ipt src='static/codemirror/mode/" + jsonobj.challenges[challenge].progenv.toLowerCase() + "/" + jsonobj.challenges[challenge].progenv.toLowerCase() + ".js'></scr" + "ipt>";
             pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' numrows='2' numcols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
+	    pages[pagectr][0] += "<scr" + "ipt language='javascript'>var myCodeMirror = CodeMirror.fromTextArea('id_" + jsonobj.challenges[challenge].chid + "');</scr" + "ipt>";// Avoid running the javascript code at this phase.
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
             pages[pagectr][0] += "<b>Select from below:</b><br />";
