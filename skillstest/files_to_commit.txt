@@ -1350,3 +1350,25 @@ Wed, 16 Sep 2015, 07:16 HRS (IST).
 4. skillstest/Tests/views.py
 5. templates/tests/test_wrapper.html
 6. files_to_commit.txt
+=======================================
+
+Sat, 19 Sep 2015, 07:58 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+6. files_to_commit.txt
+=======================================
+
+Sat, 22 Tue 2015, 04:45 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+6. files_to_commit.txt

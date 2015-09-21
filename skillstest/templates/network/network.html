@@ -1449,6 +1449,7 @@
 	    messagesdict = JSON.parse(messagesdictstr);
 	    screendiv = document.getElementById("transscreens");
 	    screendiv.style.display = "";
+	    screendiv.style = "height:400%;width:400%;";
 	    html = "<center><font color='#0000FF' style='font-weight:bold;' size=+1>Message Inbox &nbsp;&nbsp;</font><a href='#/' onClick='javascript:closemessagescreen();'><font color='#0000FF' style='font-weight:bold;' size=-1>[close]<img src='static/images/redcross.jpg' height='18px' width='18px'></font></a>&nbsp;&nbsp;&nbsp;&nbsp;<span width='35%' align='right' id='searchspan'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value=''>&nbsp;<input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();'></span></center><br><br>";
 	    html += "<center><table border='0' cellspacing='6' cellpadding='6'>";
 	    idlist = Array();
