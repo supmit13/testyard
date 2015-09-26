@@ -687,7 +687,28 @@ function populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, star
 	    }
             break;
 	case 3: // showatonce + allowchallengenavigation
-	    pass
+	    qlisttag = document.getElementById('qlist');
+            qlisttag.style = "";
+            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
+            for(var qctr=0; qctr < Object.size(alllist); qctr++){
+		qarec = alllist[qctr];
+                challengestatement25 = qarec[0].substring(0,25) + "... "; // Get the first 25 characters.
+                if(challengestatement25 == '... '){
+                    continue;
+                }
+		if(!actr || actr == undefined){
+		    actr = qctr;
+		}
+		if(currentlydisplayedchallenge.toUpperCase() == qarec[0].toUpperCase()){
+		    qlisttag.innerHTML += "<li id='highlight'><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(alllist)) + "');\">" + challengestatement25 + "</a></li>";
+		}
+		else{
+		    qlisttag.innerHTML += "<li id='simple'><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(alllist)) + "');\">" + challengestatement25 + "</a></li>";
+		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
+		}
+            }
+            break;
     }
 }
 
