@@ -2184,6 +2184,10 @@ def showtestcandidatemode(request):
             response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
             return response
     testtakeruserobj = testtakeruserqset[0]
+    if testtakeruserobj.starttime: # User had already started taking this test before, so disqualify user since she/he is trying to restart it.
+        message = "Error: %s\n"%error_msg('1049')
+        response = HttpResponse(message)
+        return response
     tabid = testtakeruserobj.id
     userobj = None
     try:
@@ -2510,7 +2514,7 @@ def sendtestdata(request):
     curdatetime = datetime.datetime.now()
     if curdatetime > skillutils.mysqltopythondatetime(usertestobj.validtill.__str__()):
         message = "Error: %s\n"%error_msg('1074')
-        response = HttpRequest(message)
+        response = HttpResponse(message)
         return response
     if int(mode) == 1 or int(mode) == 2: # User has ended test by closing the window using the 'End Test' button, or the test duration has run out.
         usertestobj.status = status
@@ -3876,6 +3880,7 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                         evalid = ''.join(s for s in evalid if s in string.printable) # Remove non-printable characters, including some unicode chars. Should be changed if foreign languages are to be supported.
                         evalid = re.sub(mysettings.MULTIPLE_WS_PATTERN, '', evalid) # Remove inadvertant whitespaces, if any.
                         evalid = evalid.__str__() # Finally, we want ASCII string, not unicode.
+                        evalid = evalid.strip()
                         print evalid
                         if evalctr == 0:
                             evaluatorobj.groupmember1 = User.objects.get(emailid=evalid)
