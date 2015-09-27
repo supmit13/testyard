@@ -799,7 +799,7 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     if(Object.size(qalist) > 0){
 	ll = qalist[Object.size(qalist) - 1];
 	//alert(ll);
-	ll[2] = timeelapsed;
+	ll[1] = timeelapsed;
 	qalist[Object.size(qalist) - 1] = ll;
     }
     qareadiv = document.getElementById('qarea');
@@ -818,11 +818,13 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
 	found = 0;
 	upcomingchallenge = testpages[elem][2];
 	for(var j=0; j < Object.size(qalist); j++){
+	    alert("upcoming = " + upcomingchallenge.toUpperCase() + "  qalist=" + qalist[j][0].toUpperCase());
 	    if(qalist[j][0].toUpperCase() == upcomingchallenge.toUpperCase()){
 		found = 1;
 		break;
 	    }
 	}
+	alert("found=" + found + "   ruleflag=" + ruleflag);
 	if(found && (ruleflag == 1 || ruleflag == 0)){
 	    index = index + 1;
 	    if(index >= testpages.length){ // All questions have been covered.
@@ -836,6 +838,8 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
 	}
 	else if(found && ruleflag == 2){
 	    elem = randomlist[index];
+	    index = index + 1;
+	    alert(timeelapsed);
 	    testpages[elem][1] = testpages[elem][1] - timeelapsed; // Set the time remaining
 	    if(index >= testpages.length){ // All questions have been covered.
 		break;

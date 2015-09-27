@@ -2085,9 +2085,9 @@
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
 			  {% if not creator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:22 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:23 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>
@@ -2154,9 +2154,9 @@
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
 			  {% if not evaluator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:26 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'></font></td>
 			</tr>
 			{% endfor %}
@@ -2193,8 +2193,8 @@
 			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:4 }}</font></td>
 			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:22 }}</font></td>
-			  <td><font size=-1 color='#0000AA'>&nbsp;</font></td>
-			  <td><font size=-1 color='#0000AA'>&nbsp;</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:26 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:27 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:23 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:13 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:10 }}</font></td>

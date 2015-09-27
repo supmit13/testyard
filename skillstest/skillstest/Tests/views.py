@@ -382,6 +382,18 @@ def manage(request):
             scope = tobj.scope
             activationdate = tobj.activationdate
             testurl = generatetesturl(tobj, userobj, tests_user_dict)
+            usertestqset = UserTest.objects.filter(test=tobj)
+            testtakerscount = usertestqset.__len__()
+            passcount, failcount = 0, 0
+            if passscore and passscore > 0:
+                for utobj in usertestqset:
+                    if utobj.score > passscore:
+                        passcount += 1
+                    else:
+                        failcount += 1
+            else:
+                passcount = "No criteria specified."
+                failcount = "No criteria specified."
             evaluatoruserobjs = tests_user_dict['user_creator_other_evaluators_dict'][test_name]
             evaluatorlinkslist = []
             for evaluserobj in evaluatoruserobjs:
@@ -390,7 +402,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness]
+            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, testtakerscount, passcount, failcount]
         except:
             response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -429,6 +441,18 @@ def manage(request):
             scope = tobj.scope
             activationdate = tobj.activationdate
             testurl = generatetesturl(tobj, userobj, tests_user_dict)
+            usertestqset = UserTest.objects.filter(test=tobj)
+            testtakerscount = usertestqset.__len__()
+            passcount, failcount = 0, 0
+            if passscore and passscore > 0:
+                for utobj in usertestqset:
+                    if utobj.score > passscore:
+                        passcount += 1
+                    else:
+                        failcount += 1
+            else:
+                passcount = "No criteria specified."
+                failcount = "No criteria specified."
             evaluatoruserobjs = tests_user_dict['user_evaluator_creator_other_evaluators_dict'][test_name]
             evaluatorlinkslist = []
             for evaluserobj in evaluatoruserobjs:
@@ -437,7 +461,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness ]
+            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness, testtakerscount, passcount, failcount ]
         except:
             response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -475,6 +499,9 @@ def manage(request):
             attemptsintervalunit = tobj.attemptsinterval
             scope = tobj.scope
             activationdate = tobj.activationdate
+            usertestqset = UserTest.objects.filter(test=tobj)
+            testtakerscount = usertestqset.__len__()
+            percentilescore = ""
             #testurl = generatetesturl(tobj, userobj, tests_user_dict)
             # The above line is causing some strange issues - Needs investigation with a fresh mind
             evaluatoruserobjs = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
@@ -511,7 +538,7 @@ def manage(request):
                 else:
                     next_test_date = "Anytime" # If no usertest object exists then the user would be able to take the test anytime.
             visibility = utobj.visibility
-            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, candidate_score, test_taken_on, next_test_date, visibility]
+            testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, candidate_score, test_taken_on, next_test_date, visibility, testtakerscount, percentilescore ]
         except:
             response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
             return HttpResponse(response)
