@@ -160,6 +160,7 @@ REMOVE_USER_URL = "skillstest/network/connection/remove/"
 SEND_MESSAGE_URL = "skillstest/network/connection/sendmessage/"
 MANAGE_GROUP_MEMBERS_URL = "skillstest/network/group/managemembers/"
 SAVE_GROUP_MEMBERS_URL = "skillstest/network/group/savemembersinfo/"
+MEMBER_SEARCH_URL = "skillstest/network/groupmember/search/"
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -220,11 +221,12 @@ NUM_DAYS_EVALUATION_COMMIT = 10
 
 # Dictionary containing all rules that may be imposed on a test.
 RULES_DICT = { \
-        'breaknotallowed' : 'Breaks are NOT allowed while taking the test', \
-        'responsenoreturn' : 'Responded challenges may not be revisited', \
-        'norevisit' : 'Attempted challenges may not be revisited', \
+        #'breaknotallowed' : 'Breaks are NOT allowed while taking the test', \
+        #'responsenoreturn' : 'Responded challenges may not be revisited', \
+        #'norevisit' : 'Attempted challenges may not be revisited', \
         'showatonce' : 'Show all challenges at the begining of the test', \
         'allowchallengenavigation' : 'Allow user to navigate between challenges', \
+        #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
         }
 
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \
@@ -244,7 +246,7 @@ OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
 OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 
 # Number of complimentary tests a newly registered user can conduct:
-NEW_USER_FREE_TESTS_COUNT = 7
+NEW_USER_FREE_TESTS_COUNT = 15
 # Types of tests the user can conduct as part of complimentary test:
 NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 
@@ -331,5 +333,5 @@ EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 MAX_POSTS_IN_PAGE = 10
 
-
+#LEFT_PANEL_CHALLENGE_LENGTH = 25
 
