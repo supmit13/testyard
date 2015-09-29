@@ -1547,6 +1547,7 @@
 		    var xmlhttp;
 		    var postdata = "testid=" + testid + "&emailid=" + emailid + "&csrfmiddlewaretoken=";
 		    postdata += document.frmmaintests.csrfmiddlewaretoken.value;
+		    //alert(postdata);
 		    yesno = confirm("Click on 'Ok' to confirm action of disqualification of candidate.");
 		    if(!yesno){
 			return(false);

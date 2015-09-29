@@ -4491,18 +4491,36 @@ def disqualifycandidate(request):
         message = error_msg('1158')
         response = HttpResponse(message)
         return response
-    usertestqset = UserTest.objects.filter(emailaddr=emailid)
+    usertestqset = UserTest.objects.filter(emailaddr=emailid, test=testobj)
     if usertestqset.__len__() == 0:
-        usertestqset = WouldbeUsers.objects.filter(emailaddr=emailid)
+        usertestqset = WouldbeUsers.objects.filter(emailaddr=emailid, test=testobj)
     if usertestqset.__len__() == 0:
         message = error_msg('1159')
         response = HttpResponse(message)
         return response
-    utobj = usertestqset[0]
-    utobj.disqualified = True
-    utobj.save()
+    # There may be multiple instances of the same test scheduled for the same candidate. Need to disqualify all.
+    for utobj in usertestqset:
+        utobj.disqualified = True
+        utobj.save()
     message = "Successfully disqualified the user for the given test."
-    # Send email to the user...
+    emailsubject = "Disqualification of your candidature from the test"
+    emailmessage = """
+    Dear candidate,
+
+    Your candidature for the test named '%s' has been disqualified. If you
+    consider to be unjust, please feel free to talk to our support team. They
+    will help you sort the matter.
+
+    Thanks,
+    TestYard Support
+    """%testobj.testname
+    fromaddr = 'support@testyard.com'
+    """
+    try:
+        retval = send_mail(emailsubject, emailmessage, fromaddr, [ emailid, ], False)
+    except:
+        message += "Could not send email to the candidate."
+    """
     response = HttpResponse(message)
     return response
 
