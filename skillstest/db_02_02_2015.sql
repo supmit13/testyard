@@ -739,6 +739,9 @@ alter table Tests_challenge convert to character set utf8mb4;
 alter table Tests_usertest add column evalcommitstate boolean default false;
 alter table Tests_wouldbeusers add column evalcommitstate boolean default false;
 
+alter table Tests_usertest add column disqualified boolean default false;
+alter table Tests_wouldbeusers add column disqualified boolean default false;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

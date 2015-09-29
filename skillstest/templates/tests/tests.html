@@ -1628,7 +1628,13 @@
 				        endtime = "";
 				    }
 				}
-			        html += "<tr bgcolor='#B8D1F3'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap><a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+			        html += "<tr bgcolor='#B8D1F3'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+				if(!answerrecord['disqualified']){
+				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				}
+				else{
+				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td nowrap>" + comments + "</td></tr>";
+				}
 			    }
 			    else{
 				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\");'>Evaluate Responses</a>";
@@ -1651,7 +1657,13 @@
 				        endtime = "";
 				    }
 				}
-				html += "<tr bgcolor='#FFFFFF'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap><a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				html += "<tr bgcolor='#FFFFFF'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+				if(!answerrecord['disqualified']){
+				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				}
+				else{
+				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td nowrap>" + comments + "</td></tr>";
+				}
 			    }
 			    rowctr++;
 			}

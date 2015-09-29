@@ -164,6 +164,7 @@ class UserTest(models.Model):
     # Tests with visibility set to 'Private' cannot be viewed by anyone, 'Protected' tests are visible only to members within the user's 
     # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
     evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
+    disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
 
 
     class Meta:
@@ -329,6 +330,7 @@ class WouldbeUsers(models.Model):
     # Tests with visibility set to 'Private' cannot be viewed by anyone, 'Protected' tests are visible only to members within the user's 
     # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
     evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
+    disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
 
     class Meta:
         verbose_name = "wouldbeusers Table"
