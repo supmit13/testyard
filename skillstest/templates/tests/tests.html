@@ -1411,6 +1411,9 @@
 		    evaltestcomment = evalwin.document.frmevalresp.evaltestcomment.value;
 		    // TODO: Restrict usage of special characters in evaltestcomment.
 		    postdata = "maxcctr=" + maxcctr + "&testid=" + testid + "&emailid=" + emailid + "&tabid=" + tabid + "&tabref=" + tabref + "&evaltestcomment=" + evaltestcomment;
+		    if(evalwin.document.frmevalresp.evalcommitstate.checked == true){
+			postdata += "&evalcommitstate=1";
+		    }
 		    for(var i=1; i < maxcctr; i++){
 		        maxscore = parseFloat(evalwin.document.getElementById('maxscore_' + i).value);
 		        negativescore = parseFloat(evalwin.document.getElementById('negativescore_' + i).value);
@@ -1418,6 +1421,7 @@
 		        assessment = parseFloat(evalwin.document.getElementById('assessment_' + i).value);
 			var numregex = new RegExp("^\-?[0-9\.]*$");
 			if(!numregex.test(assessment)){
+			    evalwin.focus();
 			    alert("Assessment should be a numeric value");
 			    evalwin.document.getElementById('assessment_' + i).focus();
 			    return (0);
@@ -1477,6 +1481,7 @@
 		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
 		    responsedata = jsonresp[emailid];
 		    candidateresponse = responsedata.candidateresponse;
+		    evalcommitstate = responsedata.evalcommitstate;
 		    evalwin = window.open("", "evaluationwindow", "width=400, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
 		    //alert(candidateresponse);
 		    html = "<body bgcolor='#669999'><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action=''>";
@@ -1504,8 +1509,14 @@
 			}
 			correctanswer = correctanswer.replace("#||#", ", ");
 			html += "<br /><br /><b>Correct Answer: </b>" + correctanswer;
-			html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "'>";
-			html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			if(evalcommitstate == false){
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "'>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			}
+			else{
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' disabled>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 disabled>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			}
 			html += "<input type='hidden' name='challengeid_" + cctr + "' id='challengeid_" + cctr + "' value='" + candidateresponse[challenge].challengeid + "'>";
 			html += "<br /><br /><hr>";
 			cctr++;
@@ -1513,7 +1524,16 @@
 		    html += "{% csrf_token %}";
 		    html += "<input type='hidden' name='maxcctr' id='maxcctr' value='" + cctr + "'>";
 		    html += "<textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
-		    html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
+		    if(evalcommitstate == false){
+		        html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1'><br /><br />";
+		    }
+		    else{
+			html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />";
+		    }
+		    if(evalcommitstate == false){
+		        html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;";
+		    }
+		    html += "<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
 		    html += "</form></body>";
 		    evalwin.document.write(html);
 		}
@@ -1524,6 +1544,27 @@
 
 
 		function disqualifycandidate(testid, emailid){
+		    var xmlhttp;
+		    var postdata = "testid=" + testid + "&emailid=" + emailid + "&csrfmiddlewaretoken=";
+		    postdata += document.frmmaintests.csrfmiddlewaretoken.value;
+		    yesno = confirm("Click on 'Ok' to confirm action of disqualification of candidate.");
+		    if(!yesno){
+			return(false);
+		    }
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+   		    xmlhttp.onreadystatechange = function(){
+                        //document.write(xmlhttp.responseText);
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			    alert(xmlhttp.responseText);
+  		        }
+  		    };
+		    xmlhttp.open("POST", '{{ disqualifycandidateurl }}', true);
+  		    xmlhttp.send(postdata);
 		}
 
 
@@ -1975,7 +2016,7 @@
 
 	function opencanvas_ver1(){
 	    drawdiv = document.getElementById('drawcanvas');
-	    drawhtml = "<div class='container'><canvas id='drawingcanvas' class='imageView' width='400' height='300'><p>Unfortunately, your browser is currently unsupported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p><p>Supported browsers: <a href='http://www.opera.com'>Opera</a>, <a href='http://www.mozilla.com'>Firefox</a>, <a href='http://www.apple.com/safari'>Safari</a>, and <a href='http://www.konqueror.org'>Konqueror</a>.</p></canvas></div><a href='#/' onClick='javascript:removecanvas();'><font color='#AA0000' size=-1><i>Remove canvas (and discard drawing).</i></font></a>";
+	    drawhtml = "<div class='container'><canvas id='drawingcanvas' class='imageView' width='400' height='300'><p>Unfortunately, your browser is no longer supported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p><p>Supported browsers: <a href='http://www.opera.com'>Opera</a>, <a href='http://www.mozilla.com'>Firefox</a>, <a href='http://www.apple.com/safari'>Safari</a>, and <a href='http://www.konqueror.org'>Konqueror</a>.</p></canvas></div><a href='#/' onClick='javascript:removecanvas();'><font color='#AA0000' size=-1><i>Remove canvas (and discard drawing).</i></font></a>";
 	    // Add a script block in head
 	    // Check if we have a script tag with source pointed to drawing.js
 	    drawingpattern = new RegExp("drawing\.js");

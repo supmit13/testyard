@@ -736,6 +736,9 @@ alter table Tests_emailfailure modify sessionid varchar(100) NOT NULL;
 
 alter table Tests_challenge convert to character set utf8mb4;
 
+alter table Tests_usertest add column evalcommitstate boolean default false;
+alter table Tests_wouldbeusers add column evalcommitstate boolean default false;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

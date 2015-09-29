@@ -55,7 +55,7 @@ may be overridden by setting creatorisevaluator field in Test class to False.
 """
 class Evaluator(models.Model):
     evalgroupname = models.CharField(max_length=150, null=False, blank=False)
-    # A group can have a maximum of 10 members (including creator of Test (if creator is Evaluators too)
+    # A group can have a maximum of 11 members (including creator of Test (if creator is Evaluators too)
     groupmember1 = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
     groupmember2 = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
     groupmember3 = models.ForeignKey(User, related_name="+", null=True, blank=True, default='')
@@ -163,6 +163,7 @@ class UserTest(models.Model):
     visibility = models.IntegerField(default=0, choices=((0, 'Private'), (1, 'Protected'), (2, 'Public')))
     # Tests with visibility set to 'Private' cannot be viewed by anyone, 'Protected' tests are visible only to members within the user's 
     # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
+    evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
 
 
     class Meta:
@@ -327,6 +328,7 @@ class WouldbeUsers(models.Model):
     visibility = models.IntegerField(default=0, choices=((0, 'Private'), (1, 'Protected'), (2, 'Public'))) 
     # Tests with visibility set to 'Private' cannot be viewed by anyone, 'Protected' tests are visible only to members within the user's 
     # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
+    evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
 
     class Meta:
         verbose_name = "wouldbeusers Table"

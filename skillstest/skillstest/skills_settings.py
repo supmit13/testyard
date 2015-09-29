@@ -126,6 +126,7 @@ SHOW_TEST_INFO_URL = "skillstest/test/showtestinfo/"
 SET_VISIBILITY_URL = "skillstest/test/visibility/"
 GET_CANVAS_URL = "skillstest/test/getcanvas/"
 SAVE_DRAWING_URL = "skillstest/test/savedrawing/"
+DISQUALIFY_CANDIDATE_URL = "skillstest/test/disqualifycandidate/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"

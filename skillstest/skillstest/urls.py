@@ -73,6 +73,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SET_VISIBILITY_URL, 'skillstest.Tests.views.setvisibility', name='setvisibility'),
     url(r'%s$'%mysettings.GET_CANVAS_URL, 'skillstest.Tests.views.getcanvas', name='getcanvas'),
     url(r'%s$'%mysettings.SAVE_DRAWING_URL, 'skillstest.Tests.views.savedrawing', name='savedrawing'),
+    url(r'%s$'%mysettings.DISQUALIFY_CANDIDATE_URL, 'skillstest.Tests.views.disqualifycandidate', name='disqualifycandidate'),
 
     url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
     url(r'%s$'%mysettings.CHECK_GRPNAME_AVAIL_URL, 'skillstest.Network.views.checkgrpnameavailability', name='creategroup'),
@@ -107,5 +108,6 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SEND_MESSAGE_URL, 'skillstest.Network.views.sendmessage', name='sendmessage'),
     url(r'%s$'%mysettings.MANAGE_GROUP_MEMBERS_URL, 'skillstest.Network.views.managegroupmembers', name='managegroupmembers'),
     url(r'%s$'%mysettings.SAVE_GROUP_MEMBERS_URL, 'skillstest.Network.views.savegroupmembers', name='savegroupmembers'),
+    url(r'%s$'%mysettings.MEMBER_SEARCH_URL, 'skillstest.Network.views.searchmember', name='searchmember'),
 )
 

@@ -50,7 +50,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -202,6 +202,7 @@ def get_user_tests(request):
     tests_user_dict['settestvisibilityurl'] = skillutils.gethosturl(request) + "/" + settestvisibilityurl
     tests_user_dict['getcanvasurl'] = skillutils.gethosturl(request) + "/" + getcanvasurl
     tests_user_dict['savedrawingurl'] = skillutils.gethosturl(request) + "/" + savedrawingurl
+    tests_user_dict['disqualifycandidateurl'] = skillutils.gethosturl(request) + "/" + disqualifycandidateurl
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
@@ -3208,14 +3209,14 @@ def evaluate(request):
         wbuqset = WouldbeUsers.objects.filter(test=testobj)
         for ut in utqset:
             if ut.active and not ut.cancelled and ut.status == 2:
-                candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment}
+                candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment, 'evalcommitstate' : ut.evalcommitstate}
                 userresputqueryset = UserResponse.objects.filter(test=testobj, tabref='usertest', tabid=ut.id, emailaddr=ut.emailaddr)
                 for userrespobj in userresputqueryset:
                     candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
                 candidateresponses[ut.emailaddr] = candidaterec
         for wbu in wbuqset:
             if wbu.active and not wbu.cancelled and wbu.status == 2:
-                candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment}
+                candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment, 'evalcommitstate' : wbu.evalcommitstate}
                 userrespwbequeryset = UserResponse.objects.filter(test=testobj, tabref='wouldbeusers', tabid=wbu.id, emailaddr=wbu.emailaddr)
                 for userrespobj in userrespwbequeryset:
                     candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
@@ -3261,6 +3262,7 @@ def evaluateresponses(request):
     testobj = None
     evalobj = None
     passscore = None
+    evalcommitstate = '0'
     if postdict.has_key('maxcctr'):
         maxcctr = postdict['maxcctr']
     if postdict.has_key('testid'):
@@ -3273,6 +3275,8 @@ def evaluateresponses(request):
         tabref = postdict['tabref']
     if postdict.has_key('evaltestcomment'):
         evaltestcomment = postdict['evaltestcomment']
+    if postdict.has_key('evalcommitstate'):
+        evalcommitstate = postdict['evalcommitstate']
     if testid:
         testobj = Test.objects.get(id=testid)
         passscore = testobj.passscore
@@ -3289,6 +3293,8 @@ def evaluateresponses(request):
             if currenttimestamp - firsttimestamp > evallimit:
                 message = error_msg('1083')
                 response = HttpResponse(message)
+                utobj.evalcommitstate = True
+                utobj.save()
                 return response
     elif tabref == 'usertest':
         utobj = UserTest.objects.get(id=tabid)
@@ -3299,6 +3305,8 @@ def evaluateresponses(request):
             currenttimestamp = int(time.time())
             if currenttimestamp - firsttimestamp > evallimit:
                 message = error_msg('1083')
+                utobj.evalcommitstate = True
+                utobj.save()
                 response = HttpResponse(message)
                 return response
     else:
@@ -3306,6 +3314,7 @@ def evaluateresponses(request):
         response = HttpResponse(message)
         return response
     totalscore = 0
+    commitable = True
     for cctr in range(1, int(maxcctr) + 1):
         challengeid, assessment, comments, maxscore = -1, 0.0, "", 0
         if postdict.has_key('challengeid_' + cctr.__str__()):
@@ -3314,6 +3323,10 @@ def evaluateresponses(request):
             continue # no use retrieving other elements with same id as we won't be able to store those values against a challenge.
         if postdict.has_key('assessment_' + cctr.__str__()):
             assessment = postdict['assessment_' + cctr.__str__()]
+            if not testobj.negativescoreallowed and assessment == '-1':
+                commitable = False
+            elif testobj.negativescoreallowed == True and assessment == '':
+                commitable = False
             totalscore = totalscore + float(assessment)
         if postdict.has_key('maxscore_' + cctr.__str__()):
             maxscore = postdict['maxscore_' + cctr.__str__()]
@@ -3341,6 +3354,11 @@ def evaluateresponses(request):
         utobj.outcome = False
     else:
         pass
+    if evalcommitstate == '1' and commitable:
+        utobj.evalcommitstate = True
+    else:
+        utobj.evalcommitstate = False
+        message += "The evaluation could not be commited as not all responses have been assessed. To commit the evaluation, you need to assess all the responses. "
     utobj.save()
     message += "Handled %s answers for user with email address '%s'"%(maxcctr.__str__(), emailid)
     return HttpResponse(message)
@@ -4419,6 +4437,73 @@ def savedrawing(request):
     else: # The challenge is not yet created, but is in the process of being created. So return back the filename so that the user may submit it while creating the challenge.
         response = HttpResponse(mediafilename)
         return response
+
+"""
+Method to disqualify a candidate. Basically it sets the 'cancel' 
+flag in 'Tests_usertest' or 'Tests_wouldbeusers' tables. Note that
+a candidate may be disqualified only by the owner/creator of the 
+concerned test.
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def disqualifycandidate(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid') and request.POST['testid'] != '':
+        testid = request.POST['testid']
+    if testid == -1:
+        message = "Error: %s"%error_msg('1142')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = "Error: %s"%error_msg('1056')
+        response = HttpResponse(message)
+        return response
+    emailid = ""
+    if request.POST.has_key('emailid') and request.POST['emailid'] != '':
+        emailid = request.POST['emailid']
+    if emailid == '':
+        message = error_msg('1157')
+        response = HttpResponse(message)
+        return response
+    # Check if the user is the owner of the test.
+    userisallowed = False
+    if userobj == testobj.creator:
+        userisallowed = True
+    if not userisallowed:
+        message = error_msg('1158')
+        response = HttpResponse(message)
+        return response
+    usertestqset = UserTest.objects.filter(emailaddr=emailid)
+    if usertestqset.__len__() == 0:
+        usertestqset = WouldbeUsers.objects.filter(emailaddr=emailid)
+    if usertestqset.__len__() == 0:
+        message = error_msg('1159')
+        response = HttpResponse(message)
+        return response
+    utobj = usertestqset[0]
+    utobj.cancelled = True
+    utobj.save()
+    message = "Successfully disqualified the user for the given test."
+    response = HttpResponse(message)
+    return response
 
 
     

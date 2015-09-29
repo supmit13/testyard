@@ -43,6 +43,7 @@ error_codes = { \
         '1047' : 'Error in test metadata: Incorrect data type for total score or number of challenges or both', \
 
         '1048' : 'Error in evaluator group name: An evaluator group with the same name but with a different set of email ids already exist', \
+        '1049' : 'User had already started taking this test before. She/He may not restart taking it again.',\
 
         '1050' : 'Entered test metadata successfully', \
         '1051' : 'This challenge/question could not be associated with any test created by you. This may mean that your session has become corrupt due to some transient problem. Please login into your account once more and retry. We regret the inconvenience caused due to this condition.', \
@@ -152,6 +153,9 @@ error_codes = { \
         '1154' : 'Could not find the user object with the specified email address',\
         '1155' : 'You are not the owner of this group. Hence you are not entitled to view the manage members screen for this group.',\
         '1156' : 'User with the given username does not belong to this group.',\
+        '1157' : 'Could not find the required parameter named emailid in the request.',\
+        '1158' : 'Candidate cannot be disqualified by any user other than the owner of the test.',\
+        '1159' : 'User with the given email Id and attempted test could not be found.',\
     }
 
 def error_msg(code):
