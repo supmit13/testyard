@@ -3421,8 +3421,34 @@ def evaluateresponses(request):
         utobj.evalcommitstate = False
         message += "The evaluation could not be commited as not all responses have been assessed. To commit the evaluation, you need to assess all the responses. "
     utobj.save()
-    if utobj.evalcommitstate is True:
-        pass # Send email to the candidate with the obtained score for the test.
+    if utobj.evalcommitstate is True: # Send email to the candidate with the obtained score for the test.
+        subject = "Your test '%s' has been evaluated"%utobj.test.testname
+        fromaddr = utobj.test.creator.emailid
+        email = utobj.emailaddr
+        passscore = utobj.test.passscore
+        outcome = "<font color='#0000AA'>Pass</font>"
+        if utobj.score < passscore:
+            outcome = "<font color='#AA0000'>Fail</font>"
+        message = """
+            Dear Candidate,
+
+            Your answer script for the test '%s' has been evaluated and the results are as follows:
+            Score: %s/%s (%s out of %s)
+            Outcome: %s
+
+            To be able to refer to the score permanently, we suggest you create an account on testyard. If
+            you already have one, then you would be able to refer to the test's outcome in the 'Tests' tab.
+
+            Thank you for using TestYard as a test partner.
+
+            Regards,
+            TestYard Test Facilitation Team.
+        """%(utobj.test.testname, utobj.score, utobj.test.maxscore, utobj.score, utobj.test.maxscore, outcome)
+        try:
+            retval = send_mail(subject, message, fromaddr, [email,], False)
+        except:
+            message = error_msg('1160')
+            print message
     message += "Handled %s answers for user with email address '%s'"%(maxcctr.__str__(), emailid)
     return HttpResponse(message)
 
