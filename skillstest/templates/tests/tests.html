@@ -1605,6 +1605,12 @@
 			    else if(answerrecord['score'] > 0){
 				outcome = "<font color='#0000DD'>No pass score specified</font>";
 			    }
+			    else if(answerrecord['evalcommitstate']){
+				if(answerrecord['outcome'] == null){
+				    answerrecord['outcome'] = '0';
+				}
+				outcome = "<font color='#0000DD'>" + answerrecord['outcome'] + "</font>";
+			    }
 			    grandtotal = "<font color='#0000DD'>" + answerrecord['score'] + "</font>";
 			    status = answerrecord['status'];
 			    comments = "<font color='#0000DD' size=-1>" + decodeURIComponent(answerrecord['evaltestcomment']) + "</font>";
@@ -2142,7 +2148,7 @@
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:22 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:23 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>
 			  {% if creator_tests_info|dictlookup:testnm|getval:18 == 'private' %}<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='0' checked onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='1'  onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Public
@@ -2211,7 +2217,7 @@
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:26 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:27 }}</font></td>
 			</tr>
 			{% endfor %}
 			</table>

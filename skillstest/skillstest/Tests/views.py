@@ -31,6 +31,7 @@ from openpyxl import load_workbook
 from xlrd import open_workbook
 import csv, string
 import xml.etree.ElementTree as et
+from itertools import chain
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -384,17 +385,29 @@ def manage(request):
             activationdate = tobj.activationdate
             testurl = generatetesturl(tobj, userobj, tests_user_dict)
             usertestqset = UserTest.objects.filter(test=tobj)
-            testtakerscount = usertestqset.__len__()
-            passcount, failcount = 0, 0
+            wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
+            combinedlist = []
+            for utobj in usertestqset:
+                combinedlist.append(utobj)
+            for wbu in wouldbeusersqset:
+                combinedlist.append(wbu)
+            testtakerscount = combinedlist.__len__()
+            passcount, failcount, notevaluated = 0, 0, 0
             if passscore and passscore > 0:
-                for utobj in usertestqset:
-                    if utobj.score > passscore:
+                for utobj in combinedlist:
+                    if utobj.evalcommitstate == 1 and utobj.score >= passscore:
                         passcount += 1
-                    else:
+                    elif utobj.evalcommitstate == 1 and utobj.score < passscore:
                         failcount += 1
+                    else:
+                        notevaluated += 1
             else:
                 passcount = "No criteria specified."
                 failcount = "No criteria specified."
+            disqualifications = 0
+            if combinedlist.__len__() > 0:
+                disqualifications += len(usertestqset.filter(disqualified=True))
+                disqualifications += len(wouldbeusersqset.filter(disqualified=True))
             evaluatoruserobjs = tests_user_dict['user_creator_other_evaluators_dict'][test_name]
             evaluatorlinkslist = []
             for evaluserobj in evaluatoruserobjs:
@@ -403,7 +416,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, testtakerscount, passcount, failcount]
+            testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, testtakerscount, passcount, failcount, disqualifications]
         except:
             response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -443,17 +456,29 @@ def manage(request):
             activationdate = tobj.activationdate
             testurl = generatetesturl(tobj, userobj, tests_user_dict)
             usertestqset = UserTest.objects.filter(test=tobj)
-            testtakerscount = usertestqset.__len__()
-            passcount, failcount = 0, 0
+            wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
+            combinedlist = []
+            for utobj in usertestqset:
+                combinedlist.append(utobj)
+            for wbu in wouldbeusersqset:
+                combinedlist.append(wbu)
+            testtakerscount = combinedlist.__len__()
+            passcount, failcount, notevaluated = 0, 0, 0
             if passscore and passscore > 0:
-                for utobj in usertestqset:
-                    if utobj.score > passscore:
+                for utobj in combinedlist:
+                    if utobj.evalcommitstate == 1 and utobj.score >= passscore:
                         passcount += 1
-                    else:
+                    elif utobj.evalcommitstate == 1 and utobj.score < passscore:
                         failcount += 1
+                    else:
+                        notevaluated += 1
             else:
                 passcount = "No criteria specified."
                 failcount = "No criteria specified."
+            disqualifications = 0
+            if combinedlist.__len__() > 0:
+                disqualifications += len(usertestqset.filter(disqualified=True))
+                disqualifications += len(wouldbeusersqset.filter(disqualified=True))
             evaluatoruserobjs = tests_user_dict['user_evaluator_creator_other_evaluators_dict'][test_name]
             evaluatorlinkslist = []
             for evaluserobj in evaluatoruserobjs:
@@ -462,7 +487,7 @@ def manage(request):
                 evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                 evaluatorlinkslist.append(evallink)
             evaluatorlinks = ", ".join(evaluatorlinkslist)
-            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness, testtakerscount, passcount, failcount ]
+            testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness, testtakerscount, passcount, failcount, disqualifications ]
         except:
             response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
             return HttpResponse(response)
@@ -501,8 +526,21 @@ def manage(request):
             scope = tobj.scope
             activationdate = tobj.activationdate
             usertestqset = UserTest.objects.filter(test=tobj)
-            testtakerscount = usertestqset.__len__()
-            percentilescore = ""
+            wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
+            combinedlist = []
+            for utobj in usertestqset:
+                combinedlist.append(utobj)
+            for wbu in wouldbeusersqset:
+                combinedlist.append(wbu)
+            testtakerscount = combinedlist.__len__()
+            percentilescore = getpercentilescore(createdscore, combinedlist)
+            evalcompleteflag = False
+            for utobj in combinedlist:
+                if utobj.evalcommitstate == 1:
+                    evalcompleteflag = True
+                    break
+            if evalcompleteflag is False:
+                percentilescore = "NA"
             #testurl = generatetesturl(tobj, userobj, tests_user_dict)
             # The above line is causing some strange issues - Needs investigation with a fresh mind
             evaluatoruserobjs = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
@@ -522,13 +560,15 @@ def manage(request):
                 continue
             utobj = None
             for utobj in utqset:
-                if utobj and utobj.score > 0: # Find which invitation the user has used to take the test. It will have a positive score value.
+                if utobj and (utobj.score > 0 or utobj.evalcommitstate): # Find which invitation the user has used to take the test. It will have a positive score value or its evalcommitstate will be 1.
                     break
             if not uniquedict.has_key(test_name):
                 uniquedict[test_name] = 1
             else:
                 continue
-            candidate_score = utobj.score
+            candidate_score = "<font color='#AA0000'>Not evaluated yet.</font>"
+            if utobj.evalcommitstate:
+                candidate_score = utobj.score
             test_taken_on = utobj.starttime
             next_test_date = ""
             if not tobj.allowmultiattempts:
@@ -552,6 +592,27 @@ def manage(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         managetestshtml = managetestshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(managetestshtml)
+
+"""
+Computes the percentile score from the given arguments:
+argument 1 is the score of the candidate. argument 2 is
+a list containing the scores (among several other things)
+of all users who have taken the test and have been 
+evaluated.
+"""
+def getpercentilescore(createdscore, combinedlist):
+    takerscount = combinedlist.__len__()
+    abovecount, belowcount = 0, 0
+    for utobj in combinedlist:
+        if not utobj.score:
+            utobj.score = 0
+        #print utobj.score, "####", createdscore
+        if int(utobj.score) >= int(createdscore):
+            abovecount += 1
+        else:
+            belowcount += 1
+    percentile = float(belowcount/takerscount) * 100.00
+    return percentile
 
 
 @skillutils.is_session_valid
@@ -3360,6 +3421,8 @@ def evaluateresponses(request):
         utobj.evalcommitstate = False
         message += "The evaluation could not be commited as not all responses have been assessed. To commit the evaluation, you need to assess all the responses. "
     utobj.save()
+    if utobj.evalcommitstate is True:
+        pass # Send email to the candidate with the obtained score for the test.
     message += "Handled %s answers for user with email address '%s'"%(maxcctr.__str__(), emailid)
     return HttpResponse(message)
 

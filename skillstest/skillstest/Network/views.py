@@ -158,6 +158,7 @@ def network(request):
         alltopicsdict[topicunderscored] = topicobj.topicname
     messageiduseddict = {};
     messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
+    messageobj = None
     for messageobj in messagesqset:
         if messageobj.attachmentfile:
             attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
@@ -188,8 +189,11 @@ def network(request):
                 attachtag = ""
             poststr += str(subpost.id) + "##" + subpost.poster.displayname + "##" + str(subpost.createdon) + "##" + attachtag + "##" + subpost.postmsgtag + "##" + subpost.postcontent
             subpostslist.append(poststr)
-        messagesdict[messageobj.id].append(subpostslist)
-    messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')
+        if messageobj is not None:
+            messagesdict[messageobj.id].append(subpostslist)
+    messagesqset2 = []
+    if messageobj is not None:
+        messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')
     for messageobj in messagesqset2:
         if not messageiduseddict.has_key(messageobj.id):
             messageiduseddict[messageobj.id] = 1
