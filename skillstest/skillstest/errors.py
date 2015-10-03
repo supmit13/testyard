@@ -156,6 +156,7 @@ error_codes = { \
         '1157' : 'Could not find the required parameter named emailid in the request.',\
         '1158' : 'Candidate cannot be disqualified by any user other than the owner of the test.',\
         '1159' : 'User with the given email Id and attempted test could not be found.',\
+        '1160' : 'Could not send test results intimation email to candidate.',\
     }
 
 def error_msg(code):

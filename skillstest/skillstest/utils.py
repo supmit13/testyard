@@ -319,16 +319,18 @@ transfer the rights to the new copied  test to the new user in order for
 the new user to access it. However, the 'evaluator' field will not
 be copied in the duplicate test.
 """
-def copy_test(testobj, creatorid, userobj):
+def copy_test(testobj, userobj):
     newtest = Test()
-    # Check if creatorobj is the creator of testobj or not. If not, return None.
-    if testobj.creator.id != creatorid:
-        return None
-    newtest.testname = testobj.testname
+    newtest.testname = "Copy of " + testobj.testname
     newtest.subtopic = testobj.subtopic
+    newtest.topic = testobj.topic
     newtest.creator = userobj
     newtest.creatorisevaluator = testobj.creatorisevaluator
-    newtest.evaluator = None
+    evaluator = Evaluator()
+    evaluator.evalgroupname = "eval_" + generate_random_string() # This will be a randomly generated string
+    evaluator.groupmember1 = userobj
+    evaluator.save()
+    newtest.evaluator = evaluator
     newtest.testtype = testobj.testtype
     newtest.createdate = datetime.datetime.now()
     newtest.maxscore = testobj.maxscore
@@ -337,9 +339,49 @@ def copy_test(testobj, creatorid, userobj):
     newtest.duration = testobj.duration
     newtest.allowedlanguages = testobj.allowedlanguages
     newtest.challengecount = testobj.challengecount
-    newtest.activationdate = datetime.datetime.now()
-    newtest.status = testobj.status
+    newtest.activationdate = datetime.datetime.now() + datetime.timedelta(seconds=864000)
+    newtest.publishdate = datetime.datetime.now() + datetime.timedelta(seconds=864000)
+    newtest.status = 0
     newtest.quality = testobj.quality
+    newtest.testlinkid = generate_random_string()
+    newtest.allowmultiattempts = testobj.allowmultiattempts
+    newtest.maxattemptscount = testobj.maxattemptscount
+    newtest.attemptsinterval = testobj.attemptsinterval
+    newtest.attemptsintervalunit = testobj.attemptsintervalunit
+    newtest.randomsequencing = testobj.randomsequencing
+    newtest.multimediareqd = testobj.multimediareqd
+    newtest.progenv = testobj.progenv
+    newtest.negativescoreallowed = testobj.negativescoreallowed
+    newtest.scope = testobj.scope
+    newtest.save()
+    newtestid = newtest.id
+    challengesqset = Challenge.objects.filter(test=testobj)
+    for challenge in challengesqset:
+        newchallenge = Challenge()
+        newchallenge.test = newtest
+        newchallenge.statement = challenge.statement
+        newchallenge.challengetype = challenge.challengetype
+        newchallenge.maxresponsesizeallowable = challenge.maxresponsesizeallowable
+        newchallenge.option1 = challenge.option1
+        newchallenge.option2 = challenge.option2
+        newchallenge.option3 = challenge.option3
+        newchallenge.option4 = challenge.option4
+        newchallenge.option5 = challenge.option5
+        newchallenge.option6 = challenge.option6
+        newchallenge.option7 = challenge.option7
+        newchallenge.option8 = challenge.option8
+        newchallenge.challengescore = challenge.challengescore
+        newchallenge.negativescore = challenge.negativescore
+        newchallenge.mustrespond = challenge.mustrespond
+        newchallenge.responsekey = challenge.responsekey
+        newchallenge.mediafile = challenge.mediafile
+        newchallenge.additionalurl = challenge.additionalurl
+        newchallenge.timeframe = challenge.timeframe
+        newchallenge.subtopic = challenge.subtopic
+        newchallenge.challengequality = challenge.challengequality
+        newchallenge.testlinkid = newtest.testlinkid
+        newchallenge.oneormore = challenge.oneormore
+        newchallenge.save()
     return newtest
 
 

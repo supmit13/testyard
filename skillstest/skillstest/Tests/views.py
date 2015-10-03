@@ -51,7 +51,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -188,6 +188,7 @@ def get_user_tests(request):
     tests_user_dict['clearnegativescoreurl'] = skillutils.gethosturl(request) + "/" + clearnegativescoreurl
     tests_user_dict['deletetesturl'] = skillutils.gethosturl(request) + "/" + deletetesturl
     tests_user_dict['showuserviewurl'] = skillutils.gethosturl(request) + "/" + showuserviewurl
+    tests_user_dict['copytesturl'] = skillutils.gethosturl(request) + "/" + copytesturl
     tests_user_dict['editchallengeurl'] = skillutils.gethosturl(request) + "/" + editchallengeurl
     tests_user_dict['showtestcandidatemode'] = skillutils.gethosturl(request) + "/" + showtestcandidatemode
     tests_user_dict['sendtestinvitationurl'] = skillutils.gethosturl(request) + "/" + sendtestinvitationurl
@@ -348,7 +349,6 @@ def manage(request):
         tests_user_dict[inc_key] = inc_context[inc_key]
     testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()
     testnames_created_list.sort()
-    #print type(testnames_created_list)
     tests_user_dict['baseURL'] = skillutils.gethosturl(request)
     ruleexplanataions = {}
     for ruleshort in mysettings.RULES_DICT.keys():
@@ -533,7 +533,28 @@ def manage(request):
             for wbu in wouldbeusersqset:
                 combinedlist.append(wbu)
             testtakerscount = combinedlist.__len__()
-            percentilescore = getpercentilescore(createdscore, combinedlist)
+            userresps = UserResponse.objects.filter(test=tobj, emailaddr=userobj.emailid)
+            attainedscore = 0
+            if userresps.__len__() == 0: # User has not appeared in the test yet
+                attainedscore = "NA"
+            utinfocusqset = UserTest.objects.filter(test=tobj, emailaddr=userobj.emailid)
+            # if we get more than one UserTest object here, we take the first one. This is a problem
+            # that will cease to exist when we allow candidates to take a test only once.
+            utinfocus = None
+            if utinfocusqset.__len__() > 0:
+                utinfocus = utinfocusqset[0]
+            if utinfocus and not utinfocus.evalcommitstate:
+                attainedscore = "NA"
+            if attainedscore != "NA":
+                for uresp in userresps:
+                    if uresp.evaluation == "" or uresp.evaluation is None:
+                        uresp.evaluation = 0.0
+                    attainedscore += uresp.evaluation
+            percentilescore = ""
+            if attainedscore == "NA":
+                percentilescore = "NA"
+            else:
+                percentilescore = getpercentilescore(attainedscore, combinedlist)
             evalcompleteflag = False
             for utobj in combinedlist:
                 if utobj.evalcommitstate == 1:
@@ -593,6 +614,7 @@ def manage(request):
         managetestshtml = managetestshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(managetestshtml)
 
+
 """
 Computes the percentile score from the given arguments:
 argument 1 is the score of the candidate. argument 2 is
@@ -600,18 +622,18 @@ a list containing the scores (among several other things)
 of all users who have taken the test and have been 
 evaluated.
 """
-def getpercentilescore(createdscore, combinedlist):
+def getpercentilescore(attainedscore, combinedlist):
     takerscount = combinedlist.__len__()
     abovecount, belowcount = 0, 0
     for utobj in combinedlist:
         if not utobj.score:
             utobj.score = 0
-        #print utobj.score, "####", createdscore
-        if int(utobj.score) >= int(createdscore):
+        if int(utobj.score) > int(attainedscore):
             abovecount += 1
         else:
             belowcount += 1
-    percentile = float(belowcount/takerscount) * 100.00
+        print abovecount, "####", belowcount, "####", attainedscore, "####", utobj.score
+    percentile = (float(belowcount)/float(takerscount)) * 100.00
     return percentile
 
 
@@ -3426,15 +3448,16 @@ def evaluateresponses(request):
         fromaddr = utobj.test.creator.emailid
         email = utobj.emailaddr
         passscore = utobj.test.passscore
-        outcome = "<font color='#0000AA'>Pass</font>"
+        outcome = "\<font color='#0000AA'\>Pass\</font\>"
         if utobj.score < passscore:
-            outcome = "<font color='#AA0000'>Fail</font>"
+            outcome = "\<font color='#AA0000'\>Fail\</font\>"
         message = """
             Dear Candidate,
 
             Your answer script for the test '%s' has been evaluated and the results are as follows:
             Score: %s/%s (%s out of %s)
             Outcome: %s
+            Pass Score: %s
 
             To be able to refer to the score permanently, we suggest you create an account on testyard. If
             you already have one, then you would be able to refer to the test's outcome in the 'Tests' tab.
@@ -3443,12 +3466,13 @@ def evaluateresponses(request):
 
             Regards,
             TestYard Test Facilitation Team.
-        """%(utobj.test.testname, utobj.score, utobj.test.maxscore, utobj.score, utobj.test.maxscore, outcome)
+        """%(utobj.test.testname, utobj.score, utobj.test.maxscore, utobj.score, utobj.test.maxscore, outcome, passscore)
         try:
             retval = send_mail(subject, message, fromaddr, [email,], False)
         except:
             message = error_msg('1160')
-            print message
+            #print message
+
     message += "Handled %s answers for user with email address '%s'"%(maxcctr.__str__(), emailid)
     return HttpResponse(message)
 
@@ -4614,5 +4638,39 @@ def disqualifycandidate(request):
     return response
 
 
-    
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def copytest(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = error_msg('1055')
+        response = HttpResponse(message)
+        return response
+    initiate = 1
+    if request.POST.has_key('initiate'):
+        initiate = request.POST['initiate']
+    existingtestobj = Test.objects.get(id=testid)
+    newtestobj = skillutils.copy_test(existingtestobj, userobj)
+    message = """New test has been created successfully. Please note the following: 
+	1. The evaluator for this test is you. You may change it later. 
+	2. The publish date and activation date are scheduled 10 days ahead. You may change them as you wish. 
+	3. To view the copied test, please refresh the screen."""
+    return HttpResponse(message)
 
