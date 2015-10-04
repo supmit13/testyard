@@ -602,4 +602,24 @@ alter table Tests_wouldbeusers add column evalcommitstate boolean default false;
 alter table Tests_usertest add column disqualified boolean default false;
 alter table Tests_wouldbeusers add column disqualified boolean default false;
 
+create table Auth_optionaluserinfo(
+    id int(11) NOT NULL AUTO_INCREMENT,
+    user_id int(11) NOT NULL,
+    houseno_and_street_address varchar(250) default "",
+    city varchar(100) default "",
+    pin_or_zip_code varchar(20) default "",
+    country varchar(100) default "",
+    profession varchar(50) default "student",
+    age int(11) default NULL,
+    reasonforuse text default "",
+    selfdescription text default "",
+    highestqualification varchar(50) default "graduate",
+    fieldofstudy varchar(100) default "",
+    workexperience int(11) default 0,
+    presentemployer_or_institution varchar(100) default "",
+    primary key (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
+)ENGINE=Innodb;
+
+
 COMMIT;

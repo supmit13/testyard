@@ -1505,5 +1505,31 @@ Sun, 04 Oct 2015, 02:21 HRS (IST).
 11.skillstest/Tests/models.py
 12.db_02_02_2015.sql
 13.db.sql
-14.files_to_commit.txt
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
+=======================================
+
+Sun, 04 Oct 2015, 16:21 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
 

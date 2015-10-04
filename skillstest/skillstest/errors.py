@@ -157,6 +157,7 @@ error_codes = { \
         '1158' : 'Candidate cannot be disqualified by any user other than the owner of the test.',\
         '1159' : 'User with the given email Id and attempted test could not be found.',\
         '1160' : 'Could not send test results intimation email to candidate.',\
+        '1161' : 'Could not save the data',\
     }
 
 def error_msg(code):

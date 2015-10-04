@@ -8,7 +8,8 @@ from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedir
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson
+#from django.utils import simplejson # Since django no longer ships simplejson as a part of it.
+import simplejson
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
 from django.utils.translation import ugettext as _

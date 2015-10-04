@@ -112,3 +112,26 @@ class EmailValidationKey(models.Model):
     def __unicode__(self):
         return "%s - %s"%(self.email, self.vkey)
 
+
+class OptionalUserInfo(models.Model):
+    user = models.ForeignKey(User, null=False, blank=False, db_column='user_id')
+    houseno_and_street_address = models.TextField(max_length=250)
+    city = models.CharField(max_length=100)
+    pin_or_zip_code = models.CharField(max_length=20)
+    country = models.CharField(max_length=100)
+    profession = models.CharField(max_length=50, choices=(('student', 'Student'), ('teacher', 'Teacher'), ('professional', 'Professional'), ('administrator', 'Administrator'), ('govtservice', 'Government Service'), ('business', 'Business'), ('other', 'Other')), default='student')
+    age = models.IntegerField()
+    reasonforuse = models.TextField(max_length=500) # Reason for using this web application
+    selfdescription = models.TextField(max_length=500)
+    highestqualification = models.CharField(max_length=50, choices=(('graduate', 'Graduate'), ('diploma', 'Diploma'), ('masters', 'Masters'), ('doctorate', 'Doctorate'), ('postdoctorate', 'PostDoctorate'), ('none', 'None')), default='graduate')
+    fieldofstudy = models.CharField(max_length=100)
+    workexperience = models.IntegerField()
+    presentemployer_or_institution = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = "Optional User Information"
+        db_table = 'Auth_optionaluserinfo'
+
+    def __unicode__(self):
+        return "%s - %s"%(self.user.displayname, self.houseno_and_street_address + ", " + self.city + ", " + self.country)
+

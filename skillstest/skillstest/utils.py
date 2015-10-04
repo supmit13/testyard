@@ -339,7 +339,7 @@ def copy_test(testobj, userobj):
     newtest.duration = testobj.duration
     newtest.allowedlanguages = testobj.allowedlanguages
     newtest.challengecount = testobj.challengecount
-    newtest.activationdate = datetime.datetime.now() + datetime.timedelta(seconds=864000)
+    newtest.activationdate = datetime.datetime.now() + datetime.timedelta(seconds=864000) # 10 days ahead
     newtest.publishdate = datetime.datetime.now() + datetime.timedelta(seconds=864000)
     newtest.status = 0
     newtest.quality = testobj.quality

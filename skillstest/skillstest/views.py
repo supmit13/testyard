@@ -7,7 +7,8 @@ from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedir
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from django.utils import simplejson
+#from django.utils import simplejson
+import simplejson
 from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
@@ -23,7 +24,7 @@ import cPickle
 import decimal, math
 
 # Application specific libraries...
-from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
+from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, OptionalUserInfo
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
@@ -168,6 +169,33 @@ def profile(request):
     inc_context = skillutils.includedtemplatevars("Profile", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         profile_data_dict[inc_key] = inc_context[inc_key]
+    userinfoqset = OptionalUserInfo.objects.filter(user=userobj)
+    if userinfoqset.__len__() == 0:
+        profile_data_dict['houseno_and_street_address'] = ""
+        profile_data_dict['city'] = ""
+        profile_data_dict['pin_or_zip_code'] = ""
+        profile_data_dict['country'] = ""
+        profile_data_dict['profession'] = ""
+        profile_data_dict['age'] = ""
+        profile_data_dict['reasonforuse'] = ""
+        profile_data_dict['selfdescription'] = ""
+        profile_data_dict['highestqualification'] = ""
+        profile_data_dict['fieldofstudy'] = ""
+        profile_data_dict['presentemployer_or_institution'] = ""
+    else:
+        profile_data_dict['houseno_and_street_address'] = userinfoqset[0].houseno_and_street_address
+        profile_data_dict['city'] = userinfoqset[0].city
+        profile_data_dict['pin_or_zip_code'] = userinfoqset[0].pin_or_zip_code
+        profile_data_dict['country'] = userinfoqset[0].country
+        profile_data_dict['profession'] = userinfoqset[0].profession
+        profile_data_dict['age'] = userinfoqset[0].age
+        profile_data_dict['reasonforuse'] = userinfoqset[0].reasonforuse
+        profile_data_dict['selfdescription'] = userinfoqset[0].selfdescription
+        profile_data_dict['highestqualification'] = userinfoqset[0].highestqualification
+        profile_data_dict['fieldofstudy'] = userinfoqset[0].fieldofstudy
+        profile_data_dict['presentemployer_or_institution'] = userinfoqset[0].presentemployer_or_institution
+    profile_data_dict['user_id'] = userobj.id
+    profile_data_dict['saveoptionalinfourl'] = mysettings.SAVE_OPTIONAL_INFO_URL
     tmpl = get_template("user/profile.html")
     profile_data_dict.update(csrf(request))
     cxt = Context(profile_data_dict)
@@ -175,7 +203,68 @@ def profile(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         profilehtml = profilehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(profilehtml)
-            
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def saveoptionalinfo(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    houseno_and_street_address, city, pin_or_zip_code, country, profession, age, reasonforuse, selfdescription, highestqualification, fieldofstudy, presentemployer_or_institution = "", "", "", "", "", 0, "", "", "", "", "" 
+    if request.POST.has_key('houseno_and_street_address'):
+        houseno_and_street_address = request.POST['houseno_and_street_address']
+    if request.POST.has_key('city'):
+        city = request.POST['city']
+    if request.POST.has_key('pin_or_zip_code'):
+        pin_or_zip_code = request.POST['pin_or_zip_code']
+    if request.POST.has_key('country'):
+        country = request.POST['country']
+    if request.POST.has_key('profession'):
+        profession = request.POST['profession']
+    if request.POST.has_key('age'):
+        age = request.POST['age']
+    if request.POST.has_key('reasonforuse'):
+        reasonforuse = request.POST['reasonforuse']
+    if request.POST.has_key('selfdescription'):
+        selfdescription = request.POST['selfdescription']
+    if request.POST.has_key('highestqualification'):
+        highestqualification = request.POST['highestqualification']
+    if request.POST.has_key('fieldofstudy'):
+        fieldofstudy = request.POST['fieldofstudy']
+    if request.POST.has_key('presentemployer_or_institution'):
+        presentemployer_or_institution = request.POST['presentemployer_or_institution']
+    optionaluserinfoqset = OptionalUserInfo.objects.filter(user=userobj)
+    userinfo = None
+    if optionaluserinfoqset.__len__() == 0: # New data
+        userinfo = OptionalUserInfo()
+    else:
+        userinfo = optionaluserinfoqset[0]
+    if not userinfo:
+        message = error_msg('1161')
+        return HttpResponse(message)
+    userinfo.user = userobj
+    userinfo.houseno_and_street_address = houseno_and_street_address
+    userinfo.city = city
+    userinfo.pin_or_zip_code = pin_or_zip_code
+    userinfo.country = country
+    userinfo.profession = profession
+    userinfo.age = age
+    userinfo.reasonforuse = reasonforuse
+    userinfo.selfdescription = selfdescription
+    userinfo.highestqualification = highestqualification
+    userinfo.fieldofstudy = fieldofstudy
+    userinfo.presentemployer_or_institution = presentemployer_or_institution
+    userinfo.save()
+    message = "Successfully saved user information."
+    return HttpResponse(message)
 
 
 def logout(request):

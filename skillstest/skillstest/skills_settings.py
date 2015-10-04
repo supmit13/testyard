@@ -164,6 +164,8 @@ MANAGE_GROUP_MEMBERS_URL = "skillstest/network/group/managemembers/"
 SAVE_GROUP_MEMBERS_URL = "skillstest/network/group/savemembersinfo/"
 MEMBER_SEARCH_URL = "skillstest/network/groupmember/search/"
 
+SAVE_OPTIONAL_INFO_URL = "skillstest/optionaluserinfo/"
+
 TEST_RUN = False # Set this to True during testing the app.
 
 HEXCODE_CHAR_MAP = { \
