@@ -1932,7 +1932,7 @@ def showuserview(request):
         username = userobj.displayname
         challenge_dict['challengemedia'] = "media" + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + challengemedia
     challenge_dict['oneormore'] = challengeobj.oneormore
-    challengeoptions = []	
+    challengeoptions = []
     if challengetype == 'MULT': # multiple choice type test
         for ctr in range(8):
             option = "option" + ctr.__str__()
@@ -1940,9 +1940,12 @@ def showuserview(request):
                 if challengeobj.__dict__[option] != "":
                     challengeoptions.append(challengeobj.__dict__[option])
         if challengeobj.oneormore:
-            responsekeyslist = challengeobj.responsekey.split('#||#')
-            challenge_dict['responsekey'] = "', '".join(responsekeyslist)
-            challenge_dict['responsekey'] = "'" + challenge_dict['responsekey'] + "'"
+            if challengeobj.responsekey is not None:
+                responsekeyslist = challengeobj.responsekey.split('#||#')
+                challenge_dict['responsekey'] = "', '".join(responsekeyslist)
+                challenge_dict['responsekey'] = "'" + challenge_dict['responsekey'] + "'"
+            else:
+                challenge_dict['responsekey'] = 'Not available'
     else:
         challengeoptions = None # Except for 'MULT' type tests,
                                 # challengeoptions do not have any significance.

@@ -1532,4 +1532,12 @@ Sun, 04 Oct 2015, 16:21 HRS (IST).
 16.templates/user/profile.html
 17.skillstest/Auth/views.py
 18.files_to_commit.txt
+=======================================
+
+Tue, 06 Oct 2015, 05:39 HRS (IST).
+----------------------------------
+1. templates/tests/create_test_form.html
+2. skillstest/Tests/views.py
+3. files_to_commit.txt
+======================================
 
