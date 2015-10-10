@@ -125,6 +125,19 @@ class Test(models.Model):
 
 
 """
+This will represent the schedule objects
+"""
+class Schedule(models.Model):
+    test = models.ForeignKey(Test, related_name="+", null=False, blank=False)
+    slot = models.CharField(max_length=100, null=False, blank=False) # the value of this field will be the concatenation of 'validfrom' and 'validtill' fields of a Test object: validfrom #||# validtill
+    createdon = models.DateTimeField(null=False, blank=False, auto_now=True)
+
+    class Meta:
+        verbose_name = "Schedule Table"
+        db_table = 'Tests_schedule'
+
+
+"""
 Identifies the set of 'User's who have been invited to take a 'Test'.
 Basically, this will contain the Ids of the 'User's and the corresponding
 URL to access the 'Test' by the 'User'. These URLs will be unique and
@@ -165,6 +178,7 @@ class UserTest(models.Model):
     # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
     evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
     disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
+    schedule = models.ForeignKey(Schedule, related_name="+", null=True, blank=True, default=None)
 
 
     class Meta:
@@ -331,6 +345,7 @@ class WouldbeUsers(models.Model):
     # circle, and 'Public' tests are visible to the entire world (whoever logs in and accessess the user's profile).
     evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
     disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
+    schedule = models.ForeignKey(Schedule, related_name="+", null=True, blank=True, default=None)
 
     class Meta:
         verbose_name = "wouldbeusers Table"
@@ -357,6 +372,7 @@ class EmailFailure(models.Model):
     class Meta:
         verbose_name = "emailfailure Table"
         db_table = 'Tests_emailfailure'
+
 
 
 

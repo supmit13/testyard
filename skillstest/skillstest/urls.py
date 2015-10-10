@@ -75,6 +75,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SAVE_DRAWING_URL, 'skillstest.Tests.views.savedrawing', name='savedrawing'),
     url(r'%s$'%mysettings.DISQUALIFY_CANDIDATE_URL, 'skillstest.Tests.views.disqualifycandidate', name='disqualifycandidate'),
     url(r'%s$'%mysettings.COPY_TEST_URL, 'skillstest.Tests.views.copytest', name='copytest'),
+    url(r'%s$'%mysettings.GET_TEST_SCHEDULE_URL, 'skillstest.Tests.views.gettestschedule', name='gettestschedule'),
 
     url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
     url(r'%s$'%mysettings.CHECK_GRPNAME_AVAIL_URL, 'skillstest.Network.views.checkgrpnameavailability', name='creategroup'),

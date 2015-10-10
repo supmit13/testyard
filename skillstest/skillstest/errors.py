@@ -158,6 +158,8 @@ error_codes = { \
         '1159' : 'User with the given email Id and attempted test could not be found.',\
         '1160' : 'Could not send test results intimation email to candidate.',\
         '1161' : 'Could not save the data',\
+        '1162' : 'You may not schedule a test while it is being edited (or created).',\
+        '1163' : 'You may not schedule a test that is not yet activated or published.',\
     }
 
 def error_msg(code):

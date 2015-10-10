@@ -1,0 +1,45 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" media="all" href="static/datepick/jsDatePick_ltr.min.css" />
+<script type="text/javascript" src="static/datepick/jsDatePick.min.1.3.js"></script>
+<script language='JavaScript'>
+function loaddatepicker(){
+  new JsDatePick({
+    useMode:2,
+    target:"start_new",
+    dateFormat:"%d-%M-%Y"
+  });
+  new JsDatePick({
+    useMode:2,
+    target:"end_new",
+    dateFormat:"%d-%M-%Y"
+  });
+}
+
+</script>
+<title>Schedule the Test</title>
+</head>
+<body bgcolor='#669999'>
+<center><h3>Add/Edit Schedule Information</h3></center>
+<form name='frmgetschedule' id='frmgetschedule' method='POST' action=''>
+<center>
+<table border='0' cellspacing='2' cellpadding='2' width='80%'>
+<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Schedule Id</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled Start</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled End</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Candidate Email Ids</font></td></tr>
+<tr>
+<td nowrap><font color='#0000AA' size=-1>New Schedule</font></td><td align='center'><input type='text' name='start_new' id='start_new' value='' max_length='20' size='15'></td><td align='center'><input type='text' name='end_new' id='end_new' value='' max_length='20' size='15'></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40'></textarea></td>
+</tr>
+{% for schedid, schedtuple in scheduleinfo.items %}
+<tr>
+{% if schedtuple.2 == 0 %}
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}'></td><td align='center' valign='middle' nowrap><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}'></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+{% else %}
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' disabled></td><td align='center' valign='middle' nowrap><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+{% endif %}
+</tr>
+{% endfor %}
+</table>
+</center>
+{% csrf_token %}
+</form>
+</body>
+</html>

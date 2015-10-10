@@ -2101,7 +2101,28 @@
 	    return (false);
 	}
 	
-
+	
+	function scheduletest(testid){
+	    var postdata = "";
+	    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata += "testid=" + testid + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    schedulepopup = window.open("", "schedulewindow", "width=1200, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no")
+		    schedulepopup.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ gettestscheduleurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
 		</script>
 		<div class="post">
 			<span class="meta">
@@ -2139,9 +2160,10 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>
 			</tr>
 			<tr>
-			  <td colspan="20">&nbsp;</td>
+			  <td colspan="21">&nbsp;</td>
 			</tr>
 			{% autoescape on %}
 			{% for testnm in tests_creator_ordered_createdate reversed %}
@@ -2179,6 +2201,7 @@
 			    {% endif %}
 			  {% endif %}
 			  </font></td>
+			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
 			</tr>
 			{% endfor %}
 			{% endautoescape %}

@@ -18,6 +18,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.core.mail import send_mail
 from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 from django.utils.encoding import smart_text
+from django.utils import timezone
 
 # Standard libraries...
 import os, sys, re, time, datetime
@@ -36,7 +37,7 @@ from itertools import chain
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -51,7 +52,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -205,6 +206,7 @@ def get_user_tests(request):
     tests_user_dict['getcanvasurl'] = skillutils.gethosturl(request) + "/" + getcanvasurl
     tests_user_dict['savedrawingurl'] = skillutils.gethosturl(request) + "/" + savedrawingurl
     tests_user_dict['disqualifycandidateurl'] = skillutils.gethosturl(request) + "/" + disqualifycandidateurl
+    tests_user_dict['gettestscheduleurl'] = skillutils.gethosturl(request) + "/" + gettestscheduleurl
     tests_user_dict['tests_creator_ordered_createdate'] = tests_creator_ordered_createdate
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
@@ -4676,4 +4678,79 @@ def copytest(request):
 	2. The publish date and activation date are scheduled 10 days ahead. You may change them as you wish. 
 	3. To view the copied test, please refresh the screen."""
     return HttpResponse(message)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def gettestschedule(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = error_msg('1055')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    # Note: Don't allow creator to schedule test if the test hasn't been published and activated. Also 'status' should be True
+    curdatetime = timezone.now()
+    publishdate = testobj.publishdate
+    activationdate = testobj.activationdate
+    status = testobj.status
+    if not status:
+        message = "<font color='#AA0000' size=-1>" + error_msg('1162') + "</font>"
+        response = HttpResponse(message)
+        return response
+    print publishdate, " ##### ",activationdate, "#####", curdatetime
+    if curdatetime < publishdate or curdatetime < activationdate:
+        message = "<font color='#AA0000' size=-1>" + error_msg('1163') + "</font>"
+        response = HttpResponse(message)
+        return response
+    # Get all schedules for this test.
+    allschedulesqset = Schedule.objects.filter(test=testobj).order_by('createdon')
+    # Now look for all schedules for this test in 'Tests_usertest' and 'Tests_wouldbeusers' tables.
+    schedule_dict = {}
+    for schedobj in allschedulesqset:
+        scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)
+        scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)
+        emailslist = []
+        for utobj in scheduledtestsqset_ut:
+            emailslist.append(utobj.emailaddr)
+        for wbuobj in scheduledtestsqset_wbu:
+            emailslist.append(wbuobj.emailaddr)
+        past = 0
+        if curdatetime > scheduledtestsqset_wbu[0].validfrom:
+            past = 1
+        elif curdatetime > scheduledtestsqset_ut[0].validfrom:
+            past = 1
+        validfrom, validto = schedobj.slot.split('#||#')
+        emailsliststr = ", ".join(emailslist)
+        schedule_dict[str(schedobj.id)] = (validfrom, validto, past, emailsliststr)
+    tmpl = get_template("tests/getscheduleinfo.html")
+    contextdict = {'scheduleinfo' : schedule_dict}
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    schedulehtml = tmpl.render(cxt)
+    return HttpResponse(schedulehtml)
+    
 

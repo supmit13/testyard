@@ -621,5 +621,17 @@ create table Auth_optionaluserinfo(
     FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
 )ENGINE=Innodb;
 
+create table Tests_schedule(
+    id int(11) NOT NULL AUTO_INCREMENT,
+    test_id int(11) NOT NULL,
+    slot varchar(100) NOT NULL,
+    primary key(`id`),
+    FOREIGN KEY (`test_id`) REFERENCES `Tests_test` (`id`)
+)ENGINE=Innodb;
+
+alter table Tests_usertest add column schedule_id int(11) default NULL;
+alter table Tests_wouldbeusers add column schedule_id int(11) default NULL;	
+
+alter table Tests_schedule add column createdon datetime NOT NULL;
 
 COMMIT;

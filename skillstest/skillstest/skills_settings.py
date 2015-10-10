@@ -128,6 +128,7 @@ GET_CANVAS_URL = "skillstest/test/getcanvas/"
 SAVE_DRAWING_URL = "skillstest/test/savedrawing/"
 DISQUALIFY_CANDIDATE_URL = "skillstest/test/disqualifycandidate/"
 COPY_TEST_URL = "skillstest/test/copytest/"
+GET_TEST_SCHEDULE_URL = "skillstest/test/setschedule/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"
