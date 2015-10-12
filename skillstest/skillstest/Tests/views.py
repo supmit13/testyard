@@ -4721,7 +4721,6 @@ def gettestschedule(request):
         message = "<font color='#AA0000' size=-1>" + error_msg('1162') + "</font>"
         response = HttpResponse(message)
         return response
-    print publishdate, " ##### ",activationdate, "#####", curdatetime
     if curdatetime < publishdate or curdatetime < activationdate:
         message = "<font color='#AA0000' size=-1>" + error_msg('1163') + "</font>"
         response = HttpResponse(message)
@@ -4739,18 +4738,171 @@ def gettestschedule(request):
         for wbuobj in scheduledtestsqset_wbu:
             emailslist.append(wbuobj.emailaddr)
         past = 0
-        if curdatetime > scheduledtestsqset_wbu[0].validfrom:
-            past = 1
-        elif curdatetime > scheduledtestsqset_ut[0].validfrom:
-            past = 1
-        validfrom, validto = schedobj.slot.split('#||#')
-        emailsliststr = ", ".join(emailslist)
-        schedule_dict[str(schedobj.id)] = (validfrom, validto, past, emailsliststr)
+        try:
+            if scheduledtestsqset_wbu.__len__() > 0 and curdatetime > scheduledtestsqset_wbu[0].validfrom:
+                print publishdate, " ##### ",activationdate, "#####", curdatetime
+                past = 1
+            elif scheduledtestsqset_ut.__len__() > 0 and curdatetime > scheduledtestsqset_ut[0].validfrom:
+                print publishdate, " ##### ",activationdate, "#####", curdatetime
+                past = 1
+            validfrom, validto = schedobj.slot.split('#||#')
+            emailsliststr = ", ".join(emailslist)
+            schedule_dict[str(schedobj.id)] = (validfrom, validto, past, emailsliststr)
+        except:
+            print sys.exc_info()[1].__str__()
     tmpl = get_template("tests/getscheduleinfo.html")
-    contextdict = {'scheduleinfo' : schedule_dict}
+    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid}
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     schedulehtml = tmpl.render(cxt)
     return HttpResponse(schedulehtml)
     
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def setschedule(request):			
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = error_msg('1055')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    joingroupflag = request.POST.get('joingroupflag', None)
+    # Check if the user is the creator of this test. Only creators of a test 
+    # are allowed to send invitations to candidates (except when an invitation 
+    # needs to be sent automatically due to a user's need to join a group).
+    if testobj.creator.id != userobj.id and not joingroupflag:
+        message = "Error: " + error_msg('1070')
+        response = HttpResponse(message)
+        return response
+    # Find the list of all evaluator's emails.
+    testevaluator = testobj.evaluator
+    testevalemailidlist = []
+    if testevaluator.groupmember1:
+        testevalemailidlist.append(testevaluator.groupmember1.emailid)
+    if testevaluator.groupmember2:
+        testevalemailidlist.append(testevaluator.groupmember2.emailid)
+    if testevaluator.groupmember3:
+        testevalemailidlist.append(testevaluator.groupmember3.emailid)
+    if testevaluator.groupmember4:
+        testevalemailidlist.append(testevaluator.groupmember4.emailid)
+    if testevaluator.groupmember5:
+        testevalemailidlist.append(testevaluator.groupmember5.emailid)
+    if testevaluator.groupmember6:
+        testevalemailidlist.append(testevaluator.groupmember6.emailid)
+    if testevaluator.groupmember7:
+        testevalemailidlist.append(testevaluator.groupmember7.emailid)
+    if testevaluator.groupmember8:
+        testevalemailidlist.append(testevaluator.groupmember8.emailid)
+    if testevaluator.groupmember9:
+        testevalemailidlist.append(testevaluator.groupmember9.emailid)
+    if testevaluator.groupmember10:
+        testevalemailidlist.append(testevaluator.groupmember10.emailid)
+    start_new = request.POST['start_new']
+    end_new = request.POST['end_new']
+    #duration = testobj.duration
+    timeslot = start_new + "#||#" + end_new
+    schedule = Schedule()
+    schedule.test = testobj
+    schedule.slot = timeslot
+    schedule.save()
+    # Now fetch all emails from emails_new
+    emails_new = request.POST['emails_new']
+    validfrom, validtill = start_new, end_new
+    new_emails_list = emails_new.split(",")
+    for new_email in new_emails_list:
+        new_email = new_email.strip()
+        # If this email belongs to the creator or one of the evaluators, skip it.
+        if new_email == testobj.creator.emailid or new_email in testevalemailidlist:
+            continue
+        # Is the user registered with testyard?
+        uobj = User.objects.get(emailid=new_email)
+        utobj = None
+        if uobj is not None: # user is registered
+            utobj = UserTest()
+            utobj.user = uobj
+        else:
+            utobj = WouldbeUsers()
+        utobj.emailaddr = new_email
+        utobj.test = testobj
+        utobj.validfrom = start_new
+        utobj.validtill = end_new
+        utobj.status = 0
+        utobj.schedule = schedule
+        baseurl = skillutils.gethosturl(request)
+        (utobj.testurl, utobj.stringid) = gettesturlforuser(utobj.emailaddr, testid, baseurl)
+        error_emails_list = []
+        candidatename = "candidate"
+        emailsubject = "A test has been scheduled for you on testyard"
+        emailmessage = """Dear %s,
+
+	A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+        """%(candidatename, testobj.testname, userobj.displayname)
+        emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
+        emailmessage += """and hence you are kindly requested to take the test
+        within that interval. You would be able to access the test by clicking
+        on the following link: <a href='%s' target=_blank>%s</a>.
+
+        If clicking on the above link doesn't work for you, please copy it and 
+        paste it in your browser's address bar and hit enter. Do please feel
+        free to let us know in case of any issues. We would do our best to
+        resolve it at the earliest.
+
+        We wish you all the best for the test.
+
+        Regards,
+        The TestYard Team.
+        """%(utobj.testurl, utobj.testurl)
+        fromaddr = "testyardteam@testyard.com"
+        retval = 0
+        try:
+            retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
+            utobj.save()
+        except:
+            if mysettings.DEBUG:
+                print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
+            message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
+            error_emails_list.append(new_email)
+            continue # Continue processing the rest of the emails in the list.
+    message = "Success! All candidates have been emailed with the link."
+    # Dump all emails Ids to which email could not be sent
+    for error_email in error_emails_list:
+        print error_email
+        emailfail = EmailFailure()
+        emailfail.user = userobj
+        emailfail.sessionid = sesscode
+        emailfail.failedemailid = error_email
+        emailfail.script = 'Tests.views.setschedule'
+        emailfail.failurereason = sys.exc_info()[1].__str__()
+        emailfail.tryagain = 1
+        try:
+            emailfail.save()
+        except:
+            message = sys.exc_info()[1].__str__()
+            print message
+    response = HttpResponse(message)
+    return(response)
 

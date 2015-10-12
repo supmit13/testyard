@@ -2116,8 +2116,11 @@
 	    xmlhttp.onreadystatechange = function(){
 		//alert(xmlhttp.responseText);
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    schedulepopup = window.open("", "schedulewindow", "width=1200, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no")
+		    schedulepopup = window.open("", "schedulewindow", "width=1200, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
 		    schedulepopup.document.write(xmlhttp.responseText);
+		    schedulepopup.onfocus = schedulepopup.loaddatepicker;
+		    //schedulepopup.blur();
+		    schedulepopup.focus();
 		}
 	    };
 	    xmlhttp.open("POST", '{{ gettestscheduleurl }}', true);
