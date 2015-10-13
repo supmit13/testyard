@@ -4751,7 +4751,7 @@ def gettestschedule(request):
         except:
             print sys.exc_info()[1].__str__()
     tmpl = get_template("tests/getscheduleinfo.html")
-    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid}
+    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname}
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     schedulehtml = tmpl.render(cxt)
@@ -4840,7 +4840,11 @@ def setschedule(request):
             if new_email == testobj.creator.emailid or new_email in testevalemailidlist:
                 continue
             # Is the user registered with testyard?
-            uobj = User.objects.get(emailid=new_email)
+            uobj = None
+            try:
+                uobj = User.objects.get(emailid=new_email)
+            except:
+                pass
             utobj = None
             if uobj is not None: # user is registered
                 utobj = UserTest()

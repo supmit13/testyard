@@ -10,7 +10,7 @@
 <script language='JavaScript'>
 
 function validateinput(){
-    datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}");
+    datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:(\\d{2})?");
     startpattern = new RegExp("^start_\\d+$");
     endpattern = new RegExp("^end_\\d+$");
     allelements = document.frmgetschedule.elements;
@@ -49,6 +49,7 @@ function saveschedules(){
     }
     postdata += "&joingroupflag=0";
     var xmlhttp;
+    waittag = document.getElementById('waitspan');
     if (window.XMLHttpRequest){
 	xmlhttp=new XMLHttpRequest();
     }
@@ -58,16 +59,20 @@ function saveschedules(){
     xmlhttp.onreadystatechange = function(){
 	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 	    alert(xmlhttp.responseText);
+	    waittag.style= "display:none";
+	    waittag.innerHTML = "";
 	}
     };
     xmlhttp.open("POST", '{{ settestscheduleurl }}', true);
     xmlhttp.send(postdata);
+    waittag.style= "";
+    waittag.innerHTML = "<img src='static/images/loading_small.gif'><font color='#0000AA' size=-1>Sending emails... please wait</font>";
 }
 </script>
 <title>Schedule the Test</title>
 </head>
 <body bgcolor='#669999'>
-<center><h3>Add/Edit Schedule Information</h3></center>
+<center><h3>Add/Edit Schedule Information ('{{testname}}')</h3></center>
 <form name='frmgetschedule' id='frmgetschedule' method='POST' action=''>
 <center>
 <table border='0' cellspacing='2' cellpadding='2' width='80%'>
@@ -85,7 +90,7 @@ function saveschedules(){
 </tr>
 {% endfor %}
 <tr>
-<td colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Schedules' onClick='javascript:saveschedules();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></td>
+<td colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Schedules' onClick='javascript:saveschedules();'><span id='waitspan' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></td>
 </tr>
 </table>
 </center>
