@@ -13,6 +13,7 @@ function validateinput(){
     datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:(\\d{2})?");
     startpattern = new RegExp("^start_\\d+$");
     endpattern = new RegExp("^end_\\d+$");
+    emailpattern = new RegExp("^\\w+[\\.\\w]{0,}@\\w+[\\-\\w]{0,}\\.\\w{2,3}[\\.\\w]{0,}$")
     allelements = document.frmgetschedule.elements;
     for(var i=0; i< allelements.length; i++){
         if(startpattern.exec(allelements[i].name) || endpattern.exec(allelements[i].name)){
@@ -31,6 +32,20 @@ function validateinput(){
 		allelements[i].focus();
 		return (false);
 	    }
+	}
+	else if(allelements[i].name == 'emails_new'){ // This will contain emails as comma separated values
+	    allemails = allelements[i].value.split(",");
+	    sanitized_emails = Array();
+	    for(var j=0; j < allemails.length; j++){
+		emailstr = allemails[j].trim();
+		sanitized_emails.push(emailstr);
+		if(emailstr != "" && !emailpattern.exec(emailstr)){
+		    alert("Invalid email Id value in the list of emails. Please rectify it before trying again.");
+		    //allelements[i].focus();
+		    return(false);
+		}
+	    }
+	    allelements[i].value = sanitized_emails.join();
 	}
     }
     return (true);

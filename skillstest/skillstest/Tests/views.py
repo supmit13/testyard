@@ -22,6 +22,7 @@ from django.utils import timezone
 
 # Standard libraries...
 import os, sys, re, time, datetime
+import pytz
 import cPickle
 import decimal, math
 from Crypto.Cipher import AES, DES3
@@ -2300,7 +2301,7 @@ def showtestcandidatemode(request):
             response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
             return response
     testtakeruserobj = testtakeruserqset[0]
-    if testtakeruserobj.starttime: # User had already started taking this test before, so disqualify user since she/he is trying to restart it.
+    if testtakeruserobj.starttime and testtakeruserobj.schedule is None: # User had already started taking this test before, so disqualify user since she/he is trying to restart it.
         message = "Error: %s\n"%error_msg('1049')
         response = HttpResponse(message)
         return response
@@ -2321,6 +2322,23 @@ def showtestcandidatemode(request):
         message = error_msg('1065')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
+    # If this is a scheduled test check if current time is in the interval bounded by validfrom and validtill
+    if testtakeruserobj.schedule is not None:
+        curdatetime = datetime.datetime.now() 
+        curdatetime_year, curdatetime_month, curdatetime_day, curdatetime_hour, curdatetime_min, curdatetime_sec = curdatetime.year, curdatetime.month, curdatetime.day, curdatetime.hour, curdatetime.minute, curdatetime.second
+        curdatetime_tzaware = datetime.datetime(curdatetime_year, curdatetime_month, curdatetime_day, curdatetime_hour, curdatetime_min, curdatetime_sec, 0, pytz.UTC)
+        validfrom = testtakeruserobj.validfrom
+        validtill = testtakeruserobj.validtill
+        if curdatetime_tzaware < validfrom: # test is scheduled in the future
+            message = error_msg('1164')%(testtakeruserobj.validfrom, testtakeruserobj.validtill)
+            response = HttpResponse(message)
+            return response
+        elif curdatetime_tzaware > validtill: # Test is over
+            message = error_msg('1165')%(testtakeruserobj.validfrom, testtakeruserobj.validtill)
+            response = HttpResponse(message)
+            return response
+        else: # Give the test to the candidate.
+            pass
     # Now, check if this user is the creator or evaluator of this test.
     # If so, set a flag in the json while sending the test. Tests with
     # this flag set will not be sending back responses (to be implemented
@@ -2384,7 +2402,7 @@ def showtestcandidatemode(request):
         allowmultiattempts = testobj.allowmultiattempts
         usertest = testtakeruserobj
         usertestqset = testtakeruserqset.filter(status=2)
-        if allowmultiattempts:
+        if allowmultiattempts and not usertest.schedule: # Multiple attempts have meaning only in the context of tests that are not scheduled.
             maxattemptscount = testobj.maxattemptscount
             if usertestqset.__len__() >= int(maxattemptscount):
                 message = error_msg('1067')
@@ -2420,12 +2438,12 @@ def showtestcandidatemode(request):
                 response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
                 return response
         # Now check if the test is valid now.
-        if skillutils.mysqltopythondatetime(str(usertest.validtill)) < currentdatetime:
+        if skillutils.mysqltopythondatetime(str(usertest.validtill)) < currentdatetime and not usertest.schedule:
             message = "Error: %s\n"%error_msg('1074')
             response = HttpResponse(message)
             return response
         # Check if the user has already taken the test or if the test is being taken now.
-        if usertest.status == 2:
+        if usertest.status == 2 and not usertest.schedule:
             message = "Error: %s\n"%error_msg('1075')
             response = HttpResponse(message)
             return response
@@ -4853,8 +4871,17 @@ def setschedule(request):
                 utobj = WouldbeUsers()
             utobj.emailaddr = new_email
             utobj.test = testobj
-            utobj.validfrom = start_new
-            utobj.validtill = end_new
+            try:
+                start_new_date, start_new_time = start_new.split(" ")
+                start_new_year, start_new_month, start_new_day = start_new_date.split("-")
+                start_new_hour, start_new_minute, start_new_second = start_new_time.split(":")
+                utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second), 0, pytz.UTC)
+                end_new_date, end_new_time = end_new.split(" ")
+                end_new_year, end_new_month, end_new_day = end_new_date.split("-")
+                end_new_hour, end_new_minute, end_new_second = end_new_time.split(":")
+                utobj.validtill = datetime.datetime(int(end_new_year), int(end_new_month), int(end_new_day), int(end_new_hour), int(end_new_minute), int(end_new_second), 0, pytz.UTC)
+            except:
+                print sys.exc_info()[1].__str__()
             utobj.status = 0
             utobj.schedule = schedule
             baseurl = skillutils.gethosturl(request)
@@ -4886,6 +4913,7 @@ def setschedule(request):
             try:
                 retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
                 utobj.save()
+                print utobj.validfrom, utobj.validtill
             except:
                 if mysettings.DEBUG:
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())

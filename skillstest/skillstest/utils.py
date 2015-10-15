@@ -557,9 +557,14 @@ YYYY-MM-DD hh:mm:ss.
 def readabledatetime(mysqldatefmt):
     if not mysqldatefmt:
         return ""
-    datepart, timepart = mysqldatefmt.__str__().split(" ")
+    datepart, timepart = "", ""
+    mysqldatefmt_parts = mysqldatefmt.__str__().split(" ")
+    if mysqldatefmt_parts.__len__() >= 2:
+        datepart, timepart = mysqldatefmt_parts[0], mysqldatefmt_parts[1]
+    else:
+        return ""
     dateelements = datepart.split("-")
-    cleantimeparts = timepart.split("+")
+    cleantimeparts,junktimeparts = timepart.split("+")
     if dateelements.__len__() != 3:
         print "Received date is not in expected format: YYYY-MM-DD hh:mm:ss: %s\n"%mysqldatefmt
         return datepart + " " + cleantimeparts[0]

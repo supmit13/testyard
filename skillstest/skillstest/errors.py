@@ -160,6 +160,8 @@ error_codes = { \
         '1161' : 'Could not save the data',\
         '1162' : 'You may not schedule a test while it is being edited (or created).',\
         '1163' : 'You may not schedule a test that is not yet activated or published.',\
+        '1164' : 'The test is scheduled to start from %s and will end on %s. Please return to this page in that interval to take the test.',\
+        '1165' : 'The test is already over. It was scheduled to start at %s and end at %s.',\
     }
 
 def error_msg(code):
