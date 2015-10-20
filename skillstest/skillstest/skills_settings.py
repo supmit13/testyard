@@ -18,7 +18,6 @@ a 'Test' are  searchable and viewable by all, but the 'Test' and the 'UserRespon
 the creator of the 'Test' only. So, 'TEST_SEARCH_SCOPE' will not be used for the first cut.
 """
 
-
 BLACKLISTED_MEMBERS = ()
 
 # The keys in the following dict should NOT be multi-word strings.
@@ -70,7 +69,6 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'ACAD' : 86400, \
                          'CERT' : 86400, }
 
-
 URL_PROTOCOL = "http://"
 
 # Email settings
@@ -81,7 +79,6 @@ EMAIL_HOST_PASSWORD = 'xtmt365i'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "test@testyard.com"
-
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"

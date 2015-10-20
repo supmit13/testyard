@@ -572,7 +572,7 @@ def readabledatetime(mysqldatefmt):
     MM = dateelements[1]
     DD = dateelements[2]
     mon = mysettings.REV_MONTHS_DICT[str(MM)]
-    readabledatetimestr = "%s %s %s, %s"%(DD, mon, YYYY, cleantimeparts[0])
+    readabledatetimestr = "%s %s %s, %s"%(DD, mon, YYYY, cleantimeparts)
     return readabledatetimestr
 
 
