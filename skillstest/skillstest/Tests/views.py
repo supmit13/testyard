@@ -4913,7 +4913,7 @@ def setschedule(request):
             try:
                 retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
                 utobj.save()
-                print utobj.validfrom, utobj.validtill
+                #print utobj.validfrom, utobj.validtill
             except:
                 if mysettings.DEBUG:
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
@@ -4964,12 +4964,30 @@ def setschedule(request):
         usertestqset = UserTest.objects.filter(schedule=scheduleobj)
         wouldbeusersqset = WouldbeUsers.objects.filter(schedule=scheduleobj)
         for utobj in usertestqset:
-            utobj.validfrom = starttime
-            utobj.validtill = endtime
+            try:
+                starttime_date, starttime_time = starttime.split(" ")
+                starttime_year, starttime_month, starttime_day = starttime_date.split("-")
+                starttime_hour, starttime_minute, starttime_second = starttime_time.split(":")
+                utobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
+                endtime_date, endtime_time = endtime.split(" ")
+                endtime_year, endtime_month, endtime_day = endtime_date.split("-")
+                endtime_hour, endtime_minute, endtime_second = endtime_time.split(":")
+                utobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
+            except:
+                print sys.exc_info()[1].__str__()
             utobj.save()
         for wbuobj in wouldbeusersqset:
-            wbuobj.validfrom = starttime
-            wbuobj.validtill = endtime
+            try:
+                starttime_date, starttime_time = starttime.split(" ")
+                starttime_year, starttime_month, starttime_day = starttime_date.split("-")
+                starttime_hour, starttime_minute, starttime_second = starttime_time.split(":")
+                wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
+                endtime_date, endtime_time = endtime.split(" ")
+                endtime_year, endtime_month, endtime_day = endtime_date.split("-")
+                endtime_hour, endtime_minute, endtime_second = endtime_time.split(":")
+                wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
+            except:
+                print sys.exc_info()[1].__str__()
             wbuobj.save()
     message += " Updated existing schedules."
     response = HttpResponse(message)

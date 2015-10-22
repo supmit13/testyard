@@ -168,11 +168,8 @@ function jsdatetomysqldatetime(jsdate){
 
 
 function decryptwrapper(encjson){
-    //decrypteddata = tripledesdecrypt(Base64.decode(encjson));
-    decrypteddata = Base64.decode(encjson);
-    jsonobj = JSON.parse(decrypteddata);
-    //alert(jsonobj);
-    handletest(encjson, jsonobj);
+    
+    handletest(encjson);
 }
 
 
@@ -250,27 +247,37 @@ function sendtoserver(postdata){
 }
 
 
-function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages, topicname, challengescount, testname, encjson, tabref, tabid){
-    var allowedlanguagesjson = '{{ answering_languages }}';
-    var rulesjson = '{{ rules }}';
-    var skillqualityjson = '{{ skill_quality }}';
-    allowedlanguagesdict = JSON.parse(allowedlanguagesjson);
-    rulesdict = JSON.parse(rulesjson);
-    skillqualitydict = JSON.parse(skillqualityjson);
+  function starttest(encjson){
+    //decrypteddata = tripledesdecrypt(Base64.decode(encjson));
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
+    //alert(jsonobj);
+    var allowedlanguages = jsonobj.allowedlanguages;
+    var rules = jsonobj.rules;
+    var skillquality = jsonobj.quality;
+    maxscore = jsonobj.maxscore;
+    duration = jsonobj.duration;
+    challengescount = Object.size(jsonobj.challenges);
+    topicname = jsonobj.topicname;
+    testname = jsonobj.testname;
+    testid = jsonobj.testid;
+    tabref = jsonobj.tabtype;
+    tabid = jsonobj.tabid;
+    targetemail = jsonobj.targetemail;
     qareadiv = document.getElementById('qarea');
     qareadiv.innerHTML = "";
     qareadiv.innerHTML += "<center>" + scrollclockhtml() + "</center><br />";
     qareadiv.innerHTML += "<br /><center><h2><font color='#0000AA'>" + jsonobj.testname + "</font></h2></center><br /><br />";
-    qareadiv.innerHTML += "<h3><font color='#0000AA'>Rules:</font></h3><br />";
-    ruleslist = rules.split(",");
-    for (var rulectr = 0; rulectr < ruleslist.length; rulectr++){
-        qareadiv.innerHTML += "<b><font color='#0000AA'>" + (rulectr + 1) + ". " + rulesdict[ruleslist[rulectr]] + "</font></b><br />";
+    qareadiv.innerHTML += "<h3><font color='#0000AA'>Rules:</font></h3>";
+    for (var rulectr = 0; rulectr < rules.length; rulectr++){
+        qareadiv.innerHTML += "<i><font color='#0000AA'>" + (rulectr + 1) + ". " + rules[rulectr] + "</font></i><br />";
     }
+    qareadiv.innerHTML += "<hr>";
     qareadiv.innerHTML += "<br /><br /><b><font color='#0000AA'>Please note the following: </font></b><br />";
-    if(progenv != ""){
-        qareadiv.innerHTML += "<font color='#0000AA'>You may be given a '" + progenv + "' programming environment while taking this test. You will need it to solve some of the challenges.</font><br />";
+    if(jsonobj.progenv != ""){
+        qareadiv.innerHTML += "<font color='#0000AA'>You may be given a '" + jsonobj.progenv + "' programming environment while taking this test. You will need it to solve some of the challenges.</font><br />";
     }
-    qareadiv.innerHTML += "<font color='#0000AA'>This test is intended for " + skillqualitydict[quality] + " quality candidates.</font><br />";
+    qareadiv.innerHTML += "<font color='#0000AA'>This test is intended for '" + skillquality + "' quality candidates.</font><br />";
     qareadiv.innerHTML += "<font color='#0000AA'>The total marks is " + maxscore + ".</font><br />";
     durationinmins = (duration/60);
     if (durationinmins < 60){
@@ -285,26 +292,25 @@ function starttest(rules, progenv, quality, maxscore, duration, allowedlanguages
     }
     qareadiv.innerHTML += "<font color='#0000AA'>There are " + challengescount + " questions in this test.</font><br />";
     qareadiv.innerHTML += "<font color='#0000AA'>You may answer this test in any of the following languages: </font>";
-    allowedlanguageslist = allowedlanguages.split(",");
-    var langctr = 0;
-    for (langctr = 0; langctr < allowedlanguageslist.length - 1; langctr++){
-        qareadiv.innerHTML += "<font color='#0000AA'>" + allowedlanguagesdict[allowedlanguageslist[langctr]] + ", </font>";
+    for (langctr = 0; langctr < allowedlanguages.length - 1; langctr++){
+        qareadiv.innerHTML += "<font color='#0000AA'>" + allowedlanguages[langctr] + ", </font>";
     }
-    if(allowedlanguageslist.length > 1){
-        qareadiv.innerHTML += "<font color='#0000AA'> and " + allowedlanguagesdict[allowedlanguageslist[allowedlanguageslist.length - 1]] + ".</font><br />";
+    if(allowedlanguages.length > 1){
+        qareadiv.innerHTML += "<font color='#0000AA'> and " + allowedlanguages[allowedlanguages.length - 1] + ".</font><br />";
     }
     else{
-        qareadiv.innerHTML += "<font color='#0000AA'>" + allowedlanguagesdict[allowedlanguageslist[allowedlanguageslist.length - 1]] + ".</font><br />";
+        qareadiv.innerHTML += "<font color='#0000AA'>" + allowedlanguages[allowedlanguages.length - 1] + ".</font><br />";
     }
     // Set the start time of the test - the ceremony is about to begin.
     starttime = new Date();
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "<font color='#0000AA'>This test falls in the '" + topicname + "' category.</font><br /><br />";
     qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you.</u></font><br /><br />";
-    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
+    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
     // Make a check here to see if starttest
     clock();
-    postdata = encodeURI("mode=7&starttest=1&starttime=" + starttime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}') + "&tabref=" + tabref + "&tabid=" + tabid);
+    encodedemail = Base64.encode(targetemail);
+    postdata = encodeURI("mode=7&starttest=1&starttime=" + starttime + "&testid=" + testid + "&useremail=" + encodedemail + "&tabref=" + tabref + "&tabid=" + tabid);
     // alert(postdata);
     sendtoserver(postdata);
 }
@@ -763,9 +769,15 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomliststr, 
     testpages = restorepagedata(rawtestpages);
     challengerec = challengelist[ctr];
     challengestatement = challengerec[0];
+    //alert(challengestatement);
     qalist = JSON.parse(Base64.decode(encqalist));
     start = 0;
-    end = randomlist.length;
+    if(ruleflag == 3){
+        end = randomlist.length;
+    }
+    else{
+	end = Object.size(qalist);
+    }
     qareadiv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
     clock();
     timeout = 0;
@@ -776,8 +788,13 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomliststr, 
 	if(testpages[elem][2].toUpperCase() == challengestatement.toUpperCase()){
 	    timeout = testpages[elem][1] * 1000 - qalist[i][1];
 	    //alert(timeout);
-	    challengescreen = testpages[elem][0];
-	    //alert(challengescreen);
+	    if(ruleflag == 3){
+	        challengescreen = testpages[elem][0];
+	    }
+	    else{
+		challengescreen = qalist[i][2];
+	    }
+	    alert(challengescreen);
 	    //alert(testpages[elem][1]);
 	    qareadiv.innerHTML += challengescreen;
 	    break;
@@ -794,6 +811,17 @@ function nextchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     challengeendtime = new Date();
     challengeendtime_ms = challengeendtime.getTime();
     timeelapsed = (challengeendtime_ms - challengestarttime_ms); // This is timeelapsed in milliseconds.
+    bchallenge = document.getElementById('bchallenge');
+    challengestatement = bchallenge.innerHTML;
+    listitem = {};
+    qareadiv = document.getElementById('qarea');
+    divcontents = qareadiv.innerHTML;
+    listitem[2] = divcontents;
+    listitem[0] = challengestatement;
+    elem = randomlist[index];
+    listitem[1] = testpages[elem][1] - timeelapsed;
+    qalist[Object.size(qalist)] = listitem;
+    index = index + 1;
     mytime = showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, timeelapsed);
 }
 
@@ -834,10 +862,12 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     nextduration = (testpages[randomlist[index]][1] * 1000);
     challengestarttime = new Date();
     challengestarttime_ms = challengestarttime.getTime();
-    index = index + 1;
+    //index = index + 1;
     window.clearTimeout(mytime);
-    mytime = window.setTimeout(showchallenge, nextduration, index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, (timeelapsed + nextduration));																																																																																																																																																																																																									
+    mytime = window.setTimeout(showchallenge, nextduration, index + 1, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, (timeelapsed + nextduration));																																																																																																																																																																																																									
     nextbutton = document.getElementById('btnnextchallenge');
+    nextbutton.onclick = function(){nextchallenge(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid,challengestarttime_ms);};
+    populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid);
 }
 
 function showchallenge2(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, timeelapsed){
@@ -943,15 +973,18 @@ function showchallenge2(index, randomlist, testpages, starttime, mytime, rulefla
 }
 
 
-function facethemusic(encjson, starttime, tabref, tabid){
+  function facethemusic(encjson, starttime){
+    //decrypteddata = tripledesdecrypt(Base64.decode(encjson));
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
+    tabref = jsonobj.tabtype;
+    tabid = jsonobj.tabid;
     mytime = '';
     index = 0;
     testpages = new Array();
     randomlist = new Array();
     ruleflag = getruleset(encjson);
     testpages = getchallenges(encjson, starttime, mytime, ruleflag);
-    decrypteddata = Base64.decode(encjson);
-    jsonobj = JSON.parse(decrypteddata);
     randomsequencing = jsonobj.randomsequencing;
     countchallenges = testpages.length;
     minimum = 0;
@@ -1047,13 +1080,16 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 }
 
 
-function handletest(encjson, jsonobj){
+function handletest(encjson){
+    //decrypteddata = tripledesdecrypt(Base64.decode(encjson));
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
     qareadiv = document.getElementById('qarea');
     qareadiv.style = '';
     qareadiv.innerHTML = "<center><h2><font color='#0000AA'>" + jsonobj.testname + "</font></h2></center><br /><center><h3><font color='#0000AA'> - " + jsonobj.creator + "</font></h3></center>";
     qareadiv.innerHTML += "<span><b><font color='#0000AA'>You may start taking this test by clicking on the 'Start Test' button below. Alternatively,<br />you may come back to take this test later.</font></b></span>";
     numchallenges = Object.keys(jsonobj.challenges).length;
-    qareadiv.innerHTML += "<br /><center><input type='button' name='starttest' value='Start Test' onClick='javascript:starttest(\"" + jsonobj.rules + "\", \"" + jsonobj.progenv + "\", \"" + jsonobj.quality+ "\", \"" + jsonobj.maxscore + "\", \"" + jsonobj.duration + "\", \"" + jsonobj.allowedlanguages + "\", \"" + jsonobj.topicname + "\", \"" + numchallenges + "\", \"" + jsonobj.testname + "\", \"" + encjson + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>&nbsp;&nbsp;<input type='button' name='notnow' value='No, not now' onClick='javascript:closetest();'></center>";
+    qareadiv.innerHTML += "<br /><center><input type='button' name='starttest' value='Start Test' onClick='javascript:starttest(\"" + encjson + "\");'>&nbsp;&nbsp;<input type='button' name='notnow' value='No, not now' onClick='javascript:closetest();'></center>";
 }
 
 
