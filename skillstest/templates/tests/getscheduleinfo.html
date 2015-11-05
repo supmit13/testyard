@@ -10,7 +10,8 @@
 <script language='JavaScript'>
 
 function validateinput(){
-    datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:(\\d{2})?");
+    datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}[:\\d{2}]?");
+    recvddatepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}[:\\d{2}]?");
     startpattern = new RegExp("^start_\\d+$");
     endpattern = new RegExp("^end_\\d+$");
     emailpattern = new RegExp("^\\w+[\\.\\w]{0,}@\\w+[\\-\\w]{0,}\\.\\w{2,3}[\\.\\w]{0,}$")
@@ -18,9 +19,14 @@ function validateinput(){
     for(var i=0; i< allelements.length; i++){
         if(startpattern.exec(allelements[i].name) || endpattern.exec(allelements[i].name)){
 	    if(!datepattern.exec(allelements[i].value)){
-	 	alert("Date format should be yyyy-mm-dd hh:mm:ss");
-		allelements[i].focus();
-		return (false);
+		if(recvddatepattern.exec(allelements[i].value)){ // We got date without the number of seconds
+		    allelements[i].value = allelements[i].value + ":00"
+		}
+		else{
+	 	    alert("Date format should be yyyy-mm-dd hh:mm:ss");
+		    allelements[i].focus();
+		    return (false);
+		}
 	    }
 	}
 	else if(allelements[i].name == 'start_new' || allelements[i].name == 'end_new'){

@@ -228,6 +228,7 @@ RULES_DICT = { \
         #'responsenoreturn' : 'Responded challenges may not be revisited', \
         #'norevisit' : 'Attempted challenges may not be revisited', \
         'showatonce' : 'Show all challenges at the begining of the test', \
+        'showonebyone' : 'Display challenges to the user one at a time.',\
         'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
         }

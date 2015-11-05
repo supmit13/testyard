@@ -4967,11 +4967,19 @@ def setschedule(request):
             try:
                 starttime_date, starttime_time = starttime.split(" ")
                 starttime_year, starttime_month, starttime_day = starttime_date.split("-")
-                starttime_hour, starttime_minute, starttime_second = starttime_time.split(":")
+                starttime_components = starttime_time.split(":")
+                if starttime_components.__len__() > 2:
+                    starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], starttime_components[2]
+                else:
+                    starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], "00"
                 utobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
                 endtime_date, endtime_time = endtime.split(" ")
                 endtime_year, endtime_month, endtime_day = endtime_date.split("-")
-                endtime_hour, endtime_minute, endtime_second = endtime_time.split(":")
+                endtime_components = endtime_time.split(":")
+                if endtime_components.__len__() > 2:
+                    endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], endtime_components[2]
+                else:
+                    endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], "00"
                 utobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
             except:
                 print sys.exc_info()[1].__str__()
@@ -4980,11 +4988,20 @@ def setschedule(request):
             try:
                 starttime_date, starttime_time = starttime.split(" ")
                 starttime_year, starttime_month, starttime_day = starttime_date.split("-")
-                starttime_hour, starttime_minute, starttime_second = starttime_time.split(":")
+                starttime_components = starttime_time.split(":")
+                if starttime_components.__len__() > 2:
+                    starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], starttime_components[2]
+                
+                else:
+                    starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], "00"
                 wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
                 endtime_date, endtime_time = endtime.split(" ")
                 endtime_year, endtime_month, endtime_day = endtime_date.split("-")
-                endtime_hour, endtime_minute, endtime_second = endtime_time.split(":")
+                endtime_components = endtime_time.split(":")
+                if endtime_components.__len__() > 2:
+                    endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], endtime_components[2]
+                else:
+                    endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], "00"
                 wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
             except:
                 print sys.exc_info()[1].__str__()

@@ -326,6 +326,10 @@ function sendresponse(){
     var tabref = "";
     var tabid = -1;
     if(document.frmchallenge){
+	//alert(document.frmchallenge.elements);
+	if(!document.frmchallenge.elements || document.frmchallenge.elements.length == 0){
+	    return;
+	}
         challengestatement = document.frmchallenge.challengestatement.value;
         challengetype = document.frmchallenge.challengetype.value;
     	oneormore = document.frmchallenge.oneormore.value; // The value of this is meaningless if challengetype is not 'MULT'
@@ -425,17 +429,24 @@ function getruleset(encjson){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
     ruleslist = jsonobj.rules;
+    showonebyoneflag = 0;
     showatonceflag = 1;
     allowchallengenavflag = 2;
-    ruleflag = 0;
+    ruleflag = showonebyoneflag; // Default is show one by one
     for(var i=0; i < ruleslist.length; i++){
         flagvalue = ruleslist[i];
         if(flagvalue == 'showatonce'){
-            ruleflag += showatonceflag;
+            ruleflag = showatonceflag;
+	    break;
         }
-        else if(flagvalue == 'allowchallengenavigation'){
-            ruleflag += allowchallengenavflag;
+        if(flagvalue == 'allowchallengenavigation'){
+            ruleflag = allowchallengenavflag;
+	    break;
         }
+	if(flagvalue == 'showonebyone'){
+	    ruleflag = showonebyoneflag;
+	    break;
+	}
     }
     return (ruleflag); // Possible values are 0, 1, 2, 3.
 }
@@ -662,6 +673,7 @@ function populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, star
 		else{
 		    qlisttag.innerHTML += "<li id='simple'><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(qalist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\" title='" + qarec[0] + "'>" + challengestatement25 + "</a></li>";
 		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
+		    //alert(testpagesb64enc);
 		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
 		}
             }
@@ -760,7 +772,6 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomliststr, 
             randomlist[j] = parseInt(randomlist[j]);
 	}
 	catch (err){
-	    //alert(err.message);
 	    continue;
 	}
     }
@@ -805,24 +816,14 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomliststr, 
 }
 
 
+pages = new Array();
 // Code to impose chosen rules end here.
-function nextchallenge(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, challengestarttime_ms){
+function nextchallenge(index, randomlist, starttime, mytime, ruleflag, tabref, tabid){
     window.clearTimeout(mytime);
-    challengeendtime = new Date();
-    challengeendtime_ms = challengeendtime.getTime();
-    timeelapsed = (challengeendtime_ms - challengestarttime_ms); // This is timeelapsed in milliseconds.
-    bchallenge = document.getElementById('bchallenge');
-    challengestatement = bchallenge.innerHTML;
-    listitem = {};
-    qareadiv = document.getElementById('qarea');
-    divcontents = qareadiv.innerHTML;
-    listitem[2] = divcontents;
-    listitem[0] = challengestatement;
-    elem = randomlist[index];
-    listitem[1] = testpages[elem][1] - timeelapsed;
-    qalist[Object.size(qalist)] = listitem;
-    index = index + 1;
-    mytime = showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, timeelapsed);
+    pagesstr = Base64.encode(JSON.stringify(pages));
+    index = document.getElementById('qindx').value;
+    //alert("========" + index + "=============");
+    mytime = showchallengesonebyone(index, randomlist, pagesstr, starttime, mytime, ruleflag, tabref, tabid);
 }
 
 
@@ -830,7 +831,6 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     timeelapsed = timeelapsed || 0;
     if(Object.size(qalist) > 0){
 	ll = qalist[Object.size(qalist) - 1];
-	//alert(ll);
 	ll[1] = timeelapsed;
 	qalist[Object.size(qalist) - 1] = ll;
     }
@@ -866,114 +866,120 @@ function showchallenge(index, randomlist, testpages, starttime, mytime, ruleflag
     window.clearTimeout(mytime);
     mytime = window.setTimeout(showchallenge, nextduration, index + 1, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, (timeelapsed + nextduration));																																																																																																																																																																																																									
     nextbutton = document.getElementById('btnnextchallenge');
+    //alert(randomlist);
     nextbutton.onclick = function(){nextchallenge(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid,challengestarttime_ms);};
     populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid);
 }
 
-function showchallenge2(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, timeelapsed){
-    timeelapsed = timeelapsed || 0;
-    if(Object.size(qalist) > 0){
-	ll = qalist[Object.size(qalist) - 1];
-	//alert(ll);
-	ll[1] = timeelapsed;
-	qalist[Object.size(qalist) - 1] = ll;
+
+function freezeresponse(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist, leftpanelclick){
+    allelements = document.frmchallenge.elements;
+    for(var i=0; i < allelements.length; i++){
+	if(allelements[i].name != 'btnnextchallenge'){
+	    allelements[i].disabled=true;
+	}
     }
-    qareadiv = document.getElementById('qarea');
-    divcontents = qareadiv.innerHTML;
-    if(divcontents != ""){
-        sendresponse();
-    }
-    qareadiv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
-    qareadiv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
-    clock();
+    sendresponse();
     elem = randomlist[index];
-    // Make a check to see if the upcoming challenge from 'testpages' is there in 'qalist'. If so, increment index and find the next challenge.
-    testisover = 0;
-    while(1){
-	found = 0;
-	upcomingchallenge = testpages[elem][2];
-	for(var j=0; j < Object.size(qalist); j++){
-	    //alert("upcoming = " + upcomingchallenge.toUpperCase() + "  qalist=" + qalist[j][0].toUpperCase());
-	    if(qalist[j][0].toUpperCase() == upcomingchallenge.toUpperCase()){
-		found = 1;
-		break;
-	    }
-	}
-	//alert("found=" + found + "   ruleflag=" + ruleflag);
-	if(found && (ruleflag == 1 || ruleflag == 0)){
-	    index = index + 1;
-	    if(index >= testpages.length){ // All questions have been covered.
-		testisover = 1;
-		break;
-	    }
-	    else{
-		elem = randomlist[index];
-		continue;
-	    }
-	}
-	else if(found && ruleflag == 2){
-	    elem = randomlist[index];
-	    index = index + 1;
-	    //alert(timeelapsed);
-	    testpages[elem][1] = testpages[elem][1] - timeelapsed; // Set the time remaining
-	    if(index >= testpages.length){ // All questions have been covered.
-		break;
-	    }
-	    else{
-		continue;
-	    }
-	}
-	else{
-	    break;
-	}
-    }
-    if(!testisover){
-    	qareadiv.innerHTML += testpages[elem][0];
-    	nextduration = (testpages[randomlist[index]][1] * 1000);
-    	challengestarttime = new Date();
-    	challengestarttime_ms = challengestarttime.getTime();
-   	index = index + 1;
-    }
-    if(index >= testpages.length){ // Test is over.
-        var jstime = new Date();
-        endtime = jsdatetomysqldatetime(String(jstime));
-        qareadiv.innerHTML += nomorechallenges('{{ testname }}', '{{ testid }}', starttime, tabref, tabid);
-        postdata = encodeURI("mode=2&starttest=1&starttime=" + starttime + "&endtime=" + endtime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}')) + "&status=2&tabref=" + tabref + "&tabid=" + tabid;
-        //alert(postdata);
-        sendtoserver(postdata);
-	listitem = {};
-    	listitem[2] = qareadiv.innerHTML;
-    	listitem[0] = "";
-    	listitem[1] = 0; // time elapsed.
-    	qalist[Object.size(qalist)] = listitem;
-    	populateleftpanel2(ruleflag, qalist, index-1, randomlist, testpages, starttime, mytime, tabref, tabid);
-	return;
-    }
-    window.clearTimeout(mytime);
-    mytime = window.setTimeout(showchallenge, nextduration, index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, (timeelapsed + nextduration));																																																																																																																																																																																																									
-    nextbutton = document.getElementById('btnnextchallenge');
-    //alert("index=" + index);
-    //alert(ruleflag);
-    //alert(randomlist);alert(testpages);alert(starttime);alert(mytime);alert(tabref);alert(tabid);alert(challengestarttime_ms);
-    if(!randomlist){
-	randomlist = "";
-    }
-    if(!testpages){
-	testpages = "";
-    }
-    nextbutton.onclick = function(){nextchallenge(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid,challengestarttime_ms);};
-    bchallenge = document.getElementById('bchallenge');
-    challengestatement = bchallenge.innerHTML;
-    listitem = {};
-    listitem[2] = divcontents;
-    listitem[0] = challengestatement;
-    listitem[1] = timeelapsed;
-    qalist[Object.size(qalist)] = listitem;
-    populateleftpanel2(ruleflag, qalist, index-1, randomlist, testpages, starttime, mytime, tabref, tabid);
+    inputform = document.getElementById('qarea').innerHTML;
+    alert(inputform);
+    testpages[elem][0] = inputform;
 }
 
 
-  function facethemusic(encjson, starttime){
+function showchallenge2(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist, leftpanelclick, directcall){
+    timeelapsed = 0;
+    if(!directcall){
+    	challengeendtime = new Date();
+    	challengeendtime_ms = challengeendtime.getTime();
+    	timeelapsed = challengeendtime_ms - starttime;
+    }
+    leftpanelclick = leftpanelclick || -1;
+    elem = randomlist[parseInt(index)];
+    // Check if the challenge was already there in qalist. In that case we have to find how much time was used up by the user during the earlier tr(y/ies).
+    //alert(testpages[elem]);
+    //alert(index); alert(elem);
+    challenge_statement = testpages[elem][2];
+    alreadyattempted = 0;
+    for(var l=0; l < Object.size(qalist); l++){
+        qachallengetext = qalist[l][3];
+	if(qachallengetext.toUpperCase() == challenge_statement.toUpperCase()){
+	    prevtimeelapsed = qalist[l][1];
+   	    timeelapsed = timeelapsed + prevtimeelapsed;
+	    alreadyattempted = 1;
+	    sendresponse();
+	    qalist[l][1] = timeelapsed;
+	    qalist[l][0] = document.getElementById('qarea').innerHTML;
+	    break;
+	}
+    }
+    totaltime = testpages[elem][1];
+    qareadiv = document.getElementById('qarea');
+    divcontents = qareadiv.innerHTML;
+    if(divcontents != "" && !alreadyattempted){ // Case where user has attempted a problem for the first time.
+        sendresponse();
+	challenge_statement = testpages[elem][2];
+	newlist = [divcontents, timeelapsed, totaltime, challenge_statement];
+	qalistsize = Object.size(qalist);
+	qalist[qalistsize] = newlist;
+    }
+    timeandnamediv = document.getElementById('timeandname');
+    timeandnamediv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
+    timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
+    clock();
+    challengestarttime = new Date();
+    starttime = challengestarttime.getTime();
+    nextindex = index;
+    if(leftpanelclick > -1){ // user has clicked a link from the left panel
+	qareadiv.innerHTML = qalist[leftpanelclick][0];
+        timeremaining = qalist[leftpanelclick][2] - qalist[leftpanelclick][1];
+	mytime = window.setTimeout(freezeresponse, timeremaining, index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist, leftpanelclick);
+	return(0);
+    }
+    else{
+	nextelem = randomlist[index];
+	qareadiv.innerHTML = testpages[nextelem][0];
+	timeframe = testpages[nextelem][1];
+	timeframe_ms = timeframe * 1000;
+	mytime = window.setTimeout(freezeresponse, timeframe_ms, index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist, -1, 0);
+    }
+    nextindex = index + 1;
+    nextbutton = document.getElementById('btnnextchallenge');
+    //alert(testpages);
+    nextbutton.onclick = function(){nextchallenge(nextindex, randomlist, starttime, mytime, ruleflag, tabref, tabid);};
+    populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid);
+}
+
+
+function showchallengesindex(index, randomlist, testpages, starttime, mytime, tabref, tabid, qalist){
+}
+
+
+function showchallengesonebyone(index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist, directcall){
+    sendresponse();
+    if(index == randomlist.length){
+	stoptest(tabref, tabid);
+    }
+    testpages = JSON.parse(Base64.decode(testpagesstr));
+    qareadiv = document.getElementById('qarea');
+    timeandnamediv = document.getElementById('timeandname');
+    timeandnamediv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
+    timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
+    clock();
+    challengestarttime = new Date();
+    challengestarttime = challengestarttime.getTime();
+    elem = randomlist[index];
+    testpage = testpages[elem][0];
+    qareadiv.innerHTML = testpage;
+    timeframe_ms = testpages[elem][1] * 1000;
+    index = parseInt(index) + 1;
+    qindxelement = document.getElementById('qindx');
+    qindxelement.value = index;
+    //alert("+++++++++" + index + "+++++++++");
+    mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist, 0);
+}
+
+function facethemusic(encjson, starttime){
     //decrypteddata = tripledesdecrypt(Base64.decode(encjson));
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
@@ -984,30 +990,49 @@ function showchallenge2(index, randomlist, testpages, starttime, mytime, rulefla
     testpages = new Array();
     randomlist = new Array();
     ruleflag = getruleset(encjson);
+    
     testpages = getchallenges(encjson, starttime, mytime, ruleflag);
     randomsequencing = jsonobj.randomsequencing;
     countchallenges = testpages.length;
     minimum = 0;
     maximum = (countchallenges - 1);
-    randomlist = create_unique_random_array(countchallenges, minimum, maximum);
+    randomlist = Array(countchallenges);
+    for(var k=minimum; k <= maximum; k++){
+	randomlist[k] = k;
+    }
+    if(randomsequencing){
+    	randomlist = create_unique_random_array(countchallenges, minimum, maximum);
+    }
     testtakerdiv = document.getElementById('testtaker');
     testendhtml = nomorechallenges(jsonobj.testname, jsonobj.testid, starttime, tabref, tabid);
     testpages[countchallenges] = testendhtml;
     randomcount = randomlist.length;
     randomlist[randomcount] = countchallenges;
-    
+    // Replace ####RANDOMLIST#### with randomlist here
+    for(pagectr=0; pagectr < testpages.length; pagectr++){
+	testpages[pagectr][0] = testpages[pagectr][0].replace('####RANDOMLIST####', '[' + randomlist.toString() + ']');
+    }
     // Start the main test counter now
     stopid = setTimeout(stoptest, (jsonobj.duration * 1000), tabref, tabid);
     index = 0;
-    mytime = setTimeout(showchallenge, 0, index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, 0);
+    qalist = {};
+    if(ruleflag == '1'){
+        showchallengesindex(index, randomlist, testpages, starttime, mytime, tabref, tabid, qalist);
+    }
+    else if(ruleflag == '0'){
+        index = 0;
+	testpagesstr = Base64.encode(JSON.stringify(testpages));
+	showchallengesonebyone(index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist);
+    }
+    else if(ruleflag == '2'){
+	showchallenge2(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist);
+    }
 }
 
 
 function getchallenges(encjson, starttime, mytime, ruleflag){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
-    qareadiv = document.getElementById('qarea');
-    qareadiv.innerHTML = "";
     challengeslist = Object.keys(jsonobj.challenges);
     randomsequencing = jsonobj.randomsequencing;
     pages = Array();
@@ -1061,18 +1086,19 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         }
         pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + " seconds</font><br />";
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
-	//alert(ruleflag + "sssss");
-        pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(1, \"" + randomlist.toString() + "\", \"" + testpages.toString() + "\", \"" + starttime + "\", \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>"; 
+	//alert(ruleflag);
+	testpagesstr = Base64.encode(JSON.stringify(pages));
+        pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, \"" + starttime + "\", \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>"; 
         pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challenge + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>";
         pages[pagectr][0] += "</form>";
+        //alert(challenge);
         pages[pagectr][1] = jsonobj.challenges[challenge].timeframe;
 	pages[pagectr][2] = challenge;
-
         if(ruleflag == 1){
 	    listitem = new Array();
 	    listitem[0] = challenge;
 	    listitem[1] = pages[pagectr][0];
-	    alllist[alllist.length] = listitem;
+	    alllist[pagectr] = listitem;
     	}
         pagectr++;
     }
@@ -1125,12 +1151,15 @@ checkbrowser();
         </ul>
     </div>
 </div>
-<div class="right col" id="qarea">
-    
-    <div class="footer row" id="metadatadiv">
-        
+
+<div class="right col" id="qareaholder">
+    <div id='timeandname'>
+    </div>
+    <br />
+    <div id="qarea">
     </div>
 </div>
+<input type='text' name='qindx' id='qindx' value=0>
 </span>
 </body>
 </html>
