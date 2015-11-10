@@ -2329,6 +2329,7 @@ def showtestcandidatemode(request):
         curdatetime_tzaware = datetime.datetime(curdatetime_year, curdatetime_month, curdatetime_day, curdatetime_hour, curdatetime_min, curdatetime_sec, 0, pytz.UTC)
         validfrom = testtakeruserobj.validfrom
         validtill = testtakeruserobj.validtill
+        print validtill, "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
         if curdatetime_tzaware < validfrom: # test is scheduled in the future
             message = error_msg('1164')%(testtakeruserobj.validfrom, testtakeruserobj.validtill)
             response = HttpResponse(message)

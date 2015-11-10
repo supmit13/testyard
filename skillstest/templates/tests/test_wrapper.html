@@ -823,7 +823,7 @@ function nextchallenge(index, randomlist, starttime, mytime, ruleflag, tabref, t
     pagesstr = Base64.encode(JSON.stringify(pages));
     index = document.getElementById('qindx').value;
     //alert("========" + index + "=============");
-    mytime = showchallengesonebyone(index, randomlist, pagesstr, starttime, mytime, ruleflag, tabref, tabid);
+    showchallengesonebyone(index, randomlist, pagesstr, starttime, mytime, ruleflag, tabref, tabid);
 }
 
 
@@ -955,11 +955,12 @@ function showchallengesindex(index, randomlist, testpages, starttime, mytime, ta
 }
 
 
-function showchallengesonebyone(index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist, directcall){
+function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
     sendresponse();
     if(index == randomlist.length){
 	stoptest(tabref, tabid);
     }
+    window.clearTimeout(mytime);
     testpages = JSON.parse(Base64.decode(testpagesstr));
     qareadiv = document.getElementById('qarea');
     timeandnamediv = document.getElementById('timeandname');
@@ -976,7 +977,7 @@ function showchallengesonebyone(index, randomlist, testpagesstr, starttime, myti
     qindxelement = document.getElementById('qindx');
     qindxelement.value = index;
     //alert("+++++++++" + index + "+++++++++");
-    mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist, 0);
+    mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, 0);
 }
 
 function facethemusic(encjson, starttime){
