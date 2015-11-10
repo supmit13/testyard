@@ -1725,3 +1725,12 @@ Tue, 10 Nov 2015, 12:59 HRS (IST).
 18.static/datetimepicker/*
 19.skillstest/settings.py
 20.files_to_commit.txt
+=======================================
+
+Tue, 10 Nov 2015, 14:18 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================
+
