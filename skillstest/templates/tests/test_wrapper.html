@@ -20,7 +20,7 @@
 	  -khtml-opacity: 0.9;
 	  background-color:#669999;
 	  color:#FFFFFF;
-	  position:absolute; top:180px; left:0px; width:100%; height:100%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	  position:absolute; top:180px; left:0px; width:100%; height:200%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
 
 </style>
@@ -339,6 +339,86 @@ function sendresponse(){
     	tabref = document.frmchallenge.tabtype.value;
     	tabid = document.frmchallenge.tabid.value;
         var postdata = "mode=0&challengestatement=" + challengestatement + "&challengetype=" + challengetype + "&oneormore=" + oneormore + "&challengeid=" + challengeid + "&testid=" + testid + "&useremail=" + useremail + "&tabref=" + tabref + "&tabid=" + tabid;
+        if(challengetype == 'CODN' || challengetype == 'SUBJ' || challengetype == 'ALGO'){
+            txtareanamepattern = new RegExp("^id_\\d+$");
+            allelements = document.frmchallenge.elements;
+            for(var i=0; i < allelements.length; i++){
+                elemname = allelements[i].name;
+                if(txtareanamepattern.test(elemname)){
+                    postdata += "&" + elemname + "=" + allelements[i].value;
+                    break;
+                }
+            }
+        }
+        else if(challengetype == 'MULT'){
+            allelements = document.frmchallenge.elements;
+            if(oneormore == "false"){ //will get radio buttons.
+                radioidpattern = new RegExp("^rdoption_\\d+$");
+                for(var i=0; i < allelements.length; i++){
+                    elemid = allelements[i].id;
+                    if(radioidpattern.test(elemid)){
+                        if(allelements[i].checked == true){
+                            postdata += "&rdoption=" + allelements[i].value;
+                            break;
+                        }
+                    }
+                }
+            }
+            else{ // will get checkboxes.
+                checkboxpattern = new RegExp("^option_\\d+$");
+                for(var i=0; i < allelements.length; i++){
+                    elemname = allelements[i].name;
+                    if(checkboxpattern.test(elemname)){
+                        if(allelements[i].checked == true){
+                            postdata += "&" + elemname + "=" + allelements[i].value;
+                        }
+                    }
+                }
+            }
+        }
+        else if(challengetype == 'FILB'){
+            filbpattern = new RegExp("^filb_\\d+$");
+            allelements = document.frmchallenge.elements;
+            for(var i=0; i < allelements.length; i++){
+                elemname = allelements[i].name;
+                if(filbpattern.test(elemname)){
+                    postdata += "&filb=" + allelements[i].value;
+                    break;
+                }
+            }
+        }
+        else{ // unrecognized challenge type.
+        }
+        var encpostdata = encodeURI(postdata)
+        //alert(encpostdata);
+        sendtoserver(encpostdata);
+    }
+}
+
+
+function rememberresponse(){
+    var challengestatement = "";
+    var challengetype = "";
+    var oneormore = "";
+    var challengeid = -1;
+    var testid = -1;
+    var useremail = "";
+    var tabref = "";
+    var tabid = -1;
+    if(document.frmchallenge){
+	//alert(document.frmchallenge.elements);
+	if(!document.frmchallenge.elements || document.frmchallenge.elements.length == 0){
+	    return;
+	}
+        challengestatement = document.frmchallenge.challengestatement.value;
+        challengetype = document.frmchallenge.challengetype.value;
+    	oneormore = document.frmchallenge.oneormore.value; // The value of this is meaningless if challengetype is not 'MULT'
+    	challengeid = document.frmchallenge.challengeid.value;
+    	testid = document.frmchallenge.testid.value;
+    	useremail = document.frmchallenge.useremail.value;
+    	tabref = document.frmchallenge.tabtype.value;
+    	tabid = document.frmchallenge.tabid.value;
+        //var postdata = "mode=0&challengestatement=" + challengestatement + "&challengetype=" + challengetype + "&oneormore=" + oneormore + "&challengeid=" + challengeid + "&testid=" + testid + "&useremail=" + useremail + "&tabref=" + tabref + "&tabid=" + tabid;
         if(challengetype == 'CODN' || challengetype == 'SUBJ' || challengetype == 'ALGO'){
             txtareanamepattern = new RegExp("^id_\\d+$");
             allelements = document.frmchallenge.elements;
@@ -950,13 +1030,183 @@ function showchallenge2(index, randomlist, testpages, starttime, mytime, rulefla
     populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid);
 }
 
-
-function showchallengesindex(index, randomlist, testpages, starttime, mytime, tabref, tabid, qalist){
+// We will collect the responses to the challenges here and send them to the server at the end of the test.
+// This will reduce the dependence on the internet connection while taking the test.
+function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
+    challengeresponsescreen = Base64.decode(challengeresponsescreenencoded);
+    // First, grab the user's response to the current challenge
+    if(document.frmchallenge){
+	curchallengetype = document.frmchallenge.challengetype.value;
+	curchallengestatement = document.frmchallenge.challengestatement.value;
+ 	curchallengeid = document.frmchallenge.challengeid.value;
+	if(curchallengetype == 'SUBJ' || curchallengetype == 'ALGO' || curchallengetype == 'CODN'){
+	    textval = document.getElementsByTagName('textarea')[0].value;
+	    for(j=0; j < testpages.length - 1; j++){
+		challengestatement = testpages[j][2];
+		if(challengestatement == curchallengestatement){
+		    testpagesparts = testpages[j][0].split('<textarea ');
+		    if(testpagesparts.length == 2){
+			valuepattern = new RegExp("value='([^\\']+)'");
+			if(valuepattern.test(testpagesparts[1])){
+			    testpagesparts[1] = testpagesparts[1].replace(valuepattern, "");
+			}
+			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
+			testpages[j][0] = testpagesparts[0] + testpagesparts[1];
+		    }
+		    else{ // There is some problem. It should not be less than 2.
+			alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
+		    }
+		    testpagesparts = testpages[j][0].split('</textarea>');
+		    txtvalpattern = new RegExp(">([^<]+)$");
+		    testpagesparts[0] = testpagesparts[0].replace(txtvalpattern, ">");
+		    if(testpagesparts.length == 2){
+			testpagesparts[0] = testpagesparts[0] + textval;
+			testpages[j][0] = testpagesparts[0] + "</textarea>" + testpagesparts[1];
+		    }
+		    else{ // There is some problem. It should not be less than 2.
+			alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
+		    }
+		}
+	    }
+	}
+	else if(curchallengetype == 'MULT'){
+	    inputtags = document.getElementsByTagName("input");
+	    checkboxes = Array();
+	    radiobuttons = Array();
+	    for(var i=0; i < inputtags.length; i++){
+		if(inputtags[i].type == 'checkbox'){
+		    checkboxes.push(inputtags[i]);
+		}
+		else if(inputtags[i].type == 'radio'){
+		    radiobuttons.push(inputtags[i]);
+	 	}
+	    }
+	    if(checkboxes.length > 0){
+		checkedpattern = new RegExp("checked='checked'");
+		for(j=0; j < testpages.length; j++){
+		    tpquestion = testpages[j][2].replace(/\s+/g, "");
+		    curquestion = curchallengestatement.replace(/\s+/g, "");
+		    tpquestion = tpquestion.replace('"', '');
+		    tpquestion = tpquestion.replace("'", "");
+		    if(tpquestion == curquestion){
+			testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+		    }
+		}
+		for(k=0; k < checkboxes.length; k++){
+		    if(checkboxes[k].checked == true){
+			checkboxname = checkboxes[k].name;
+			checkboxnamepattern = new RegExp(checkboxname);
+			checkboxvalue = checkboxes[k].value;
+			for(j=0; j < testpages.length; j++){
+			    tpquestion = testpages[j][2].replace(/\s+/g, "");
+			    curquestion = curchallengestatement.replace(/\s+/g, "");
+			    tpquestion = tpquestion.replace('"', '');
+		    	    tpquestion = tpquestion.replace("'", "");
+			    //alert("testpages, j, 2 = " + tpquestion);
+			    //alert("current q = " + curquestion);
+			    if(tpquestion == curquestion){
+				testpagesparts = testpages[j][0].split("name=");
+				for(var l=0; l < testpagesparts.length; l++){
+				    if(checkboxnamepattern.test(testpagesparts[l])){
+					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked='checked'");
+				    }
+				}
+				testpages[j][0] = testpagesparts.join("name=");
+			    }
+			}
+		    }
+		}
+	    }
+	    else if(radiobuttons.length > 0){
+		checkedpattern = new RegExp("checked='checked'");
+		for(k=0;k < radiobuttons.length;k++){
+		    if(radiobuttons[k].checked == true){
+			radiobuttonvalue = radiobuttons[k].value;
+			radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+			for(j=0; j < testpages.length; j++){
+			    tpquestion = testpages[j][2].replace(/\s+/g, "");
+			    curquestion = curchallengestatement.replace(/\s+/g, "");
+			    tpquestion = tpquestion.replace('"', '');
+		    	    tpquestion = tpquestion.replace("'", "");
+			    //alert("testpages, j, 2 = " + tpquestion);
+			    //alert("current q = " + curquestion);
+			    if(tpquestion == curquestion){
+				testpagesparts = testpages[j][0].split("value=");
+				testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+				for(var l=0; l < testpagesparts.length; l++){
+				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
+				    }
+				}
+				testpages[j][0] = testpagesparts.join("value=");
+			    }
+			}
+		    }
+		}
+	    }
+	}
+	else if(curchallengetype == 'FILB'){
+	    textval = document.getElementsByName('filb_' + curchallengeid)[0].value;
+	    textval = textval.replace("'", '__SINGLEQUOTE__');
+	    textval = textval.replace('"', '__DOUBLEQUOTE__');
+	    //alert(textval);
+	    for(j=0; j < testpages.length - 1; j++){
+		challengestatement = testpages[j][2];
+		if(challengestatement == curchallengestatement){
+		    testpagesparts = testpages[j][0].split("<input type='text'");
+		    if(testpagesparts.length == 2){
+		    	valuepattern = new RegExp("value='([^\\']*)'");
+			if(valuepattern.test(testpagesparts[1])){
+		    	    testpagesparts[1] = testpagesparts[1].replace(valuepattern, "");
+			}
+			//textval = textval.replace('__SINGLEQUOTE__', "&quot;");
+			//textval = textval.replace('__DOUBLEQUOTE__', "&quot;");
+			testpagesparts[1] = " value='" + textval + "' " + testpagesparts[1];
+		    	testpages[j][0] = testpagesparts[0] + "<input type='text' " + testpagesparts[1];
+		    }
+		    else{
+			alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
+		    }
+	        }
+	    }
+	}
+    }
+    responsescreendiv = document.getElementById('responsescreen');
+    responsescreendiv.innerHTML = "";
+    testpages[elem][0] = testpages[elem][0].replace("value=''", "");
+    //alert(testpages[elem][0]);
+    responsescreendiv.innerHTML = testpages[elem][0];
 }
 
 
+function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, tabid, qalist){
+    testpages = JSON.parse(Base64.decode(testpagesstr));
+    qareadiv = document.getElementById('qarea');
+    timeandnamediv = document.getElementById('timeandname');
+    timeandnamediv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
+    timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
+    clock();
+    html = "<br /><table border=0 cellspacing='2' cellpadding='2'>";
+    html += "<tr><td width='5%'>&nbsp;</td><td width='80%'><font color='0000AA' style='font-weight:bold;'><i>Questions</i></font></td><td width='15%'><font color='0000AA' style='font-weight:bold;'><i>Time Available (secs)</i></font></td></tr>";
+    slno = 1;
+    for(var j=0; j < randomlist.length - 1;j++){
+	elem = randomlist[j];
+	challengeentity = testpages[elem][2];
+        maxtime = testpages[elem][1];
+ 	challengeresponsescreen = testpages[elem][0];
+	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
+	html += "<tr><td width='5%'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ");'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
+	slno++;
+    }
+    html += "</table>";
+    html += "<div id='responsescreen'></div>";
+    qareadiv.innerHTML = html;
+}
+
+// We will collect the responses to the challenges here and send them to the server at the end of the test.
+// This will reduce the dependence on the internet connection while taking the test.
 function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
-    sendresponse();
+    //sendresponse();
     if(index == randomlist.length){
 	stoptest(tabref, tabid);
     }
@@ -1017,12 +1267,12 @@ function facethemusic(encjson, starttime){
     stopid = setTimeout(stoptest, (jsonobj.duration * 1000), tabref, tabid);
     index = 0;
     qalist = {};
+    testpagesstr = Base64.encode(JSON.stringify(testpages));
     if(ruleflag == '1'){
-        showchallengesindex(index, randomlist, testpages, starttime, mytime, tabref, tabid, qalist);
+        showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist);
     }
     else if(ruleflag == '0'){
         index = 0;
-	testpagesstr = Base64.encode(JSON.stringify(testpages));
 	showchallengesonebyone(index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist);
     }
     else if(ruleflag == '2'){
@@ -1089,8 +1339,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
 	//alert(ruleflag);
 	testpagesstr = Base64.encode(JSON.stringify(pages));
-        pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, \"" + starttime + "\", \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>"; 
-        pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challenge + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>";
+        pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, \"" + starttime + "\", \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+	challengestmt = challenge.replace("'", "");
+	challengestmt = challengestmt.replace('"', '');
+        pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challengestmt + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>";
         pages[pagectr][0] += "</form>";
         //alert(challenge);
         pages[pagectr][1] = jsonobj.challenges[challenge].timeframe;
@@ -1132,6 +1384,9 @@ function tripledesdecrypt(encstr){
  return(decstr);
 }
 </script>
+<style type="text/css">
+html { min-height: 400%; margin-bottom: 1px; }
+</style>
 </head>
 <body onload="javascript:decryptwrapper('####ENCJSON####');">
 <script language='JavaScript'>

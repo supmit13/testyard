@@ -1734,3 +1734,10 @@ Tue, 10 Nov 2015, 14:18 HRS (IST).
 3. files_to_commit.txt
 =======================================
 
+Tue, 17 Nov 2015, 14:05 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================					
+																	
