@@ -396,15 +396,10 @@ function sendresponse(){
 }
 
 
-function rememberresponse(){
+function rememberresponse(testpagesstr){
     var challengestatement = "";
     var challengetype = "";
     var oneormore = "";
-    var challengeid = -1;
-    var testid = -1;
-    var useremail = "";
-    var tabref = "";
-    var tabid = -1;
     if(document.frmchallenge){
 	//alert(document.frmchallenge.elements);
 	if(!document.frmchallenge.elements || document.frmchallenge.elements.length == 0){
@@ -413,66 +408,101 @@ function rememberresponse(){
         challengestatement = document.frmchallenge.challengestatement.value;
         challengetype = document.frmchallenge.challengetype.value;
     	oneormore = document.frmchallenge.oneormore.value; // The value of this is meaningless if challengetype is not 'MULT'
-    	challengeid = document.frmchallenge.challengeid.value;
-    	testid = document.frmchallenge.testid.value;
-    	useremail = document.frmchallenge.useremail.value;
-    	tabref = document.frmchallenge.tabtype.value;
-    	tabid = document.frmchallenge.tabid.value;
-        //var postdata = "mode=0&challengestatement=" + challengestatement + "&challengetype=" + challengetype + "&oneormore=" + oneormore + "&challengeid=" + challengeid + "&testid=" + testid + "&useremail=" + useremail + "&tabref=" + tabref + "&tabid=" + tabid;
-        if(challengetype == 'CODN' || challengetype == 'SUBJ' || challengetype == 'ALGO'){
-            txtareanamepattern = new RegExp("^id_\\d+$");
-            allelements = document.frmchallenge.elements;
-            for(var i=0; i < allelements.length; i++){
-                elemname = allelements[i].name;
-                if(txtareanamepattern.test(elemname)){
-                    postdata += "&" + elemname + "=" + allelements[i].value;
-                    break;
-                }
-            }
-        }
-        else if(challengetype == 'MULT'){
-            allelements = document.frmchallenge.elements;
-            if(oneormore == "false"){ //will get radio buttons.
-                radioidpattern = new RegExp("^rdoption_\\d+$");
-                for(var i=0; i < allelements.length; i++){
-                    elemid = allelements[i].id;
-                    if(radioidpattern.test(elemid)){
-                        if(allelements[i].checked == true){
-                            postdata += "&rdoption=" + allelements[i].value;
-                            break;
-                        }
-                    }
-                }
-            }
-            else{ // will get checkboxes.
-                checkboxpattern = new RegExp("^option_\\d+$");
-                for(var i=0; i < allelements.length; i++){
-                    elemname = allelements[i].name;
-                    if(checkboxpattern.test(elemname)){
-                        if(allelements[i].checked == true){
-                            postdata += "&" + elemname + "=" + allelements[i].value;
-                        }
-                    }
-                }
-            }
-        }
-        else if(challengetype == 'FILB'){
-            filbpattern = new RegExp("^filb_\\d+$");
-            allelements = document.frmchallenge.elements;
-            for(var i=0; i < allelements.length; i++){
-                elemname = allelements[i].name;
-                if(filbpattern.test(elemname)){
-                    postdata += "&filb=" + allelements[i].value;
-                    break;
-                }
-            }
-        }
-        else{ // unrecognized challenge type.
-        }
-        var encpostdata = encodeURI(postdata)
-        //alert(encpostdata);
-        sendtoserver(encpostdata);
+	// Find the challenge record in testpages
+        testpages = JSON.parse(Base64.decode(testpagesstr));
+	for(var i=0; i < testpages.length; i++){
+	    if(testpages[i][2] == challengestatement){
+		if(challengetype == 'CODN' || challengetype == 'ALGO' || challengetype == 'SUBJ'){
+		    textval = document.getElementsByTagName('textarea')[0].value;
+		    testpagesparts = testpages[i][0].split("<textarea ");
+		    if(testpagesparts.length == 2){
+			valuepattern = new RegExp("value='([^\\']+)'");
+			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
+			testpages[i][0] = testpagesparts[0] + testpagesparts[1];
+		    }
+		    else{ // There is some problem. Deal with such issues later
+			alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
+		    }
+		}
+		else if(challengetype == 'MULT'){
+		    inputtags = document.getElementsByTagName("input");
+	    	    checkboxes = Array();
+	    	    radiobuttons = Array();
+	    	    for(var j=0; j < inputtags.length; j++){
+			if(inputtags[j].type == 'checkbox'){
+		    	    checkboxes.push(inputtags[j]);
+			}
+			else if(inputtags[j].type == 'radio'){
+		    	    radiobuttons.push(inputtags[j]);
+	 		}
+	    	    }
+		    if(checkboxes.length > 0){
+			checkedpattern = new RegExp("checked='checked'");
+			testpages[i][0] = testpages[i][0].replace(checkedpattern, '');// Get rid of previous checked values
+			for(k=0; k < checkboxes.length; k++){
+		    	    if(checkboxes[k].checked == true){
+				checkboxname = checkboxes[k].name;
+				checkboxnamepattern = new RegExp(checkboxname);
+				checkboxvalue = checkboxes[k].value;
+				testpagesparts = testpages[i][0].split("name=");
+				for(var l=0; l < testpagesparts.length; l++){
+				    if(checkboxnamepattern.test(testpagesparts[l])){
+					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked='checked'");
+				    }
+				}
+				testpages[i][0] = testpagesparts.join("name=");
+			    }
+			}
+		    }
+		    else if(radiobuttons.length > 0){
+			checkedpattern = new RegExp("checked='checked'");
+			for(k=0;k < radiobuttons.length;k++){
+		    	    if(radiobuttons[k].checked == true){
+				radiobuttonvalue = radiobuttons[k].value;
+				radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+				testpagesparts = testpages[i][0].split("value=");
+				testpages[i][0] = testpages[i][0].replace(checkedpattern, '');// Get rid of previous checked values
+				for(var l=0; l < testpagesparts.length; l++){
+				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
+				    }
+				}
+				testpages[i][0] = testpagesparts.join("value=");
+			    }
+			}
+		    }
+		}
+		else if(challengetype == 'FILB'){
+		    textval = document.getElementsByName('filb_' + curchallengeid)[0].value;
+		    textval = textval.replace("'", '__SINGLEQUOTE__');
+		    textval = textval.replace('"', '__DOUBLEQUOTE__');
+		    for(j=0; j < testpages.length - 1; j++){
+			challengestatement = testpages[j][2];
+			if(challengestatement == curchallengestatement){
+			    testpagesparts = testpages[j][0].split("<input type='text'");
+			    if(testpagesparts.length == 2){
+				valuepattern = new RegExp("value='([^\\']*)'");
+				if(valuepattern.test(testpagesparts[1])){
+				    testpagesparts[1] = testpagesparts[1].replace(valuepattern, "");
+				}
+				//textval = textval.replace('__SINGLEQUOTE__', "&quot;");
+				//textval = textval.replace('__DOUBLEQUOTE__', "&quot;");
+				testpagesparts[1] = " value='" + textval + "' " + testpagesparts[1];
+				testpages[j][0] = testpagesparts[0] + "<input type='text' " + testpagesparts[1];
+			    }
+			    else{
+				alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
+			    }
+			}
+		    }
+		}
+		break;
+	    }
+	}
+	//alert("SSSSSSSSSSSSSSSSSSSS" + testpages);
+	testpagesstr = Base64.encode(JSON.stringify(testpages));
     }
+    return(testpagesstr);
 }
 
 
@@ -1206,7 +1236,7 @@ function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, t
 // We will collect the responses to the challenges here and send them to the server at the end of the test.
 // This will reduce the dependence on the internet connection while taking the test.
 function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
-    //sendresponse();
+    testpagesstr = rememberresponse(testpagesstr);
     if(index == randomlist.length){
 	stoptest(tabref, tabid);
     }
@@ -1221,12 +1251,14 @@ function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabr
     challengestarttime = challengestarttime.getTime();
     elem = randomlist[index];
     testpage = testpages[elem][0];
+    pages = testpages; // This one is for nextchallenge function.
     qareadiv.innerHTML = testpage;
     timeframe_ms = testpages[elem][1] * 1000;
     index = parseInt(index) + 1;
     qindxelement = document.getElementById('qindx');
     qindxelement.value = index;
     //alert("+++++++++" + index + "+++++++++");
+    alert(testpages);
     mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, 0);
 }
 
