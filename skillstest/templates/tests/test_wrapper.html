@@ -1152,7 +1152,8 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 	    }
 	}
     }
-    alert(elem + " SSSSSSSSS");
+    //alert(elem + " SSSSSSSSS");
+    testpages[elem][1] = 0; // Thats it, no more time left for this challenge.
     if(testpages[elem][1] <= 0){
     	showchallengeresponsescreen(Base64.encode(testpages[elem][0]), elem);
     }
@@ -1326,7 +1327,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     responsescreendiv = document.getElementById('responsescreen');
     responsescreendiv.innerHTML = "";
     testpages[elem][0] = testpages[elem][0].replace("value=''", "");
-    alert(testpages[elem][1]);
+    // alert(testpages[elem][1]);
     textareapattern = new RegExp("textarea");
     textinputpattern = new RegExp("type=['\"]text['\"]");
     checkboxpattern = new RegExp("type=['\"]checkbox['\"]");
