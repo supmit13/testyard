@@ -405,8 +405,9 @@ function rememberresponse(testpagesstr){
 	if(!document.frmchallenge.elements || document.frmchallenge.elements.length == 0){
 	    return;
 	}
-        challengestatement = document.frmchallenge.challengestatement.value;
+        curchallengestatement = document.frmchallenge.challengestatement.value;
         challengetype = document.frmchallenge.challengetype.value;
+	curchallengeid = document.frmchallenge.challengeid.value;
     	oneormore = document.frmchallenge.oneormore.value; // The value of this is meaningless if challengetype is not 'MULT'
 	// Find the challenge record in testpages
         testpages = JSON.parse(Base64.decode(testpagesstr));
@@ -499,7 +500,6 @@ function rememberresponse(testpagesstr){
 		break;
 	    }
 	}
-	//alert("SSSSSSSSSSSSSSSSSSSS" + testpages);
 	testpagesstr = Base64.encode(JSON.stringify(testpages));
     }
     return(testpagesstr);
@@ -562,285 +562,6 @@ function getruleset(encjson){
 }
 
 
-// Display challenges on the left, depending on the set of rules
-// applicable to the test and the state of the test at that instant.
-function populateleftpanel(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid){
-    currentlydisplayedchallenge = testpages[randomlist[index]][2];
-    switch(ruleflag){
-        case 1:
-        case 2:
-        case 3:
-        case 5:
-        case 6:
-        case 7:
-            qlisttag = document.getElementById('qlist');
-            qlisttag.style = "";
-            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
-            qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
-	    for(var actr=0; actr < alllist.length; actr++){
-		challengerec = alllist[actr];
-		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
-		if(challengerec[0].length < 25){
-		    challengestatement25 = challengerec[0];
-		}
-		foundflag = 0;
-		lastqctr=0;
-		for(var qctr=0; qctr < Object.size(qalist); qctr++){
-		    qarec = qalist[qctr];
-		    //alert(currentlydisplayedchallenge.toUpperCase() + " ##### " + qarec[0].toUpperCase() + " ##### " + challengerec[0].toUpperCase());
-		    if(currentlydisplayedchallenge.toUpperCase() == challengerec[0].toUpperCase()){
-			qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
-			foundflag = 1;
-			break;
-		    }
-		    else if(qarec[0].toUpperCase() == challengerec[0].toUpperCase()){
-			qlisttag.innerHTML += "<li id='encountered'>" + challengestatement25 + "</li>";
-			foundflag = 1;
-			break;
-		    }
-		}
-		if(!foundflag){
-		    lastqctr = actr;
-		    nextindex = index + 1;
-                    qlisttag.innerHTML += "<li><a href='#/'  id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + lastqctr + ", " + nextindex + ", '" + randomlist + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-	    }
-            break;
-
-        case 4: // No responsenoreturn or norevisit set. Only challenges that have been responded to are displayed.
-	    qlisttag = document.getElementById('qlist');
-	    qlisttag.style = "";
-            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
-            for(var qctr=0; qctr < Object.size(qalist); qctr++){
-		challengerec = qalist[qctr];
-		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
-		if(challengerec[0].length < 25){
-		    challengestatement25 = challengerec[0];
-		}
-		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
-		    qlisttag.innerHTML += "<li><a href='#' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(qalist)) + "', " + qctr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\" id='highlight'>" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-                }
-		else{
-		    qlisttag.innerHTML += "<li><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(qalist)) + "', " + qctr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-	    }
-            break;
-	// Cases 9, 10, 11, 13, 14, 15: Display all challenges in the test.
-	case 9:
-	case 10:
- 	case 11:
-	case 13:
-	case 14:
- 	case 15:
-	    qlisttag = document.getElementById('qlist');
-	    qlisttag.style = "";
-            qlisttag.innerHTML = "";
-            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
-	    for(var actr=0; actr < alllist.length; actr++){
-		challengerec = alllist[actr];
-		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
-		if(challengerec[0].length < 25){
-		    challengestatement25 = challengerec[0];
-		}
-		foundflag = 0;
-		lastqctr=0;
-		for(var qctr=0; qctr < Object.size(qalist); qctr++){
-		    qarec = qalist[qctr];
-		    //alert(currentlydisplayedchallenge.toUpperCase() + " ##### " + qarec[0].toUpperCase() + " ##### " + challengerec[0].toUpperCase());
-		    if(currentlydisplayedchallenge.toUpperCase() == challengerec[0].toUpperCase()){
-			qlisttag.innerHTML += "<li id='highlight'>" + challengestatement25 + "</li>";
-			foundflag = 1;
-			break;
-		    }
-		    else if(qarec[0].toUpperCase() == challengerec[0].toUpperCase()){
-			qlisttag.innerHTML += "<li id='encountered'>" + challengestatement25 + "</li>";
-			foundflag = 1;
-			break;
-		    }
-		}
-		if(!foundflag){
-		    lastqctr = actr;
-		    nextindex = index + 1;
-                    qlisttag.innerHTML += "<li><a href='#/'  id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + lastqctr + ", " + nextindex + ", '" + randomlist + "', '####TESTPAGES####', '" + starttime + "', " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-	    }
-            break;
-	// Cases 8, 12: Display all challenges with links to the challenge screens (with the 
-	// user's response in it, if  the user has attempted it previously).
-	case 8:
-	case 12:
-	    qlisttag = document.getElementById('qlist');
-	    qlisttag.style = "";
-            qlisttag.innerHTML = "";
-	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
-            for(var actr=0; actr < Object.size(alllist); actr++){
-		challengerec = alllist[actr];
-		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
-		if(challengerec[0].length < 25){
-		    challengestatement25 = challengerec[0];
-		}
-		if (!index && index != 0){
-		    index = -1;
-		}
-		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
-		    qlisttag.innerHTML += "<li><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-		else{
-		    qlisttag.innerHTML += "<li><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-	    }
-            break;
-        case 16:
-        case 17:
-        case 18:
-        case 19:
-        case 20:
-        case 21:
-        case 22:
-        case 23: // Handle navigation of questions by user here.
-            qlisttag = document.getElementById('qlist');
-	    qlisttag.style = "";
-            qlisttag.innerHTML = "";
-	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
-            for(var actr=0; actr < Object.size(alllist); actr++){
-		challengerec = alllist[actr];
-		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
-		if(challengerec[0].length < 25){
-		    challengestatement25 = challengerec[0];
-		}
-		if (!index && index != 0){
-		    index = -1;
-		}
-		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
-		    qlisttag.innerHTML += "<li><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-		else{
-		    qlisttag.innerHTML += "<li><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + actr + ", " + index + ", " + randomlist + ", '####TESTPAGES####', " + starttime + ", " + mytime + ", " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-	    }
-            break;
-    }
-}
-
-
-// Display challenges on the left, depending on the set of rules
-// applicable to the test and the state of the test at that instant.
-function populateleftpanel2(ruleflag, qalist, index, randomlist, testpages, starttime, mytime, tabref, tabid){
-    currentlydisplayedchallenge = testpages[randomlist[index]][2];
-    switch(ruleflag){
-	case 0: // No rule selected. So questions will appear one after the other in a random sequence.
-	    qlisttag = document.getElementById('qlist');
-            qlisttag.style = "";
-            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
-            for(var qctr=0; qctr < Object.size(qalist); qctr++){
-		qarec = qalist[qctr];
-                challengestatement25 = qarec[0].substring(0,25) + "... "; // Get the first 25 characters.
-                if(challengestatement25 == '... '){
-                    continue;
-                }
-		if(currentlydisplayedchallenge.toUpperCase() == qarec[0].toUpperCase()){
-		    qlisttag.innerHTML += "<li id='highlight' title='" + qarec[0] + "'>" + challengestatement25 + "</li>";
-		}
-		else{
-		    qlisttag.innerHTML += "<li id='simple' title='" + qarec[0] + "'>" + challengestatement25 + "</li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-            }
-            break;
-        case 2: // allowchallengenavigation
-            qlisttag = document.getElementById('qlist');
-            qlisttag.style = "";
-            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
-            for(var qctr=0; qctr < Object.size(qalist); qctr++){
-		qarec = qalist[qctr];
-                challengestatement25 = qarec[0].substring(0,25) + "... "; // Get the first 25 characters.
-                if(challengestatement25 == '... '){
-                    continue;
-                }
-		if(!actr || actr == undefined){
-		    actr = qctr;
-		}
-		if(currentlydisplayedchallenge.toUpperCase() == qarec[0].toUpperCase()){
-		    qlisttag.innerHTML += "<li id='highlight'><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(qalist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\" title='" + qarec[0] + "'>" + challengestatement25 + "</a></li>";
-		}
-		else{
-		    qlisttag.innerHTML += "<li id='simple'><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(qalist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(qalist)) + "');\" title='" + qarec[0] + "'>" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    //alert(testpagesb64enc);
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-            }
-            break;
-        case 1: // showatonce
-	    qlisttag = document.getElementById('qlist');
-	    qlisttag.style = "";
-            qlisttag.innerHTML = "";
-	    qlisttag.innerHTML += "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Challenges</font></center><br /><br />";
-            for(var actr=0; actr < Object.size(alllist); actr++){
-		challengerec = alllist[actr];
-		challengestatement25 = challengerec[0].substring(0,25) + "... "; // Get the first 25 characters.
-		if(challengerec[0].length < 25){
-		    challengestatement25 = challengerec[0];
-		}
-		if (!index && index != 0){
-		    index = -1;
-		}
-		if(currentlydisplayedchallenge.toLowerCase() == challengerec[0].toLowerCase()){
-		    qlisttag.innerHTML += "<li title='" + challengerec[0] + "'>" + challengestatement25 + "</li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-		else{
-		    qlisttag.innerHTML += "<li title='" + challengerec[0] + "'>" + challengestatement25 + "</li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-	    }
-            break;
-	case 3: // showatonce + allowchallengenavigation
-	    qlisttag = document.getElementById('qlist');
-            qlisttag.style = "";
-            qlisttag.innerHTML = "<center><font size=+1 color='#0000AA' style='font-weight:bold;'>Response Status</font></center><br /><br />Number of challenges attempted till now: " + (Object.size(qalist) - 1).toString();
-            for(var qctr=0; qctr < Object.size(alllist); qctr++){
-		qarec = alllist[qctr];
-                challengestatement25 = qarec[0].substring(0,25) + "... "; // Get the first 25 characters.
-                if(challengestatement25 == '... '){
-                    continue;
-                }
-		if(!actr || actr == undefined){
-		    actr = qctr;
-		}
-		if(currentlydisplayedchallenge.toUpperCase() == qarec[0].toUpperCase()){
-		    qlisttag.innerHTML += "<li id='highlight'><a href='#' id='highlight' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(alllist)) + "');\">" + challengestatement25 + "</a></li>";
-		}
-		else{
-		    qlisttag.innerHTML += "<li id='simple'><a href='#' id='simple' onClick=\"javascript:displaychallengescreen('" + Base64.encode(JSON.stringify(alllist)) + "', " + qctr + ", " + index + ", '" + Base64.encode(JSON.stringify(randomlist)) + "', '####TESTPAGES####', '" + starttime + "', '" + mytime + "', " + ruleflag + ", '" + tabref + "', " + tabid + ", '" + Base64.encode(JSON.stringify(alllist)) + "');\">" + challengestatement25 + "</a></li>";
-		    testpagesb64enc = Base64.encode(JSON.stringify(testpages));
-		    qlisttag.innerHTML = qlisttag.innerHTML.replace('####TESTPAGES####', testpagesb64enc);
-		}
-            }
-            break;
-    }
-}
-
-
 function restorepagedata(rawdata){
     rawdataparts = rawdata.split(/\]\,\[?/);
     //alert(rawdataparts);
@@ -859,7 +580,6 @@ function restorepagedata(rawdata){
 	if(twoparts[1] && twoparts[1] != undefined){
             twopartssecond = twoparts[1].split(/\,\"/);
 	}
-	//alert(twopartssecond[1] + "===================");
 	newlist[1] = twopartssecond[0];
  	twopartssecond[1] = twopartssecond[1].replace('\\"', "");
 	twopartssecond[1] = twopartssecond[1].replace('"', '');
@@ -933,7 +653,6 @@ function nextchallenge(index, randomlist, mytime, ruleflag, tabref, tabid){
     window.clearTimeout(mytime);
     pagesstr = Base64.encode(JSON.stringify(pages));
     index = document.getElementById('qindx').value;
-    //alert("========" + index + "=============");
     showchallengesonebyone(index, randomlist, pagesstr, challengestarttime, mytime, ruleflag, tabref, tabid);
 }
 
@@ -1152,8 +871,8 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 	    }
 	}
     }
-    //alert(elem + " SSSSSSSSS");
     testpages[elem][1] = 0; // Thats it, no more time left for this challenge.
+    alert("Your time is up for this challenge. You may not edit the response anymore.");
     if(testpages[elem][1] <= 0){
     	showchallengeresponsescreen(Base64.encode(testpages[elem][0]), elem);
     }
@@ -1166,7 +885,7 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 // We will collect the responses to the challenges here and send them to the server at the end of the test.
 // This will reduce the dependence on the internet connection while taking the test.
 function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
-    window.clearTimeout(mytime);	
+    window.clearTimeout(mytime);
     challengeresponsescreen = Base64.decode(challengeresponsescreenencoded);
     challengeendtime = new Date();
     challengeendtime = challengeendtime.getTime();
@@ -1189,7 +908,9 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    if(testpagesparts.length == 2){
 			valuepattern = new RegExp("value='([^\\']+)'");
 			if(valuepattern.test(testpagesparts[1])){
-			    testpagesparts[1] = testpagesparts[1].replace(valuepattern, "");
+			    testpagesparts1parts = testpagesparts[1].split("<input");
+		    	    testpagesparts1parts[0] = testpagesparts1parts[0].replace(valuepattern, "", 1);
+			    testpagesparts[1] = testpagesparts1parts.join("<input");
 			}
 			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
 			testpages[j][0] = testpagesparts[0] + testpagesparts[1];
@@ -1307,7 +1028,9 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    if(testpagesparts.length == 2){
 		    	valuepattern = new RegExp("value='([^\\']*)'");
 			if(valuepattern.test(testpagesparts[1])){
-		    	    testpagesparts[1] = testpagesparts[1].replace(valuepattern, "");
+			    testpagesparts1parts = testpagesparts[1].split("<input");
+		    	    testpagesparts1parts[0] = testpagesparts1parts[0].replace(valuepattern, "", 1);
+			    testpagesparts[1] = testpagesparts1parts.join("<input");
 			}
 			//textval = textval.replace('__SINGLEQUOTE__', "&quot;");
 			//textval = textval.replace('__DOUBLEQUOTE__', "&quot;");
@@ -1327,7 +1050,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     responsescreendiv = document.getElementById('responsescreen');
     responsescreendiv.innerHTML = "";
     testpages[elem][0] = testpages[elem][0].replace("value=''", "");
-    // alert(testpages[elem][1]);
+    //alert(testpages[elem][1]);
     textareapattern = new RegExp("textarea");
     textinputpattern = new RegExp("type=['\"]text['\"]");
     checkboxpattern = new RegExp("type=['\"]checkbox['\"]");
@@ -1384,10 +1107,13 @@ function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, t
 
 // We will collect the responses to the challenges here and send them to the server at the end of the test.
 // This will reduce the dependence on the internet connection while taking the test.
-function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
+function showchallengesonebyone_2(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
     challengeendtime = new Date();
     challengeendtime = challengeendtime.getTime();
     deltatime = (challengeendtime - starttime)/1000.0;
+    if(!deltatime){
+	deltatime = 0;
+    }
     testpagesstr = rememberresponse(testpagesstr);
     if(index == randomlist.length){
 	stoptest(tabref, tabid);
@@ -1403,7 +1129,7 @@ function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabr
     timeandnamediv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
     timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
     clock();
-    elem = randomlist[index];
+    elem = randomlist[index - 1];
     testpage = testpages[elem][0];
     pages = testpages; // This one is for nextchallenge function.
     qareadiv.innerHTML = testpage;
@@ -1413,8 +1139,54 @@ function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabr
     index = parseInt(index) + 1;
     qindxelement = document.getElementById('qindx');
     qindxelement.value = index;
-    //alert(testpages);
+    //alert(timeframe_ms);
     mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, challengestarttime, tabref, tabid, qalist, 0);
+}
+
+
+function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
+    challengeendtime = new Date();
+    challengeendtime = challengeendtime.getTime();
+    deltatime = (challengeendtime - starttime)/1000.0;
+    if(!deltatime){
+	deltatime = 0;
+    }
+    testpagesstr = rememberresponse(testpagesstr);
+    if(index == randomlist.length){
+	stoptest(tabref, tabid);
+    }
+    window.clearTimeout(mytime);
+    curchallengestatement = "";
+    challengetype = "";
+    if(document.getElementById('bchallenge') != null){
+      curchallengestatement = document.getElementById('bchallenge').innerHTML;
+    }
+    if(document.frmchallenge != null){
+      challengetype = document.frmchallenge.challengetype.value;
+    }
+    testpages = JSON.parse(Base64.decode(testpagesstr));
+    availabletime = testpages[randomlist[index - 1]][1];
+    timeleft = availabletime - deltatime;
+    testpages[randomlist[index - 1]][1] = timeleft;
+    //alert(deltatime + " ## " + timeleft + " ## " + testpages[randomlist[index - 1]][1]);
+    qareadiv = document.getElementById('qarea');
+    timeandnamediv = document.getElementById('timeandname');
+    timeandnamediv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
+    timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
+    clock();
+    elem = randomlist[index - 1];
+    testpage = testpages[elem][0];
+    pages = testpages; // This one is for nextchallenge function.
+    testpagesenc = Base64.encode(JSON.stringify(testpages));
+    qareadiv.innerHTML = testpage;
+    challengestarttime = new Date();
+    challengestarttime = challengestarttime.getTime();
+    timeframe_ms = testpages[elem][1] * 1000;
+    index = parseInt(index) + 1;
+    qindxelement = document.getElementById('qindx');
+    qindxelement.value = index;
+    //alert(timeframe_ms);
+    mytime = window.setTimeout(disablechallenge, timeframe_ms, testpagesenc, curchallengestatement, challengetype, elem);
 }
 
 
@@ -1455,6 +1227,7 @@ function facethemusic(encjson, starttime){
     stopid = setTimeout(stoptest, (jsonobj.duration * 1000), tabref, tabid);
     index = 1;
     qalist = {};
+    
     testpagesstr = Base64.encode(JSON.stringify(testpages));
     if(ruleflag == '1'){
         showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist);
@@ -1527,7 +1300,12 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
 	//alert(ruleflag);
 	testpagesstr = Base64.encode(JSON.stringify(pages));
-        pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+	if(ruleflag != 1){
+            pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+	}
+	else{ // showatonce
+	    pages[pagectr][0] += "<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+	}
 	challengestmt = challenge.replace("'", "");
 	challengestmt = challengestmt.replace('"', '');
         pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challengestmt + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>";
