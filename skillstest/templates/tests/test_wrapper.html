@@ -877,10 +877,21 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
     if(testpages[elem][1] <= 0 && ruleflag > 0){ //One by one mode is not eligible for this function
     	showchallengeresponsescreen(Base64.encode(testpages[elem][0]), elem);
     }
+    else if(ruleflag == 0){
+        displaydisabledresponse1by1(Base64.encode(testpages[elem][0]), elem);
+    }
     testpagesstr = JSON.stringify(testpages);
     testpagesenc = Base64.encode(testpagesstr);
     return(testpagesenc);
 }
+
+
+// We need not compute endtime here as the user gets only one chance to respond to it.
+function displaydisabledresponse1by1(responsescreenencoded, elem){
+    window.clearTimeout(mytime);
+    challengeresponsescreen = Base64.decode(responsescreenencoded);
+}
+
 
 
 // We will collect the responses to the challenges here and send them to the server at the end of the test.
