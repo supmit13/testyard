@@ -890,6 +890,8 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 function displaydisabledresponse1by1(responsescreenencoded, elem){
     window.clearTimeout(mytime);
     challengeresponsescreen = Base64.decode(responsescreenencoded);
+    qareadiv = document.getElementById('qarea');
+    qareadiv.innerHTML = challengeresponsescreen;
 }
 
 
