@@ -648,12 +648,13 @@ function displaychallengescreen(challengelistencstr, ctr, index, randomliststr, 
 
 pages = new Array();
 challengestarttime = '';
+starttime1by1 = '';
 // Code to impose chosen rules end here.
 function nextchallenge(index, randomlist, mytime, ruleflag, tabref, tabid){
     window.clearTimeout(mytime);
     pagesstr = Base64.encode(JSON.stringify(pages));
     index = document.getElementById('qindx').value;
-    showchallengesonebyone(index, randomlist, pagesstr, challengestarttime, mytime, ruleflag, tabref, tabid);
+    showchallengesonebyone(index, randomlist, pagesstr, mytime, ruleflag, tabref, tabid);
 }
 
 
@@ -781,7 +782,7 @@ function showchallenge2(index, randomlist, testpages, starttime, mytime, rulefla
 }
 
 
-function disablechallenge(testpagesenc, curchallengestatement, challengetype, elem){
+function disablechallenge(testpagesenc, curchallengestatement, challengetype, elem, ruleflag){
     testpagesstr = Base64.decode(testpagesenc);
     testpages = JSON.parse(testpagesstr);
     if(challengetype == 'SUBJ' || challengetype == 'ALGO' || challengetype == 'CODN'){
@@ -873,7 +874,7 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
     }
     testpages[elem][1] = 0; // Thats it, no more time left for this challenge.
     alert("Your time is up for this challenge. You may not edit the response anymore.");
-    if(testpages[elem][1] <= 0){
+    if(testpages[elem][1] <= 0 && ruleflag > 0){ //One by one mode is not eligible for this function
     	showchallengeresponsescreen(Base64.encode(testpages[elem][0]), elem);
     }
     testpagesstr = JSON.stringify(testpages);
@@ -1075,7 +1076,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     challengestarttime = challengestarttime.getTime();
     responsescreendiv.innerHTML = testpages[elem][0] + "<input type='hidden' name='atoncestart' id='atoncestart' value='" + challengestarttime + "'>";
     if(testpages[elem][1] > 0){
-    	mytime = window.setTimeout(disablechallenge, testpages[elem][1] * 1000, testpagesenc, testpages[elem][2], challengetype, elem);
+    	mytime = window.setTimeout(disablechallenge, testpages[elem][1] * 1000, testpagesenc, testpages[elem][2], challengetype, elem, 1);
     }
 }
 
@@ -1096,7 +1097,7 @@ function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, t
         maxtime = testpages[elem][1];
  	challengeresponsescreen = testpages[elem][0];
 	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
-	html += "<tr><td width='5%'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ");'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
+	html += "<tr><td width='5%'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
 	slno++;
     }
     html += "</table>";
@@ -1140,20 +1141,20 @@ function showchallengesonebyone_2(index, randomlist, testpagesstr, starttime, ta
     qindxelement = document.getElementById('qindx');
     qindxelement.value = index;
     //alert(timeframe_ms);
-    mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, challengestarttime, tabref, tabid, qalist, 0);
+    mytime = window.setTimeout(showchallengesonebyone, timeframe_ms, index, randomlist, testpagesstr, tabref, tabid, qalist, 0);
 }
 
 
-function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabref, tabid, qalist, directcall){
+function showchallengesonebyone(index, randomlist, testpagesstr, tabref, tabid, qalist, directcall){
     challengeendtime = new Date();
     challengeendtime = challengeendtime.getTime();
-    deltatime = (challengeendtime - starttime)/1000.0;
-    if(!deltatime){
-	deltatime = 0;
+    deltatime = 0;
+    if(starttime1by1){
+      deltatime = (challengeendtime - starttime1by1)/1000.0;
     }
     testpagesstr = rememberresponse(testpagesstr);
     if(index == randomlist.length){
-	stoptest(tabref, tabid);
+      stoptest(tabref, tabid);
     }
     window.clearTimeout(mytime);
     curchallengestatement = "";
@@ -1179,14 +1180,17 @@ function showchallengesonebyone(index, randomlist, testpagesstr, starttime, tabr
     pages = testpages; // This one is for nextchallenge function.
     testpagesenc = Base64.encode(JSON.stringify(testpages));
     qareadiv.innerHTML = testpage;
-    challengestarttime = new Date();
-    challengestarttime = challengestarttime.getTime();
+    //challengestarttime = new Date();
+    //challengestarttime = challengestarttime.getTime();
+    starttime1by1 = new Date();
+    starttime1by1 = starttime1by1.getTime();
     timeframe_ms = testpages[elem][1] * 1000;
     index = parseInt(index) + 1;
     qindxelement = document.getElementById('qindx');
     qindxelement.value = index;
     //alert(timeframe_ms);
-    mytime = window.setTimeout(disablechallenge, timeframe_ms, testpagesenc, curchallengestatement, challengetype, elem);
+    ruleflag = 0;
+    mytime = window.setTimeout(disablechallenge, timeframe_ms, testpagesenc, curchallengestatement, challengetype, elem, ruleflag);
 }
 
 
@@ -1234,7 +1238,7 @@ function facethemusic(encjson, starttime){
     }
     else if(ruleflag == '0'){
         index = 1;
-	showchallengesonebyone(index, randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist);
+	showchallengesonebyone(index, randomlist, testpagesstr, mytime, tabref, tabid, qalist);
     }
     else if(ruleflag == '2'){
 	showchallenge2(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist);
