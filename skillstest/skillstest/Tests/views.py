@@ -2593,11 +2593,64 @@ Current Functionality: This method gets invoked when the user  submits the test
 or the test ends due to the time limit running out. Now, in the case of a number
 of people taking a test, there is a fat chance that this method will be called
 at the same time by several takers. Hence, this method simply dumps the testpages
-content in a flat xml file. Along with that testpages variable, we also store the
+content in a flat json file. Along with that testpages variable, we also store the
 starttime, testid, useremail, endtime, tabref and tabid in the same file. Later,
 a batch script will read the files and send the data in them to the database.
 The name of the text file in which these vars will be dumped will be along the 
-following lines: <testid>_<tabref>_<tabid>.xml.
+following lines: answerscripts/<testid>/<tabref>_<tabid>.json.
+Note: The testpages variable will contain base64 encoded content. Decoding will 
+be done by the batch process when it is transferred to DB.
+"""
+
+@csrf_exempt
+def gettestdata(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1071')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    starttest, starttime, testid, useremail, testlink, endtime, status, testpagesenc, testpages = 0, '', -1, '', '', '', 1, '', ''
+    mode, challengeid, challengetype, challengestatement, oneormore, resptext = -1, -1, "", "", False, ""
+    chkboxselectedoptions, radioselection, filbtext, useremail, tabref, tabid = [], "", "", "", "", -1
+    if request.POST.has_key('starttest'):
+        starttest = request.POST['starttest']
+    if request.POST.has_key('starttime'):
+        starttime = request.POST['starttime']
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    if request.POST.has_key('useremail'):
+        useremail = base64.b64decode(request.POST['useremail'])
+    if request.POST.has_key('endtime'):
+        endtime = request.POST['endtime']
+    if request.POST.has_key('status'):
+        status = request.POST['status']
+    if request.POST.has_key('tabref'):
+        tabref = request.POST['tabref']
+    if request.POST.has_key('tabid'):
+        tabid = request.POST['tabid']
+    if request.POST.has_key('mode'):
+        mode = request.POST['mode']
+    if request.POST.has_key('testpages'):
+        testpagesenc = request.POST['testpages']
+    print testpagesenc + " ################"
+    answerscriptpath = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + testid
+    if not os.path.exists(answerscriptpath):
+        os.makedirs(answerscriptpath)
+    answerscriptfile = answerscriptpath  + os.path.sep +  tabref + "_" + tabid + ".json"
+    answerscript = { 'testid' : testid, 'starttime' : starttime, 'endtime' : endtime, 'useremail' : useremail, 'status' : status, 'tabref' : tabref, 'tabid' : tabid, 'mode' : mode, 'testpages' : testpagesenc }
+    message = ""
+    try:
+        answerscriptdumped = json.dumps(answerscript)
+        fp = open(answerscriptfile, "wb+")
+        fp.write(answerscriptdumped)
+        fp.close()
+        message = "Successfully stored answer script for evaluation later. Once the evaluator evaluates your answer script, you will be informed of the score and the outcome of the test through email at '%s'. Thank you for choosing TestYard as your test partner."%useremail
+    except:
+        message = "Failed to store the answer script due to the following reason: %s\n\nPlease contact the administrator or the support personnel at 'support@testyard.com'."%sys.exc_info()[1].__str__()
+    response = HttpResponse(message)
+    return response
+    
+
 """
 @csrf_protect
 def gettestdata(request):
@@ -2763,12 +2816,12 @@ def gettestdata(request):
             emailsent = False
             testevallink = getevaluationlink(request, testobj.id, evalemailid, useremail, tabref, tabid)
             emailsubject = "Test taken by user with email Id '%s'"%useremail
-            emailmessage = """Dear Sir, 
-             The  test named '%s' has been completed by user with email Id '%s'. You can start evaluating the 
-             responses by clicking on the following link: '%s'. Do please let us know in case of any issues or
-             irregularities. 
-             Thanks,
-             %s """%(testobj.testname, useremail, testevallink, fromaddr)
+            emailmessage = "Dear Sir, \
+             The  test named '%s' has been completed by user with email Id '%s'. You can start evaluating the \
+             responses by clicking on the following link: '%s'. Do please let us know in case of any issues or\
+             irregularities. \
+             Thanks, \
+             %s "%(testobj.testname, useremail, testevallink, fromaddr)
 	    try:
 	        retval = send_mail(emailsubject, emailmessage, fromaddr, [ evalemailid, ], False)
 	        message = "Successfully sent email to evaluator identified by '%s' for test identified by name '%s' and Id '%s' and candidate identified by email '%s'"%(evalemailid, testobj.testname, testid, useremail)
@@ -2794,7 +2847,7 @@ def gettestdata(request):
 	#return HttpResponse(message)
     message = "Success: Test in progress."
     return HttpResponse(message)
-
+"""
 
 @skillutils.is_session_valid
 @skillutils.session_location_match

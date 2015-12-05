@@ -1767,4 +1767,12 @@ Sat, 05 Dec 2015, 08:26 HRS (IST).
 1. skillstest/Tests/views.py
 2. templates/tests/test_wrapper.html
 3. files_to_commit.txt
-=======================================										
+=======================================	
+
+Sat, 05 Dec 2015, 13:52 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================	
+									

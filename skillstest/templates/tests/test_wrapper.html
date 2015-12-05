@@ -203,13 +203,28 @@ function endtest(testname, testid, starttime, tabref, tabid){
     if(resp){
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thanks you for choosing testyard to take your test.</i></font></center>";
-	alert(testpages);
-	q = "&testpages=" + Base64.encode(testpages) + "&csrfmiddlewaretoken=" + document.frmchallenge.csrfmiddlewaretoken.value;
+	q = "&testpages=" + Base64.encode(JSON.stringify(testpages));
         endtime = new Date();
         endtime = jsdatetomysqldatetime(String(endtime));
         postdata = encodeURI("starttest=1&mode=1&starttime=" + starttime + "&endtime=" + endtime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}')) + "&status=2&tabref=" + tabref + "&tabid=" + tabid + q;
         //alert(postdata);
-        sendtoserver(postdata);
+	window.clearTimeout(mytime);
+	var xmlhttp;
+    	if (window.XMLHttpRequest){
+	    xmlhttp=new XMLHttpRequest();
+    	}
+    	else{
+	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+     	}
+	xmlhttp.onreadystatechange = function(){
+	    // alert(xmlhttp.responseText);
+	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    	message = xmlhttp.responseText;
+	        alert(message);
+	    }
+    	};
+        xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
+    	xmlhttp.send(postdata);
 	// Enable F5
   	$(document).off("keydown", disableF5);
         window.close();
