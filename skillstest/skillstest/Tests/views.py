@@ -2580,7 +2580,7 @@ def getevaluationlink(request, testid, evalemailid, useremail, tabref, tabid):
 
 
 """
-Method to communicate with server while user is taking test.
+Outdated Note: Method to communicate with server while user is taking test.
 The type of response is indicated by the value of mode. 
 0 - Response to a challenge, 1 - User ends the test by closing
 the challenge window, 2 - Test is over, 3 - User applies
@@ -2588,15 +2588,25 @@ for a break (if break is allowed), 4 - User returns from a
 break (if break is allowed), 5 - Evaluator requests the
 candidate's response, 6 - Evaluator submits the evaluation,
 7 - User starts taking the test.
+
+Current Functionality: This method gets invoked when the user  submits the test
+or the test ends due to the time limit running out. Now, in the case of a number
+of people taking a test, there is a fat chance that this method will be called
+at the same time by several takers. Hence, this method simply dumps the testpages
+content in a flat xml file. Along with that testpages variable, we also store the
+starttime, testid, useremail, endtime, tabref and tabid in the same file. Later,
+a batch script will read the files and send the data in them to the database.
+The name of the text file in which these vars will be dumped will be along the 
+following lines: <testid>_<tabref>_<tabid>.xml.
 """
-@csrf_exempt
-def sendtestdata(request):
+@csrf_protect
+def gettestdata(request):
     message = ""
     if request.method != 'POST':
         message = "Error: " + error_msg('1071')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
         return response
-    starttest, starttime, testid, useremail, testlink, endtime, status = 0, '', -1, '', '', '', 1
+    starttest, starttime, testid, useremail, testlink, endtime, status, testpagesenc, testpages = 0, '', -1, '', '', '', 1, '', ''
     mode, challengeid, challengetype, challengestatement, oneormore, resptext = -1, -1, "", "", False, ""
     chkboxselectedoptions, radioselection, filbtext, useremail, tabref, tabid = [], "", "", "", "", -1
     if request.POST.has_key('starttest'):
@@ -2617,6 +2627,9 @@ def sendtestdata(request):
         tabid = request.POST['tabid']
     if request.POST.has_key('mode'):
         mode = request.POST['mode']
+    if request.POST.has_key('testpages'):
+        testpagesenc = request.POST['testpages']
+    testpages = base64.b64decode(testpagesenc)
     if int(mode) == 0: # This is a response to a challenge by the test taker.
         challengeid = request.POST['challengeid']
         challengetype = request.POST['challengetype']
@@ -5032,4 +5045,8 @@ def setschedule(request):
     message += " Updated existing schedules."
     response = HttpResponse(message)
     return(response)
+
+@csrf_protect
+def savetestresponses(request):
+    pass
 
