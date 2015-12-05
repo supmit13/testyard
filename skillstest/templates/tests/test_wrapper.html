@@ -622,6 +622,7 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 	}
     }
     else if(challengetype == 'MULT'){
+	endtestpattern = new RegExp("End test");
 	inputtags = document.getElementsByTagName("input");
 	checkboxes = Array();
 	radiobuttons = Array();
@@ -642,6 +643,9 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 		if(curquestion == tpquestion){
 		    testpagesparts = testpages[j][0].split("<input ");
 		    for(i=1; i < testpagesparts.length; i++){
+			if(endtestpattern.test(testpagesparts[i])){
+			    continue; // The end test button should be active.
+			}
 			testpagesparts[i] = "disabled='disabled' " + testpagesparts[i];
 		    }
 		    testpages[j][0] = testpagesparts.join("<input ");
@@ -658,6 +662,9 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 		if(curquestion == tpquestion){
 		    testpagesparts = testpages[j][0].split("<input ");
 		    for(i=1; i < testpagesparts.length; i++){
+			if(endtestpattern.test(testpagesparts[i])){
+			    continue; // The end test button should be active.
+			}
 			testpagesparts[i] = "disabled='disabled' " + testpagesparts[i];
 		    }
 		    testpages[j][0] = testpagesparts.join("<input ");

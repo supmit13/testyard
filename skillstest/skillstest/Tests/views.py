@@ -2632,15 +2632,20 @@ def gettestdata(request):
         mode = request.POST['mode']
     if request.POST.has_key('testpages'):
         testpagesenc = request.POST['testpages']
-    print testpagesenc + " ################"
-    answerscriptpath = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + testid
-    if not os.path.exists(answerscriptpath):
+    ts = int(time.time())
+    ts_str = str(ts)
+    answerscriptpath = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + testid + "_" + ts_str
+    if not os.path.exists(answerscriptpath) and testpagesenc != "":
         os.makedirs(answerscriptpath)
     answerscriptfile = answerscriptpath  + os.path.sep +  tabref + "_" + tabid + ".json"
     answerscript = { 'testid' : testid, 'starttime' : starttime, 'endtime' : endtime, 'useremail' : useremail, 'status' : status, 'tabref' : tabref, 'tabid' : tabid, 'mode' : mode, 'testpages' : testpagesenc }
     message = ""
     try:
         answerscriptdumped = json.dumps(answerscript)
+        if not testpagesenc or testpagesenc == "":
+            message = "Could not find any answer script with this request. We are not accepting requests without answer scripts"
+            response = HttpResponse(message)
+            return response
         fp = open(answerscriptfile, "wb+")
         fp.write(answerscriptdumped)
         fp.close()
