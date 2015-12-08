@@ -1780,6 +1780,17 @@ Sat, 05 Dec 2015, 16:40 HRS (IST).
 ----------------------------------
 1. skillstest/Tests/views.py
 2. templates/tests/test_wrapper.html
-3. files_to_commit.txt
-=======================================	
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. files_to_commit.txt
+=======================================
+
+Tue, 08 Dec 2015, 14:32 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. skillstest/Tests/management/commands/populate_db_answer_scripts.py
+6. files_to_commit.txt
 									

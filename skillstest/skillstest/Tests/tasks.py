@@ -3,8 +3,11 @@ import skillstest.utils as skillutils
 from skillstest import settings as mysettings
 from skillstest.Tests.models import Test, UserTest, WouldbeUsers, Challenge
 
-import os, sys, datetime
+import os, sys, datetime, re
 from django.core.mail import send_mail
+import glob, base64
+import simplejson as json
+import urllib,urllib2
 
 """
 This scans all tests and activates the ones whose publish and 
@@ -74,3 +77,53 @@ Just the opposite of the above function.
 """
 def scan_and_deactivate():
     pass
+
+
+"""
+Reads the dumped answer scripts (in json) from 
+the mysettings.ANSWER_SCRIPT_DUMP_PATH and populates
+the userresponse table with the data from the scripts.
+Updates the usertest and the wouldbeuser tables too.
+"""
+def process_answer_scripts():
+    targetreaddir = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH
+    targetwritedir = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + mysettings.PROCESSED_SCRIPT_DUMP
+    jsonfiles = glob.glob(targetreaddir + os.path.sep + "*_*" + os.path.sep + "*.json")
+    for jsonfile in jsonfiles:
+        fp = open(jsonfile, "rb")
+        jsonstrdata = fp.read()
+        fp.close()
+        jsondata = json.loads(jsonstrdata)
+        starttime, endtime, tabid, tabref, useremail, testid, testpagesenc = "", "", "", "", "", "", ""
+        for dk in jsondata.keys():
+            if dk == 'starttime':
+                starttime = jsondata[dk]
+            elif dk == 'endtime':
+                endtime = jsondata[dk]
+            elif dk == 'useremail':
+                useremail = jsondata[dk]
+            elif dk == 'tabid':
+                tabid = jsondata[dk]
+            elif dk == 'tabref':
+                tabref = jsondata[dk]
+            elif dk == 'testid':
+                testid = jsondata[dk]
+            elif dk == 'testpages':
+                testpagesenc = jsondata[dk]
+            else:
+                pass
+        #print testpagesenc
+        missing_padding = 4 - len(testpagesenc) % 4
+        padding = "=" * missing_padding
+        testpagesstr = base64.b64decode(testpagesenc + padding)
+        print testpagesstr
+        testpagesstr = re.sub("\X", "\u00", testpagesstr)
+        testpagesstr = skillutils.remove_control_chars(testpagesstr)
+        testpages = json.loads(testpagesstr, strict=False)
+        print testpages
+        
+
+
+
+
+

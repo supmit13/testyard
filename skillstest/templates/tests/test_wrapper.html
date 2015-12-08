@@ -203,6 +203,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
     if(resp){
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thanks you for choosing testyard to take your test.</i></font></center>";
+	//q = "&testpages=" + encodeURI(JSON.stringify(testpages));
 	q = "&testpages=" + Base64.encode(JSON.stringify(testpages));
         endtime = new Date();
         endtime = jsdatetomysqldatetime(String(endtime));
@@ -223,7 +224,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
 	        alert(message);
 	    }
     	};
-        xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
+ xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
     	xmlhttp.send(postdata);
 	// Enable F5
   	$(document).off("keydown", disableF5);

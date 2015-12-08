@@ -228,8 +228,8 @@ RULES_DICT = { \
         #'responsenoreturn' : 'Responded challenges may not be revisited', \
         #'norevisit' : 'Attempted challenges may not be revisited', \
         'showatonce' : 'Show all challenges at the begining of the test', \
-        'showonebyone' : 'Display challenges to the user one at a time.',\
-        'allowchallengenavigation' : 'Allow user to navigate between challenges', \
+        #'showonebyone' : 'Display challenges to the user one at a time.',\
+        #'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
         }
 
@@ -338,4 +338,7 @@ EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 MAX_POSTS_IN_PAGE = 10
 
 #LEFT_PANEL_CHALLENGE_LENGTH = 25
+
+ANSWER_SCRIPT_DUMP_PATH = "answerscripts" # This will be inside MEDIA_ROOT
+PROCESSED_SCRIPT_DUMP = "answerscripts/processed"
 
