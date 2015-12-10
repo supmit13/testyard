@@ -340,5 +340,5 @@ MAX_POSTS_IN_PAGE = 10
 #LEFT_PANEL_CHALLENGE_LENGTH = 25
 
 ANSWER_SCRIPT_DUMP_PATH = "answerscripts" # This will be inside MEDIA_ROOT
-PROCESSED_SCRIPT_DUMP = "answerscripts/processed"
+PROCESSED_SCRIPT_DUMP = "processed"
 

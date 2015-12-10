@@ -9,6 +9,7 @@ import glob, base64
 import simplejson as json
 import urllib,urllib2
 from BeautifulSoup import BeautifulSoup
+import shutil
 
 """
 This scans all tests and activates the ones whose publish and 
@@ -91,6 +92,7 @@ def process_answer_scripts():
     targetwritedir = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + mysettings.PROCESSED_SCRIPT_DUMP
     jsonfiles = glob.glob(targetreaddir + os.path.sep + "*_*" + os.path.sep + "*.json")
     for jsonfile in jsonfiles:
+        print jsonfile
         fp = open(jsonfile, "rb")
         jsonstrdata = fp.read()
         fp.close()
@@ -184,7 +186,13 @@ def process_answer_scripts():
         utobj.clientsware = useragent
         # Save the modified UserTest/WouldbeUsers object.
         utobj.save()
-    # Thats it, we are done.
+        # Now, move the json dump files to another location...
+        jsonfilecomponents = jsonfile.split(os.path.sep)
+        jsonfilecomponents.pop()
+        jsondir = os.path.sep.join(jsonfilecomponents)
+        shutil.move(jsondir, targetwritedir)
+        #print jsondir
+    # Thats it, we are done. 
     print "Added challenge responses into UserResponse and updated UserTest/WouldbeUsers successfully. Exiting...\n"
         
 
