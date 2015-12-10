@@ -197,14 +197,12 @@ function closetest(){
     }
 }
 
-
 function endtest(testname, testid, starttime, tabref, tabid){
     resp = confirm("This will take you away from this page by closing the window. The test will be considered as completed by you. Do you want to continue?");
     if(resp){
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thanks you for choosing testyard to take your test.</i></font></center>";
-	//q = "&testpages=" + encodeURI(JSON.stringify(testpages));
-	q = "&testpages=" + Base64.encode(JSON.stringify(testpages));
+	q = "&testpages=" + Base64.encode(encodeURI(JSON.stringify(testpages)));
         endtime = new Date();
         endtime = jsdatetomysqldatetime(String(endtime));
         postdata = encodeURI("starttest=1&mode=1&starttime=" + starttime + "&endtime=" + endtime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}')) + "&status=2&tabref=" + tabref + "&tabid=" + tabid + q;
@@ -224,7 +222,8 @@ function endtest(testname, testid, starttime, tabref, tabid){
 	        alert(message);
 	    }
     	};
- xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
+ 	xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
+	xmlhttp.overrideMimeType("text/plain"); 
     	xmlhttp.send(postdata);
 	// Enable F5
   	$(document).off("keydown", disableF5);

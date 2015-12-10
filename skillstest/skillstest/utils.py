@@ -28,6 +28,8 @@ endcommapattern = re.compile("\,$")
 multiplewhitespacepattern = re.compile("\s+", re.DOTALL)
 numericpattern = re.compile("\d+")
 
+hextoascii = { '%3C' : '<', '%3E' : '>', '%20' : ' ', '%22' : '"', '%5B' : '[', '%5D' : ']', '%5C' : '\\', '%3A' : ':', '%3B' : ';', '%28' : '(', '%29' : ')', '%2D' : '-', '%2B' : '+'}
+
 """
 Creates and returns a session object if the request is a
 valid and authenticated session. Returns None otherwise.
@@ -677,4 +679,20 @@ class Logger(object):
 
     def close(self):
         self.logfilehandle.close()
+
+
+
+def remove_control_chars(s):
+    control_chars = ''.join(map(unichr, range(0,32) + range(127,160)))
+    control_char_re = re.compile('[%s]' % re.escape(control_chars))
+    return control_char_re.sub('', s)
+
+# Taken from an answer on stackoverflow
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 

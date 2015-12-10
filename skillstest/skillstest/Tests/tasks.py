@@ -1,13 +1,14 @@
 from django.conf import settings
 import skillstest.utils as skillutils
 from skillstest import settings as mysettings
-from skillstest.Tests.models import Test, UserTest, WouldbeUsers, Challenge
+from skillstest.Tests.models import Test, UserTest, WouldbeUsers, Challenge, UserResponse
 
 import os, sys, datetime, re
 from django.core.mail import send_mail
 import glob, base64
 import simplejson as json
 import urllib,urllib2
+from BeautifulSoup import BeautifulSoup
 
 """
 This scans all tests and activates the ones whose publish and 
@@ -94,7 +95,7 @@ def process_answer_scripts():
         jsonstrdata = fp.read()
         fp.close()
         jsondata = json.loads(jsonstrdata)
-        starttime, endtime, tabid, tabref, useremail, testid, testpagesenc = "", "", "", "", "", "", ""
+        starttime, endtime, tabid, tabref, useremail, testid, testpagesenc, clientIP, useragent = "", "", "", "", "", "", "", "", ""
         for dk in jsondata.keys():
             if dk == 'starttime':
                 starttime = jsondata[dk]
@@ -108,6 +109,10 @@ def process_answer_scripts():
                 tabref = jsondata[dk]
             elif dk == 'testid':
                 testid = jsondata[dk]
+            elif dk == 'clientIP':
+                clientIP = jsondata[dk]
+            elif dk == 'useragent':
+                useragent = jsondata[dk]
             elif dk == 'testpages':
                 testpagesenc = jsondata[dk]
             else:
@@ -115,12 +120,72 @@ def process_answer_scripts():
         #print testpagesenc
         missing_padding = 4 - len(testpagesenc) % 4
         padding = "=" * missing_padding
-        testpagesstr = base64.b64decode(testpagesenc + padding)
-        print testpagesstr
-        testpagesstr = re.sub("\X", "\u00", testpagesstr)
-        testpagesstr = skillutils.remove_control_chars(testpagesstr)
+        testpagesstr = (base64.b64decode(testpagesenc + padding)).decode('iso-8859-1')
+        for hexkey in skillutils.hextoascii.keys():
+            testpagesstr = testpagesstr.replace(hexkey, skillutils.hextoascii[hexkey])
+        #print testpagesstr
         testpages = json.loads(testpagesstr, strict=False)
-        print testpages
+        testendmessage = testpages.pop() # The last entity contains the test end message
+        #print testpages
+        for challengeresp in testpages:
+            testobj = Test.objects.get(id=testid)
+            # First, create an UserResponse object
+            userrespobj = UserResponse()
+            userrespobj.test = testobj
+            userrespobj.tabref = tabref
+            userrespobj.tabid = int(tabid)
+            userrespobj.responsedatetime = starttime
+            userrespobj.emailaddr = useremail
+            resp = challengeresp[0]
+            timereqd = challengeresp[1]
+            challengestatement = challengeresp[2]
+            try:
+                challengeobj = Challenge.objects.filter(test=testobj).filter(statement=challengestatement)[0]
+            except:
+                print "Could not find the challenge '%s'"%challengestatement
+                continue 
+            userrespobj.challenge = challengeobj
+            inputdatatag, inputdata = None, ""
+            # Now parse the resp variable to find the user's response
+            soup = BeautifulSoup(resp)
+            challengetypetag = soup.find('input', {'name' : 'challengetype'})
+            challengetype = challengetypetag['value']
+            #print challengestatement + " ====>> " + challengetype
+            if challengetype == 'SUBJ' or challengetype == 'ALGO' or challengetype == 'CODN':
+                inputdatatag = soup.find("textarea")
+                inputdata = inputdatatag.renderContents()
+            elif challengetype == 'FILB':
+                inputdatatag = soup.find("input", {'type' : 'text'})
+                inputdata = inputdatatag['value']
+            elif challengetype == 'MULTI':
+                inputdatatag = soup.find("input", {'type' : 'checkbox', 'checked' : True})
+                if not inputdatatag:
+                    inputdatatag = soup.find("input", {'type' : 'radio', 'checked' : True})
+                inputdata = inputdatatag['value']
+            else:
+                print "Unhandled challenge type"
+                continue
+            #print "#### " + inputdata
+            userrespobj.answer = inputdata
+            userrespobj.attachments = None
+            userrespobj.save()
+        # Now edit the usertest or wouldbeusers table
+        if tabref == 'usertest':
+            utqset = UserTest.objects.filter(id=tabid)
+        else:
+            utqset = WouldbeUsers.objects.filter(id=tabid)
+        if utqset.__len__() == 0:
+            print "Could not find the usertest record related to this session"
+            continue
+        utobj = utqset[0]
+        utobj.status = 2 # Test has been taken
+        # Need to store ipaddress and client software too.
+        utobj.ipaddress = clientIP
+        utobj.clientsware = useragent
+        # Save the modified UserTest/WouldbeUsers object.
+        utobj.save()
+    # Thats it, we are done.
+    print "Added challenge responses into UserResponse and updated UserTest/WouldbeUsers successfully. Exiting...\n"
         
 
 

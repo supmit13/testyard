@@ -2638,7 +2638,9 @@ def gettestdata(request):
     if not os.path.exists(answerscriptpath) and testpagesenc != "":
         os.makedirs(answerscriptpath)
     answerscriptfile = answerscriptpath  + os.path.sep +  tabref + "_" + tabid + ".json"
-    answerscript = { 'testid' : testid, 'starttime' : starttime, 'endtime' : endtime, 'useremail' : useremail, 'status' : status, 'tabref' : tabref, 'tabid' : tabid, 'mode' : mode, 'testpages' : testpagesenc }
+    clientIP = skillutils.get_client_ip(request)
+    clientua = request.META['HTTP_USER_AGENT']
+    answerscript = { 'testid' : testid, 'starttime' : starttime, 'endtime' : endtime, 'useremail' : useremail, 'status' : status, 'tabref' : tabref, 'tabid' : tabid, 'mode' : mode, 'clientIP' : clientIP, 'useragent' : clientua, 'testpages' : testpagesenc }
     message = ""
     try:
         answerscriptdumped = json.dumps(answerscript)
@@ -2646,7 +2648,7 @@ def gettestdata(request):
             message = "Could not find any answer script with this request. We are not accepting requests without answer scripts"
             response = HttpResponse(message)
             return response
-        fp = open(answerscriptfile, "wb+")
+        fp = open(answerscriptfile, "w")
         fp.write(answerscriptdumped)
         fp.close()
         message = "Successfully stored answer script for evaluation later. Once the evaluator evaluates your answer script, you will be informed of the score and the outcome of the test through email at '%s'. Thank you for choosing TestYard as your test partner."%useremail
