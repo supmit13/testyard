@@ -1,0 +1,2 @@
+1. In Tests => Schedule Test functionality, the date entered from the date and time widget is in the format yyyy-mm-dd hh:mm. It should also have the seconds component, and currently we are entering it manually. This needs to be fixed.
+
