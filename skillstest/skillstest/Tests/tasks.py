@@ -159,11 +159,12 @@ def process_answer_scripts():
             elif challengetype == 'FILB':
                 inputdatatag = soup.find("input", {'type' : 'text'})
                 inputdata = inputdatatag['value']
-            elif challengetype == 'MULTI':
-                inputdatatag = soup.find("input", {'type' : 'checkbox', 'checked' : True})
-                if not inputdatatag:
-                    inputdatatag = soup.find("input", {'type' : 'radio', 'checked' : True})
-                inputdata = inputdatatag['value']
+            elif challengetype == 'MULT':
+                inputdatatag = soup.findAll("input", {'type' : 'checkbox', 'checked' : True})
+                if inputdatatag.__len__() == 0:
+                    inputdatatag = soup.findAll("input", {'type' : 'radio', 'checked' : True})
+                for j in range(0, inputdatatag.__len__()):
+                    inputdata = inputdata + "#||#" + inputdatatag[j]['value']
             else:
                 print "Unhandled challenge type"
                 continue

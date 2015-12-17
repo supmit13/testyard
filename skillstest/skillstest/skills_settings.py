@@ -163,6 +163,8 @@ MANAGE_GROUP_MEMBERS_URL = "skillstest/network/group/managemembers/"
 SAVE_GROUP_MEMBERS_URL = "skillstest/network/group/savemembersinfo/"
 MEMBER_SEARCH_URL = "skillstest/network/groupmember/search/"
 
+TESTS_CHALLENGE_SEARCH_URL = "skillstest/search/testschallengesearch/"
+
 SAVE_OPTIONAL_INFO_URL = "skillstest/optionaluserinfo/"
 
 TEST_RUN = False # Set this to True during testing the app.

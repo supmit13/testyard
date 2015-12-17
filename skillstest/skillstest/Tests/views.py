@@ -1057,24 +1057,6 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     return editchallengehtml
 
 
-@skillutils.is_session_valid
-@skillutils.session_location_match
-@csrf_protect
-def search(request):
-    tests_user_dict = get_user_tests(request)
-    inc_context = skillutils.includedtemplatevars("Search", request) # Since this is the 'Dashboard' page for the user.
-    for inc_key in inc_context.keys():
-        tests_user_dict[inc_key] = inc_context[inc_key]
-    # Now create and render the template here
-    tmpl = get_template("tests/search.html")
-    tests_user_dict.update(csrf(request))
-    cxt = Context(tests_user_dict)
-    searchtestshtml = tmpl.render(cxt)
-    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
-        searchtestshtml = searchtestshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
-    return HttpResponse(searchtestshtml)
-
-
 """
 Function to add or edit a challenge
 """

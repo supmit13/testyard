@@ -1,0 +1,45 @@
+<table border=0 cellspacing='2' cellpadding='3'>
+<tr bgcolor='#666699'>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Name</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Topic</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Creator</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Type</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Creation Date</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Max. Score</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Pass Score</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Rules</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Duration</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Allowed Languages</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Challenges Count</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Published On</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Multimedia Req.</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Programming Env.</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Scope</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Quality</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Negative Scoring</font></td>
+</tr>
+
+{% for testname, otherattribs in resultrecs.items %}
+<tr bgcolor='#000033'>
+    <td nowrap><font color='#0000AA'>{{testname}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.topic}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.creator}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.testtype}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.createdate}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.maxscore}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.passscore}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.ruleset}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.duration}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.allowedlanguages}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.challengecount}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.publishdate}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.multimediareqd}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.progenv}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.scope}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.quality}}</font></td>
+    <td nowrap><font color='#0000AA'>{{otherattribs.negativescoreallowed}}</font></td>
+</tr>
+{% endfor %}
+</table>
+
+

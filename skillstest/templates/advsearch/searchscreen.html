@@ -1,0 +1,70 @@
+{% include "inc/html_head.html" %}
+	
+	{% include "inc/mission_statement.html" %}
+		<!-- ### Post Entry Begin ###  -->
+		<script type='text/javascript'>
+		function conductsearchtest(){
+		    testname = document.frmadvsearch.testname.value;
+		    searchphrase = document.frmadvsearch.searchphrase.value;
+		    testcreator = document.frmadvsearch.testcreator.value;
+		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
+		    postdata = "testname=" + testname + "&searchphrase=" + searchphrase + "&testcreator=" + testcreator + "&csrfmiddlewaretoken=" + csrftoken;
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+		    	xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            divres = document.getElementById('searchresults');
+			    divres.style.display = "";
+			    responsedata = xmlhttp.responseText;
+			    divres.innerHTML = responsedata;
+  		        }
+  		    };
+		    //alert(postdata);
+  		    xmlhttp.open("POST", '{{ testschallengesearchurl }}', true); // Not an ajax call since we want to ensure that the  action has been successfully completed before taking any further steps.
+  		    xmlhttp.send(postdata);
+		}
+
+		function conductsearchuser(){
+		}
+		</script>
+		<div class="post">
+			<span class="meta">
+			<h3>Dear {{ displayname }},</h3>
+			{{ msg }} {{ newuser }}
+			<div class="entry">
+			<center>
+			<form name='frmadvsearch' id='frmadvsearch' method='POST' action='/search/advsearch/'>
+			<table border=0 cellspacing=3 cellpadding=3 width='80%'>
+			<tr><td align='center' colspan=3 nowrap><font color='#0000AA' style='font-weight:bold'>Search tests, challenges, users and groups</font></td></tr>
+			<tr><td colspan=3><hr></td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Tests</font></td></tr>
+			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Test Name:</font></td><td><input type='text' name='testname' value='' id='testname'></td><td>&nbsp;</td></tr>
+			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='searchphrase' value='' id='searchphrase'></td><td>&nbsp;</td></tr>
+			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Test Creator:</font></td><td><input type='text' name='testcreator' value='' id='testcreator'></td><td>&nbsp;</td></tr>
+			<tr><td align='center' colspan=3><input type='button' name='searchtest' id='searchtest' onClick='javascript:conductsearchtest();' value='Search Tests/Challenges'></td></tr>
+
+			<tr><td colspan=3><hr></td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Users</font></td></tr>
+			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Username:</font></td><td><input type='text' name='testname' value='' id='testname'></td><td>&nbsp;</td></tr>
+			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'></td><td>&nbsp;</td></tr>
+			<tr><td align='center' colspan=3><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'></td></tr>
+			</table>
+			{% csrf_token %}
+			</form>
+			</center>
+			<div id='searchresults'></div>
+			</div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+
+	
+		
+	{% include "inc/html_foot.html" %}
+
