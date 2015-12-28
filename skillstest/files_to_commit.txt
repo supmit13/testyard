@@ -1823,5 +1823,28 @@ Thu, 10 Dec 2015, 12:20 HRS (IST).
 12.templates/advsearch/testrecords.html
 13.skillstest/urls.py
 14.files_to_commit.txt
+=======================================
+
+Thu, 10 Dec 2015, 12:20 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. skillstest/Tests/management/commands/populate_db_answer_scripts.py
+6. skillstest/utils.py
+7. skillstest/AdvSearch/views.py
+8. skillstest/AdvSearch/models.py
+9. skillstest/AdvSearch/tests.py
+10.skillstest/AdvSearch/__init__.py
+11.templates/advsearch/searchscreen.html
+12.templates/advsearch/testrecords.html
+13.skillstest/urls.py
+14.skillstest/views.py
+15.templates/aboutus.html
+16.skillstest/errors.py
+17.templates/tests/tests.html
+18.todo.txt
+19.files_to_commit.txt
 
 									

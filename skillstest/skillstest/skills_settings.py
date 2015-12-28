@@ -78,7 +78,7 @@ EMAIL_HOST_USER = 'codexaddict@gmail.com'
 EMAIL_HOST_PASSWORD = 'xtmt365i'
 EMAIL_USE_TLS = True
 
-MAILSENDER = "test@testyard.com"
+MAILSENDER = "admin@testyard.com"
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
@@ -127,6 +127,8 @@ DISQUALIFY_CANDIDATE_URL = "skillstest/test/disqualifycandidate/"
 COPY_TEST_URL = "skillstest/test/copytest/"
 GET_TEST_SCHEDULE_URL = "skillstest/test/setschedule/"
 SET_TEST_SCHEDULE_URL = "skillstest/test/setvalue/"
+ACTIVATE_TEST_BY_CREATOR = "skillstest/test/activatetest/"
+DEACTIVATE_TEST_BY_CREATOR = "skillstest/test/deactivatetest/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"
@@ -164,6 +166,7 @@ SAVE_GROUP_MEMBERS_URL = "skillstest/network/group/savemembersinfo/"
 MEMBER_SEARCH_URL = "skillstest/network/groupmember/search/"
 
 TESTS_CHALLENGE_SEARCH_URL = "skillstest/search/testschallengesearch/"
+USER_SEARCH_URL = "skillstest/search/user/"
 
 SAVE_OPTIONAL_INFO_URL = "skillstest/optionaluserinfo/"
 
@@ -252,7 +255,7 @@ OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
 OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 
 # Number of complimentary tests a newly registered user can conduct:
-NEW_USER_FREE_TESTS_COUNT = 15
+NEW_USER_FREE_TESTS_COUNT = 20
 # Types of tests the user can conduct as part of complimentary test:
 NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 

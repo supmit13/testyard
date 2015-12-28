@@ -8,4 +8,36 @@
 8. Create a branch containing the login, registration, image change, and other user authentication related features in app's skeletal code. Name the branch 'commoncode'.
 9. On changing profile image, the whole page is refreshed at present. This should be replaced with the functionality to refresh the uploaded image on the page only.
 10. Need to add condition to check user's 'plan' to show the 'Create New Test' link in skillstest.Test.views.get_user_tests().
-11. 
+11. ========================================================================================
+
+24-12-2015 (Thursday)
+---------------------
+
+1. Implement ElasticSearch on 'Search' page. It should look up challenges from all tests that have been published. However, none of the
+challenges will be traced back to a test. This way, the integrity of the tests will remain intact as well as the user would be able to 
+see the challenges and their responses (by the creator as well as other test takers), again, not displaying the user's identity.
+
+2. Tag all tests and their questions for use with elasticsearch. This will be done by the creator of the test by selecting one of the
+ choices from the 'Topic of Test' dropdown on the "Enter Test Metadata" page.
+
+3. Collect saplings for landlotus (sthalapadma) and gandharaj and take them to Kolkata for planting them there.
+
+4. Start testing all the implemented features one by one. This should be a comprehensive test activity that should find out each and every
+ bug. Add the bug report on Bugzilla.
+
+5. Continue reading ElasticSearch documentation thoroughly.
+
+6. Add static content to the following pages: 1) About Us, 2) Help, 3) Careers.
+
+7. Upload the application to the docker on Amazon. Send a note to pratik about this, and ask him to help with decrypting the 3DES encrypted test content.
+
+8. Decide content on 'Dashboard' page. This should also be implemented during the holidays.
+
+9. Decide about the content on the 'Analytics' page. Start implementing them after all the above points have been taken care of. This might
+ be started after the holidays.
+
+10. The profile view of the connections of every user must contain some data from the 'Profile' page. Currently it just displays the tests
+ information. This info will be kepts as is, but the info from the Profile page should be displayed above them.
+
+=====================================================================================================
+

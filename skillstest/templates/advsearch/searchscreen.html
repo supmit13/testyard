@@ -30,7 +30,52 @@
 		}
 
 		function conductsearchuser(){
+		    usrname = document.frmadvsearch.username.value;
+		    searchphrase = document.frmadvsearch.usr_searchphrase.value;
+		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
+		    postdata = "user=" + usrname + "&searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken;
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+		    	xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            divres = document.getElementById('searchresults');
+			    divres.innerHTML = "";
+			    divres.style.display = "";
+			    responsedata = xmlhttp.responseText;
+			    divres.innerHTML = responsedata;
+  		        }
+  		    };
+		    //alert(postdata);
+		    xmlhttp.open("POST", '{{ usersearchurl }}', true);
+		    xmlhttp.send(postdata);
 		}
+
+		function copytest(testid){
+		    // Displays the interface which allows the logged in user to request an invitation from the creator of the test.
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmadvsearch.csrfmiddlewaretoken.value + "&initiate=1";
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			  alert(xmlhttp.responseText);
+			  return (true);
+		      }
+		    };
+		    xmlhttp.open("POST", '{{ copytesturl }}', true);
+		    xmlhttp.send(postdata);
+		}
+
 		</script>
 		<div class="post">
 			<span class="meta">
@@ -42,16 +87,16 @@
 			<table border=0 cellspacing=3 cellpadding=3 width='80%'>
 			<tr><td align='center' colspan=3 nowrap><font color='#0000AA' style='font-weight:bold'>Search tests, challenges, users and groups</font></td></tr>
 			<tr><td colspan=3><hr></td></tr>
-			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Tests</font></td></tr>
-			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Test Name:</font></td><td><input type='text' name='testname' value='' id='testname'></td><td>&nbsp;</td></tr>
-			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='searchphrase' value='' id='searchphrase'></td><td>&nbsp;</td></tr>
-			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Test Creator:</font></td><td><input type='text' name='testcreator' value='' id='testcreator'></td><td>&nbsp;</td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Challenges</font></td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Test Name:</font></td><td><input type='text' name='testname' value='' id='testname'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='searchphrase' value='' id='searchphrase'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Test Creator:</font></td><td><input type='text' name='testcreator' value='' id='testcreator'></td><td>&nbsp;</td></tr>
 			<tr><td align='center' colspan=3><input type='button' name='searchtest' id='searchtest' onClick='javascript:conductsearchtest();' value='Search Tests/Challenges'></td></tr>
 
 			<tr><td colspan=3><hr></td></tr>
 			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Users</font></td></tr>
-			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Username:</font></td><td><input type='text' name='testname' value='' id='testname'></td><td>&nbsp;</td></tr>
-			<tr><td align='center' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Username:</font></td><td><input type='text' name='username' value='' id='username'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'></td><td>&nbsp;</td></tr>
 			<tr><td align='center' colspan=3><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'></td></tr>
 			</table>
 			{% csrf_token %}

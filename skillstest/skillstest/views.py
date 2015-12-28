@@ -290,14 +290,25 @@ def logout(request):
 
 
 def aboutus(request):
+    if request.method != "GET":
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    displayname = userobj.displayname
     aboutus_data_dict = {}
     # Need check to see if user is logged in.
-    #aboutus_data_dict['displayname'] = "%s"%userobj.displayname
-    #aboutus_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
+    # aboutus_data_dict['displayname'] = "%s"%userobj.displayname
+    # aboutus_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     # fix up the variables from included templates
     inc_context = skillutils.includedtemplatevars("About Us", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         aboutus_data_dict[inc_key] = inc_context[inc_key]
+    aboutus_data_dict['displayname'] = displayname
+    aboutus_data_dict['freetestscount'] = mysettings.NEW_USER_FREE_TESTS_COUNT
     tmpl = get_template("aboutus.html")
     aboutus_data_dict.update(csrf(request))
     cxt = Context(aboutus_data_dict)
@@ -327,6 +338,14 @@ def helpndocs(request):
 
 
 def careers(request):
+    if request.method != "GET":
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
     careers_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
     #careers_data_dict['displayname'] = "%s"%userobj.displayname
@@ -334,6 +353,7 @@ def careers(request):
     inc_context = skillutils.includedtemplatevars("Careers/Jobs", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         careers_data_dict[inc_key] = inc_context[inc_key]
+    careers_data_dict['displayname'] = userobj.displayname
     tmpl = get_template("careers.html")
     careers_data_dict.update(csrf(request))
     cxt = Context(careers_data_dict)

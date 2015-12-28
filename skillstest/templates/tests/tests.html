@@ -2126,6 +2126,49 @@
 	    xmlhttp.open("POST", '{{ gettestscheduleurl }}', true);
   	    xmlhttp.send(postdata);
 	}
+
+
+	function activatestatusnow(testid){
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ activatetestbycreator }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+
+	function deactivatestatusnow(testid){
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ deactivatetestbycreator }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
 		</script>
 		<div class="post">
 			<span class="meta">
@@ -2164,9 +2207,10 @@
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate Test Now</font></td>
 			</tr>
 			<tr>
-			  <td colspan="21">&nbsp;</td>
+			  <td colspan="22">&nbsp;</td>
 			</tr>
 			{% autoescape on %}
 			{% for testnm in tests_creator_ordered_createdate reversed %}
@@ -2205,7 +2249,12 @@
 			  {% endif %}
 			  </font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
-			</tr>
+			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
+			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td>
+			{% else %}
+			  <td nowrap align='right'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td>
+			{% endif %}
+			</tr> 
 			{% endfor %}
 			{% endautoescape %}
 			</table>

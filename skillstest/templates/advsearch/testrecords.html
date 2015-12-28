@@ -1,5 +1,5 @@
 <table border=0 cellspacing='2' cellpadding='3'>
-<tr bgcolor='#666699'>
+<tr bgcolor='#00ccff'>
     <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Name</font></td>
     <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Topic</font></td>
     <td nowrap><font color='#0000AA' style='font-weight:bold;'>Creator</font></td>
@@ -17,10 +17,11 @@
     <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Scope</font></td>
     <td nowrap><font color='#0000AA' style='font-weight:bold;'>Test Quality</font></td>
     <td nowrap><font color='#0000AA' style='font-weight:bold;'>Negative Scoring</font></td>
+    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Copy Test</font></td>
 </tr>
 
 {% for testname, otherattribs in resultrecs.items %}
-<tr bgcolor='#000033'>
+<tr bgcolor='#99ffcc'>
     <td nowrap><font color='#0000AA'>{{testname}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.topic}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.creator}}</font></td>
@@ -38,6 +39,7 @@
     <td nowrap><font color='#0000AA'>{{otherattribs.scope}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.quality}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.negativescoreallowed}}</font></td>
+    <td nowrap><font color='#0000AA'><a href='#/' onClick='javascript:copytest("{{otherattribs.id}}");' alttext='Copying a test allows you to create a new test that is identical to the test being copied.'>Copy Test</a></font></td>
 </tr>
 {% endfor %}
 </table>

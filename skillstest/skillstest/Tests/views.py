@@ -53,7 +53,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -124,6 +124,8 @@ def get_user_tests(request):
         if test.evaluator.groupmember10 is not None:
             evalgrpemaillist.append(test.evaluator.groupmember10.emailid)
         evalgrpemails = ",".join(evalgrpemaillist)
+        test.evaluator.evalgroupname = test.evaluator.evalgroupname.replace("@", "__")
+        test.evaluator.evalgroupname = test.evaluator.evalgroupname.replace(".", "__")
         assocevalgrps += "evalgrpsdict.%s = '%s';"%(test.evaluator.evalgroupname, evalgrpemails)
         evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, test.evaluator.evalgroupname)
         evalgroupslitags = evalgroupslitags.replace('&quot;', '\\"')
@@ -205,6 +207,8 @@ def get_user_tests(request):
     tests_user_dict['getevaluationdetailsurl'] = skillutils.gethosturl(request) + "/" + getevaluationdetailsurl
     tests_user_dict['settestvisibilityurl'] = skillutils.gethosturl(request) + "/" + settestvisibilityurl
     tests_user_dict['getcanvasurl'] = skillutils.gethosturl(request) + "/" + getcanvasurl
+    tests_user_dict['activatetestbycreator'] = skillutils.gethosturl(request) + "/" + activatetestbycreator
+    tests_user_dict['deactivatetestbycreator'] = skillutils.gethosturl(request) + "/" + deactivatetestbycreator
     tests_user_dict['savedrawingurl'] = skillutils.gethosturl(request) + "/" + savedrawingurl
     tests_user_dict['disqualifycandidateurl'] = skillutils.gethosturl(request) + "/" + disqualifycandidateurl
     tests_user_dict['gettestscheduleurl'] = skillutils.gethosturl(request) + "/" + gettestscheduleurl
@@ -238,6 +242,8 @@ the test. Returns True if the user is permitted and False
 otherwise.
 """
 def ispermittedtoview(userobj, testobj, tests_user_dict):
+    if not tests_user_dict['user_evaluator_creator_other_evaluators_dict'].has_key(testobj.testname):
+        return False
     evalslist = tests_user_dict['user_evaluator_creator_other_evaluators_dict'][testobj.testname]
     evalemailslist = []
     evaldisplaynames = []
@@ -1446,9 +1452,12 @@ def savechanges(request):
         if challenge.challengescore.strip() == "":
             challenge.challengescore = 0
         challenge.timeframe = challengeduration[chid]
-        if challenge.timeframe.strip() == "":
+        if challenge.timeframe.strip() == "" or not challenge.timeframe or challenge.timeframe == 'None':
             challenge.timeframe = testobj.duration
-        challenge.save()
+        try:
+            challenge.save()
+        except:
+            print sys.exc_info()[1].__str__()
         #updatedchallenges += 1
     message = "challenges were successfully updated. "
     if nonexistentchallenges.__len__() > 0:
@@ -3955,7 +3964,7 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                     evaluatorobj.creationdate = datetime.datetime.now()
                     evaluatorobj.save()
                     testobj.evaluator = evaluatorobj
-                    if testobj.creator.emailid == testobj.evaluator.groupmember1.emailid or testobj.creator.emailid == testobj.evaluator.groupmember2.emailid or testobj.creator.emailid == testobj.evaluator.groupmember3.emailid or testobj.creator.emailid == testobj.evaluator.groupmember4.emailid or testobj.creator.emailid == testobj.evaluator.groupmember5.emailid or testobj.creator.emailid == testobj.evaluator.groupmember6.emailid or testobj.creator.emailid == testobj.evaluator.groupmember7.emailid or testobj.creator.emailid == testobj.evaluator.groupmember8.emailid or testobj.creator.emailid == testobj.evaluator.groupmember9.emailid or testobj.creator.emailid == testobj.evaluator.groupmember10.emailid:
+                    if (hasattr(testobj.evaluator, 'groupmember1') and testobj.creator.emailid == testobj.evaluator.groupmember1.emailid) or  (hasattr(testobj.evaluator, 'groupmember2') and testobj.creator.emailid == testobj.evaluator.groupmember2.emailid) or (hasattr(testobj.evaluator, 'groupmember3') and testobj.creator.emailid == testobj.evaluator.groupmember3.emailid) or (hasattr(testobj.evaluator, 'groupmember4') and  testobj.creator.emailid == testobj.evaluator.groupmember4.emailid) or (hasattr(testobj.evaluator, 'groupmember5') and testobj.creator.emailid == testobj.evaluator.groupmember5.emailid) or (hasattr(testobj.evaluator, 'groupmember6') and testobj.creator.emailid == testobj.evaluator.groupmember6.emailid) or (hasattr(testobj.evaluator, 'groupmember7') and testobj.creator.emailid == testobj.evaluator.groupmember7.emailid) or (hasattr(testobj.evaluator, 'groupmember8') and testobj.creator.emailid == testobj.evaluator.groupmember8.emailid) or (hasattr(testobj.evaluator, 'groupmember9') and testobj.creator.emailid == testobj.evaluator.groupmember9.emailid) or (hasattr(testobj.evaluator, 'groupmember10') and testobj.creator.emailid == testobj.evaluator.groupmember10.emailid):
                         testobj.creatorisevaluator = True
                     else:
                         testobj.creatorisevaluator = False
@@ -4064,13 +4073,21 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                     testobj.createdate = datetime.datetime.now()
                     testobj.testname = row[0].decode('utf-8', 'replace')
                     testobj.testtype = row[1]
+                    testobj.testtype = testobj.testtype.replace('"', '')
+                    testobj.testtype = testobj.testtype.strip()
+                    row[2] = row[2].replace('"', '')
+                    row[2] = row[2].strip()
                     testobj.ruleset = row[2]
+                    row[3] = row[3].replace('"', '')
+                    row[3] = row[3].strip()
                     if row[3] != "" and row[3] is not None:
                         testobj.topicname = row[3]
                         testobj.topic = Topic.objects.filter(id=-1)[0]
                         testobj.topicname = testobj.topicname.replace("__", " ")
                     else:
                         topicname = ""
+                        row[4] = row[4].replace('"', '')
+                        row[4] = row[4].strip()
                         if row[4] != "" and row[4] is not None:
                             topicname = row[4]
                         if topicname.__len__() > 0 and testobj.topicname.__len__() == 0:
@@ -4082,6 +4099,9 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                             topic.save()
                             testobj.topic = topic
                             testobj.topicname = topic.topicname
+                    for j in range(5, 9):
+                        row[j] = row[j].replace('"', '')
+                        row[j] = row[j].strip()
                     if row[5] and row[5] != "":
                         testobj.maxscore = row[5]
                     else:
@@ -4128,6 +4148,8 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                         maxchallengedurationunit = testdurationunit
                     evaluatorids = row[14].decode('utf-8', "replace")
                     evaluatorgrpname = row[14].decode('utf-8', "replace")
+                    evaluatorgrpname = evaluatorgrpname.replace('"', '')
+                    evaluatorids = evaluatorids.replace('"', '')
                     evaluatorgrpname = evaluatorgrpname.replace(" ", "__")
                     evaluatorslist = evaluatorids.split(",")
                     evaluatorobj = Evaluator()
@@ -4140,7 +4162,7 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                         evalid = re.sub(mysettings.MULTIPLE_WS_PATTERN, '', evalid) # Remove inadvertant whitespaces, if any.
                         evalid = evalid.__str__() # Finally, we want ASCII string, not unicode.
                         evalid = evalid.strip()
-                        print evalid
+                        #print evalid
                         if evalctr == 0:
                             evaluatorobj.groupmember1 = User.objects.get(emailid=evalid)
                         elif evalctr == 1:
@@ -4167,19 +4189,26 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                     evaluatorobj.creationdate = datetime.datetime.now()
                     evaluatorobj.save()
                     testobj.evaluator = evaluatorobj
-                    if testobj.creator.emailid == testobj.evaluator.groupmember1.emailid or testobj.creator.emailid == testobj.evaluator.groupmember2.emailid or testobj.creator.emailid == testobj.evaluator.groupmember3.emailid or testobj.creator.emailid == testobj.evaluator.groupmember4.emailid or testobj.creator.emailid == testobj.evaluator.groupmember5.emailid or testobj.creator.emailid == testobj.evaluator.groupmember6.emailid or testobj.creator.emailid == testobj.evaluator.groupmember7.emailid or testobj.creator.emailid == testobj.evaluator.groupmember8.emailid or testobj.creator.emailid == testobj.evaluator.groupmember9.emailid or testobj.creator.emailid == testobj.evaluator.groupmember10.emailid:
+                    if (hasattr(testobj.evaluator, 'groupmember1') and testobj.creator.emailid == testobj.evaluator.groupmember1.emailid) or  (hasattr(testobj.evaluator, 'groupmember2') and testobj.creator.emailid == testobj.evaluator.groupmember2.emailid) or (hasattr(testobj.evaluator, 'groupmember3') and testobj.creator.emailid == testobj.evaluator.groupmember3.emailid) or (hasattr(testobj.evaluator, 'groupmember4') and  testobj.creator.emailid == testobj.evaluator.groupmember4.emailid) or (hasattr(testobj.evaluator, 'groupmember5') and testobj.creator.emailid == testobj.evaluator.groupmember5.emailid) or (hasattr(testobj.evaluator, 'groupmember6') and testobj.creator.emailid == testobj.evaluator.groupmember6.emailid) or (hasattr(testobj.evaluator, 'groupmember7') and testobj.creator.emailid == testobj.evaluator.groupmember7.emailid) or (hasattr(testobj.evaluator, 'groupmember8') and testobj.creator.emailid == testobj.evaluator.groupmember8.emailid) or (hasattr(testobj.evaluator, 'groupmember9') and testobj.creator.emailid == testobj.evaluator.groupmember9.emailid) or (hasattr(testobj.evaluator, 'groupmember10') and testobj.creator.emailid == testobj.evaluator.groupmember10.emailid):
                         testobj.creatorisevaluator = True
                     else:
                         testobj.creatorisevaluator = False
-                    if row[16] and row[16] != "":
+                    row[16] = row[16].strip()
+                    row[17] = row[17].strip()
+                    row[18] = row[18].replace('"', '')
+                    row[18] = row[18].strip()
+                    if row[16] and row[16] != "" and row[16] != '""':
                         testobj.publishdate = row[16]
                     else:
                         testobj.publishdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
-                    if row[17] and row[17] != "":
+                    if row[17] and row[17] != "" and row[17] != '""':
                         testobj.activationdate = row[17]
                     else:
                         testobj.activationdate = skillutils.pythontomysqldatetime(datetime.datetime.now().__str__())
                     testobj.quality = row[18]
+                    for j in range(19, 26):
+                        row[j] = row[j].replace('"', '')
+                        row[j] = row[j].strip()
                     if row[19] and row[19] != "":
                         testobj.scope = row[19]
                     else:
@@ -4201,7 +4230,10 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                     testobj.maxattemptscount = row[25]
                     testobj.attemptsinterval = row[26]
                     testobj.attemptsintervalunit = row[27]
+                    testobj.attemptsintervalunit = testobj.attemptsintervalunit.replace('"', '')
+                    testobj.attemptsintervalunit = testobj.attemptsintervalunit.strip()
                     testobj.status = False
+                    testobj.testlinkid = testlinkid
                     print "Creating test with name '%s'"%testobj.testname
                     testobj.save()
                 elif rowctr == 1:
@@ -4210,17 +4242,33 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                     challengeobj = Challenge()
                     challengeobj.test = testobj
                     challengeobj.statement = row[0]
+                    row[1] = row[1].replace('"', '')
+                    row[1] = row[1].strip()
+                    row[2] = row[2].replace('"', '')
+                    row[2] = row[2].strip()
                     challengeobj.challengescore = row[1]
                     if row[2] and row[2] != "":
                         challengeobj.timeframe = row[2]
                     else:
                         challengeobj.timeframe = testobj.duration
+                    row[3] = row[3].replace('"', '')
+                    row[3] = row[3].strip()
                     if row[3] and row[3] != "":
                         challengeobj.negativescore = row[3]
                     else:
                         challengeobj.negativescore = 0
+                    row[4] = row[4].replace('"', '')
+                    row[4] = row[4].strip()
+                    row[5] = row[5].replace('"', '')
+                    row[5] = row[5].strip()
+                    row[7] = row[7].replace('"', '')
+                    row[7] = row[7].strip()
+                    row[8] = row[8].replace('"', '')
+                    row[8] = row[8].strip()
                     challengeobj.mediafile = row[4]
                     challengeobj.additionalurl = row[5]
+                    row[6] = row[6].replace('"', '')
+                    row[6] = row[6].strip()
                     challengeobj.challengetype = row[6]
                     if row[7] and row[7] != "":
                         challengeobj.mustrespond = row[7]
@@ -4230,30 +4278,39 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                         challengeobj.oneormore = row[8]
                     else:
                         challengeobj.oneormore = False
+                    row[9] = row[9].replace('"', '')
+                    row[9] = row[9].strip()
+                    row[10] = row[10].replace('"', '')
+                    row[10] = row[10].strip()
+                    for j in range(11, row.__len__()):
+                        row[j] = row[j].replace('"', '')
+                        row[j] = row[j].strip()
                     if row[9] and row[9] != "":
                         challengeobj.challengequality = row[9]
                     else:
                         challengeobj.challengequality = testobj.quality
                     challengeobj.responsekey = row[10]
                     if challengeobj.challengetype == 'MULT':
-                        if row[11] != "":
+                        if row.__len__() >= 12 and row[11] != "":
                             challengeobj.option1 = row[11]
-                        if row[12] != "":
+                        if row.__len__() >= 13 and row[12] != "":
                             challengeobj.option2 = row[12]
-                        if row[13] != "":
+                        if row.__len__() >= 14 and row[13] != "":
                             challengeobj.option3 = row[13]
-                        if row[14] != "":
+                        if row.__len__() >= 15 and row[14] != "":
                             challengeobj.option4 = row[14]
-                        if row[15] != "":
+                        if row.__len__() >= 16 and row[15] != "":
                             challengeobj.option5 = row[15]
-                        if row[16] != "":
+                        if row.__len__() >= 17 and row[16] != "":
                             challengeobj.option6 = row[16]
-                        if row[17] != "":
+                        if row.__len__() >= 18 and row[17] != "":
                             challengeobj.option7 = row[17]
-                        if row[18] != "":
+                        if row.__len__() >= 19 and row[18] != "":
                             challengeobj.option8 = row[18]
+                    challengeobj.testlinkid = testlinkid
                     print "Creating challenge object '%s'...\n"%challengeobj.statement
                     challengeobj.save()
+                rowctr += 1
     except:
         message = "Exception occurred while creating test from file '%s': %s\n"%(os.path.basename(filepath), sys.exc_info()[1].__str__())
         print message
@@ -4814,11 +4871,12 @@ def gettestschedule(request):
     activationdate = testobj.activationdate
     status = testobj.status
     if not status:
-        message = "<font color='#AA0000' size=-1>" + error_msg('1162') + "</font>"
+        message = "<font color='#AA0000'>" + error_msg('1162') + "</font>"
+        message += "<br /><font color='#0000AA'> If you think you are done with editing and ready to start scheduling this test, then you may first activate it. You may do so by clicking on the \"<i>Activate Now</i>\" link for this test at the far right hand side of the main screen."
         response = HttpResponse(message)
         return response
     if curdatetime < publishdate or curdatetime < activationdate:
-        message = "<font color='#AA0000' size=-1>" + error_msg('1163') + "</font>"
+        message = "<font color='#AA0000'>" + error_msg('1163') + "</font>"
         response = HttpResponse(message)
         return response
     # Get all schedules for this test.
@@ -5088,7 +5146,98 @@ def setschedule(request):
     response = HttpResponse(message)
     return(response)
 
+
 @csrf_protect
 def savetestresponses(request):
     pass
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def activatetestbycreator(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = error_msg('1055')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    # Check if the user is the creator of the test. If not, back out with an appropriate message.
+    if testobj.creator != userobj:
+        message = "User is not the creator of this test. Hence she/he may not activate the test."
+        response = HttpResponse(message)
+        return response
+    testobj.status = True
+    testobj.save()
+    message = "The test has been activated. You may now schedule this test for test takers and the test takers will now be able to take the test."
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def deactivatetestbycreator(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = -1
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = error_msg('1055')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    # Check if the user is the creator of the test. If not, back out with an appropriate message.
+    if testobj.creator != userobj:
+        message = "User is not the creator of this test. Hence she/he may not activate the test."
+        response = HttpResponse(message)
+        return response
+    testobj.status = False
+    testobj.save()
+    message = "The test has been deactivated. You may not schedule this test for test takers now. Test takers will not be able to take the test now."
+    response = HttpResponse(message)
+    return response
+
+
 
