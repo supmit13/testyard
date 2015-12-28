@@ -27,6 +27,7 @@ import decimal, math
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, OptionalUserInfo
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
+from skillstest.models import Careers
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -288,7 +289,9 @@ def logout(request):
     return response
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def aboutus(request):
     if request.method != "GET":
         message = error_msg('1004')
@@ -318,7 +321,9 @@ def aboutus(request):
     return HttpResponse(aboutushtml)
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def helpndocs(request):
     helpndocs_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
@@ -336,7 +341,9 @@ def helpndocs(request):
     return HttpResponse(helphtml)
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def careers(request):
     if request.method != "GET":
         message = error_msg('1004')
@@ -354,6 +361,28 @@ def careers(request):
     for inc_key in inc_context.keys():
         careers_data_dict[inc_key] = inc_context[inc_key]
     careers_data_dict['displayname'] = userobj.displayname
+    careersqset = Careers.objects.filter(status=True)
+    positionslist = []
+    for careerobj in careersqset:
+        position = {}
+        position['shortname'] = careerobj.position_shortname
+        position['longname'] = careerobj.position_longname
+        position['code'] = careerobj.position_code
+        position['description'] = careerobj.position_description
+        position['closingdate'] = careerobj.closingdate
+        position['maxsalaryoffered'] = careerobj.maxsalaryoffered
+        position['maxsalarytimeunit'] = careerobj.maxsalarytimeunit
+        position['urgencyindays'] = careerobj.urgencyindays
+        position['position_type'] = careerobj.position_type
+        position['experiencedesired'] = careerobj.experiencedesired
+        position['skillset'] = careerobj.skillset
+        position['position_location'] = careerobj.position_location
+        position['department'] = careerobj.department
+        position['contactperson'] = careerobj.contactperson
+        position['contactemail'] = careerobj.contactemail
+        position['conditions'] = careerobj.conditions
+        positionslist.append(position)
+    careers_data_dict['positionslist'] = positionslist
     tmpl = get_template("careers.html")
     careers_data_dict.update(csrf(request))
     cxt = Context(careers_data_dict)

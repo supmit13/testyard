@@ -634,4 +634,29 @@ alter table Tests_wouldbeusers add column schedule_id int(11) default NULL;
 
 alter table Tests_schedule add column createdon datetime NOT NULL;
 
+CREATE TABLE `careers` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `position_longname` varchar(200) NOT NULL,
+    `position_shortname` varchar(50) NOT NULL,
+    `position_code` varchar(10) NOT NULL UNIQUE,
+    `position_description` text default "",
+    `openingdate` datetime NOT NULL,
+    `closingdate` datetime NOT NULL,
+    `status` bool NOT NULL,
+    `maxsalaryoffered` int(11),
+    `maxsalarytimeunit` varchar(20) default "per annum",
+    `urgencyindays` integer NOT NULL DEFAULT 30,
+    `position_type` varchar(100) DEFAULT "permanent",
+    `experiencedesired` integer NOT NULL,
+    `skillset` text DEFAULT "",
+    `position_location` varchar(200) NOT NULL DEFAULT "New Delhi",
+    `department` varchar(200) NOT NULL,
+    `position_budget` integer DEFAULT 0,
+    `contactperson` varchar(255),
+    `submissiondatetime` datetime NOT NULL,
+    `conditions` text default ""
+);
+
+alter table careers add column contactemail varchar(255) NOT NULL;
+
 COMMIT;
