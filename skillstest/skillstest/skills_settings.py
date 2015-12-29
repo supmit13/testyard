@@ -170,6 +170,8 @@ USER_SEARCH_URL = "skillstest/search/user/"
 
 SAVE_OPTIONAL_INFO_URL = "skillstest/optionaluserinfo/"
 
+DETAIL_HELP_URL = "skillstest/helpndocs/detailedhelp/"
+
 TEST_RUN = False # Set this to True during testing the app.
 
 HEXCODE_CHAR_MAP = { \

@@ -118,5 +118,7 @@ urlpatterns += patterns('',
 
     url(r'%s$'%mysettings.SAVE_OPTIONAL_INFO_URL, 'skillstest.views.saveoptionalinfo', name='saveoptionalinfo'),
     url(r'%s$'%mysettings.SET_TEST_SCHEDULE_URL, 'skillstest.Tests.views.setschedule', name='setschedule'),
+
+    url(r'%s$'%mysettings.DETAIL_HELP_URL, 'skillstest.views.detailedhelp', name='detailedhelp'),
 )
 

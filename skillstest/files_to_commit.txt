@@ -1857,4 +1857,23 @@ Tue, 29 Dec 2015, 02:40 HRS (IST).
 5. db_02_02_2015.sql
 6. templates/aboutus.html
 7. files_to_commit.txt
-									
+=======================================
+
+Tue, 29 Dec 2015, 23:33 HRS (IST).
+----------------------------------
+1. templates/tests/tests.html
+2. skillstest/views.py
+3. templates/help.html
+4. skillstest/skills_settings.py
+5. skillstest/urls.py
+6. templates/helpndocs/profilehelp.html
+7. templates/helpndocs/dashboardhelp.html
+8. templates/helpndocs/subscriptionhelp.html
+9. templates/helpndocs/testhelp.html
+10.templates/helpndocs/networkhelp.html
+11.templates/helpndocs/searchhelp.html
+12.templates/helpndocs/analyticshelp.html
+13.files_to_commit.txt
+=======================================
+
+					

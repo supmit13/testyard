@@ -325,6 +325,15 @@ def aboutus(request):
 @skillutils.session_location_match
 @csrf_protect
 def helpndocs(request):
+    if request.method != "GET":
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    displayname = userobj.displayname
     helpndocs_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
     #helpndocs_data_dict['displayname'] = "%s"%userobj.displayname
@@ -332,6 +341,8 @@ def helpndocs(request):
     inc_context = skillutils.includedtemplatevars("Help/Documentation", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         helpndocs_data_dict[inc_key] = inc_context[inc_key]
+    helpndocs_data_dict['displayname'] = displayname
+    helpndocs_data_dict['detailhelpurl'] = mysettings.DETAIL_HELP_URL
     tmpl = get_template("help.html")
     helpndocs_data_dict.update(csrf(request))
     cxt = Context(helpndocs_data_dict)
@@ -339,6 +350,50 @@ def helpndocs(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         helphtml = helphtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(helphtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def detailedhelp(request):
+    if request.method != "POST":
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    displayname = userobj.displayname
+    helppage = ""
+    if request.POST.has_key('help'):
+        helppage = request.POST['help']
+    tmpl = get_template("helpndocs/profilehelp.html") # Default help screen
+    pagetitle = "Help - Profile"
+    if helppage == 'dashboard':
+        tmpl = get_template("helpndocs/dashboardhelp.html")
+        pagetitle = "Help - Dashboard"
+    elif helppage == 'subscription':
+        tmpl = get_template("helpndocs/subscriptionhelp.html")
+        pagetitle = "Help - Subscription"
+    elif helppage == 'test':
+        tmpl = get_template("helpndocs/testhelp.html")
+        pagetitle = "Help - Tests"
+    elif helppage == 'network':
+        tmpl = get_template("helpndocs/networkhelp.html")
+        pagetitle = "Help - Network"
+    elif helppage == 'search':
+        tmpl = get_template("helpndocs/searchhelp.html")
+        pagetitle = "Help - Search"
+    elif helppage == 'analytics':
+        tmpl = get_template("helpndocs/analyticshelp.html")
+        pagetitle = "Help - Analytics"
+    help_dict = { 'displayname' : displayname, 'pagetitle' : pagetitle }
+    help_dict.update(csrf(request))
+    cxt = Context(help_dict)
+    helphtml = tmpl.render(cxt)
+    response = HttpResponse(helphtml)
+    return response
 
 
 @skillutils.is_session_valid
