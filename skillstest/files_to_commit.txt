@@ -1876,4 +1876,14 @@ Tue, 29 Dec 2015, 23:33 HRS (IST).
 13.files_to_commit.txt
 =======================================
 
-					
+Thu, 31 Dec 2015, 14:00 HRS (IST).
+----------------------------------
+1. templates/help.html
+2. templates/inc/html_head.html
+3. templates/tests/create_interview_form.html
+4. skillstest/Tests/views.py
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. files_to_commit.txt
+

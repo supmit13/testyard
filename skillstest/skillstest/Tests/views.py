@@ -38,7 +38,7 @@ from itertools import chain
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -53,10 +53,11 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
+        interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Create an Interview</a>(<font color='#0000AA' face='verdana' size=-2>Please use either Chrome or Firefox or Safari to use this facility</font>)"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
             if ttcode == 'MULT':
@@ -170,12 +171,15 @@ def get_user_tests(request):
     tests_user_dict['displayname'] = userobj.displayname
     tests_user_dict['createlink'] = createlink
     tests_user_dict['uploadlink'] = uploadlink
+    tests_user_dict['interviewlink'] = interviewlink
     tests_user_dict['testtypes'] = testtypes
     tests_user_dict['testrules'] = testrules
     tests_user_dict['testtopics'] = testtopics
+    tests_user_dict['interviewtopics'] = testtopics
     tests_user_dict['skilltarget'] = skilltarget
     tests_user_dict['answeringlanguage'] = answeringlanguage
     tests_user_dict['testscope'] = testscope
+    tests_user_dict['interviewscope'] = testscope
     tests_user_dict['progenv'] = progenv
     tests_user_dict['creatoremail'] = userobj.emailid
     tests_user_dict['existingtestnames'] = "','".join(user_creator_other_evaluators_dict.keys())
@@ -183,6 +187,7 @@ def get_user_tests(request):
     tests_user_dict['assocevalgrps'] = assocevalgrps
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
+    tests_user_dict['createinterviewurl'] = createinterviewurl
     tests_user_dict['addeditchallengeurl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_TEST_URL
     tests_user_dict['edittesturl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_EXISTING_TEST_URL
     tests_user_dict['testsummaryurl'] = mysettings.TEST_SUMMARY_URL
@@ -201,6 +206,7 @@ def get_user_tests(request):
     tests_user_dict['invitationcancelurl'] = skillutils.gethosturl(request) + "/" + invitationcancelurl
     tests_user_dict['hosturl'] = skillutils.gethosturl(request) 
     tests_user_dict['testlinkid'] = skillutils.generate_random_string()
+    tests_user_dict['interviewlinkid'] = skillutils.generate_random_string()
     tests_user_dict['testbulkuploadurl'] = skillutils.gethosturl(request) + "/" + testbulkuploadurl
     tests_user_dict['testevaluationurl'] = skillutils.gethosturl(request) + "/" + testevaluationurl
     tests_user_dict['evaluateresponseurl'] = skillutils.gethosturl(request) + "/" + evaluateresponseurl
@@ -4910,7 +4916,7 @@ def gettestschedule(request):
     cxt = Context(contextdict)
     schedulehtml = tmpl.render(cxt)
     return HttpResponse(schedulehtml)
-    
+
 
 @skillutils.is_session_valid
 @skillutils.session_location_match
@@ -5191,7 +5197,7 @@ def activatetestbycreator(request):
         return response
     testobj.status = True
     testobj.save()
-    message = "The test has been activated. You may now schedule this test for test takers and the test takers will now be able to take the test."
+    message = "The test has been activated. You may now schedule this test for test takers and the test takers will now be able to take the test. Please refresh the page to view the updated status of the test."
     response = HttpResponse(message)
     return response
 
@@ -5235,9 +5241,130 @@ def deactivatetestbycreator(request):
         return response
     testobj.status = False
     testobj.save()
-    message = "The test has been deactivated. You may not schedule this test for test takers now. Test takers will not be able to take the test now."
+    message = "The test has been deactivated. You may not schedule this test for test takers now. Test takers will not be able to take the test now. Please refresh the page to view the updated status of the test."
     response = HttpResponse(message)
     return response
+
+
+def captureaudiovisual(request):
+    tmpl = get_template("tests/audiovisual.html")
+    tests_user_dict = {}
+    tests_user_dict.update(csrf(request))
+    cxt = Context(tests_user_dict)
+    audiovisualhtml = tmpl.render(cxt)
+    return HttpResponse(audiovisualhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def createinterview(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, challengeseparatorcharacter, responseendcharacter, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext = "", "", 0, 300, "", "", "", "", "", "", "","", "", "", "", "", "Add Intro"
+    if request.POST.has_key('interviewtitle'):
+        interviewtitle = request.POST['interviewtitle']
+    if request.POST.has_key('interviewtopic'):
+        interviewtopic = request.POST['interviewtopic']
+    if request.POST.has_key('totalscore'):
+        totalscore = request.POST['totalscore']
+    totalscore = totalscore.strip()
+    if not totalscore:
+        totalscore = 0
+    if request.POST.has_key('maxresponsestarttime'):
+        maxresponsestarttime = request.POST['maxresponsestarttime']
+    if request.POST.has_key('numchallenges'):
+        numchallenges = request.POST['numchallenges']
+    if request.POST.has_key('interviewduration'):
+        interviewduration = request.POST['interviewduration']
+    if request.POST.has_key('medium'):
+        medium = request.POST['medium']
+    if request.POST.has_key('publishdate'):
+        publishdate = request.POST['publishdate']
+    if request.POST.has_key('challengeseparatorcharacter'):
+        challengeseparatorcharacter = request.POST['challengeseparatorcharacter']
+    if request.POST.has_key('responseendcharacter'):
+        responseendcharacter = request.POST['responseendcharacter']
+    if request.POST.has_key('language'):
+        language = request.POST['language']
+    if request.POST.has_key('realtime'):
+        realtime = request.POST['realtime']
+    else:
+        realtime = 0
+    if request.POST.has_key('skilltarget'):
+        skilltarget = request.POST['skilltarget']
+    if request.POST.has_key('interviewscope'):
+        interviewscope = request.POST['interviewscope']
+    if request.POST.has_key('randomsequencing'):
+        randomsequencing = request.POST['randomsequencing']
+    else:
+        randomsequencing = 0
+    if request.POST.has_key('interviewlinkid'):
+        interviewlinkid = request.POST['interviewlinkid']
+    if request.POST.has_key('btncreateinterview'):
+        introbtntext = request.POST['btncreateinterview']
+    interviewobj = None
+    if introbtntext == 'Add Intro': # We are here for the first time
+        interviewobj = Interview()
+        interviewobj.title = interviewtitle
+    elif introbtntext == 'Open Intro':
+        try:
+            interviewobj = Interview.objects.filter(title=interviewtitle, interviewer=userobj)[0]
+        except:
+            interviewobj = Interview()
+        interviewobj.title = interviewtitle
+    interviewobj.challengescount = numchallenges
+    interviewobj.maxresponsestarttime = maxresponsestarttime
+    interviewobj.topicname = interviewtopic
+    interviewobj.interviewer = userobj
+    interviewobj.medium = medium
+    interviewobj.language = language
+    interviewobj.challengeseparatorcharacter = challengeseparatorcharacter
+    interviewobj.responseendcharacter = responseendcharacter
+    interviewobj.createdate = ""
+    publishdateparts = publishdate.split("-")
+    pubmon2digit = mysettings.MONTHS_DICT[publishdateparts[1]]
+    publishdate_mysqlcompliant = publishdateparts[2] + "-" + pubmon2digit + "-" + publishdateparts[0]
+    interviewobj.publishdate = publishdate_mysqlcompliant + " 00:00:00"
+    interviewobj.status = False # The interview is being created... so this ought to be false.
+    interviewobj.maxscore = totalscore
+    interviewobj.maxduration = interviewduration
+    interviewobj.randomsequencing = randomsequencing
+    interviewobj.interviewlinkid = interviewlinkid
+    interviewobj.scope = interviewscope
+    #interviewobj.quality = skilltarget
+    interviewobj.challengesfilepath = ""
+    interviewobj.introfilepath = ""
+    interviewobj.filetype = "wav"
+    int_user_dict = {}
+    try:
+        interviewobj.save()
+        # Create the directory for the interview
+        directoryname = re.sub(re.compile("\s+"), "_", interviewtitle)
+        dirpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname
+        os.makedirs(dirpath)
+    except:
+        int_user_dict['errmsg'] = "Error: " + sys.exc_info()[1].__str__()
+        return HttpResponse(int_user_dict['errmsg'])
+    tmpl = get_template("tests/audiovisual.html")
+    int_user_dict.update(csrf(request))
+    cxt = Context(int_user_dict)
+    audiovisualhtml = tmpl.render(cxt)
+    return HttpResponse(audiovisualhtml)
+
+
 
 
 

@@ -374,5 +374,54 @@ class EmailFailure(models.Model):
         db_table = 'Tests_emailfailure'
 
 
+"""
+This model represents an interview which will contain either audiovisual data or audio data.
+"""
+class Interview(models.Model):
+    title = models.CharField(max_length=200, null=False, blank=False, unique=True)
+    challengescount = models.IntegerField(default=5, null=True, blank=True)
+    maxresponsestarttime = models.IntegerField(default=300) # This is the maximum duration (in seconds) that a 
+    # candidate can take to start responding to a verbal challenge. Please 
+    # note that the candidate may take more than this time to complete her/his response.
+    topic = models.ForeignKey(Topic, blank=True, default='') # If topic is custom topic created by user, 
+    # then this will point to the 'Tests_topic' record.
+    topicname = models.CharField(max_length=200, blank=True) # If topic is one of the built-in topics, 
+    # then this will hold the name of it. In that case, topic will be ''.
+    interviewer = models.ForeignKey(User, blank=False, null=False) # In case the 'interviewer' is some 
+    # board or association, one of its members
+    # will need to come forward to be accountable for the interview.
+    # Note: There won't be any separate evaluator for an interview. The interviewer 
+    # will evaluate the responses and optionally assign a score for each response.
+    medium = models.CharField(default='audio', choices = (('audio', 'Audio'), ('audiovisual', 'AudioVisual')), max_length=15)
+    language = models.CharField(default='english', null=True, blank=True, max_length=20)
+    challengeseparatorcharacter = models.CharField(default='#', max_length=4) # Character to separate consecutive challenge statements.
+    responseendcharacter = models.CharField(default='#', max_length=4)
+    createdate = models.DateTimeField(auto_now_add=True)
+    publishdate = models.DateTimeField(null=False, blank=True)
+    status = models.BooleanField(default=True) # Determines if the 'Interview' is being edited (or created). 
+    # A 'False' value indicates that the interview is being edited or created at the current instant. Under this 
+    # condition, the user may not attempt to take it, and the creator will not be able to send out invitations or
+    # schedule this interview for any candidate.
+    maxscore = models.IntegerField(default=0, null=True, blank=True)
+    maxduration = models.IntegerField(default=3600) # Max length (in seconds) of time of the interview.
+    randomsequencing = models.BooleanField(default=True, null=False, blank=False)
+    interviewlinkid = models.CharField(max_length=200, null=False, blank=False)
+    scope = models.CharField(max_length=50, null=False, default='public')
+    quality = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()), default='INT') # Determines the class of users the 'Interview' is for.
+    challengesfilepath = models.TextField(default='/tmp/int.wav', null=True, blank=True) # This is the absolute path
+    # to the file that contains the interview challenges.
+    introfilepath = models.TextField(default='/tmp/intro.wav', null=True, blank=True) # Path to the file containing the
+    # introduction of the interview. This may contain information like the interviewer's name, her/his company name (if applicable),
+    # and the reason for which the interview is being taken.
+    filetype = models.CharField(max_length=4, default='wav', null=False, blank=False) # This is basically the file extension. Default is (.)wav.
+    realtime = models.BooleanField(default=True) # Whether the interview may be taken in realtime, i.e., the interviewer and the
+    # interviewee will be present together for the interview.
+    
+    class Meta:
+        verbose_name = "Interview Table"
+        db_table = 'Tests_interview'
+
+    def __unicode__(self):
+        return "Interview: %s"%(self.title)
 
 

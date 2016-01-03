@@ -659,4 +659,35 @@ CREATE TABLE `careers` (
 
 alter table careers add column contactemail varchar(255) NOT NULL;
 
+create table `Tests_interview` (
+    `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `title` varchar(200) NOT NULL UNIQUE,
+    `challengescount` integer DEFAULT 5,
+    `maxresponsestarttime` integer DEFAULT 300,
+    `topic_id` integer,
+    `topicname` varchar(200),
+    `interviewer_id` integer NOT NULL,
+    `medium` varchar(15) NOT NULL DEFAULT 'audio',
+    `language` varchar(20) NOT NULL DEFAULT 'english',
+    `challengeseparatorcharacter` varchar(4) NOT NULL DEFAULT '#',
+    `responseendcharacter` varchar(4) NOT NULL DEFAULT '#',
+    `createdate` datetime NOT NULL,
+    `publishdate` datetime,
+    `status` boolean DEFAULT true,
+    `maxscore` integer DEFAULT 0,
+    `maxduration` integer DEFAULT 3600,
+    `randomsequencing` boolean DEFAULT true,
+    `interviewlinkid` varchar(200) NOT NULL,
+    `scope` varchar(50) NOT NULL DEFAULT 'public',
+    `quality` varchar(4) NOT NULL DEFAULT 'INT',
+    `challengesfilepath` text NOT NULL,
+    `introfilepath` text,
+    `filetype` varchar(4) DEFAULT 'wav',
+    `realtime` boolean DEFAULT true,
+    FOREIGN KEY (`topic_id`) REFERENCES `Tests_topic` (`id`),
+    FOREIGN KEY (`interviewer_id`) REFERENCES `Auth_user` (`id`)
+)ENGINE=Innodb;
+
+alter table Tests_interview drop index title;
+
 COMMIT;
