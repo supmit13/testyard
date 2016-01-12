@@ -41,3 +41,42 @@ see the challenges and their responses (by the creator as well as other test tak
 
 =====================================================================================================
 
+04-01-2016
+----------
+
+1. While creating an interview object, create a folder with the name of the interview under the user's upload directory - 
+ userdata/<username>/interviews/<interview name>. The interview name should be stripped off all whitespace characters and replaced by
+ underscore characters. [Done]
+
+2. Modify the "Recorder.setupDownload = function(blob, filename){...}" code to send the blob to the server and saved by the name of "intro" or <question number counter> as appropriate under the directory created in the above step. [Done]
+
+3. If, for some reason, the interview object creation failed, the system should return an error message and not display the intro 
+ addition screen. This should also apply to a failure in creating the interview directory. [Done]
+
+======================================================================================================
+
+12-01-2016
+----------
+
+1. On creating an interview (by adding a record in the Tests_interview table), the system should provide the user with a means to add an intro to it by opening up a new window containing a button to record the intro. [Done]
+
+2. Once the user records the intro, the same screen should present a button to the user to record the questions for that interview one by one. Each question should be stored on the hard disk as a wav file, and an entry for it should be added in the Tests_interviewquestions table. 
+
+3. If the user specified a figure for the number of questions allowed (while creating the interview in the first step), the system should stop showing the question recording screen  after that many questions have been recorded. If the user did not specify a value for the number of questions that the interview will contain, then each question screen should have a button that, when clicked, will indicate to the system that the user wants to end entering questions for the interview. (The user may later on add more questions to the interview while editing it from another screen that is yet to be created).
+
+4. If the interview has the 'realtime' flag set, then the system will wait for a period for the response from the user and record the response. The response recording for each question will stop when the interviewer clicks on a button that sets the recorder off and saves the question as well as the response to it in the appropriate tables.
+
+5. If the interview doesn't have the 'realtime' flag set, then the responses to the interview questions will be recorded and stored whenever any interviewee attends the interview.
+
+6. In order to attend an interview, the interviewee need not have an account at testyard. The responses to an interview will be stored in the "<MEDIA_ROOT>/<interviewer_username>/interviews/<interview_title>/<interviewee_email_id>/" directory. Each response will be stored with the interview question in the begining, so when it is played, the question will be played first and then the response to it. They will be stored as a single file, so the evaluator will not need to put in any effort to correlate a response to its question. Each response will be in a file of its own.
+
+7. The responses to the interview questions will be stored in Tests_interviewresponses table. Another table, Tests_interviewsessions will have a record for each interview session with a specific user. This table will have a status field which will be set to false as long as the interview for that specific user has not concluded. Once the interview is over for a specific user, the status field will be set to True for that user in the Tests_interviewsessions table.
+
+8. Once an interviewee has answered all the questions in the interview, she/he may stop the session by clicking on a button, which will set the status field in the Tests_interviewsessions to True.
+
+9. An evaluator may evaluate an interview only when the status field in the Tests_interviewsessions table is set to True. For now, the only evaluator allowed in an interview would be the interviewer herself/himself.
+
+10.An interview may be edited as long as it has not been taken by any candidate. Thereafter, trying to edit an interview will create a new interview with the same name and a number annexed to it. This name may be changed by the interviewer (or creator) as long as it has not been taken by any candidate.
+
+
+

@@ -162,6 +162,13 @@ error_codes = { \
         '1163' : 'You may not schedule a test that is not yet activated or published.',\
         '1164' : 'The test is scheduled to start from %s and will end on %s. Please return to this page in that interval to take the test.',\
         '1165' : 'The test is already over. It was scheduled to start at %s and end at %s.',\
+
+        '1166' : 'An interview with the same title already exists in your account. Please choose a different name and try again.',\
+        '1167' : 'This challenge is not associated with an interview. It will not be saved.',\
+        '1168' : 'Could not find a binary object containing the content submitted by the user.',\
+        '1169' : 'Error: Could not find the interview identified by the submitted interviewlinkid',\
+        '1170' : 'Error: An interview with the same linkid exists. Please refresh the "Tests" tab and click on the "Create an Interview" link to create another interview with a unique link id. You will not be able to add questions to this interview unless you perform this step.',\
+        '1171' : 'Could not find an interviewlinkid with the request. Please restart the process of creating test as it seems that the data for this test has become corrupt.',\
     }
 
 def error_msg(code):

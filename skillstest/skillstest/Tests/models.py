@@ -425,3 +425,24 @@ class Interview(models.Model):
         return "Interview: %s"%(self.title)
 
 
+class InterviewQuestions(models.Model):
+    interview = models.ForeignKey(Interview, related_name="+", null=False, blank=False)
+    questionfilename = models.CharField(max_length=255, null=False, blank=False)
+    questionnumber = models.IntegerField(default=1, null=False, blank=False)
+    deleted = models.BooleanField(default=False)
+    maxscore = models.IntegerField(default=0, null=True, blank=True)
+    interviewlinkid = models.CharField(max_length=200, null=False, blank=False)
+    timelimit = models.IntegerField(default=3600) 
+    # Value in seconds for the interviewee to respond, time starting from the instant the interviewer completes the question statement.
+    # Default is 1 hour.
+    status = models.BooleanField(default=False) # True indicates the question is complete and it may be asked in an interview session.
+
+    class Meta:
+        verbose_name = "Interview Questions Table"
+        db_table = 'Tests_interviewquestions'
+
+    def __unicode__(self):
+        return "InterviewQuestion: %s"%(self.questionfilename)
+
+
+ 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	 

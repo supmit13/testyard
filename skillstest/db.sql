@@ -690,4 +690,17 @@ create table `Tests_interview` (
 
 alter table Tests_interview drop index title;
 
+create table `Tests_interviewquestions` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `interview_id` INTEGER NOT NULL,
+    `questionfilename` varchar(255) NOT NULL,
+    `questionnumber` INTEGER NOT NULL,
+    `deleted` BOOLEAN DEFAULT false,
+    `maxscore` INTEGER DEFAULT 0,
+    `interviewlinkid` varchar(200) NOT NULL,
+    `timelimit` INTEGER DEFAULT 600,
+    `status` BOOLEAN DEFAULT false,
+    FOREIGN KEY (`interview_id`) REFERENCES `Tests_interview` (`id`)
+)ENGINE=Innodb;
+
 COMMIT;

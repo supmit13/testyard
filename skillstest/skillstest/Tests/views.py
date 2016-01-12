@@ -19,9 +19,11 @@ from django.core.mail import send_mail
 from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 from django.utils.encoding import smart_text
 from django.utils import timezone
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 
 # Standard libraries...
-import os, sys, re, time, datetime
+import os, sys, re, time, datetime, stat
 import pytz
 import cPickle
 import decimal, math
@@ -53,7 +55,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -222,6 +224,7 @@ def get_user_tests(request):
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
     tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
+    tests_user_dict['chkintnameavailabilityurl'] = skillutils.gethosturl(request) + "/" + chkintnameavailabilityurl
     return  tests_user_dict
 
 
@@ -5249,10 +5252,107 @@ def deactivatetestbycreator(request):
 def captureaudiovisual(request):
     tmpl = get_template("tests/audiovisual.html")
     tests_user_dict = {}
+    tests_user_dict['blob_upload_url'] = mysettings.BLOB_UPLOAD_URL
+    tests_user_dict['interviewlinkid'] = request.POST['interviewlinkid']
     tests_user_dict.update(csrf(request))
     cxt = Context(tests_user_dict)
     audiovisualhtml = tmpl.render(cxt)
     return HttpResponse(audiovisualhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def askquestion(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    interviewlinkid = None
+    int_questions_dict = {}
+    int_questions_dict['askquestionurl'] = mysettings.ASK_QUESTION_URL
+    int_questions_dict['challengestoreurl'] = mysettings.CHALLENGE_STORE_URL
+    int_questions_dict['pagetitle'] = "Record Question"
+    if request.POST.has_key('interviewlinkid'):
+        interviewlinkid = request.POST['interviewlinkid']
+    else:
+        int_questions_dict['errmsg'] = error_msg('1171')
+    question_num = 0
+    if request.POST.has_key('question_num'):
+        question_num = request.POST['question_num']
+        if question_num == '':
+            question_num = 0
+        current_question_num = int(question_num) + 1
+    int_questions_dict['interviewlinkid'] = interviewlinkid
+    int_questions_dict['question_num'] = current_question_num
+    tmpl = get_template("tests/audiovisual.html")
+    int_questions_dict.update(csrf(request))
+    cxt = Context(int_questions_dict)
+    audiovisualhtml = tmpl.render(cxt)
+    return HttpResponse(audiovisualhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def uploadblobdata(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    interviewlinkid, blobdata, filename, question_num = "", "", "intro.wav", ""
+    if request.POST.has_key('question_num'):
+        question_num = request.POST['question_num']
+    else:
+        question_num = '0'
+    if question_num != '' and int(question_num) > 0:
+        filename = "q" + question_num + ".wav"
+    if request.POST.has_key('interviewlinkid'):
+        interviewlinkid = request.POST['interviewlinkid']
+    else: # This question/challenge doesn't seem to be associated with any interview. Hence we may drop it.
+        response = HttpResponse(error_msg('1167'))
+        return response
+    if request.FILES.has_key('file'):
+        interviewqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
+        if interviewqset.__len__() == 0:
+            response = HttpResponse(error_msg('1169'))
+            return response
+        if interviewqset.__len__() > 1:
+            return HttpResponse(error_msg('1170'))
+        interviewtitle = interviewqset[0].title
+        directoryname = re.sub(re.compile("\s+"), "_", interviewtitle)
+        filename = interviewqset[0].introfilepath
+        filepath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname + os.path.sep + filename
+        os.chmod(mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname, stat.S_IRWXG|stat.S_IRWXO|stat.S_IRWXU)
+        blobdata = request.FILES['file']
+        with open(filepath, 'wb+') as destination:
+            for chunk in blobdata.chunks():
+                destination.write(chunk)
+        destination.close()
+    else:
+        response = HttpResponse(error_msg('1168'))
+        return response
+    return HttpResponse("The content has been uploaded successfully")
 
 
 @skillutils.is_session_valid
@@ -5273,9 +5373,14 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, challengeseparatorcharacter, responseendcharacter, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext = "", "", 0, 300, "", "", "", "", "", "", "","", "", "", "", "", "Add Intro"
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, challengeseparatorcharacter, responseendcharacter, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename = "", "", 0, 300, "", "", "", "", "", "", "","", "", "", "", "", "Add Intro", "intro.wav"
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
+    # Check to see if an interview with the same title exists in the current user's list.
+    interviewqset = Interview.objects.filter(title=interviewtitle)
+    if interviewqset.__len__() > 0: # Return an error message
+        msg = "Error: %s"%error_msg('1166')
+        return HttpResponse(msg)
     if request.POST.has_key('interviewtopic'):
         interviewtopic = request.POST['interviewtopic']
     if request.POST.has_key('totalscore'):
@@ -5313,8 +5418,17 @@ def createinterview(request):
         randomsequencing = 0
     if request.POST.has_key('interviewlinkid'):
         interviewlinkid = request.POST['interviewlinkid']
+    if request.POST.has_key('introfilename'):
+        introfilename = request.POST['introfilename']
+    else:
+        introfilename = "intro.wav"
     if request.POST.has_key('btncreateinterview'):
         introbtntext = request.POST['btncreateinterview']
+    # Check if we already have an interview with the same interviewlinkid. If so, we do not create the interview.
+    intqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
+    if intqset.__len__() > 0:
+        resp = HttpResponse(error_msg('1170'))
+        return resp
     interviewobj = None
     if introbtntext == 'Add Intro': # We are here for the first time
         interviewobj = Interview()
@@ -5346,7 +5460,7 @@ def createinterview(request):
     interviewobj.scope = interviewscope
     #interviewobj.quality = skilltarget
     interviewobj.challengesfilepath = ""
-    interviewobj.introfilepath = ""
+    interviewobj.introfilepath = introfilename
     interviewobj.filetype = "wav"
     int_user_dict = {}
     try:
@@ -5354,10 +5468,16 @@ def createinterview(request):
         # Create the directory for the interview
         directoryname = re.sub(re.compile("\s+"), "_", interviewtitle)
         dirpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname
-        os.makedirs(dirpath)
+        if not os.path.exists(dirpath):
+            os.makedirs(dirpath)
     except:
         int_user_dict['errmsg'] = "Error: " + sys.exc_info()[1].__str__()
         return HttpResponse(int_user_dict['errmsg'])
+    int_user_dict['challengestoreurl'] = mysettings.CHALLENGE_STORE_URL
+    int_user_dict['interviewlinkid'] = interviewlinkid
+    int_user_dict['askquestionurl'] = mysettings.ASK_QUESTION_URL
+    int_user_dict['pagetitle'] = "Add an Introductory Comment"
+    int_user_dict['question_num'] = "0"
     tmpl = get_template("tests/audiovisual.html")
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
@@ -5365,6 +5485,35 @@ def createinterview(request):
     return HttpResponse(audiovisualhtml)
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def checknameavailability(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    inttitle = request.POST['inttitle']
+    intqset = Interview.objects.filter(title=inttitle, interviewer=userobj)
+    if intqset.__len__() > 0:
+        return HttpResponse('0') # Not available
+    else:
+        return HttpResponse('1') # Available
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def interviewchallengestore(request):
+    pass
 
