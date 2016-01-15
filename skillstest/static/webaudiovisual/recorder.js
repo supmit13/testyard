@@ -116,6 +116,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
     //alert(document.frmremediation.filename.value);
     postdata.append('csrfmiddlewaretoken', document.frmremediation.csrfmiddlewaretoken.value);
     postdata.append('interviewlinkid', document.frmremediation.interviewlinkid.value);
+    postdata.append('question_num', document.frmremediation.question_num.value);
     var xmlhttp;
     if (window.XMLHttpRequest){
 	xmlhttp=new XMLHttpRequest();
@@ -132,6 +133,7 @@ var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456
 	    }
 	}
     };
+    //alert(postdata);
     xmlhttp.open("POST", 'skillstest/test/interview/uploadblob/', true);
     xmlhttp.send(postdata);
   };

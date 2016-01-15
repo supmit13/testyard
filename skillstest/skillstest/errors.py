@@ -169,6 +169,7 @@ error_codes = { \
         '1169' : 'Error: Could not find the interview identified by the submitted interviewlinkid',\
         '1170' : 'Error: An interview with the same linkid exists. Please refresh the "Tests" tab and click on the "Create an Interview" link to create another interview with a unique link id. You will not be able to add questions to this interview unless you perform this step.',\
         '1171' : 'Could not find an interviewlinkid with the request. Please restart the process of creating test as it seems that the data for this test has become corrupt.',\
+        '1172' : 'An error occurred while storing the questions in DB. Please contact the administrator at admin@testyard.com with the name of the interview.',\
     }
 
 def error_msg(code):

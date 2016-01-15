@@ -20,6 +20,7 @@
 	    window.close(); // Close the previous window
 	    popup.document.write(pagecontent);
 	    */
+	    //alert(document.frmremediation.question_num.value);
 	    document.frmremediation.action = "{{askquestionurl}}";
 	    document.frmremediation.method = "POST";
 	    document.frmremediation.submit();
@@ -97,16 +98,16 @@
 	</div>
 	</center>
 	<br />
-	<font color='#0000AA' face='verdana' size=-1><i>(Click on the microphone to start recording. To stop recording click on it again.)</i></font>
+	<center><font color='#0000AA' face='verdana' style='font-weight:bold' size=-1><i>(Click on the microphone to start recording. To stop recording click on it again.)</i></font></center>
 	<br />
 	<div id="actions">
 	<table border='0' cellspacing=3 cellpadding=3>
 	<tr>
-	<td nowrap><a id="addquestions" href="#" onClick='javascript:addquestionswin();'>Add Questions</a></td>
+	<td nowrap><a id="addquestions" href="#" onClick='javascript:addquestionswin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Add Questions</font></a></td>
 	</tr>
 	
 	<tr>
-	<td nowrap><a id="closewindow" href="#" onClick='javascript:closewin();'>Close Window</a></td>
+	<td nowrap><a id="closewindow" href="#" onClick='javascript:closewin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Close Window</font></a></td>
 	</tr>
 	</table>
 	</div>

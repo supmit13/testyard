@@ -40,7 +40,7 @@ from itertools import chain
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -224,6 +224,7 @@ def get_user_tests(request):
     tests_user_dict['tests_evaluator_ordered_createdate'] = tests_evaluator_ordered_createdate
     tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
     tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
+    tests_user_dict['realtime'] = 1
     tests_user_dict['chkintnameavailabilityurl'] = skillutils.gethosturl(request) + "/" + chkintnameavailabilityurl
     return  tests_user_dict
 
@@ -5254,6 +5255,7 @@ def captureaudiovisual(request):
     tests_user_dict = {}
     tests_user_dict['blob_upload_url'] = mysettings.BLOB_UPLOAD_URL
     tests_user_dict['interviewlinkid'] = request.POST['interviewlinkid']
+    tests_user_dict['realtime'] = '1'
     tests_user_dict.update(csrf(request))
     cxt = Context(tests_user_dict)
     audiovisualhtml = tmpl.render(cxt)
@@ -5291,8 +5293,9 @@ def askquestion(request):
     if request.POST.has_key('question_num'):
         question_num = request.POST['question_num']
         if question_num == '':
-            question_num = 0
-        current_question_num = int(question_num) + 1
+            current_question_num = '0'
+        else:
+            current_question_num = int(question_num) + 1
     int_questions_dict['interviewlinkid'] = interviewlinkid
     int_questions_dict['question_num'] = current_question_num
     tmpl = get_template("tests/audiovisual.html")
@@ -5324,7 +5327,7 @@ def uploadblobdata(request):
     if request.POST.has_key('question_num'):
         question_num = request.POST['question_num']
     else:
-        question_num = '0'
+        question_num = '1'
     if question_num != '' and int(question_num) > 0:
         filename = "q" + question_num + ".wav"
     if request.POST.has_key('interviewlinkid'):
@@ -5332,6 +5335,22 @@ def uploadblobdata(request):
     else: # This question/challenge doesn't seem to be associated with any interview. Hence we may drop it.
         response = HttpResponse(error_msg('1167'))
         return response
+    if int(question_num) >= 1 and interviewlinkid:
+        try:
+            interviewquestionobj = InterviewQuestions()
+            interviewobj = Interview.objects.get(interviewlinkid = interviewlinkid)
+            interviewquestionobj.interview = interviewobj
+            interviewquestionobj.questionfilename = filename
+            interviewquestionobj.questionnumber = question_num
+            interviewquestionobj.interviewlinkid = interviewlinkid
+            interviewquestionobj.status = True
+            interviewquestionobj.maxscore = interviewobj.maxscore
+            interviewquestionobj.timelimit = interviewobj.maxduration
+            interviewquestionobj.save()
+        except:
+            print sys.exc_info()[1].__str__()
+            resp = HttpResponse(error_msg('1172'))
+            return resp
     if request.FILES.has_key('file'):
         interviewqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
         if interviewqset.__len__() == 0:
@@ -5341,7 +5360,10 @@ def uploadblobdata(request):
             return HttpResponse(error_msg('1170'))
         interviewtitle = interviewqset[0].title
         directoryname = re.sub(re.compile("\s+"), "_", interviewtitle)
-        filename = interviewqset[0].introfilepath
+        # Check if there are any files in 'filepath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname'. If not, the filename should be 'intro.wav'.
+        fileslist = os.listdir(mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname)
+        if fileslist.__len__() == 0:
+            filename = interviewqset[0].introfilepath
         filepath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname + os.path.sep + filename
         os.chmod(mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + directoryname, stat.S_IRWXG|stat.S_IRWXO|stat.S_IRWXU)
         blobdata = request.FILES['file']

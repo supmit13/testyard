@@ -890,6 +890,20 @@
 		  return false;
 		}
 
+		function showcreateinterviewform(uid){
+		  // Populate the div (id='createtestdiv') with the form
+		  var thediv=document.getElementById('createtestdiv');
+		  if(thediv.style.display == "none"){
+		    thediv.style.display = "";
+		    thediv.innerHTML = "{% include 'tests/create_interview_form.html' %}";
+		  }
+		  else{
+		    thediv.style.display = "none";
+		    thediv.innerHTML = '';
+		  }
+		  return false;
+		}
+
 		// Function to display test upload interface. This will enable user to create a 
 		// test in  CSV or XLS(X) format and upload them in a single action.
 		function showuploadtestform(uid){
@@ -2167,6 +2181,127 @@
   	    xmlhttp.send(postdata);
 	}
 
+	
+	function createinterview(uid, createinterviewurl){
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    // Gather data from the form. If any required value is missing, assign the default value for that field (if one exists),
+	    // or alert the user about the missing value.
+	    postdata = ""
+	    numericpattern = new RegExp("^\\d+$");
+	    for(var i=0; i < document.createinterviewform.elements.length; i++){
+		if(document.createinterviewform.elements[i].name == 'interviewtitle' && document.createinterviewform.elements[i].value.trim() == ""){
+		    alert("Interview title cannot be empty. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'interviewtopic' && document.createinterviewform.elements[i].value.trim() == ""){
+		    alert("Interview topic cannot be empty. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'totalscore' && (document.createinterviewform.elements[i].value.trim() == "" || !numericpattern.test(document.createinterviewform.elements[i].value))){
+		    alert("Total score cannot be empty or non-numeric. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'maxresponsestarttime' && (document.createinterviewform.elements[i].value.trim() == "" || !numericpattern.test(document.createinterviewform.elements[i].value.trim()))){
+		    alert("Max Response Start Time cannot be empty or non-numeric. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'numchallenges' && (document.createinterviewform.elements[i].value.trim() == "" || !numericpattern.test(document.createinterviewform.elements[i].value.trim()))){
+		    alert("Number of Challenges cannot be empty or non-numeric. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'interviewduration' && document.createinterviewform.elements[i].value.trim() == ""){
+		    // Assign a default value
+		    document.createinterviewform.elements[i].value = '3600';
+		}
+		if(document.createinterviewform.elements[i].name == 'medium' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = 'audio';
+		}
+		if(document.createinterviewform.elements[i].name == 'publishdate' && document.createinterviewform.elements[i].value.trim() == ""){
+		    alert("Interview publish date cannot be empty. Please enter a value for it. It should be in 'dd-mon-yyyy' format.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'challengeseparatorcharacter' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = '#';
+		}
+		if(document.createinterviewform.elements[i].name == 'responseendcharacter' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = '#';
+		}
+		if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == false){
+		    continue;
+		}
+		if(document.createinterviewform.elements[i].name == 'randomsequencing' && document.createinterviewform.elements[i].checked == false){
+		    continue;
+		}
+		if(document.createinterviewform.elements[i].name == 'introfilename' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = 'intro.wav';
+		}
+		postdata += document.createinterviewform.elements[i].name + "=" + document.createinterviewform.elements[i].value + "&";
+	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Open a popup window here to add challenges for the interview
+		    errorpattern = new RegExp('Error:');
+		    if(errorpattern.test(xmlhttp.responseText)){
+			alert(xmlhttp.responseText);
+			return (0);
+		    }
+		    var windowName = 'addintro'; 
+		    var popUp = window.open('', windowName, 'width=1000, height=700, left=24, top=24, scrollbars=1, resizable');
+		    if (popUp == null || typeof(popUp)=='undefined') { 	
+			alert('Please disable your pop-up blocker and click the "Open Intro" button again.'); 
+		    } 
+		    else { 	
+			popUp.focus();
+		    }
+		    popUp.document.write(xmlhttp.responseText);
+		    popUp.document.close();
+		}
+	    };
+	    if(document.createinterviewform.btncreateinterview.value == 'Add Intro'){
+		document.createinterviewform.btncreateinterview.value = 'Open Intro';
+	    }
+	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+
+        function checkintnameavailability(title){
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "inttitle=" + title + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		namewarn = document.getElementById('namewarning');
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    if(xmlhttp.responseText == '1'){
+			namewarn.innerHTML = "<font color='#00AA00' size=-1 face='verdana'>Available</font>";
+		    }
+		    else{
+			namewarn.innerHTML = "<font color='#AA0000' size=-1 face='verdana'>NOT Available</font>";
+		    }
+		}
+	    };
+	    xmlhttp.open("POST", '{{ chkintnameavailabilityurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
 		</script>
 		<div class="post">
 			<span class="meta">
@@ -2177,6 +2312,7 @@
 			<div id='createtestdiv' style='display:none;'></div>
 			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
 			<h3><font color='#00BB00'>Alternatively, you may upload a new test from the screen pointed to by this link: {{ uploadlink }}</font></h3>
+			<h3><font color='#00BB00'>You may create an interview by clicking on this link: {{ interviewlink }}</font></h3>
 			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
 			<form name='frmmaintests' id='frmmaintests' method='POST' action=''>
 			{% csrf_token %}
