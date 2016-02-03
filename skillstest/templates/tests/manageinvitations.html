@@ -2,7 +2,7 @@
 {% if usertest.LENGTH > 0 %}
 <br /><br />
 <div id='utinfo' style=''>
-<font color='#0508E3' style='font-weight:bold;'>Invitations to Existing Users</font><font color='#0508E3' size=-1>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</font><br />
+<font color='#0508E3' style='font-weight:bold;'>Invitations to Existing Users</font><font color='#0508E3' size=-1 style='font-weight:bold;'><i>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
 <table border='1' cellspacing='4' cellpadding='4'>
 <tr>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till</font></td>
@@ -46,13 +46,13 @@
 {% endfor %}
 </table>
 {% endif %}
-<font color='#0508E3' size=-1>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</font>
+<font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
 </div>
 
 {% if wouldbeusers.LENGTH > 0 %}
 <br /><br />
 <div id='wbuinfo' style=''>
-<font color='#0508E3' style='font-weight:bold;'>Invitations to Users Not Registered on TestYard</font>  <font color='#0508E3' size=-1>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</font><br />
+<font color='#0508E3' style='font-weight:bold;'>Invitations to Users Not Registered on TestYard</font>  <font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
 <table border=1 cellspacing='4' cellpadding='4'>
 <tr>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till</font></td>
@@ -92,7 +92,7 @@
 {% endfor %}
 </table>
 {% endif %}
-<font color='#0508E3' size=-1>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</font>
+<font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
 </div>
 {% csrf_token %}
 <table border=0 cellspacing=4 cellpadding=4>
