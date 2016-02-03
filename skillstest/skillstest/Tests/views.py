@@ -5576,10 +5576,31 @@ def createinterview(request):
                 retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
             except:
                 if mysettings.DEBUG:
-                    print "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
-            html = "Your interview has been scheduled at %s"%scheduledatetime
-            html += "You may attend the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
-            html += "The interview link (above) has also been sent to you at your email address."
+                    retmsg = "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
+                    return retmsg
+            # Now, send a similar email to the creator/conductor of the interview with the appropriate interview URL.
+            message = """Dear Interviewer,
+		You have successfully set up an interview for %s at %s. You may click on the following link to access the interview application
+		that will assist you in conducting the interview at the aforementioned time.
+
+		%s
+
+		Good Luck!
+
+		The TestYard Team.
+	    """%(emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl)
+	    subject = "Interview Scheduled"
+	    fromaddr = userobj.emailid
+   	    toaddr = userobj.emailid
+	    try:
+		retval = send_mail(subject, message, fromaddr, [toaddr,], False)
+	    except:
+ 		if mysettings.DEBUG:
+		    retmsg = "sendmail failed for %s - %s\n"%(toaddr, sys.exc_info()[1].__str__())
+		    return retmsg
+            html = "The interview has been scheduled at %s, and the candidate has been informed about it by email."%scheduledatetime
+            html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
+            html += "The interview link (above) has also been sent to you to your email address."
             int_user_dict = {}
             cxt = Context(int_user_dict)
             interviewhtml = html.render(cxt)
