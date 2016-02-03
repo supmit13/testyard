@@ -135,6 +135,8 @@ CHECK_INT_NAME_AVAILABILITY_URL = "skillstest/test/checknameavail/"
 CHALLENGE_STORE_URL = "skillstest/test/interview/addchallenge/"
 BLOB_UPLOAD_URL = "skillstest/test/interview/uploadblob/"
 ASK_QUESTION_URL = "skillstest/test/interview/askquestion/"
+ATTEND_INTERVIEW_URL = "skillstest/test/interview/attend/"
+UPDATE_INTERVIEW_META_URL = "skillstest/test/interview/updatemeta/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"

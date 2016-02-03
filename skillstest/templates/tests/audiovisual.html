@@ -3,24 +3,29 @@
 <head>
 	<meta name="viewport" content="width=device-width,initial-scale=1">
 	<title>Audio Recorder</title>
-	<script language='JavaScript'>
-
+    	<script language='JavaScript'>
 	function closewin(){
-	    window.close();
+    	    interviewlinkid = document.getElementById('interviewlinkid').value;
+	    csrftoken = document.frmremediation.csrfmiddlewaretoken.value;
+	    postdata = "interviewlinkid=" + interviewlinkid + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+   	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		    alert(xmlhttp.responseText);
+		    window.close();
+  		}
+  	    };
+	    xmlhttp.open("POST", '{{ updateinterviewmetaurl }}', true);
+  	    xmlhttp.send(postdata);
 	}
 
-
    	function addquestionswin(){
-	    /* 
-	    var windowName = 'addquestions';
-   	    var html = document.getElementsByTagName('html')[0];
-	    var pagecontent = html.innerHTML;
-	    alert(pagecontent);
-	    var popup = window.open('', windowName, 'width=1000, height=700, left=24, top=24, scrollbars=1, resizable');
-	    window.close(); // Close the previous window
-	    popup.document.write(pagecontent);
-	    */
-	    //alert(document.frmremediation.question_num.value);
 	    document.frmremediation.action = "{{askquestionurl}}";
 	    document.frmremediation.method = "POST";
 	    document.frmremediation.submit();
@@ -83,31 +88,45 @@
 	</style>
 </head>
 <body>
-	<form name='frmremediation' id='frmremediation' action='{{challengestoreurl}}' method='POST' enctype='multipart/form-data'>{% csrf_token %}<input type='hidden' name='interviewlinkid' value='{{interviewlinkid}}'><input type='hidden' name='question_num' value='{{question_num}}'>
+	<form name='frmremediation' id='frmremediation' action='{{challengestoreurl}}' method='POST' enctype='multipart/form-data'>{% csrf_token %}<input type='hidden' name='interviewlinkid' id='interviewlinkid' value='{{interviewlinkid}}'><input type='hidden' name='question_num' value='{{question_num}}'><input type='hidden' name='medium' value='audiovisual'>
 	<center><font color='#0000AA' face='verdana' style='font-weight:bold;'>{{pagetitle}}</font></center>
         <center><font color='#AA0000' face='verdana' style='font-weight:bold;' size=-1>{{errmsg}}</font></center>
 	</form>
 	<br /><br />
-	<div id="viz">
-		<canvas id="wavedisplay" width="512" height="350"></canvas>
+	<video id='audiovisualcontainer' muted="muted" volume='0'></video>
+    	<script>
+	// Remove the background jarring noise... (Is that the CMB?)
+	window.onload = function () {
+    	    var element = document.getElementById('audiovisualcontainer');
+    	    element.muted = "muted";
+	};
+
+	(function () {
+    	    navigator.getMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia);
+    	    navigator.getMedia(
+            {video:true, audio:true},
+            function (mediaStream) {
+            	var video = document.getElementById('audiovisualcontainer');
+            	video.src = window.URL.createObjectURL(mediaStream);
+            	video.play();
+            },   
+            function (error) {
+            	console.log(error);
+            })   
+	})();
+	</script>
+	<br />
+	<div style="text-align:center; width:100%">
+            <img id="record" src="static/webaudiovisual/images/audiovisual.jpg" style='height:60px;width:60px;' onclick="toggleRecording(this);">
 	</div>
-	<br />
-        <center>
-	<div id="controls">
-		<img id="record" src="static/webaudiovisual/images/mic128.png" style='height:60px;width:60px;' onclick="toggleRecording(this);">
-	</div>
-	</center>
-	<br />
-	<center><font color='#0000AA' face='verdana' style='font-weight:bold' size=-1><i>(Click on the microphone to start recording. To stop recording click on it again.)</i></font></center>
-	<br />
 	<div id="actions">
 	<table border='0' cellspacing=3 cellpadding=3>
 	<tr>
-	<td nowrap><a id="addquestions" href="#" onClick='javascript:addquestionswin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Add Questions</font></a></td>
+	<td nowrap><a id="addquestions" href="#/" onClick='javascript:addquestionswin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Add Questions</font></a></td>
 	</tr>
 	
 	<tr>
-	<td nowrap><a id="closewindow" href="#" onClick='javascript:closewin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Close Window</font></a></td>
+	<td nowrap><a id="closewindow" href="#/" onClick='javascript:closewin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Close Window</font></a></td>
 	</tr>
 	</table>
 	</div>

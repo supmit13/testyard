@@ -394,8 +394,6 @@ class Interview(models.Model):
     # will evaluate the responses and optionally assign a score for each response.
     medium = models.CharField(default='audio', choices = (('audio', 'Audio'), ('audiovisual', 'AudioVisual')), max_length=15)
     language = models.CharField(default='english', null=True, blank=True, max_length=20)
-    challengeseparatorcharacter = models.CharField(default='#', max_length=4) # Character to separate consecutive challenge statements.
-    responseendcharacter = models.CharField(default='#', max_length=4)
     createdate = models.DateTimeField(auto_now_add=True)
     publishdate = models.DateTimeField(null=False, blank=True)
     status = models.BooleanField(default=True) # Determines if the 'Interview' is being edited (or created). 
@@ -445,4 +443,33 @@ class InterviewQuestions(models.Model):
         return "InterviewQuestion: %s"%(self.questionfilename)
 
 
- 																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																	 
+class InterviewResponses(models.Model):
+    interview = models.ForeignKey(Interview, related_name="+", null=False, blank=False)
+    questionfilename = models.CharField(max_length=255, null=False, blank=False)
+    interviewlinkid = models.CharField(max_length=200, null=False, blank=False)
+    responsefilename = models.CharField(max_length=200, null=False, blank=False)
+
+    class Meta:
+        verbose_name = "Interview Responses Table"
+        db_table = 'Tests_interviewresponses'
+
+    def __unicode__(self):
+        return "InterviewResponse: %s"%(self.questionfilename)
+
+
+class InterviewCandidates(models.Model):
+    interview = models.ForeignKey(Interview, related_name="+", null=False, blank=False)
+    emailaddr = models.CharField(max_length=255, null=False, blank=False)
+    scheduledtime = models.DateTimeField(null=True, blank=True)
+    actualstarttime = models.DateTimeField(null=True, blank=True)
+    interviewlinkid = models.CharField(max_length=200, null=False, blank=False)
+    totaltimetaken = models.IntegerField(default=0, null=True, blank=True)
+    interviewurl = models.TextField(default='', null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Interview Candidates Table"
+        db_table = 'Tests_interviewcandidates'
+
+    def __unicode__(self):
+        return "InterviewCandidates: %s"%(self.emailaddr)
+

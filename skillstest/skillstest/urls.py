@@ -86,6 +86,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.CHALLENGE_STORE_URL, 'skillstest.Tests.views.interviewchallengestore', name='interviewchallengestore'),
     url(r'%s$'%mysettings.BLOB_UPLOAD_URL, 'skillstest.Tests.views.uploadblobdata', name='uploadblobdata'),
     url(r'%s$'%mysettings.ASK_QUESTION_URL, 'skillstest.Tests.views.askquestion', name='askquestion'),
+    url(r'%s$'%mysettings.ATTEND_INTERVIEW_URL, 'skillstest.Tests.views.attendinterview', name='attendinterview'),
+    url(r'%s$'%mysettings.UPDATE_INTERVIEW_META_URL, 'skillstest.Tests.views.updateinterviewmeta', name='updateinterviewmeta'),
 
     url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
     url(r'%s$'%mysettings.CHECK_GRPNAME_AVAIL_URL, 'skillstest.Network.views.checkgrpnameavailability', name='creategroup'),

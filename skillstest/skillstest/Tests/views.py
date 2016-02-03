@@ -36,11 +36,12 @@ from xlrd import open_workbook
 import csv, string
 import xml.etree.ElementTree as et
 from itertools import chain
+import pyaudio, wave
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -5151,6 +5152,9 @@ def setschedule(request):
                 wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
             except:
                 print sys.exc_info()[1].__str__()
+                message += " Could not update record."
+                response = HttpResponse(message)
+                return response
             wbuobj.save()
     message += " Updated existing schedules."
     response = HttpResponse(message)
@@ -5256,6 +5260,7 @@ def captureaudiovisual(request):
     tests_user_dict['blob_upload_url'] = mysettings.BLOB_UPLOAD_URL
     tests_user_dict['interviewlinkid'] = request.POST['interviewlinkid']
     tests_user_dict['realtime'] = '1'
+    tests_user_dict['updateinterviewmetaurl'] = mysettings.UPDATE_INTERVIEW_META_URL
     tests_user_dict.update(csrf(request))
     cxt = Context(tests_user_dict)
     audiovisualhtml = tmpl.render(cxt)
@@ -5296,13 +5301,24 @@ def askquestion(request):
             current_question_num = '0'
         else:
             current_question_num = int(question_num) + 1
+    medium = "audiovisual"
+    if request.POST.has_key('medium'):
+        medium = request.POST['medium']
     int_questions_dict['interviewlinkid'] = interviewlinkid
     int_questions_dict['question_num'] = current_question_num
-    tmpl = get_template("tests/audiovisual.html")
+    int_questions_dict['updateinterviewmetaurl'] = mysettings.UPDATE_INTERVIEW_META_URL
+    int_questions_dict['answerfilename'] = ""
+    if medium == "audiovisual":
+        tmpl = get_template("tests/audiovisual.html")
+    elif medium == "audio":
+        tmpl = get_template("tests/audio.html")
+    else:
+        print "Unsupported medium requested."
+        tmpl = "Unsupported medium requested."
     int_questions_dict.update(csrf(request))
     cxt = Context(int_questions_dict)
-    audiovisualhtml = tmpl.render(cxt)
-    return HttpResponse(audiovisualhtml)
+    mediumhtml = tmpl.render(cxt)
+    return HttpResponse(mediumhtml)
 
 
 @skillutils.is_session_valid
@@ -5371,6 +5387,9 @@ def uploadblobdata(request):
             for chunk in blobdata.chunks():
                 destination.write(chunk)
         destination.close()
+        #if interviewqset[0].realtime:
+        #    print "EEEEEEEEEEEEEEEEEEEEEEEE"
+        #    streaminterview(filepath)
     else:
         response = HttpResponse(error_msg('1168'))
         return response
@@ -5395,7 +5414,7 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, challengeseparatorcharacter, responseendcharacter, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename = "", "", 0, 300, "", "", "", "", "", "", "","", "", "", "", "", "Add Intro", "intro.wav"
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", "", "", "Add Intro", "intro.wav", "", ""
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
     # Check to see if an interview with the same title exists in the current user's list.
@@ -5405,31 +5424,30 @@ def createinterview(request):
         return HttpResponse(msg)
     if request.POST.has_key('interviewtopic'):
         interviewtopic = request.POST['interviewtopic']
-    if request.POST.has_key('totalscore'):
+    if request.POST.has_key('totalscore') and request.POST['totalscore'] != "":
         totalscore = request.POST['totalscore']
     totalscore = totalscore.strip()
-    if not totalscore:
-        totalscore = 0
-    if request.POST.has_key('maxresponsestarttime'):
+    if request.POST.has_key('maxresponsestarttime') and request.POST['maxresponsestarttime'] != "":
         maxresponsestarttime = request.POST['maxresponsestarttime']
-    if request.POST.has_key('numchallenges'):
+    if request.POST.has_key('numchallenges') and request.POST['numchallenges'] != "":
         numchallenges = request.POST['numchallenges']
-    if request.POST.has_key('interviewduration'):
+    if request.POST.has_key('interviewduration') and request.POST['interviewduration'] != "":
         interviewduration = request.POST['interviewduration']
     if request.POST.has_key('medium'):
         medium = request.POST['medium']
     if request.POST.has_key('publishdate'):
         publishdate = request.POST['publishdate']
-    if request.POST.has_key('challengeseparatorcharacter'):
-        challengeseparatorcharacter = request.POST['challengeseparatorcharacter']
-    if request.POST.has_key('responseendcharacter'):
-        responseendcharacter = request.POST['responseendcharacter']
-    if request.POST.has_key('language'):
+    #if request.POST.has_key('scheduledatetime'):
+    #    scheduledatetime = request.POST['scheduledatetime']
+    if request.POST.has_key('language') and request.POST['language'] != "":
         language = request.POST['language']
     if request.POST.has_key('realtime'):
         realtime = request.POST['realtime']
-    else:
-        realtime = 0
+    else:  
+	realtime = 0
+    if realtime: # Email invitation to all interviewees should be sent.
+        emailinvitationtarget = request.POST['invitationemailaddr']
+        scheduledatetime = request.POST['scheduledatetime']
     if request.POST.has_key('skilltarget'):
         skilltarget = request.POST['skilltarget']
     if request.POST.has_key('interviewscope'):
@@ -5467,8 +5485,6 @@ def createinterview(request):
     interviewobj.interviewer = userobj
     interviewobj.medium = medium
     interviewobj.language = language
-    interviewobj.challengeseparatorcharacter = challengeseparatorcharacter
-    interviewobj.responseendcharacter = responseendcharacter
     interviewobj.createdate = ""
     publishdateparts = publishdate.split("-")
     pubmon2digit = mysettings.MONTHS_DICT[publishdateparts[1]]
@@ -5483,6 +5499,31 @@ def createinterview(request):
     #interviewobj.quality = skilltarget
     interviewobj.challengesfilepath = ""
     interviewobj.introfilepath = introfilename
+    if emailinvitationtarget: # Send an email invitation link to the email address.
+        message = """Dear Candidate,
+                     
+                     This is an invitation to attend an interview with %s on %s. Please click on the 
+                     link below to load the interview interface. If it doesn't work, then copy
+                     the link and paste it in your browser's address bar and hit <enter>.
+
+                     %s/%s
+
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.
+                     Browsers other than these 3 may not support every feature used by the inter-
+                     view application.
+
+                     Good Luck!
+
+                     The TestYard Interview Team.
+	"""%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL)
+        subject = "TestYard Interview Invitation"
+        fromaddr = userobj.emailid
+        # Send email
+        try:
+            retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
+        except:
+            if mysettings.DEBUG:
+                print "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
     interviewobj.filetype = "wav"
     int_user_dict = {}
     try:
@@ -5495,12 +5536,67 @@ def createinterview(request):
     except:
         int_user_dict['errmsg'] = "Error: " + sys.exc_info()[1].__str__()
         return HttpResponse(int_user_dict['errmsg'])
+    # Inform both users that interview has been scheduled. If scheduled datetime > current datetime, 
+    # then the audio.html/audiovisual.html screen should not be shown. Instead, show the URL for both
+    # users and request the users to appear at the linked page at the scheduled time. The respective 
+    # URLs will be sent to both the users through email. Additionally, the interviewer will have the 
+    # URL listed in her/his list of interviews. If the interviewee is also a member of TestYard, then
+    # she too will have the URL listed  in her/his list of interviews.
+    if realtime:
+        intcandidateobj = InterviewCandidates()
+        intcandidateobj.interview = interviewobj
+        intcandidateobj.emailaddr = emailinvitationtarget
+        intcandidateobj.scheduledtime = scheduledatetime
+        intcandidateobj.interviewlinkid = interviewlinkid
+        intcandidateobj.interviewurl = mysettings.URL_PROTOCOL + skillutils.gethosturl(request) + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/"
+        intcandidateobj.save()
+        currentdatetime = datetime.datetime.now()
+        scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
+        if scheduledatetime_dt > currentdatetime:
+            message = """Dear Candidate,
+                     
+                     This is an invitation to attend an interview with %s on %s. Please click on the 
+                     link below to load the interview interface. If it doesn't work, then copy
+                     the link and paste it in your browser's address bar and hit <enter>.
+
+                     %s
+
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.
+                     Browsers other than these 3 may not support every feature used by the inter-
+                     view application.
+
+                     Good Luck!
+
+                     The TestYard Interview Team.
+	"""%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "?attend=" + emailinvitationtarget)
+            subject = "TestYard Interview Invitation"
+            fromaddr = userobj.emailid
+            # Send email
+            try:
+                retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
+            except:
+                if mysettings.DEBUG:
+                    print "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
+            html = "Your interview has been scheduled at %s"%scheduledatetime
+            html += "You may attend the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
+            html += "The interview link (above) has also been sent to you at your email address."
+            int_user_dict = {}
+            cxt = Context(int_user_dict)
+            interviewhtml = html.render(cxt)
+            return HttpResponse(interviewhtml)
+        else:
+            pass
     int_user_dict['challengestoreurl'] = mysettings.CHALLENGE_STORE_URL
     int_user_dict['interviewlinkid'] = interviewlinkid
     int_user_dict['askquestionurl'] = mysettings.ASK_QUESTION_URL
-    int_user_dict['pagetitle'] = "Add an Introductory Comment"
+    int_user_dict['updateinterviewmetaurl'] = mysettings.UPDATE_INTERVIEW_META_URL
+    int_user_dict['pagetitle'] = "^ Please click on 'Allow' button above to allow the computer to use webcam and microphone. ^ Add an Introductory Comment"
     int_user_dict['question_num'] = "0"
-    tmpl = get_template("tests/audiovisual.html")
+    int_user_dict['medium'] = medium
+    if medium == 'audio':
+        tmpl = get_template("tests/audio.html")
+    else:
+        tmpl = get_template("tests/audiovisual.html")
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
     audiovisualhtml = tmpl.render(cxt)
@@ -5538,4 +5634,66 @@ def checknameavailability(request):
 @csrf_protect
 def interviewchallengestore(request):
     pass
+
+
+def streaminterview(filename):
+    CHUNK = 1024
+    wf = wave.open(filename, 'rb')
+    p = pyaudio.PyAudio()
+    stream = p.open(format=p.get_format_from_width(wf.getsampwidth()), channels=wf.getnchannels(), rate=wf.getframerate(), output=True)
+    data = wf.readframes(CHUNK)
+    while len(data) > 0:
+        stream.write(data)
+        data = wf.readframes(CHUNK)
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+
+def attendinterview(request):
+    pass
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def updateinterviewmeta(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    intlinkid = ""
+    if request.POST.has_key('interviewlinkid'):
+        intlinkid = request.POST['interviewlinkid']
+        intobj = Interview.objects.get(interviewlinkid=intlinkid)
+        intquestionsqset = InterviewQuestions.objects.filter(interviewlinkid=intlinkid)
+        questionscount = list(intquestionsqset).__len__()
+        intobj.challengescount = questionscount
+        try:
+            intobj.save()
+        except:
+            response = HttpResponse("Could not save interview property - %s"%sys.exc_info()[1].__str__())
+            return response
+        response = HttpResponse("Updated Interview object successfully")
+        return response
+    else:
+        response = HttpResponse("The request is corrupt. Please try again. If it fails again, please contact the TestYard administrator at '%s'"%mysettings.MAILSENDER)
+        return response
+
+
+
+
+
+
+
 

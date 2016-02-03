@@ -845,6 +845,35 @@ create table `Tests_interviewquestions` (
     FOREIGN KEY (`interview_id`) REFERENCES `Tests_interview` (`id`)
 )ENGINE=Innodb;
 
+
+create table `Tests_interviewresponses` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `interview_id` INTEGER NOT NULL,
+    `question_id` INTEGER NOT NULL,
+    `interviewlinkid` VARCHAR(200) NOT NULL,
+    `responsefilename` VARCHAR(200) DEFAULT '',
+    FOREIGN KEY (`interview_id`) REFERENCES `Tests_interview` (`id`),
+    FOREIGN KEY (`question_id`) REFERENCES `Tests_interviewquestions` (`id`)
+)ENGINE=Innodb;
+
+
+create table `Tests_interviewcandidates` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `interview_id` INTEGER NOT NULL,
+    `emailaddr` VARCHAR (200) NOT NULL,
+    `scheduledtime` DATETIME default NULL,
+    `actualstarttime` DATETIME default NULL,
+    `interviewlinkid` VARCHAR(200) NOT NULL,
+    `totaltimetaken` INTEGER DEFAULT NULL,
+    FOREIGN KEY (`interview_id`) REFERENCES `Tests_interview` (`id`)
+)ENGINE=Innodb;
+
+
+ALTER table `Tests_interview` drop column `challengeseparatorcharacter`;
+ALTER table `Tests_interview` drop column `responseendcharacter`;
+
+ALTER table `Tests_interviewcandidates` add column `interviewurl` text default '';
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

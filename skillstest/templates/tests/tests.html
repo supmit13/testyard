@@ -4,7 +4,7 @@
 	<script src='http://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
 	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script>
-	 
+	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -79,12 +79,20 @@
 		  new JsDatePick({
 		    useMode:2,
 		    target:"publishdate",
-		    dateFormat:"%d-%M-%Y"
+		    dateFormat:"%d-%M-%Y", 
+		    limitToToday : false
 		  });
 		  new JsDatePick({
 		    useMode:2,
 		    target:"activedate",
-		    dateFormat:"%d-%M-%Y"
+		    dateFormat:"%d-%M-%Y",
+		    limitToToday : false
+		  });
+		  new JsDatePick({
+		    useMode:2,
+		    target:"scheduledatetime",
+		    dateFormat:"%d-%M-%Y",
+		    limitToToday : false
 		  });
 		}
 
@@ -2205,18 +2213,18 @@
 		    document.createinterviewform.elements[i].focus();
 		    return (false);
 		}
-		if(document.createinterviewform.elements[i].name == 'totalscore' && (document.createinterviewform.elements[i].value.trim() == "" || !numericpattern.test(document.createinterviewform.elements[i].value))){
-		    alert("Total score cannot be empty or non-numeric. Please enter a value for it.");
+		if(document.createinterviewform.elements[i].name == 'totalscore' && !numericpattern.test(document.createinterviewform.elements[i].value) && document.createinterviewform.elements[i].value != ""){
+		    alert("Total score cannot be non-numeric. Please enter a numeric value for it.");
 		    document.createinterviewform.elements[i].focus();
 		    return (false);
 		}
-		if(document.createinterviewform.elements[i].name == 'maxresponsestarttime' && (document.createinterviewform.elements[i].value.trim() == "" || !numericpattern.test(document.createinterviewform.elements[i].value.trim()))){
-		    alert("Max Response Start Time cannot be empty or non-numeric. Please enter a value for it.");
+		if(document.createinterviewform.elements[i].name == 'maxresponsestarttime' && !numericpattern.test(document.createinterviewform.elements[i].value.trim()) && document.createinterviewform.elements[i].value.trim() != "" ){
+		    alert("Max Response Start Time cannot be non-numeric. Please enter a numeric value for it.");
 		    document.createinterviewform.elements[i].focus();
 		    return (false);
 		}
-		if(document.createinterviewform.elements[i].name == 'numchallenges' && (document.createinterviewform.elements[i].value.trim() == "" || !numericpattern.test(document.createinterviewform.elements[i].value.trim()))){
-		    alert("Number of Challenges cannot be empty or non-numeric. Please enter a value for it.");
+		if(document.createinterviewform.elements[i].name == 'numchallenges' && !numericpattern.test(document.createinterviewform.elements[i].value.trim()) && document.createinterviewform.elements[i].value.trim() != "" ){
+		    alert("Number of Challenges cannot be non-numeric. Please enter a numeric value for it.");
 		    document.createinterviewform.elements[i].focus();
 		    return (false);
 		}
@@ -2225,7 +2233,7 @@
 		    document.createinterviewform.elements[i].value = '3600';
 		}
 		if(document.createinterviewform.elements[i].name == 'medium' && document.createinterviewform.elements[i].value.trim() == ""){
-		    document.createinterviewform.elements[i].value = 'audio';
+		    document.createinterviewform.elements[i].value = 'audiovisual';
 		}
 		if(document.createinterviewform.elements[i].name == 'publishdate' && document.createinterviewform.elements[i].value.trim() == ""){
 		    alert("Interview publish date cannot be empty. Please enter a value for it. It should be in 'dd-mon-yyyy' format.");
@@ -2240,6 +2248,46 @@
 		}
 		if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == false){
 		    continue;
+		}
+		else if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == true){
+		    if(document.createinterviewform.scheduledatetime.value == ""){
+			d = new Date();
+			yyyy = d.getFullYear();
+	    		dd = d.getDate();
+	    		mm = d.getMonth() + 1;
+			hh = d.getHours();
+			min = d.getMinutes();
+			ss = d.getSeconds();
+	    		dd = dd.toString();
+	    		mm = mm.toString();
+			hh = hh.toString();
+			min = min.toString();
+			ss = ss.toString();
+	    		if(dd.length < 2){
+			    dd = "0" + dd;
+	    		}
+	    		if(mm.length < 2){
+			    mm = "0" + mm;
+	    		}
+			if(hh.length < 2){
+			    hh = "0" + hh;
+	    		}
+			if(min.length < 2){
+			    min = "0" + min;
+	    		}
+			if(ss.length < 2){
+			    ss = "0" + ss;
+	    		}
+	    		var months = {'01':'JAN', '02': 'FEB', '03':'MAR', '04':'APR', '05':'MAY', '06':'JUN', '07':'JUL', '08':'AUG', '09': 'SEP', '10':'OCT', '11':'NOV', '12':'DEC'};
+	    		curdate = dd + "-" + months[mm] + "-" + yyyy + " " + hh + ":" + min + ":" + ss;
+			//alert(curdate);
+			document.createinterviewform.scheduledatetime.value = curdate;
+		    }
+		    if(document.createinterviewform.invitationemailaddr.value.trim() == ""){
+			alert("Email address of the candidate may not be left empty if realtime is checked");
+			document.createinterviewform.invitationemailaddr.focus();
+			return (false);
+		    }
 		}
 		if(document.createinterviewform.elements[i].name == 'randomsequencing' && document.createinterviewform.elements[i].checked == false){
 		    continue;
@@ -2274,6 +2322,58 @@
 	    }
 	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
   	    xmlhttp.send(postdata);
+	}
+
+	function focusfield(){
+	    if(document.getElementById('scheduledatetime').value == "YYYY-MM-DD hh:mm:ss"){
+		document.getElementById('scheduledatetime').value = "";
+	    }
+	}
+
+ 	function blurfield(){
+	    if(document.getElementById('scheduledatetime').value == ""){
+		document.getElementById('scheduledatetime').value = "YYYY-MM-DD hh:mm:ss";
+	    }
+	    datetimepattern = new RegExp("\\d{4}\\-\\d{2}\\-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}");
+	    fieldval = document.getElementById('scheduledatetime').value;
+	    if(!datetimepattern.test(fieldval) && fieldval != "YYYY-MM-DD hh:mm:ss"){
+		document.getElementById('fieldmsg').innerHTML = "<font color='#AA0000' size=-1>Incorrect format for date/time value.</font>";
+		return(0);
+	    }
+	    else{
+		document.getElementById('fieldmsg').innerHTML = "";
+	    }
+	}
+
+	function showinvitationfields(elem){
+	    invitationspan = document.getElementById('invitationemail');
+	    if(elem.checked == true){
+		invitationspan.style.display = "";
+		invitationspan.innerHTML = "<tr><td><font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'><span id='fieldmsg'></span><br /><br /></td></tr>";
+	    }
+	    else{
+		invitationspan.style.display = "none";
+		invitationspan.innerHTML = "";
+	    }
+	    // Also, clear any date specified in 'Publish this interview on' field and set it to current date
+	    var d = new Date();
+	    yyyy = d.getFullYear();
+	    dd = d.getDate();
+	    mm = d.getMonth() + 1;
+	    dd = dd.toString();
+	    mm = mm.toString();
+	    if(dd.length < 2){
+		dd = "0" + dd;
+	    }
+	    if(mm.length < 2){
+		mm = "0" + mm;
+	    }
+	    var months = {'01':'JAN', '02': 'FEB', '03':'MAR', '04':'APR', '05':'MAY', '06':'JUN', '07':'JUL', '08':'AUG', '09': 'SEP', '10':'OCT', '11':'NOV', '12':'DEC'};
+	    pubdate = dd + "-" + months[mm] + "-" + yyyy;
+	    
+	    document.createinterviewform.publishdate.value = pubdate;
+	    // Also, modify the 'medium' field to appropriate value.
+ 	    document.createinterviewform.medium.value = 'audiovisual';
 	}
 
 
