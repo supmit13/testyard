@@ -652,7 +652,7 @@ def getpercentilescore(attainedscore, combinedlist):
             abovecount += 1
         else:
             belowcount += 1
-        print abovecount, "####", belowcount, "####", attainedscore, "####", utobj.score
+        #print abovecount, "####", belowcount, "####", attainedscore, "####", utobj.score
     percentile = (float(belowcount)/float(takerscount)) * 100.00
     return percentile
 
@@ -5443,6 +5443,7 @@ def createinterview(request):
         language = request.POST['language']
     if request.POST.has_key('realtime'):
         realtime = request.POST['realtime']
+        scheduledatetime = request.POST['scheduledatetime']
     else:  
 	realtime = 0
     if realtime: # Email invitation to all interviewees should be sent.
@@ -5490,6 +5491,9 @@ def createinterview(request):
     pubmon2digit = mysettings.MONTHS_DICT[publishdateparts[1]]
     publishdate_mysqlcompliant = publishdateparts[2] + "-" + pubmon2digit + "-" + publishdateparts[0]
     interviewobj.publishdate = publishdate_mysqlcompliant + " 00:00:00"
+    #datetimePattern = re.compile("\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}")
+    #if datetimePattern.search(scheduledatetime):
+    #    interviewobj.publishdate = scheduledatetime
     interviewobj.status = False # The interview is being created... so this ought to be false.
     interviewobj.maxscore = totalscore
     interviewobj.maxduration = interviewduration
@@ -5515,7 +5519,7 @@ def createinterview(request):
                      Good Luck!
 
                      The TestYard Interview Team.
-	"""%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL)
+	"""%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid)
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         # Send email
@@ -5546,10 +5550,15 @@ def createinterview(request):
         intcandidateobj = InterviewCandidates()
         intcandidateobj.interview = interviewobj
         intcandidateobj.emailaddr = emailinvitationtarget
+        if scheduledatetime == 'YYYY-MM-DD hh:mm:ss':
+            scheduledatetime = datetime.datetime.now()
         intcandidateobj.scheduledtime = scheduledatetime
         intcandidateobj.interviewlinkid = interviewlinkid
-        intcandidateobj.interviewurl = mysettings.URL_PROTOCOL + skillutils.gethosturl(request) + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/"
-        intcandidateobj.save()
+        try:
+            intcandidateobj.interviewurl = skillutils.gethosturl(request) + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/"
+            intcandidateobj.save()
+        except:
+            print "Error: %s"%sys.exc_info()[1].__str__()
         currentdatetime = datetime.datetime.now()
         scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
         if scheduledatetime_dt > currentdatetime:
@@ -5577,7 +5586,7 @@ def createinterview(request):
             except:
                 if mysettings.DEBUG:
                     retmsg = "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
-                    return retmsg
+                    return HttpResponse(retmsg)
             # Now, send a similar email to the creator/conductor of the interview with the appropriate interview URL.
             message = """Dear Interviewer,
 		You have successfully set up an interview for %s at %s. You may click on the following link to access the interview application
@@ -5597,14 +5606,11 @@ def createinterview(request):
 	    except:
  		if mysettings.DEBUG:
 		    retmsg = "sendmail failed for %s - %s\n"%(toaddr, sys.exc_info()[1].__str__())
-		    return retmsg
+		    return HttpResponse(retmsg)
             html = "The interview has been scheduled at %s, and the candidate has been informed about it by email."%scheduledatetime
             html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
-            html += "The interview link (above) has also been sent to you to your email address."
-            int_user_dict = {}
-            cxt = Context(int_user_dict)
-            interviewhtml = html.render(cxt)
-            return HttpResponse(interviewhtml)
+            html += "The interview link (above) has also been sent to your email address."
+            return HttpResponse(html)
         else:
             pass
     int_user_dict['challengestoreurl'] = mysettings.CHALLENGE_STORE_URL
@@ -5672,7 +5678,26 @@ def streaminterview(filename):
 
 
 def attendinterview(request):
-    pass
+    if request.method != 'GET':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    interviewlinkid = ""
+    if not request.GET.has_key('lid'):
+        message = error_msg('1173')
+        response = HttpResponse(message)
+        return response
+    interviewlinkid = request.GET['lid']
+    intobj = Interview.objects.get(interviewlinkid=interviewlinkid)
+    intcandobj = InterviewCandidates.objects.get(interview=intobj)
+    intcandobj.actualstarttime = datetime.datetime.now()
+    intcandobj.save()
+    tmpl = get_template("tests/interview_candidate_screen.html")
+    int_user_dict = {}
+    int_user_dict.update(csrf(request))
+    cxt = Context(int_user_dict)
+    intcandscreen = tmpl.render(cxt)
+    return HttpResponse(intcandscreen)
 
 
 @skillutils.is_session_valid

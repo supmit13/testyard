@@ -2198,6 +2198,8 @@
   	    else{
     		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   	    }
+	    waitdiv = document.getElementById('waiticon');
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'><font style='font-weight:bold;' size=-1 color='#0000AA'>Please bear with us while we prepare and launch the interview window...</font>";
 	    // Gather data from the form. If any required value is missing, assign the default value for that field (if one exists),
 	    // or alert the user about the missing value.
 	    postdata = ""
@@ -2249,8 +2251,11 @@
 		if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == false){
 		    continue;
 		}
+		if(document.createinterviewform.elements[i].name == 'chkrightnow' && document.createinterviewform.elements[i].checked == false){
+		    continue;
+		}
 		else if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == true){
-		    if(document.createinterviewform.scheduledatetime.value == ""){
+		    if(document.createinterviewform.scheduledatetime.value == "" || document.createinterviewform.scheduledatetime.value == "YYYY-MM-DD hh:mm:ss" || document.createinterviewform.chkrightnow.checked == true){
 			d = new Date();
 			yyyy = d.getFullYear();
 	    		dd = d.getDate();
@@ -2279,7 +2284,8 @@
 			    ss = "0" + ss;
 	    		}
 	    		var months = {'01':'JAN', '02': 'FEB', '03':'MAR', '04':'APR', '05':'MAY', '06':'JUN', '07':'JUL', '08':'AUG', '09': 'SEP', '10':'OCT', '11':'NOV', '12':'DEC'};
-	    		curdate = dd + "-" + months[mm] + "-" + yyyy + " " + hh + ":" + min + ":" + ss;
+	    		//curdate = dd + "-" + months[mm] + "-" + yyyy + " " + hh + ":" + min + ":" + ss;
+			curdate = yyyy + "-" + mm + "-" + dd + " " + hh + ":" + min + ":" + ss;
 			//alert(curdate);
 			document.createinterviewform.scheduledatetime.value = curdate;
 		    }
@@ -2315,6 +2321,7 @@
 		    }
 		    popUp.document.write(xmlhttp.responseText);
 		    popUp.document.close();
+		    waitdiv.innerHTML = "";
 		}
 	    };
 	    if(document.createinterviewform.btncreateinterview.value == 'Add Intro'){
@@ -2345,15 +2352,23 @@
 	    }
 	}
 
+	function processrightnow(){
+	    if(document.getElementById('chkrightnow').checked == true){
+		document.getElementById('scheduledatetime').value = "";
+	    }
+	}
+
 	function showinvitationfields(elem){
 	    invitationspan = document.getElementById('invitationemail');
 	    if(elem.checked == true){
 		invitationspan.style.display = "";
-		invitationspan.innerHTML = "<tr><td><font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'><span id='fieldmsg'></span><br /><br /></td></tr>";
+		invitationspan.innerHTML = "<tr><td><font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'> <br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br /></td></tr>";
+		document.createinterviewform.randomsequencing.disabled=true;
 	    }
 	    else{
 		invitationspan.style.display = "none";
 		invitationspan.innerHTML = "";
+		document.createinterviewform.randomsequencing.disabled=false;
 	    }
 	    // Also, clear any date specified in 'Publish this interview on' field and set it to current date
 	    var d = new Date();
