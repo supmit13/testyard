@@ -5737,8 +5737,392 @@ def updateinterviewmeta(request):
         return response
 
 
+@skillutils.is_session_valid
+@csrf_exempt
+def mobile_listtestsandinterviews(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sessid, username = "", ""
+    if request.POST.has_key('sessionid'):
+        sessid = request.POST['sessionid']
+    if request.POST.has_key('username'):
+        username = request.POST['username']
+    # Check if the sessionid provided actually relates to the given username. if not, send an empty response.
+    sessionqset = Session.objects.filter(sessioncode=sessid)
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    if userobj.displayname != username:
+        print "Username is not the same as displayname. username: %s, displayname: %s"%(username, userobj.displayname)
+        return HttpResponse(message) # Empty message sent.
+    jsonResponse = {}
+    utestcandidateqset = UserTest.objects.filter(user=userobj)
+    testcreatorqset = Test.objects.filter(creator=userobj)
+    evaluatorqset1 = Evaluator.objects.filter(groupmember1=userobj)
+    evaluatorqset2 = Evaluator.objects.filter(groupmember2=userobj)
+    evaluatorqset3 = Evaluator.objects.filter(groupmember3=userobj)
+    evaluatorqset4 = Evaluator.objects.filter(groupmember4=userobj)
+    evaluatorqset5 = Evaluator.objects.filter(groupmember5=userobj)
+    evaluatorqset6 = Evaluator.objects.filter(groupmember6=userobj)
+    evaluatorqset7 = Evaluator.objects.filter(groupmember7=userobj)
+    evaluatorqset8 = Evaluator.objects.filter(groupmember8=userobj)
+    evaluatorqset9 = Evaluator.objects.filter(groupmember9=userobj)
+    evaluatorqset10 = Evaluator.objects.filter(groupmember10=userobj)
+    evaluatorlist = list(chain(evaluatorqset1, evaluatorqset2, evaluatorqset3, evaluatorqset4, evaluatorqset5, evaluatorqset6, evaluatorqset7, evaluatorqset8, evaluatorqset9, evaluatorqset10))
+    testevaluatorqlist = []
+    for evalobj in evaluatorlist:
+        testsqset = Test.objects.filter(evaluator=evalobj)
+        for testobj in testsqset:
+            testevaluatorqlist.append(testobj)
+    interviewqset = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)
+    interviewerqset = Interview.objects.filter(interviewer=userobj)
+    # Form the json object
+    jsonResponse['asCandidate'] = {}
+    candidatesdata = {}
+    ctr = 0
+    for ctr in range(0, utestcandidateqset.__len__() - 1):
+        usertestobj = utestcandidateqset[ctr]
+        testname = usertestobj.test.testname
+        testscore = usertestobj.score
+        outcome = usertestobj.outcome
+        testdate = usertestobj.starttime
+        testdate_str = str(testdate)
+        testdate_str_parts = testdate_str.split("+")
+        testdate_str = testdate_str_parts[0]
+        testdate_serializable = testdate_str
+        testtopic = usertestobj.test.topic.topicname
+        if not testtopic:
+            testtopic = usertestobj.test.topicname
+        candidatesdata[testname] = (testscore, outcome, testdate_serializable, testtopic)
+    jsonResponse['asCandidate'] = candidatesdata
+    jsonResponse['asCreator'] = {}
+    creatordata = {}
+    ctr = 0
+    for ctr in range(0, testcreatorqset.__len__() - 1):
+        testobj = testcreatorqset[ctr]
+        testname = testobj.testname
+        testtopic = testobj.topic.topicname
+        if not testtopic:
+            testtopic = testobj.topicname
+        takerscount = list(UserTest.objects.filter(test=testobj)).__len__()
+        creatordata[testname] = (takerscount, testtopic)
+    jsonResponse['asCreator'] = creatordata
+    jsonResponse['asEvaluator'] = {}
+    evaluatordata = {}
+    ctr = 0
+    for ctr in range(0, testevaluatorqlist.__len__() - 1):
+        testobj = testevaluatorqlist[ctr]
+        testname = testobj.testname
+        testtopic = testobj.topic.topicname
+        if not testtopic:
+            testtopic = testobj.topicname
+        evaluatordata[testname] = (testtopic,)
+    jsonResponse['asEvaluator'] = evaluatordata
+    jsonResponse['asInterviewCandidates'] = {}
+    interviewcandidates = {}
+    for interviewcandiateobj in interviewqset:
+        interviewname = interviewcandiateobj.interview.title
+        interviewtopic = ""
+        interviewconductdate = ""
+        try:
+            interviewtopic = interviewcandiateobj.interview.topic.topicname
+            if not interviewtopic:
+                interviewtopic = interviewcandiateobj.interview.topicname
+            interviewconductdate = interviewcandiateobj.actualstarttime
+        except:
+            print "INTERVIEW CANDIDATES: %s"%sys.exc_info()[1].__str__()
+        try:
+            interviewcandidates[interviewname] = (interviewtopic, interviewconductdate )
+        except:
+            interviewcandidates[interviewname] = [interviewtopic, interviewconductdate ]
+    jsonResponse['asInterviewCandidates'] = interviewcandidates
+    jsonResponse['asInterviewer'] = {}
+    interviewerdata = {}
+    for interviewobj in interviewerqset:
+        interviewname = interviewobj.title
+        interviewtopic = ""
+        interviewer = ""
+        try:
+            interviewtopic = interviewobj.topic.topicname
+            if not interviewtopic:
+                interviewtopic = interviewobj.topicname
+            interviewer = interviewobj.interviewer.displayname
+        except:
+            interviewtopic = ""
+            print "INTERVIEWERS: %s"%sys.exc_info()[1].__str__()
+        interviewerdata[interviewname] = (interviewtopic, interviewer )
+    jsonResponse['asInterviewer'] = interviewerdata
+    try:
+        jsonstr = json.dumps(jsonResponse)
+    except:
+        print "Could not 'dumps' jsonResponse - Error: %s"%sys.exc_info()[1].__str__()
+        jsonstr = "{}"
+    respobj = HttpResponse(jsonstr)
+    #print "================================", jsonstr
+    return respobj
+ 
+
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_createtest(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sessid, username = "", ""
+    if not request.POST.has_key('data'):
+        message = "Error: %s"%error_msg('1174')
+        response = HttpResponse(message)
+        return response
+    postdata = request.POST['data']
+    keystring, ivstring = "test", "test"
+    decryptedPostdata = skillutils.des3Decrypt(postdata, keystring, ivstring)
+    decodedPostdata = base64.b64decode(postdata)
+    keyValuePairs = decodedPostdata.split("&")
+    testobj = Test()
+    datepattern = re.compile("^\d{4}\-\d{2}\-\d{2}$")
+    maxchallengeduration = 0
+    evendistributionofscores = False
+    sessionid = ""
+    username = ""
+    userobj = None
+    topicobj = None
+    topicname = ""
+    testobj.status = 0
+    for keyval in keyValuePairs:
+        attr, value = keyval.split("=")
+        if attr == "testname":
+            value = value.replace("+", " ")
+            emptyPattern = re.compile("^\s*$")
+            if emptyPattern.search(value):
+                message = "Error: %s"%error_msg('1177')
+                response = HttpResponse(message)
+                return response
+            testobj.testname = value
+        elif attr == "progenvselected":
+            value = value.replace("+", " ")
+            testobj.progenv = value
+        elif attr == "testscore":
+            testobj.maxscore = value
+        elif attr == "multimediaAllowedFlag":
+            if value == '1':
+                testobj.multimediareqd = True
+            elif value == '0':
+                testobj.multimediareqd = False
+        elif attr == "randomSequencedFlag":
+            if value == '1':
+                testobj.randomsequencing = True
+            elif value == '0':
+                testobj.randomsequencing = False
+        elif attr == "multipleAttemptsFlag":
+            if value == '1':
+                testobj.allowmultiattempts = True
+            elif value == '0':
+                testobj.allowmultiattempts = False
+        elif attr == "passscore":
+            testobj.passscore = value
+        elif attr == "testscopeselected":
+            testobj.scope = value
+        elif attr == "challengescount":
+            testobj.challengecount = value
+        elif attr == "testruleselected":
+            testobj.ruleset = value
+        elif attr == "evalgroupname":
+            evaluatorobj = None
+            if value != "":
+                value = value.replace("%40", "@")
+                try:
+                    evaluatorobj = Evaluator.objects.get(evalgroupname=value)
+                except:
+                    evaluatorobj = None
+                if evaluatorobj:
+                    testobj.evaluator = evaluatorobj
+                else:
+                    evaluatorobj = Evaluator()
+                    evaluatorobj.evalgroupname = value
+                    testobj.evaluator = None
+            else:
+                evaluatorobj = Evaluator()
+                evaluatorobj.evalgroupname = None
+                testobj.evaluator = None
+        elif attr == "evalemailids":
+            value = value.replace("%40", "@")
+            emailidsstr = value
+            emailidslist = emailidsstr.split(",")
+            if not evaluatorobj.evalgroupname:
+                emailidparts = emailidslist[0].split("@")
+                evaluatorobj.evalgroupname = emailidparts[0]
+            emailidctr = 1
+            for emailid in emailidslist:
+                emailid = emailid.replace("%40", "@")
+                if emailidctr == 1:
+                    try:
+                        evaluatorobj.groupmember1 = User.objects.get(emailid=emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 2:
+                    try:
+                        evaluatorobj.groupmember2 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 3:
+                    try:
+                        evaluatorobj.groupmember3 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 4:
+                    try:
+                        evaluatorobj.groupmember4 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 5:
+                    try:
+                        evaluatorobj.groupmember5 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 6:
+                    try:
+                        evaluatorobj.groupmember6 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 7:
+                    try:
+                        evaluatorobj.groupmember7 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 8:
+                    try:
+                        evaluatorobj.groupmember8 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 9:
+                    try:
+                        evaluatorobj.groupmember9 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                elif emailidctr == 10:
+                    try:
+                        evaluatorobj.groupmember10 = User.objects.get(emailid = emailid)
+                    except:
+                        message = "Error: %s"%error_msg('1176')
+                        response = HttpResponse(message)
+                        return response
+                emailidctr += 1
+            evaluatorobj.save()
+            if not testobj.evaluator:
+                testobj.evaluator = evaluatorobj
+        elif attr == "testactivationdate": # Sanitize the date value first. Should be in yyyy-mm-dd format
+            matchobj = datepattern.search(value)
+            if not matchobj:
+                message = "Error: " + error_msg('1175')
+                response = HttpResponse(message)
+                return response
+            testobj.activationdate = value
+        elif attr == "maxchallengeduration_secs":
+            maxchallengeduration = value
+        elif attr == "answeringlanguageselected":
+            value = value.replace("+", " ")
+            if value == "English - US":
+                testobj.allowedlanguages = "enus"
+            elif value == "English - UK":
+                testobj.allowedlanguages = "enuk"
+            elif value == "Latin":
+                testobj.allowedlanguages = "lat"
+            elif value == "French":
+                testobj.allowedlanguages = "fr"
+            elif value == "Hindi":
+                testobj.allowedlanguages = "hndi"
+            elif value == "Bengali - WB":
+                testobj.allowedlanguages = "bngw"
+            elif value == "Bengali - Bangladesh":
+                testobj.allowedlanguages = "bnge"
+        elif attr == "samescorevalue":
+            evendistributionofscores = True
+        elif attr == "targetskilllevelselected":
+            val = "BEG"
+            if value == "Intermediate":
+                val = "INT"
+            elif value == "Proficient":
+                val = "PRO"
+            testobj.quality = val
+        elif attr == "testduration":
+            testobj.duration = int(value) * 60 # The value is in minutes, so we convert it to seconds.
+        elif attr == "testtypeselected":
+            val = "COMP"
+            if value == "Coding": 
+                val = "COD"
+            elif value == "Fill up the Blanks":
+                val = "FILB"
+            elif value == "Algorithm":
+                val = "ALGO"
+            elif value == "Subjective":
+                val = "SUBJ"
+            elif value == "Multiple Choice":
+                val = "MULT"
+            testobj.testtype = val
+        elif attr == "negativescorevalue":
+            if value == "Yes":
+                testobj.negativescoreallowed = True
+            else:
+                testobj.negativescoreallowed = False
+        elif attr == "testtopicselected":
+            value = value.replace("+", " ")
+            testobj.topicname = value
+            topicname = value
+            topicobj = None
+        elif attr == "testpublishdate":
+            matchobj = datepattern.search(value)
+            if not matchobj:
+                message = "Error: " + error_msg('1175')
+                response = HttpResponse(message)
+                return response
+            testobj.publishdate = value
+        elif attr == "username":
+            username = value
+            userobj = User.objects.get(displayname=username)
+    topicobj = Topic()
+    topicobj.topicname = topicname
+    topicobj.user = userobj
+    topicobj.isactive = True
+    topicobj.save()
+    testobj.topic = topicobj
+    testobj.creator = userobj
+    try:
+        testobj.save()
+    except:
+        message = "Error: Could not create the test - %s\n"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    message = "Test object created successfully"
+    response = HttpResponse(message)
+    return response
 
 
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_addchallenge(request):
+    pass
 
 
 

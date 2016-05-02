@@ -7,6 +7,7 @@ import urllib, urllib2
 import string, random
 import StringIO, gzip
 import mimetypes, mimetools
+from Crypto.Cipher import DES3
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -695,4 +696,15 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+# Method to decrypt DES3 encrypted strings.
+# For now, this is just a placeholder.
+def des3Decrypt(encString, key, iv):
+    """
+    des3 = DES3.new(key, DES3.MODE_CFB, iv)
+    des3.decrypt(encString)
+    """
+    return encString
+
+
 

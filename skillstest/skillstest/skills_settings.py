@@ -180,6 +180,11 @@ SAVE_OPTIONAL_INFO_URL = "skillstest/optionaluserinfo/"
 
 DETAIL_HELP_URL = "skillstest/helpndocs/detailedhelp/"
 
+MOBILE_VERIFY_CREDS_URL = "skillstest/mobile/verifycreds/"
+MOBILE_LIST_TESTS_INTERVIEWS_URL = "skillstest/mobile/listtestsinterviews/"
+MOBILE_TEST_CREATE_URL = "skillstest/mobile/tests/create/"
+MOBILE_CHALLENGE_ADDITION_URL = "skillstest/mobile/tests/addchallenge/"
+
 TEST_RUN = False # Set this to True during testing the app.
 
 HEXCODE_CHAR_MAP = { \
@@ -265,7 +270,7 @@ OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
 OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 
 # Number of complimentary tests a newly registered user can conduct:
-NEW_USER_FREE_TESTS_COUNT = 20
+NEW_USER_FREE_TESTS_COUNT = 50
 # Types of tests the user can conduct as part of complimentary test:
 NEW_USER_FREE_TESTS_TYPES = 'MULT|FILB|SUBJ|CODN|ALGO|COMP'
 

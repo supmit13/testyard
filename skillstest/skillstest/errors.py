@@ -170,7 +170,11 @@ error_codes = { \
         '1170' : 'Error: An interview with the same linkid exists. Please refresh the "Tests" tab and click on the "Create an Interview" link to create another interview with a unique link id. You will not be able to add questions to this interview unless you perform this step.',\
         '1171' : 'Could not find an interviewlinkid with the request. Please restart the process of creating test as it seems that the data for this test has become corrupt.',\
         '1172' : 'An error occurred while storing the questions in DB. Please contact the administrator at admin@testyard.com with the name of the interview.',\
-        '1173' : 'Error: Missing the link id parameter. System can\'t figure out which interview to link to\', Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913'
+        '1173' : 'Error: Missing the link id parameter. System can\'t figure out which interview to link to\', Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource at https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913',\
+        '1174' : 'Could not find data in the request.',\
+        '1175' : 'Date value is not in the correct format. It should be in the yyyy-mm-dd format.',\
+        '1176' : 'Evaluator with the given email Id could not be found. ',\
+        '1177' : 'Test name is empty or invalid',\
     }
 
 def error_msg(code):

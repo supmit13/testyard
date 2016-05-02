@@ -1996,3 +1996,109 @@ Tue, 16 Feb 2016, 12:03 HRS (IST);
 20.skillstest/wsgi.py
 21.files_to_commit.txt
 ==========================================
+
+Tue, 16 Feb 2016, 12:03 HRS (IST);
+----------------------------------
+testyard repo:
+
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.static/images/*
+22.files_to_commit.txt
+------------------------------------------------
+
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+==========================================
+
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+==========================================
+
+Tue, 03 May, 2016, 05:09 am.
+----------------------------
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+testyard repo:
+
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.static/images/*
+22.files_to_commit.txt 
+
+

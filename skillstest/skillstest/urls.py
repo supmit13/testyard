@@ -128,5 +128,10 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SET_TEST_SCHEDULE_URL, 'skillstest.Tests.views.setschedule', name='setschedule'),
 
     url(r'%s$'%mysettings.DETAIL_HELP_URL, 'skillstest.views.detailedhelp', name='detailedhelp'),
+
+    url(r'%s$'%mysettings.MOBILE_VERIFY_CREDS_URL, 'skillstest.Auth.views.mobile_verifypassword', name='mobile_verifypassword'),
+    url(r'%s$'%mysettings.MOBILE_LIST_TESTS_INTERVIEWS_URL, 'skillstest.Tests.views.mobile_listtestsandinterviews', name='mobile_listtestsandinterviews'),
+    url(r'%s$'%mysettings.MOBILE_TEST_CREATE_URL, 'skillstest.Tests.views.mobile_createtest', name='mobile_createtest'),
+    url(r'%s$'%mysettings.MOBILE_CHALLENGE_ADDITION_URL, 'skillstest.Tests.views.mobile_addchallenge', name='mobile_addchallenge'),
 )
 
