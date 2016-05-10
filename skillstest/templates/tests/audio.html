@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Audio Recorder</title>
+    	<script language='JavaScript'>
+	function closewin(){
+    	    interviewlinkid = document.getElementById('interviewlinkid').value;
+	    csrftoken = document.frmremediation.csrfmiddlewaretoken.value;
+	    postdata = "interviewlinkid=" + interviewlinkid + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+   	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		    alert(xmlhttp.responseText);
+		    window.close();
+  		}
+  	    };
+	    xmlhttp.open("POST", '{{ updateinterviewmetaurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+   	function addquestionswin(){
+	    document.frmremediation.action = "{{askquestionurl}}";
+	    document.frmremediation.method = "POST";
+	    document.frmremediation.submit();
+	}
+
+	</script>
+	<script src="static/webaudiovisual/audiodisplay.js"></script>
+	<script src="static/webaudiovisual/recorder.js"></script>
+	<script src="static/webaudiovisual/main.js"></script>
+	<style>
+	html { overflow-x: hidden; overflow-y: auto; }
+	body {
+		font: 14pt Arial, sans-serif; 
+		background: lightgrey;
+		display: flex;
+		flex-direction: row;
+		height: 100vh;
+		width: 100%;
+		margin: 0 0;
+	}
+	canvas {
+		display: inline-block; 
+		background: #202020; 
+		width: 95%;
+		height: 45%;
+		box-shadow: 0px 0px 10px blue;
+	}
+	#controls {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-around;
+		height: 20%;
+		width: 100%;
+	}
+	#record { height: 15vh; }
+	#record.recording { 
+		background: red;
+		background: -webkit-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); 
+		background: -moz-radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); 
+		background: radial-gradient(center, ellipse cover, #ff0000 0%,lightgrey 75%,lightgrey 100%,#7db9e8 100%); 
+	}
+	#save, #save img { height: 10vh; }
+	#save { opacity: 0.25;}
+	#save[download] { opacity: 1;}
+	#viz {
+		height: 80%;
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		align-items: center;
+	}
+	@media (orientation: landscape) {
+		body { flex-direction: column;}
+		#controls { flex-direction: row; height: 100%; width: 10%;}
+		#viz { height: 100%; width: 90%;}
+	}
+
+	</style>
+</head>
+<body>
+	<form name='frmremediation' id='frmremediation' action='{{challengestoreurl}}' method='POST' enctype='multipart/form-data'>{% csrf_token %}<input type='hidden' name='interviewlinkid' id='interviewlinkid' value='{{interviewlinkid}}'><input type='hidden' name='question_num' value='{{question_num}}'><input type='hidden' name='medium' value='audio'>
+	<center><font color='#0000AA' face='verdana' style='font-weight:bold;'>{{pagetitle}}</font></center>
+        <center><font color='#AA0000' face='verdana' style='font-weight:bold;' size=-1>{{errmsg}}</font></center>
+	</form>
+	<br /><br />
+	<div id="viz">
+		<canvas id="wavedisplay" width="512" height="350"></canvas>
+	</div>
+	<br />
+        <center>
+	<div id="controls">
+		<img id="record" src="static/webaudiovisual/images/mic128.png" style='height:60px;width:60px;' onclick="toggleRecording(this);">
+	</div>
+	</center>
+	<br />
+	<center><font color='#0000AA' face='verdana' style='font-weight:bold' size=-1><i>(Click on the microphone to start recording. To stop recording click on it again.)</i></font></center>
+	<br />
+	<div id="actions">
+	<table border='0' cellspacing=3 cellpadding=3>
+	<tr>
+	<td nowrap><a id="addquestions" href="#/" onClick='javascript:addquestionswin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Add Questions</font></a></td>
+	</tr>
+	
+	<tr>
+	<td nowrap><a id="closewindow" href="#/" onClick='javascript:closewin();'><font color='#0000AA' face='verdana' size=-1 style='font-weight:bold'>Close Window</font></a></td>
+	</tr>
+	</table>
+	</div>
+</body>
+</html>

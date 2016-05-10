@@ -906,8 +906,7 @@ function RenderCssCal(bNewCal)
 }
 
 
-function NewCssCal(pCtrl, pFormat, pScroller, pShowTime, pTimeMode, pShowSeconds, pEnableDateMode)
-{
+function NewCssCal(pCtrl, pFormat, pScroller, pShowTime, pTimeMode, pShowSeconds, pEnableDateMode){
 	// get current date and time
 
 	dtToday = new Date();
@@ -1078,7 +1077,7 @@ function NewCssCal(pCtrl, pFormat, pScroller, pShowTime, pTimeMode, pShowSeconds
 		else{
 			intMonth = parseInt(strMonth, 10) - 1;
 		}
-		if ((parseInt(intMonth, 10) >= 0) && (parseInt(intMonth, 10) < 12))	{
+		if ((parseInt(intMonth, 10) >= 0) && (parseInt(intMonth, 10) < 12)){
 			Cal.Month = intMonth;
 		}
 		//end parse month

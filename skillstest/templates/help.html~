@@ -1,0 +1,173 @@
+	{% include "inc/html_head.html" %}
+	
+	{% include "inc/mission_statement.html" %}
+	<script language='javascript'>
+	function displayprofilehelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=profile";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    profhlpwin = window.open("", "profilehelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    profhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	function displaydashboardhelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=dashboard";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    dshbrdhlpwin = window.open("", "dashboardhelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    dshbrdhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	function displaysubscriptionhelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=subscription";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    subscriptionhlpwin = window.open("", "subscriptionhelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    subscriptionhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	function displaytestshelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=test";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    testhlpwin = window.open("", "testhelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    testhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+ 	function displaynetworkhelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=network";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    networkhlpwin = window.open("", "networkhelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    networkhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	function displaysearchhelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=search";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    srchhlpwin = window.open("", "searchhelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    srchhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	function displayanalyticshelp(){
+	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&help=analytics";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    analhlpwin = window.open("", "analyticshelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+		    analhlpwin.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ detailhelpurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	// Open the youtube URL in a window.
+    	function basicusagevideo(){
+	    basicusghlpwin = window.open("http://www.youtube.com/", "basicusagehelpwindow", "width=600, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=yes, toolbar=no, status=no");
+	}
+
+	</script>
+	
+		<div class="post">
+			<span class="meta">
+			<h3>Dear {{ displayname }},</h3>
+			<div class="entry"><font color='#0000AA' face='verdana' size=-1>
+			The following links point to pages that describe how to use testyard for your skills testing needs.<br /> This content is divided on the tabs available on the TestYard application. <br />There is no help pertaining to 'About Us', 'Help' and 'Careers' tabs, as they are self-explanatory.<br />If you have any difficulty with any of the features described in those pages, please feel free to contact us on support@testyard.com. We promise to do our best to help you out.<br /><br /></font>
+			<a href='#/' onClick='javascript:displayprofilehelp();'><font color='#0000AA' face='verdana' size=-1>Profile Help</font></a><br />
+			<!-- <a href='#/' onClick='javascript:displaydashboardhelp();'><font color='#0000AA' face='verdana' size=-1>Dashboard Help</font></a><br /> -->
+			<a href='#/' onClick='javascript:displaysubscriptionhelp();'><font color='#0000AA' face='verdana' size=-1>Subscription Help</font></a><br />
+			<a href='#/' onClick='javascript:displaytestshelp();'><font color='#0000AA' face='verdana' size=-1>Tests Help</font></a><br />
+			<a href='#/' onClick='javascript:displaynetworkhelp();'><font color='#0000AA' face='verdana' size=-1>Network Help</font></a><br />
+			<a href='#/' onClick='javascript:displaysearchhelp();'><font color='#0000AA' face='verdana' size=-1>Search Help</font></a><br />
+			<a href='#/' onClick='javascript:displayanalyticshelp();'><font color='#0000AA' face='verdana' size=-1>Analytics Help</font></a><br />
+			<br />
+			<a href='#/' onClick='javascript:basicusagevideo();'><font color='#0000AA' face='verdana' size=-1>Basic Usage Video</font></a><br />
+			</div>
+			</span>
+		</div>
+		<form name='frmhelp' id='frmhelp'>{% csrf_token %}</form>
+
+	{% include "inc/right_panel.html" %}
+		
+	{% include "inc/html_foot.html" %}
