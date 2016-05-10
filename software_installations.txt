@@ -123,4 +123,12 @@ Start mysql server: sudo service mysql start
 Login in to mysql client: mysql -u root
 (Note: no password entered).
 
+======================================================================================
+
+Install django-like
+Download django-like, and untar the tar gzipped file. cd into it and run 'python setup.py install'.
+
+
+
+
 

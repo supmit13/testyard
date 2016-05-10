@@ -37,3 +37,12 @@ OAuth Details to use with TestYard:
     OAuth User Token: 9f88127b-21fb-46fb-8235-e3fe8ca05e5b
     OAuth User Secret: 042a5b7c-2261-4979-b0c1-36ddfaec19b2
 
+
+================================================================================================================================
+
+TestYard Mobile Screens:
+========================
+
+The first screen after the splash screen displays the search test/interview widget, a create test widget, a conduct interview widget and a schedule a test widget. 
+The search test/interview widget results in a page that displays all scheduled tests and interviews pertaining to the user. 
+

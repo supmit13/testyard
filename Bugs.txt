@@ -1,2 +1,4 @@
 1. In Tests => Schedule Test functionality, the date entered from the date and time widget is in the format yyyy-mm-dd hh:mm. It should also have the seconds component, and currently we are entering it manually. This needs to be fixed.
+2. In android app, the splash screen doesn't appear anymore. It used to work till I manipulated the user login process to handle the erroneous inputs.
+3. In android, if the user enters an erroneous username and/or password, the app needs to be closed and reopened now to enter the correct password. This needs to be fixed.
 
