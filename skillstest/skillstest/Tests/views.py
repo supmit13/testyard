@@ -6175,7 +6175,9 @@ def mobile_addchallenge(request):
     decryptedPostdata = skillutils.des3Decrypt(postdata, keystring, ivstring)
     decodedPostdata = base64.b64decode(postdata)
     keyValuePairs = decodedPostdata.split("&")
-    challengeStatement, externalResourceUrl, responseLinesCount, challengeScore, negativeScore, maxTimeLimit, challengeQuality, compulsoryChallenge, testname = "", "", "", "", "", "", "", "", ""
+    challengeStatement, externalResourceUrl, responseLinesCount, challengeScore, negativeScore, maxTimeLimit, challengeQuality, compulsoryChallenge, testname, challengeType, testType, testLinkId, oneOrMoreValues = "", "", "", "", "", "", "", "", "", "", "", "", ""
+    mcOptions = [""] * 8
+    optionKeyPattern = re.compile(r"option(\d+)Value")
     print keyValuePairs
     for keyval in keyValuePairs:
         key, val = keyval.split("=")
@@ -6184,7 +6186,7 @@ def mobile_addchallenge(request):
             challengeStatement = val
         elif key == "externalResourceUrl":
             externalResourceUrl = val
-        elif key == "responseLinesCount":
+        elif key == "maxResponseLinesCount":
             responseLinesCount = val
         elif key == "challengeScore":
             challengeScore = val
@@ -6198,8 +6200,25 @@ def mobile_addchallenge(request):
             compulsoryChallenge = val
         elif key == "testname":
             testname = val
+        elif key == "challengeType":
+            challengeType = val
+        elif key == "testtypeselected":
+            testType = val
+        elif key == "testlinkid":
+            testLinkId = val
+        elif key == "oneOrMoreValues":
+            if val == "No":
+                oneOrMoreValues = False
+            else:
+                oneOrMoreValues = True
         else:
-            pass
+            if challengeType == "Multiple Choice" or testType == "Multiple Choice":
+                optionKeyMatch = optionKeyPattern.search(key)
+                if optionKeyMatch:
+                    optionKeyId = optionKeyMatch.groups()[0]
+                    if val == "":
+                        continue
+                    mcOptions[int(optionKeyId)] = val
     testobj = None
     if testname != "":
         try:
