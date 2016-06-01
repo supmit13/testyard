@@ -2531,6 +2531,8 @@ def showtestcandidatemode(request):
         testhtml = testhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(testhtml)
 
+#mobile_showtestcandidatemode = showtestcandidatemode
+
 
 def encryptstring(mystr):
     iv = Random.get_random_bytes(8)
@@ -4698,7 +4700,10 @@ def savedrawing(request):
     # Base64 decode it one more time to retrieve the binary data
     canvasdata = base64.b64decode(canvasdata)
     mediafilename = "t" + testid + "_" + str(int(time.time())) + ".png"
-    mediapath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "tests" + os.path.sep + testid + os.path.sep + mediafilename
+    mediapath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "tests" + os.path.sep + testid
+    if not os.path.exists(mediapath):
+        os.makedirs(mediapath)
+    mediapath += os.path.sep + mediafilename
     returnval = ""
     try:
         fp = open(mediapath, "wb+")
@@ -6175,7 +6180,7 @@ def mobile_addchallenge(request):
     decryptedPostdata = skillutils.des3Decrypt(postdata, keystring, ivstring)
     decodedPostdata = base64.b64decode(postdata)
     keyValuePairs = decodedPostdata.split("&")
-    challengeStatement, externalResourceUrl, responseLinesCount, challengeScore, negativeScore, maxTimeLimit, challengeQuality, compulsoryChallenge, testname, challengeType, testType, testLinkId, oneOrMoreValues = "", "", "", "", "", "", "", "", "", "", "", "", ""
+    challengeStatement, externalResourceUrl, responseLinesCount, challengeScore, negativeScore, maxTimeLimit, challengeQuality, compulsoryChallenge, testname, challengeType, testType, testLinkId, oneOrMoreValues, responsekey = "", "", "", "", "", "", "", "", "", "", "", "", "", ""
     mcOptions = [""] * 8
     optionKeyPattern = re.compile(r"option(\d+)Value")
     print keyValuePairs
@@ -6183,6 +6188,11 @@ def mobile_addchallenge(request):
         key, val = keyval.split("=")
         val = val.replace("+", " ")
         if key == "challengeStatement":
+            val = val.replace("%3F", "?")
+            val = val.replace("%2C", ",")
+            val = val.replace("%27", "'")
+            val = val.replace("%22", '"')
+            val = val.replace("%2F", "/")
             challengeStatement = val
         elif key == "externalResourceUrl":
             externalResourceUrl = val
@@ -6198,6 +6208,8 @@ def mobile_addchallenge(request):
             challengeQuality = val
         elif key == "compulsoryChallenge":
             compulsoryChallenge = val
+            if compulsoryChallenge == "":
+                compulsoryChallenge = False
         elif key == "testname":
             testname = val
         elif key == "challengeType":
@@ -6206,6 +6218,8 @@ def mobile_addchallenge(request):
             testType = val
         elif key == "testlinkid":
             testLinkId = val
+        elif key == "filbResponseStr":
+             responsekey = val
         elif key == "oneOrMoreValues":
             if val == "No":
                 oneOrMoreValues = False
@@ -6224,6 +6238,8 @@ def mobile_addchallenge(request):
         try:
             testqset = Test.objects.filter(testname=testname)
             testobj = testqset[0]
+            if maxTimeLimit == "":
+                maxTimeLimit = testobj.duration
         except:
             message = "Could not find the test named '%s' - Error: %s"%(testname, sys.exc_info()[1].__str__())
             response = HttpResponse(message)
@@ -6235,7 +6251,18 @@ def mobile_addchallenge(request):
     challengeobj = Challenge()
     challengeobj.test = testobj
     challengeobj.statement = challengeStatement
-    challengeobj.challengetype = ""
+    if challengeType == "Subjective":
+        challengeobj.challengetype = "SUBJ"
+    elif challengeType == "Multiple Choice":
+        challengeobj.challengetype = "MULT"
+    elif challengeType == "Fill up the Blanks":
+        challengeobj.challengetype = "FILB"
+    elif challengeType == "Algorithm":
+        challengeobj.challengetype = "ALGO"
+    elif challengeType == "Coding":
+        challengeobj.challengetype = "CODN"
+    else:
+        challengeobj.challengetype = ""
     challengeobj.challengescore = challengeScore
     challengeobj.negativescore = negativeScore
     if compulsoryChallenge == "1":
@@ -6246,8 +6273,15 @@ def mobile_addchallenge(request):
     challengeobj.mediafile = ""
     challengeobj.additionalurl = externalResourceUrl
     challengeobj.timeframe = maxTimeLimit
+    if challengeQuality == "Intermediate":
+        challengeQuality = "INT"
+    elif challengeQuality == "Proficient":
+        challengeQuality = "PRO"
+    elif challengeQuality == "Beginner":
+        challengeQuality = "BEG"
     challengeobj.challengequality = challengeQuality
-    challengeobj.testlinkid = ""
+    challengeobj.testlinkid = testobj.testlinkid
+    challengeobj.responsekey = responsekey
     challengeobj.oneormore = False
     try:
         challengeobj.save()
