@@ -184,6 +184,7 @@ MOBILE_VERIFY_CREDS_URL = "skillstest/mobile/verifycreds/"
 MOBILE_LIST_TESTS_INTERVIEWS_URL = "skillstest/mobile/listtestsinterviews/"
 MOBILE_TEST_CREATE_URL = "skillstest/mobile/tests/create/"
 MOBILE_CHALLENGE_ADDITION_URL = "skillstest/mobile/tests/addchallenge/"
+MOBILE_LIST_CREATOR_TESTS_URL = "skillstest/mobile/tests/listcreatortests/"
 
 TEST_RUN = False # Set this to True during testing the app.
 

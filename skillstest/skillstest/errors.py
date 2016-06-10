@@ -175,6 +175,9 @@ error_codes = { \
         '1175' : 'Date value is not in the correct format. It should be in the yyyy-mm-dd format.',\
         '1176' : 'Evaluator with the given email Id could not be found. ',\
         '1177' : 'Test name is empty or invalid',\
+        '1178' : 'Your session has expired or it got lost in transit.',\
+        '1179' : 'The username field is empty. Aborting the requested operation.',\
+        '1180' : 'The user with the given username does not exist.',\
     }
 
 def error_msg(code):

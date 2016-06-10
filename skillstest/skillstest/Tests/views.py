@@ -5901,6 +5901,13 @@ def mobile_createtest(request):
     topicname = ""
     testobj.status = 0
     for keyval in keyValuePairs:
+        attr,value = keyval.split("=")
+        if attr != "username":
+            continue
+        username = value
+        userobj = User.objects.get(displayname=username)
+        break
+    for keyval in keyValuePairs:
         attr, value = keyval.split("=")
         if attr == "testname":
             value = value.replace("+", " ")
@@ -5966,11 +5973,18 @@ def mobile_createtest(request):
             value = value.replace("%40", "@")
             emailidsstr = value
             emailidslist = emailidsstr.split(",")
-            if not evaluatorobj.evalgroupname:
-                emailidparts = emailidslist[0].split("@")
-                evaluatorobj.evalgroupname = emailidparts[0]
             emailidctr = 1
+            if userobj.emailid not in emailidslist:
+                emailidslist.append(userobj.emailid)
+            if not evaluatorobj.evalgroupname:
+                if emailidslist[0] == "":
+                    emailidparts = emailidslist[1].split("@") # The first element is '', so we ignore it.
+                else:
+                    emailidparts = emailidslist[0].split("@")
+                evaluatorobj.evalgroupname = emailidparts[0]
             for emailid in emailidslist:
+                if emailid == "":
+                    continue
                 emailid = emailid.replace("%40", "@")
                 if emailidctr == 1:
                     try:
@@ -6136,9 +6150,6 @@ def mobile_createtest(request):
                 response = HttpResponse(jsonstr)
                 return response
             testobj.publishdate = value
-        elif attr == "username":
-            username = value
-            userobj = User.objects.get(displayname=username)
     topicobj = Topic()
     topicobj.topicname = topicname
     topicobj.user = userobj
@@ -6291,6 +6302,52 @@ def mobile_addchallenge(request):
         return response
     response = HttpResponse("The challenge was successfully saved.")
     return response
+
+
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_listcreatortests(request):
+    message = ""
+    print "HELLLLLLLOOOOOO"
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    sessid, username = "", ""
+    if request.POST.has_key('sessionid'):
+        sessid = request.POST['sessionid']
+    if sessid == "":
+        message = "Error: %s"%error_msg('1178')
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('username'):
+        username = request.POST['username']
+    if username == "":
+        message = "Error: %s\n"%error_msg('1179')
+        response = HttpResponse(message)
+        return response
+    userobj = None
+    try:
+        userobj = User.objects.get(displayname=username)
+    except:
+        message = error_msg('1180')
+        response = HttpResponse(message)
+        return response
+    testinfo = {}
+    testrecords = Test.objects.filter(creator=userobj)
+    for testobj in testrecords:
+        testname = testobj.testname
+        testtopic = testobj.topicname
+        if testtopic == "":
+            testtopic = testobj.topic.topicname
+        maxscore = testobj.maxscore
+        duration = testobj.duration
+        testinfo[testname] = [testtopic, maxscore, duration, testname]
+    jsonstr = json.dumps(testinfo)
+    #print "JSONSTR = "+jsonstr
+    response = HttpResponse(jsonstr)
+    return response
+
 
 
 
