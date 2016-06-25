@@ -6308,47 +6308,278 @@ def mobile_addchallenge(request):
 @csrf_protect
 def mobile_listcreatortests(request):
     message = ""
-    print "HELLLLLLLOOOOOO"
     if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')
-        response = HttpResponse(message)
+        msgdict = {'message' : message}
+        jsonstr = json.dumps(msgdict)
+        response = HttpResponse(jsonstr)
         return response
     sessid, username = "", ""
     if request.POST.has_key('sessionid'):
         sessid = request.POST['sessionid']
     if sessid == "":
         message = "Error: %s"%error_msg('1178')
-        response = HttpResponse(message)
+        msgdict = {'message' : message}
+        jsonstr = json.dumps(msgdict)
+        response = HttpResponse(jsonstr)
         return response
     if request.POST.has_key('username'):
         username = request.POST['username']
     if username == "":
         message = "Error: %s\n"%error_msg('1179')
-        response = HttpResponse(message)
+        msgdict = {'message' : message}
+        jsonstr = json.dumps(msgdict)
+        response = HttpResponse(jsonstr)
         return response
     userobj = None
     try:
         userobj = User.objects.get(displayname=username)
     except:
         message = error_msg('1180')
-        response = HttpResponse(message)
+        msgdict = {'message' : message}
+        jsonstr = json.dumps(msgdict)
+        response = HttpResponse(jsonstr)
         return response
     testinfo = {}
     testrecords = Test.objects.filter(creator=userobj)
     for testobj in testrecords:
+        testid = testobj.id
         testname = testobj.testname
         testtopic = testobj.topicname
         if testtopic == "":
             testtopic = testobj.topic.topicname
         maxscore = testobj.maxscore
         duration = testobj.duration
-        testinfo[testname] = [testtopic, maxscore, duration, testname]
+        testinfo[testname] = [testtopic, maxscore, duration, testname, testid.__str__()]
     jsonstr = json.dumps(testinfo)
-    #print "JSONSTR = "+jsonstr
     response = HttpResponse(jsonstr)
     return response
 
 
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_setschedule(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    sessid, username = "", ""
+    sessid = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sessid)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    if not request.POST.has_key('data'):
+        message = "Error: %s"%error_msg('1174')
+        response = HttpResponse(message)
+        return response
+    postdata = request.POST['data']
+    keystring, ivstring = "schedule", "schedule"
+    decryptedPostdata = skillutils.des3Decrypt(postdata, keystring, ivstring)
+    decodedPostdata = base64.b64decode(postdata)
+    keyValuePairs = decodedPostdata.split("&")
+    emailIds, scheduleDate, scheduleTime, testid, username = "", "", "", "", ""
+    for keyval in keyValuePairs:
+        key, val = keyval.split("=")
+        if key == "emailtext":
+            emailIds = val
+        elif key == "sched_date":
+            scheduleDate = val
+        elif key == "sched_time":
+            scheduleTime = val
+        elif key == "testid":
+            testid = val
+        elif key == "username":
+            username = val
+    emailIds = emailIds.replace("%2C", ",")
+    emailIds = emailIds.replace("%40", "@")
+    emailsList = emailIds.split(",")
+    if userobj.displayname != username:
+        message = "Error: %s"%error_msg('1181')
+        response = HttpResponse(message)
+        return response
+    testobj = None
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    # Check if the user is the creator of this test. Only creators of a test 
+    # are allowed to send invitations to candidates (except when an invitation 
+    # needs to be sent automatically due to a user's need to join a group).
+    if testobj.creator.id != userobj.id:
+        message = "Error: " + error_msg('1070')
+        response = HttpResponse(message)
+        return response
+    # Find the list of all evaluator's emails.
+    testevaluator = testobj.evaluator
+    testevalemailidlist = []
+    try:
+        if testevaluator.groupmember1:
+            testevalemailidlist.append(testevaluator.groupmember1.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember2:
+            testevalemailidlist.append(testevaluator.groupmember2.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember3:
+            testevalemailidlist.append(testevaluator.groupmember3.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember4:
+            testevalemailidlist.append(testevaluator.groupmember4.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember5:
+            testevalemailidlist.append(testevaluator.groupmember5.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember6:
+            testevalemailidlist.append(testevaluator.groupmember6.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember7:
+            testevalemailidlist.append(testevaluator.groupmember7.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember8:  
+            testevalemailidlist.append(testevaluator.groupmember8.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember9:
+            testevalemailidlist.append(testevaluator.groupmember9.emailid)
+    except:
+        pass
+    try:
+        if testevaluator.groupmember10:
+            testevalemailidlist.append(testevaluator.groupmember10.emailid)
+    except:
+        pass
+    testduration = testobj.duration
+    # Provide a 3 day validity - this has to be worked on to allow the user to select a period for which this invitation will be valid.
+    try:
+        scheduleTime = scheduleTime.replace("%3A", ":")
+        fromdatetimestr = scheduleDate + " " + scheduleTime + ":00"
+        fromdatetimeobj = datetime.datetime.strptime(fromdatetimestr, '%Y-%m-%d %H:%M:%S')
+        todatetimeobj = fromdatetimeobj + datetime.timedelta(days=3)
+        toyearstr = str(todatetimeobj.year)
+    except:
+        print "#############################" + sys.exc_info()[1].__str__()
+    tomonthstr = str(todatetimeobj.month)
+    if tomonthstr.__len__() < 2:
+        tomonthstr = "0" + tomonthstr
+    todaystr = str(todatetimeobj.day)
+    if todaystr.__len__() < 2:
+        todaystr = "0" + todaystr
+    tohourstr = str(todatetimeobj.hour)
+    if tohourstr.__len__() < 2:
+        tohourstr = "0" + tohourstr 
+    tominutestr = str(todatetimeobj.minute)
+    if tominutestr.__len__() < 2:
+        tominutestr = "0" + tominutestr
+    todatetimestr = toyearstr + "-" + tomonthstr + "-" + todaystr + " " + tohourstr + ":" + tominutestr + ":00"
+    timeslot = fromdatetimestr + "#||#" + todatetimestr
+    schedule = Schedule()
+    schedule.test = testobj
+    schedule.slot = timeslot
+    schedule.save()
+    validfrom, validtill = fromdatetimestr, todatetimestr
+    for new_email in emailsList:
+        new_email = new_email.strip()
+        # If this email belongs to the creator or one of the evaluators, skip it.
+        if new_email == testobj.creator.emailid or new_email in testevalemailidlist:
+            continue
+        # Is the user registered with testyard?
+        uobj = None
+        try:
+            uobj = User.objects.get(emailid=new_email)
+        except:
+            pass
+        utobj = None
+        if uobj is not None: # user is registered
+            utobj = UserTest()
+            utobj.user = uobj
+        else:
+            utobj = WouldbeUsers()
+        utobj.emailaddr = new_email
+        utobj.test = testobj
+        try:
+            utobj.validfrom = fromdatetimeobj
+            utobj.validtill = todatetimeobj
+        except:
+            print sys.exc_info()[1].__str__()
+        utobj.status = 0
+        utobj.schedule = schedule
+        baseurl = skillutils.gethosturl(request)
+        (utobj.testurl, utobj.stringid) = gettesturlforuser(utobj.emailaddr, testid, baseurl)
+        error_emails_list = []
+        candidatename = "candidate"
+        emailsubject = "A test has been scheduled for you on testyard"
+        emailmessage = """Dear %s,
 
+	     A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+             """%(candidatename, testobj.testname, userobj.displayname)
+        emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
+        emailmessage += """and hence you are kindly requested to take the test
+            within that interval. You would be able to access the test by clicking
+            on the following link: <a href='%s' target=_blank>%s</a>.
+
+            If clicking on the above link doesn't work for you, please copy it and 
+            paste it in your browser's address bar and hit enter. Do please feel
+            free to let us know in case of any issues. We would do our best to
+            resolve it at the earliest.
+
+            We wish you all the best for the test.
+
+            Regards,
+            The TestYard Team.
+            """%(utobj.testurl, utobj.testurl)
+        fromaddr = "testyardteam@testyard.com"
+        retval = 0
+        try:
+            retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
+            utobj.save()
+        except:
+            if mysettings.DEBUG:
+                print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
+            message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
+            error_emails_list.append(new_email)
+            continue # Continue processing the rest of the emails in the list.
+    if retval == 0:
+        message = "Success! All candidates except the following ones have been emailed with the link: %s"%(", ".join(error_emails_list))
+    else:
+        message = "Success! All candidates have been emailed with the link."
+    # Dump all emails Ids to which email could not be sent
+    for error_email in error_emails_list:
+        emailfail = EmailFailure()
+        emailfail.user = userobj
+        emailfail.sessionid = sessid
+        emailfail.failedemailid = error_email
+        emailfail.script = 'Tests.views.mobile_setschedule'
+        emailfail.failurereason = sys.exc_info()[1].__str__()
+        emailfail.tryagain = 1
+        try:
+            emailfail.save()
+        except:
+            message = "Error: %s"%sys.exc_info()[1].__str__()
+            print message
+    # In mobile we do not provide for the user to edit existing schedules. That can only be done from the web interface.
+    response = HttpResponse(message)
+    return response
 
 

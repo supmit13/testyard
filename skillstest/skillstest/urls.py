@@ -134,5 +134,6 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MOBILE_TEST_CREATE_URL, 'skillstest.Tests.views.mobile_createtest', name='mobile_createtest'),
     url(r'%s$'%mysettings.MOBILE_CHALLENGE_ADDITION_URL, 'skillstest.Tests.views.mobile_addchallenge', name='mobile_addchallenge'),
     url(r'%s$'%mysettings.MOBILE_LIST_CREATOR_TESTS_URL, 'skillstest.Tests.views.mobile_listcreatortests', name='mobile_listcreatortests'),
+    url(r'%s$'%mysettings.MOBILE_TEST_SET_SCHEDULE_URL, 'skillstest.Tests.views.mobile_setschedule', name='mobile_setschedule'),
 )
 

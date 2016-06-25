@@ -178,6 +178,7 @@ error_codes = { \
         '1178' : 'Your session has expired or it got lost in transit.',\
         '1179' : 'The username field is empty. Aborting the requested operation.',\
         '1180' : 'The user with the given username does not exist.',\
+        '1181' : 'User mismatch - seems like you have a session that does not belong to you. Please logout and login again to continue.',\
     }
 
 def error_msg(code):
