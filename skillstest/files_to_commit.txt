@@ -2272,3 +2272,73 @@ testyardandroid repo:
 10.local.properties
 11.settings.gradle
 12.testyardandroid.iml
+
+===============================
+
+testyardandroid repo:
+----------------------
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+==============================
+
+Path to nginx index.html:
+ /usr/share/nginx/html/index.html
+
+Sun, June 26, 2016, 02:45 HRS.
+-------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.todo.txt
+19.uwsgi_params
+20.uwsgi.ini
+21.skillstest_nginx.conf
+22.skillstest/wsgi.py
+23.static/images/*
+24./usr/share/nginx/html/index.html
+25.templates/tests/getscheduleinfo.html
+26.templates/tests/interview_candidate_screen.html
+27.node_modules/*
+28.files_to_commit.txt 
+
+testyardandroid repo:
+----------------------
+1. app/src/main/java/xpresstech/testyard/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+13.app/src/main/res/*
+

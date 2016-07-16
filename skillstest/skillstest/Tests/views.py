@@ -163,12 +163,54 @@ def get_user_tests(request):
         else:
             continue
         tests_candidate_ordered_createdate.append(test.testname)
+    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj)
+    interviews_list = {}
+    interviews_list['asinterviewer'] = {}
+    for interview in interviewsasinterviewer:
+        inttitle = interview.title
+        #inttopic = interview.topic
+        inttopic = ""
+        inttopicname = interview.topicname
+        intmedium = interview.medium
+        intlanguage = interview.language
+        intcreatedate = interview.createdate
+        intpublishdate = interview.publishdate
+        intstatus = interview.status
+        intmaxscore = interview.maxscore
+        intmaxduration = interview.maxduration
+        intrealtime = interview.realtime
+        intlinkid = interview.interviewlinkid
+        intdata = (inttitle, inttopic, inttopicname, intmedium, intlanguage, intcreatedate, intpublishdate, intstatus, intmaxscore, intmaxduration, intrealtime, intlinkid)
+        interviews_list['asinterviewer'][inttitle] = intdata
+    interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)
+    interviews_list['asinterviewee'] = {}
+    for intcandidate in interviewsasinterviewees:
+        interviewname = intcandidate.interview.title
+        #interviewtopic = intcandidate.interview.topic
+        interviewtopic = ""
+        interviewtopicname = intcandidate.interview.topicname
+        interviewmedium = intcandidate.interview.medium
+        interviewlanguage = intcandidate.interview.language
+        interviewcreatedate = intcandidate.interview.createdate
+        interviewpublishdate = intcandidate.interview.publishdate
+        interviewmaxscore = intcandidate.interview.maxscore
+        interviewstatus = intcandidate.interview.status
+        interviewmaxduration = intcandidate.interview.maxduration
+        interviewrealtime = intcandidate.interview.realtime
+        interviewscheduledtime = intcandidate.scheduledtime
+        interviewactualstarttime = intcandidate.actualstarttime
+        interviewtotaltimetaken = intcandidate.totaltimetaken
+        interviewurl = intcandidate.interviewurl
+        intdata = (interviewname, interviewtopic, interviewtopicname, interviewmedium, interviewlanguage, interviewcreatedate, interviewpublishdate, interviewstatus, interviewmaxscore, interviewmaxduration, interviewrealtime, interviewscheduledtime, interviewactualstarttime, interviewtotaltimetaken, interviewurl)
+        interviews_list['asinterviewee'][interviewname] = intdata
     tests_user_dict = {}
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     tests_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     tests_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
     tests_user_dict['testlist_asevaluator'] = testlist_asevaluator
     tests_user_dict['testlist_ascandidate'] = testlist_ascandidate
+    tests_user_dict['interviewlist_asinterviewer'] = interviews_list['asinterviewer']
+    tests_user_dict['interviewlist_asinterviewee'] = interviews_list['asinterviewee']
     tests_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     tests_user_dict['displayname'] = userobj.displayname
     tests_user_dict['createlink'] = createlink
@@ -2210,6 +2252,7 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
         jsonstringcontent = httpresponsejson.read()
     except:
         message = "Error: %s"%(sys.exc_info()[1].__str__())
+        print message
         response = HttpResponse(message)
         return response
     jsonobj = json.loads(jsonstringcontent)
@@ -5559,7 +5602,7 @@ def createinterview(request):
         intcandidateobj.scheduledtime = scheduledatetime
         intcandidateobj.interviewlinkid = interviewlinkid
         try:
-            intcandidateobj.interviewurl = skillutils.gethosturl(request) + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/"
+            intcandidateobj.interviewurl = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/" + "?lid=" + interviewlinkid
             intcandidateobj.save()
         except:
             print "Error: %s"%sys.exc_info()[1].__str__()
@@ -5581,7 +5624,7 @@ def createinterview(request):
                      Good Luck!
 
                      The TestYard Interview Team.
-	"""%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "?attend=" + emailinvitationtarget)
+	"""%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
             # Send email
@@ -5624,6 +5667,7 @@ def createinterview(request):
     int_user_dict['pagetitle'] = "^ Please click on 'Allow' button above to allow the computer to use webcam and microphone. ^ Add an Introductory Comment"
     int_user_dict['question_num'] = "0"
     int_user_dict['medium'] = medium
+    int_user_dict['interview_url'] = intcandidateobj.interviewurl
     if medium == 'audio':
         tmpl = get_template("tests/audio.html")
     else:
@@ -5692,7 +5736,11 @@ def attendinterview(request):
         response = HttpResponse(message)
         return response
     interviewlinkid = request.GET['lid']
-    intobj = Interview.objects.get(interviewlinkid=interviewlinkid)
+    intobjqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
+    if intobjqset.__len__() > 0:
+        intobj = intobjqset[0]
+    else:
+        intobj = None
     intcandobj = InterviewCandidates.objects.get(interview=intobj)
     intcandobj.actualstarttime = datetime.datetime.now()
     intcandobj.save()
@@ -6352,6 +6400,7 @@ def mobile_listcreatortests(request):
         duration = testobj.duration
         testinfo[testname] = [testtopic, maxscore, duration, testname, testid.__str__()]
     jsonstr = json.dumps(testinfo)
+    #print jsonstr
     response = HttpResponse(jsonstr)
     return response
 
@@ -6501,6 +6550,8 @@ def mobile_setschedule(request):
     validfrom, validtill = fromdatetimestr, todatetimestr
     for new_email in emailsList:
         new_email = new_email.strip()
+        new_email = new_email.replace("+", "") # The user sometimes places whitespace characters around email Id. 
+        # That gets encoded as '+'. We need to remove those.
         # If this email belongs to the creator or one of the evaluators, skip it.
         if new_email == testobj.creator.emailid or new_email in testevalemailidlist:
             continue
@@ -6518,6 +6569,7 @@ def mobile_setschedule(request):
             utobj = WouldbeUsers()
         utobj.emailaddr = new_email
         utobj.test = testobj
+        utobj.clientsware = "Android Browser App"
         try:
             utobj.validfrom = fromdatetimeobj
             utobj.validtill = todatetimeobj

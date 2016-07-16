@@ -297,7 +297,7 @@ This table keeps info regarding such relationships. Note: sharing a 'Test'
 will enable the second 'User' to view the 'Challenge's and the available
 options for responding to it only. Responses of the  test takers will not
 be accessible to the second user. Such information is accessible only
-by the creator of the 'Test'. But the second user may copy the same 'Test'
+to the creator of the 'Test'. But the second user may copy the same 'Test'
 and become the creator of the copied version of the 'Test'. 'User's
 taking this 'Test' will be judged by the second 'User' and in that case
 the primary 'User' will not be able to access the responses of the 'User's
@@ -434,6 +434,7 @@ class InterviewQuestions(models.Model):
     # Value in seconds for the interviewee to respond, time starting from the instant the interviewer completes the question statement.
     # Default is 1 hour.
     status = models.BooleanField(default=False) # True indicates the question is complete and it may be asked in an interview session.
+
 
     class Meta:
         verbose_name = "Interview Questions Table"

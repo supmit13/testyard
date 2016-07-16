@@ -3,11 +3,10 @@ from django.views.decorators.csrf import csrf_exempt, csrf_protect
 from django.core.context_processors import csrf
 from django.views.decorators.cache import never_cache
 from django.views.generic import View
-from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedirect
+from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedirect, HttpResponsePermanentRedirect, HttpRequest
 from django.core.urlresolvers import reverse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
-#from django.utils import simplejson
 import simplejson
 from django.db.models import Q
 from django.template.response import TemplateResponse
@@ -17,6 +16,7 @@ from django.template.loader import get_template
 from django.contrib.sites.models import get_current_site
 from django.contrib.sessions.backends.db import SessionStore
 from passlib.hash import pbkdf2_sha256 # To create hash of passwords
+import logging
 
 # Standard libraries...
 import os, sys, re, time, datetime
@@ -31,6 +31,32 @@ from skillstest.models import Careers
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
+
+
+def returnRedirect(request):
+    requestline = request.build_absolute_uri()
+    logger = logging.getLogger(__name__)
+    logger.debug("REQUEST LINE: %s"%requestline)
+    httpPattern = re.compile(r"^http:")
+    if httpPattern.search(requestline):
+        redirectUrl = "%s/%s"%("", mysettings.LOGIN_URL)
+        redirectUrlParts = redirectUrl.split("//")
+        urlPathPart = redirectUrlParts[redirectUrlParts.__len__() - 1]
+        urlPathPart = mysettings.URL_PROTOCOL + skillutils.gethosturl(request) + urlPathPart
+        urlPathPart = urlPathPart.replace("https://", "", 1)
+        return HttpResponseRedirect(urlPathPart)
+    redirectUrl = "%s/%s"%("", mysettings.MANAGE_TEST_URL)
+    if not skillutils.isloggedin(request):
+        redirectUrl = "%s/%s"%("", mysettings.LOGIN_URL)
+    redirectUrlParts = redirectUrl.split("//")
+    urlPathPart = redirectUrlParts[redirectUrlParts.__len__() - 1]
+    urlPathPart = mysettings.URL_PROTOCOL + skillutils.gethosturl(request) + urlPathPart
+    urlPathPart = urlPathPart.replace("https://", "", 1)
+    return HttpResponseRedirect(urlPathPart)
+
+
+def handler404(request):	
+    return HttpResponseRedirect("%s/%s"%("", mysettings.LOGIN_URL))
 
 
 """
@@ -272,9 +298,11 @@ def logout(request):
     message = ''
     if request.method != "GET": # Illegal bad request... 
         message = error_msg('1004')
-        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
     request = skillutils.checksession(request)
+    if type(request) == HttpResponseRedirect:
+        return request
     sesscode = request.COOKIES['sessioncode']
     sessionobj = None
     try:
@@ -283,7 +311,9 @@ def logout(request):
         response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=%s"%message)
         return response
     if type(request) == 'HttpRequest':
-        request = skillutils.destroysession(request, sessionobj[0])
+        for i in range(0, sessionobj.__len__()):
+            request = skillutils.destroysession(request, sessionobj[i])
+            sessionobj[i].status = 0
     message = error_msg('1031')
     response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=%s"%message)
     return response

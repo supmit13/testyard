@@ -2204,6 +2204,7 @@
 	    // or alert the user about the missing value.
 	    postdata = ""
 	    numericpattern = new RegExp("^\\d+$");
+	    emailpattern = new RegExp("@.*\.");
 	    for(var i=0; i < document.createinterviewform.elements.length; i++){
 		if(document.createinterviewform.elements[i].name == 'interviewtitle' && document.createinterviewform.elements[i].value.trim() == ""){
 		    alert("Interview title cannot be empty. Please enter a value for it.");
@@ -2294,6 +2295,11 @@
 			document.createinterviewform.invitationemailaddr.focus();
 			return (false);
 		    }
+		    if(!emailpattern.test(document.createinterviewform.invitationemailaddr.value.trim())){
+			alert("Please enter a valid email address.");
+			document.createinterviewform.invitationemailaddr.focus();
+			return (false);
+		    }
 		}
 		if(document.createinterviewform.elements[i].name == 'randomsequencing' && document.createinterviewform.elements[i].checked == false){
 		    continue;
@@ -2322,6 +2328,7 @@
 		    popUp.document.write(xmlhttp.responseText);
 		    popUp.document.close();
 		    waitdiv.innerHTML = "";
+		    popUp.parent.location.href = popUp.parent.location.href; // Basically refreshing the parent window.
 		}
 	    };
 	    if(document.createinterviewform.btncreateinterview.value == 'Add Intro'){
@@ -2418,6 +2425,7 @@
 	}
 
 		</script>
+		{% include "inc/right_panel.html" %}
 		<div class="post">
 			<span class="meta">
 			<h3>Dear {{ displayname }},</h3>
@@ -2627,6 +2635,86 @@
 			<br />
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
+			<br /><br />
+			<div id='interviewsconducted' style="">
+			<h3>Interviews Conducted</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration (in seconds)</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>
+			</tr>
+			<tr>
+			  <td colspan="11">&nbsp;</td>
+			</tr>
+			{% for interviewtitle in interviewlist_asinterviewer %}  
+			    <tr>
+  			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:1 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:3 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:4 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:5 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:6 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:7 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:8 }}</font></td>
+		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:9 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:10 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}</font></td>
+			</tr>
+			{% endfor %}
+			</table>
+			</div>
+			<br /><br />
+			<div id='interviewsattended' style="">
+			<h3>Interviews Attended</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration (in seconds)</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Scheduled Time</font></td>
+ 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Actual Start Time</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>
+			</tr>
+			<tr>
+			  <td colspan="14">&nbsp;</td>
+			</tr>
+			{% for interviewtitle in interviewlist_asinterviewee %}  
+			<tr>
+  			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:1 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:3 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:4 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:5 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:6 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:7 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:8 }}</font></td>
+		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:9 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:10 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:11 }}</font></td>
+		   	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:12 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:13 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}</font></td>
+			</tr>
+			{% endfor %}
+			</table>
+			<br />
 			<!-- {{ test_tables }} -->
 			</form>
 			</div>

@@ -69,9 +69,17 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
                          'ACAD' : 86400, \
                          'CERT' : 86400, }
 
-URL_PROTOCOL = "http://"
+###### HTTPS SETTINGS ######
+URL_PROTOCOL = "https://"
 
-# Email settings
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE=True
+SECURE_SSL_REDIRECT = True
+SECURE_HSTS_SECONDS = 31536000 
+###### HTTPS SETTINGS END HERE ######
+
+##### EMAIL SETTINGS #######
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
@@ -79,6 +87,11 @@ EMAIL_HOST_PASSWORD = 'xtmt365i'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
+##### EMAIL SETTINGS END HERE #######
+
+####### URLCONF SETTINGS #######
+ROOT_URL = "/"
+HTTP_URL = "^http://192.168.1.2/"
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
@@ -186,6 +199,7 @@ MOBILE_TEST_CREATE_URL = "skillstest/mobile/tests/create/"
 MOBILE_CHALLENGE_ADDITION_URL = "skillstest/mobile/tests/addchallenge/"
 MOBILE_LIST_CREATOR_TESTS_URL = "skillstest/mobile/tests/showcreatortests/"
 MOBILE_TEST_SET_SCHEDULE_URL = "skillstest/mobile/tests/setschedule/"
+####### URLCONF SETTINGS END HERE #######
 
 TEST_RUN = False # Set this to True during testing the app.
 
@@ -357,10 +371,30 @@ EASYAPI_PASSWORD = 'spmprx13'
 EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
+GO_DADDY_CUST_NUM = 73165291
+GO_DADDY_PASSWD = "Xtmt365i@"
+
 MAX_POSTS_IN_PAGE = 10
 
 #LEFT_PANEL_CHALLENGE_LENGTH = 25
 
 ANSWER_SCRIPT_DUMP_PATH = "answerscripts" # This will be inside MEDIA_ROOT
 PROCESSED_SCRIPT_DUMP = "processed"
+
+###### AMAZON AWS API INFO ######
+
+ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
+SECRET_ACCESS_KEY = "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"
+
+AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
+AMAZON_ACCT_PASSWD = "spmprx13"
+
+AMAZON_ACCT_ID = "704972534197"
+
+IAM_USER = "supmit"
+IAM_PASSWD = "spmprx13"
+
+IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
+###### AMAZON AWS SETTINGS END ######
+
 

@@ -57,7 +57,9 @@ def isloggedin(request):
         request = destroysession(request, sessobj)
         return False
     else: # Good session...
-        return True
+        if sessobj.status == 1:
+            return True
+        return False
         
 
 """
@@ -67,6 +69,8 @@ def destroysession(request, sessobj):
     try:
         if request.has_key('COOKIES'):
             del request['COOKIES']
+        if request.COOKIES.has_key('sessioncode'):
+            del request.COOKIES['sessioncode']
         sessobj.status = 0
         sessobj.save()
     except:

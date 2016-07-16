@@ -1,7 +1,9 @@
 from django.conf.urls import patterns, include, url
 from django.conf import settings
+from django.views.generic import RedirectView
 from skillstest import settings as mysettings
 import skillstest.utils as skillutils
+
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
@@ -30,9 +32,14 @@ urlpatterns += patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^skillstest/admin/$', include(admin.site.urls)),
 
+    url(r'^%s$'%mysettings.ROOT_URL, 'skillstest.views.returnRedirect', name='returnRedirectRoot'),
+    url(r'^$', 'skillstest.views.returnRedirect', name='returnRedirectEmpty'),
+    url(r'^%s'%mysettings.HTTP_URL, 'skillstest.views.returnRedirect', name='returnRedirectHttp'),
+
     url(r'^%s$'%mysettings.REGISTER_URL, 'skillstest.Auth.views.register', name='newuser'),
     url(r'^%s$'%mysettings.DASHBOARD_URL, 'skillstest.views.dashboard', name='dashboard'),
     url("%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login'),
+    url("/%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login2'),
     url(r'%s$'%mysettings.LOGIN_REDIRECT_URL, 'skillstest.views.profile', name='profile'),
     url(r'%s$'%mysettings.SUBSCRIPTION_URL, 'skillstest.Subscription.views.subscriptions', name='subscriptions'),
     url(r'%s$'%mysettings.PROFILE_URL, 'skillstest.views.profile', name='profile'),
@@ -86,9 +93,8 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.CHALLENGE_STORE_URL, 'skillstest.Tests.views.interviewchallengestore', name='interviewchallengestore'),
     url(r'%s$'%mysettings.BLOB_UPLOAD_URL, 'skillstest.Tests.views.uploadblobdata', name='uploadblobdata'),
     url(r'%s$'%mysettings.ASK_QUESTION_URL, 'skillstest.Tests.views.askquestion', name='askquestion'),
-    url(r'%s$'%mysettings.ATTEND_INTERVIEW_URL, 'skillstest.Tests.views.attendinterview', name='attendinterview'),
+    url(r'%s'%mysettings.ATTEND_INTERVIEW_URL, 'skillstest.Tests.views.attendinterview', name='attendinterview'),
     url(r'%s$'%mysettings.UPDATE_INTERVIEW_META_URL, 'skillstest.Tests.views.updateinterviewmeta', name='updateinterviewmeta'),
-
     url(r'%s$'%mysettings.CREATE_NETWORK_GROUP_URL, 'skillstest.Network.views.creategroup', name='creategroup'),
     url(r'%s$'%mysettings.CHECK_GRPNAME_AVAIL_URL, 'skillstest.Network.views.checkgrpnameavailability', name='creategroup'),
     url(r'%s$'%mysettings.SEARCH_GROUP_URL, 'skillstest.Network.views.searchgroups', name='searchgroups'),
@@ -135,5 +141,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MOBILE_CHALLENGE_ADDITION_URL, 'skillstest.Tests.views.mobile_addchallenge', name='mobile_addchallenge'),
     url(r'%s$'%mysettings.MOBILE_LIST_CREATOR_TESTS_URL, 'skillstest.Tests.views.mobile_listcreatortests', name='mobile_listcreatortests'),
     url(r'%s$'%mysettings.MOBILE_TEST_SET_SCHEDULE_URL, 'skillstest.Tests.views.mobile_setschedule', name='mobile_setschedule'),
+
+    url(r'^.*$', 'skillstest.views.returnRedirect', name='returnRedirectHttp'), # All other URLs are handled here...
 )
 
