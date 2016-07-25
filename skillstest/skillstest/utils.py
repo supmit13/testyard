@@ -67,14 +67,11 @@ Function to destroy a session object and return a request object.
 """
 def destroysession(request, sessobj):
     try:
-        if request.has_key('COOKIES'):
-            del request['COOKIES']
-        if request.COOKIES.has_key('sessioncode'):
-            del request.COOKIES['sessioncode']
-        sessobj.status = 0
-        sessobj.save()
+        del request.COOKIES['sessioncode']
     except:
-        request = None
+        pass
+    sessobj.status = False
+    sessobj.save()
     return request
 
 

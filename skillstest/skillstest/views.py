@@ -310,11 +310,9 @@ def logout(request):
     except:
         response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=%s"%message)
         return response
-    if type(request) == 'HttpRequest':
-        for i in range(0, sessionobj.__len__()):
-            request = skillutils.destroysession(request, sessionobj[i])
-            sessionobj[i].status = 0
-    message = error_msg('1031')
+    for i in range(0, sessionobj.__len__()):
+        request = skillutils.destroysession(request, sessionobj[i])
+    message += error_msg('1031')
     response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=%s"%message)
     return response
 
