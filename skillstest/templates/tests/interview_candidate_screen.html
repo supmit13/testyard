@@ -57,7 +57,7 @@ var stun_server = "stun.l.google.com:19302";
       media_element.play();
     };
     stun_server = "74.125.31.127:19302";
-  } 
+  }
   else if (navigator.webkitGetUserMedia) { // early webkit webrtc implementation
     rtc_peer_connection = webkitRTCPeerConnection;
     rtc_session_description = RTCSessionDescription;
@@ -65,7 +65,7 @@ var stun_server = "stun.l.google.com:19302";
     connect_stream_to_src = function(media_stream, media_element) {
       media_element.src = webkitURL.createObjectURL(media_stream);
     };
-  } 
+  }
   else {
     alert("This browser does not support WebRTC - visit WebRTC.org for more info");
     webrtc_capable = false;
@@ -273,7 +273,7 @@ function setup_video() {
     { 
       "audio": true, // request access to local microphone
       "video": true  // request access to local camera
-    }, 
+    },
     function (local_stream) { // success callback
       // display preview from the local camera & microphone using local <video> MediaElement
       connect_stream_to_src(local_stream, document.getElementById("local_video"));

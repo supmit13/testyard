@@ -2342,3 +2342,31 @@ testyardandroid repo:
 12.testyardandroid.iml
 13.app/src/main/res/*
 
+==================================
+Mon, July 26, 2016, 15:10 HRS.
+-------------------------------
+
+1. skillstest/utils.py
+2. skillstest/views.py
+3. templates/authentication/login.html
+4. templates/tests/audiovisual.html
+5. skillstest/Tests/views.py
+6. static/webaudiovisual/main.js
+7. skillstest/Tests/models.py
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.templates/tests/getscheduleinfo.html
+19.templates/tests/interview_candidate_screen.html
+20.node_modules/*
+21.skillstest/settings.py
+22.files_to_commit.txt 
+
+

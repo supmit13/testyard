@@ -91,7 +91,7 @@ MAILSENDER = "admin@testyard.com"
 
 ####### URLCONF SETTINGS #######
 ROOT_URL = "/"
-HTTP_URL = "^http://192.168.1.2/"
+HTTP_URL = "^http://192.168.1.4/"
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
@@ -363,7 +363,7 @@ PAYPAL_LIVE_URL = "https://api.paypal.com"
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
 
-CUSTOMER_IP_ADDRESS = '192.168.1.3:8080'
+CUSTOMER_IP_ADDRESS = '192.168.1.4:8080'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
