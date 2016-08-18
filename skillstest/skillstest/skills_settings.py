@@ -388,7 +388,7 @@ ACCESS_KEY_ID = "**********************"
 SECRET_ACCESS_KEY = "**************************************"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "spmprx13"
+AMAZON_ACCT_PASSWD = "**********"
 
 AMAZON_ACCT_ID = "704972534197"
 
