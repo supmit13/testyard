@@ -383,8 +383,9 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
-SECRET_ACCESS_KEY = "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"
+#ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
+ACCESS_KEY_ID = "**********************"
+SECRET_ACCESS_KEY = "**************************************"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
 AMAZON_ACCT_PASSWD = "spmprx13"
