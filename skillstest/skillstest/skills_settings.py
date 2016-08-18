@@ -393,7 +393,7 @@ AMAZON_ACCT_PASSWD = "**********"
 AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "spmprx13"
+IAM_PASSWD = "***********"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
