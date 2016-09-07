@@ -39,7 +39,12 @@ var connect_stream_to_src = null;
 var stun_server = "stun.l.google.com:19302";
 
 if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
+  if (typeof RTCPeerConnection == 'undefined'){
+  rtc_peer_connection = webkitRTCPeerConnection;
+  }
+  else {
   rtc_peer_connection = RTCPeerConnection;
+  }
   rtc_session_description = RTCSessionDescription;
   get_user_media = navigator.getUserMedia.bind(navigator);
   connect_stream_to_src = function(media_stream, media_element) {
@@ -102,19 +107,20 @@ var signaling_server; // signaling server for this call
 var peer_connection; // peer connection object
 
 function start() {
-  window.location = "{{interview_url}}";
-  // create the WebRTC peer connection object
   peer_connection = new rtc_peer_connection({ // RTCPeerConnection configuration 
-    "iceServers": [ // information about ice servers
+    "iceServers": [ 
       { "url": "stun:"+stun_server }, // stun server info
     ]
   });
 
   // generic handler that sends any ice candidates to the other peer
   peer_connection.onicecandidate = function (ice_event) {
+    var token = "{{hashtoken}}";
+    call_token = "#"+token;
     if (ice_event.candidate) {
       signaling_server.send(
         JSON.stringify({
+          token: call_token,
           type: "new_ice_candidate",
           candidate: ice_event.candidate ,
         })
@@ -133,23 +139,14 @@ function start() {
   // setup stream from the local camera 
   setup_video();
 
-  // setup generic connection to the signaling server using the WebSocket API
-  signaling_server = new WebSocket("ws://192.168.1.2:8888");
-
-  if (document.location.hash === "" || document.location.hash === undefined) { // you are the Caller
-
-    // create the unique token for this call 
-    var token = Date.now()+"-"+Math.round(Math.random()*10000);
+  signaling_server = new WebSocket("wss://54.201.126.160:8888");
+  if (document.location.hash === "" || document.location.hash === undefined || document.location.hash === "#/") { // you are the Caller
+    var token = "{{hashtoken}}";
     call_token = "#"+token;
-
-    // set location.hash to the unique token for this call
     document.location.hash = token;
 
     signaling_server.onopen = function() {
-      // setup caller signal handler
       signaling_server.onmessage = caller_signal_handler;
-
-      // tell the signaling server you have joined the call 
       signaling_server.send(
         JSON.stringify({ 
           token:call_token,
@@ -159,13 +156,15 @@ function start() {
     }
 
     document.title = "You are the Caller";
-    document.getElementById("loading_state").innerHTML = "Ready for a call...ask your friend to visit:<br/><br/>"+document.location;
+    //document.getElementById("loading_state").innerHTML = "Ready for a call...ask the other party to visit:<br/><br/>"+document.location;
 
-  } else { // you have a hash fragment so you must be the Callee 
+  } 
+  attendpattern = new RegExp("attend=");
+  matchres = attendpattern.exec(document.location);
+  if(matchres){
     
-    // get the unique token for this call from location.hash
     call_token = document.location.hash;
-
+    //alert(call_token);
     signaling_server.onopen = function() {
       // setup caller signal handler
       signaling_server.onmessage = callee_signal_handler;
@@ -188,7 +187,9 @@ function start() {
     }
 
     document.title = "You are the Callee";
-    document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
+    //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
+    document.captureinterview.btnstartcapture.disabled= true;
+    document.captureinterview.btnstopcapture.disabled= true;
   }
 
 }
@@ -234,9 +235,11 @@ function caller_signal_handler(event) {
       },
       log_error
     );
-  } else {
+  } 
+  else {
     // extend with your own signal types here
   }
+
 }
 
 // handle signals as a callee
@@ -246,7 +249,8 @@ function callee_signal_handler(event) {
     peer_connection.addIceCandidate(
       new RTCIceCandidate(signal.candidate)
     );
-  } else if (signal.type === "new_description") {
+  } 
+  else if (signal.type === "new_description") {
     peer_connection.setRemoteDescription(
       new rtc_session_description(signal.sdp), 
       function () {
@@ -256,7 +260,8 @@ function callee_signal_handler(event) {
       },
       log_error
     );
-  } else {
+  } 
+  else {
     // extend with your own signal types here
   }
 }
@@ -284,6 +289,227 @@ function log_error(error) {
 }
 
 </script>
+
+<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+<script src="https://cdn.webrtc-experiment.com/gif-recorder.js"></script>
+<script src="https://cdn.webrtc-experiment.com/getScreenId.js"></script>
+
+<script>
+            (function() {
+                var params = {},
+                    r = /([^&=]+)=?([^&]*)/g;
+                function d(s) {
+                    return decodeURIComponent(s.replace(/\+/g, ' '));
+                }
+
+                var match, search = window.location.search;
+                while (match = r.exec(search.substring(1))) {
+                    params[d(match[1])] = d(match[2]);
+
+                    if(d(match[2]) === 'true' || d(match[2]) === 'false') {
+                        params[d(match[1])] = d(match[2]) === 'true' ? true : false;
+                    }
+                }
+
+                window.params = params;
+            })();
+            
+             function addStreamStopListener(stream, callback) {
+                var streamEndedEvent = 'ended';
+
+                if ('oninactive' in stream) {
+                    streamEndedEvent = 'inactive';
+                }
+
+                stream.addEventListener(streamEndedEvent, function() {
+                    callback();
+                    callback = function() {};
+                }, false);
+
+                stream.getAudioTracks().forEach(function(track) {
+                    track.addEventListener(streamEndedEvent, function() {
+                        callback();
+                       callback = function() {};
+                    }, false);
+                });
+
+                stream.getVideoTracks().forEach(function(track) {
+                    track.addEventListener(streamEndedEvent, function() {
+                        callback();
+                        callback = function() {};
+                    }, false);
+                });
+            }
+</script>
+
+<script>
+   function intallFirefoxScreenCapturingExtension() {
+        InstallTrigger.install({
+                    'Foo': {
+                        // URL: 'https://addons.mozilla.org/en-US/firefox/addon/enable-screen-capturing/',
+                        URL: 'https://addons.mozilla.org/firefox/downloads/file/355418/enable_screen_capturing_in_firefox-1.0.006-fx.xpi?src=cb-dl-hotness',
+                        toString: function() {
+                            return this.URL;
+                        }
+                    }
+                });
+    }
+
+    var recordingPlayer = recordingDIV.querySelector('video');
+    var mimeType = 'video/mp4';
+    startbutton = document.captureinterview.btnstartcapture;
+    var commonConfig = {
+        onMediaCaptured: function(stream){
+            startbutton.stream = stream;
+            if(button.mediaCapturedCallback) {
+                button.mediaCapturedCallback();
+            }
+        },
+        onMediaStopped: function() {
+       }
+    };
+ 
+// Function to start capturing the stream from the video element
+function startCapture(startbutton){
+  document.captureinterview.btnstopcapture.disabled = false;
+  document.captureinterview.btnstartcapture.disabled = true;
+  //alert("HIIIUUUU");
+  captureAudioPlusVideo(commonConfig);
+  var button = startbutton;
+  button.mediaCapturedCallback = function() {
+  if(typeof MediaRecorder === 'undefined') { // opera or chrome etc.
+    button.recordRTC = [];
+    if(!params.bufferSize){
+       // it fixes audio issues whilst recording 720p
+       params.bufferSize = 16384;
+    }
+
+    var options = {
+      type: 'audio',
+      bufferSize: typeof params.bufferSize == 'undefined' ? 0 : parseInt(params.bufferSize),
+      sampleRate: typeof params.sampleRate == 'undefined' ? 44100 : parseInt(params.sampleRate),
+      leftChannel: params.leftChannel || false,
+      disableLogs: params.disableLogs || false,
+      recorderType: webrtcDetectedBrowser === 'edge' ? StereoAudioRecorder : null
+    }; 
+    if(typeof params.sampleRate == 'undefined') {
+      delete options.sampleRate;
+    }
+
+    var audioRecorder = RecordRTC(button.stream, options);
+
+    var videoRecorder = RecordRTC(button.stream, {
+      type: 'video',
+      disableLogs: params.disableLogs || false,
+      canvas: {
+        width: params.canvas_width || 320,
+        height: params.canvas_height || 240
+      },
+      frameInterval: typeof params.frameInterval !== 'undefined' ? parseInt(params.frameInterval) : 20 // minimum time between pushing frames to Whammy (in milliseconds)
+    });
+    // to sync audio/video playbacks in browser!
+    videoRecorder.initRecorder(function() {
+      audioRecorder.initRecorder(function() {
+      audioRecorder.startRecording();
+      videoRecorder.startRecording();
+      });
+    });
+
+    button.recordRTC.push(audioRecorder, videoRecorder);
+    button.recordingEndedCallback = function() {
+      // Upload the file to the server
+    }
+    return;
+  } // end of if(typeof MediaRecorder === ...
+
+  button.recordRTC = RecordRTC(button.stream, {
+    type: 'video',
+    mimeType: mimeType,
+    disableLogs: params.disableLogs || false,
+    // bitsPerSecond: 25 * 8 * 1025 // 25 kbits/s
+    getNativeBlob: true // enable it for longer recordings
+  });
+  button.recordingEndedCallback = function(url) { // Upload the recording here
+  };
+  button.recordRTC.startRecording();
+  }; // end of button.mediaCapturedCallback
+}
+
+
+// Function to stop capturing the stream. Additionally, this function is 
+// also responsible for uploading the video captured to the server.
+function stopCapture(stopbtn){
+  //First check to see if anything is being captured at all.
+  //setTimeout(function() {
+  // button.disabled = false;
+  //  button.disableStateWaiting = false;
+  //  }, 2 * 1000);
+
+  function stopStream() {
+    if(stopbtn.stream && stopbtn.stream.stop) {
+      stopbtn.stream.stop();
+      stopbtn.stream = null;
+    }
+  }
+  alert(stopbtn.recordRTC);
+  if(stopbtn.recordRTC){
+    if(stopbtn.recordRTC.length){
+      stopbtn.recordRTC[0].stopRecording(function(url) {
+        if(!stopbtn.recordRTC[1]){
+          stopbtn.recordingEndedCallback(url);
+          stopStream();
+
+          //saveToDiskOrOpenNewTab(stopbtn.recordRTC[0]);
+          stopbtn.recordRTC[0].save();
+          alert("Saved recording...");
+          return;
+        }
+
+        stopbtn.recordRTC[1].stopRecording(function(url) {
+        stopbtn.recordingEndedCallback(url);
+        stopStream();
+        });
+      }); // end of function(url){...
+    }
+    else{
+      stopbtn.recordRTC.stopRecording(function(url) {
+        stopbtn.recordingEndedCallback(url);
+        stopStream();
+        //saveToDiskOrOpenNewTab(stopbtn.recordRTC); 
+        stopbtn.recordRTC.save();
+        alert("Saved recording");
+      });
+    }
+  }
+  return;
+  
+}
+
+
+function captureAudioPlusVideo(config) {
+  //captureUserMedia({video: true, audio: true}, function(audioVideoStream) {
+  //recordingPlayer.srcObject = audioVideoStream;
+  //recordingPlayer.play();
+                    
+  captureUserMedia({video: true, audio: true}, function() {
+  audioVideoStream = document.getElementById('remote_video').srcObject;
+  config.onMediaCaptured(audioVideoStream);
+                    
+  addStreamStopListener(audioVideoStream, function() {
+    config.onMediaStopped();
+  });
+  }, function(error) {
+  config.onMediaCapturingFailed(error);
+  });
+}
+</script>
+
+
+<script type="text/css">
+.center {
+margin: 0 auto;
+}
+</script>
 <style>
 html, body {
   padding: 0px;
@@ -299,33 +525,39 @@ html, body {
   text-align: center;
 }
 #open_call_state {
-  display: none;
 }
 #local_video {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 100px;
+  left: 100px;
   width: 160px;
   height: 120px;
   background: #333333;
 }
 #remote_video {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 1024px;
-  height: 768px;
+  top: 100px;
+  left: 100px;
+  width: 70%;
+  height: 70%;
   background: #999999;
 }
 </style>
 </head>
-<body onload="start()">
+<body onload="start()" onbeforeunload="stopCapture(this);"> 
   <div id="loading_state">
-    loading...
+    loading... 
   </div>
-  <div id="open_call_state">
-    Remote Video: <video id="remote_video"></video>
-    Local Video: <video id="local_video"></video>
+  <div id="open_call_state" class="center">
+    <video id="remote_video"></video>
+    <video id="local_video"></video> 
+  </div>
+  <br />
+  <div align='center'>
+  <form name='captureinterview' id='captureinterview' method='POST'>
+  <input type='button' name='btnstartcapture' value='Start Capturing' onClick='javascript:startCapture(this);'>&nbsp;&nbsp;
+  <input type='button' name='btnstopcapture' value='Stop Capturing' onClick='javascript:stopCapture(this);' disabled=true>
+  </form>
   </div>
 </body>
 </html>

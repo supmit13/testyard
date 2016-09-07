@@ -36,7 +36,7 @@ import csv, string
 import xml.etree.ElementTree as et
 from itertools import chain
 import pyaudio, wave
-
+import binascii
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
@@ -68,14 +68,21 @@ def get_user_tests(request):
                 testtypes += "<option value=&quot;%s&quot;>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
         for trule in mysettings.RULES_DICT.keys():
             testrules += "<option value=&quot;%s&quot;>%s</option>"%(trule, mysettings.RULES_DICT[trule])
+
+        unique_topics = {}
         for ttopics in mysettings.TEST_TOPICS:
             ttopicsval = ttopics.replace(" ", "__")
-            testtopics += "<option value=&quot;%s&quot;>%s</option>"%(ttopicsval, ttopics)
+            if not unique_topics.has_key(ttopicsval):
+                unique_topics[ttopicsval] = 1
+                testtopics += "<option value=&quot;%s&quot;>%s</option>"%(ttopicsval, ttopics)
         # Get topics created in the past by this user
         usertopics = Topic.objects.filter(user=userobj, isactive=True)
         for topic in usertopics:
             topicname = topic.topicname.replace(" ", "__")
-            testtopics += "<option value=&quot;%s&quot;>%s</option>"%(topicname, topic.topicname)
+            topicname = topicname.replace("+", "__")
+            if not unique_topics.has_key(topicname):
+                unique_topics[topicname] = 1
+                testtopics += "<option value=&quot;%s&quot;>%s</option>"%(topicname, topic.topicname)
         for skillcode in mysettings.SKILL_QUALITY.keys():
             skilltarget += "<option value=&quot;%s&quot;>%s</option>"%(skillcode, mysettings.SKILL_QUALITY[skillcode])
         for tscope in mysettings.TEST_SCOPES:
@@ -177,7 +184,19 @@ def get_user_tests(request):
         intpublishdate = interview.publishdate
         intstatus = interview.status
         intmaxscore = interview.maxscore
-        intmaxduration = interview.maxduration
+        intmaxduration_min = interview.maxduration/60
+        if intmaxduration_min >= 60:
+            intmaxduration_hr = intmaxduration_min/60
+        if intmaxduration_hr >= 1:
+            if intmaxduration_hr == 1:
+                intmaxduration = str(intmaxduration_hr) + " hour"
+            else:
+                intmaxduration = str(intmaxduration_hr) + " hours"
+            intmaxduration_min = (intmaxduration_hr - int(intmaxduration_hr)) * 60
+            if intmaxduration_min > 0:
+                intmaxduration += " " + str(intmaxduration_min) + " minutes"
+        else:
+            intmaxduration = str(intmaxduration_min) + " minutes"
         intrealtime = interview.realtime
         intlinkid = interview.interviewlinkid
         intdata = (inttitle, inttopic, inttopicname, intmedium, intlanguage, intcreatedate, intpublishdate, intstatus, intmaxscore, intmaxduration, intrealtime, intlinkid)
@@ -194,14 +213,30 @@ def get_user_tests(request):
         interviewcreatedate = intcandidate.interview.createdate
         interviewpublishdate = intcandidate.interview.publishdate
         interviewmaxscore = intcandidate.interview.maxscore
+        interviewerid = intcandidate.interview.interviewer_id
+        interviewerobj = User.objects.get(id=interviewerid)
+        interviewername = interviewerobj.displayname
         interviewstatus = intcandidate.interview.status
         interviewmaxduration = intcandidate.interview.maxduration
+        intmaxduration_min = intcandidate.interview.maxduration/60
+        if intmaxduration_min >= 60:
+            intmaxduration_hr = intmaxduration_min/60
+        if intmaxduration_hr >= 1:
+            if intmaxduration_hr == 1:
+                interviewmaxduration = str(intmaxduration_hr) + " hour"
+            else:
+                interviewmaxduration = str(intmaxduration_hr) + " hours"
+            intmaxduration_min = (intmaxduration_hr - int(intmaxduration_hr)) * 60
+            if intmaxduration_min > 0:
+                interviewmaxduration += " " + str(intmaxduration_min) + " minutes"
+        else:
+            interviewmaxduration = str(intmaxduration_min) + " minutes"
         interviewrealtime = intcandidate.interview.realtime
         interviewscheduledtime = intcandidate.scheduledtime
         interviewactualstarttime = intcandidate.actualstarttime
         interviewtotaltimetaken = intcandidate.totaltimetaken
         interviewurl = intcandidate.interviewurl
-        intdata = (interviewname, interviewtopic, interviewtopicname, interviewmedium, interviewlanguage, interviewcreatedate, interviewpublishdate, interviewstatus, interviewmaxscore, interviewmaxduration, interviewrealtime, interviewscheduledtime, interviewactualstarttime, interviewtotaltimetaken, interviewurl)
+        intdata = (interviewname, interviewtopic, interviewtopicname, interviewmedium, interviewlanguage, interviewcreatedate, interviewpublishdate, interviewstatus, interviewmaxscore, interviewmaxduration, interviewrealtime, interviewscheduledtime, interviewactualstarttime, interviewtotaltimetaken, interviewurl, interviewername)
         interviews_list['asinterviewee'][interviewname] = intdata
     tests_user_dict = {}
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
@@ -865,7 +900,7 @@ def create(request):
             message = error_msg('1043')
             return HttpResponse(message)
         elif activemm in ('04', '06', '09', '11') and int(activedateparts[0]) > 30:
-            message = error_msg('1043')		
+            message = error_msg('1043')     
             return HttpResponse(message)
         elif activemm == '02' and int(activedateparts[2]) % 4 == 0 and int(activedateparts[2]) % 100 != 0 and int(activedateparts[0]) > 29: # Leap year
             message = error_msg('1043')
@@ -1627,20 +1662,27 @@ def editexistingtest(request):
     create_test_dict['topic'] = testobj.topic
     testtopicname = testobj.topicname
     create_test_dict['testtopics'] = ""
+    unique_topics = {}
     for ttopics in mysettings.TEST_TOPICS:
         ttopicsval = ttopics.replace(" ", "__")
-        if testtopicname == ttopics:
-            create_test_dict['testtopics'] += "<option value=&quot;%s&quot; selected>%s</option>"%(ttopicsval, ttopics)
-        else:
-            create_test_dict['testtopics'] += "<option value=&quot;%s&quot;>%s</option>"%(ttopicsval, ttopics)
+        ttopicsval = ttopics.replace('""', '"')
+        if testtopicname == ttopics and not unique_topics.has_key(ttopicsval):
+            create_test_dict['testtopics'] += "<option value=%s selected>%s</option>"%(ttopicsval, ttopics)
+            unique_topics[ttopicsval] = 1
+        elif not unique_topics.has_key(ttopicsval):
+            create_test_dict['testtopics'] += "<option value=%s>%s</option>"%(ttopicsval, ttopics)
+            unique_topics[ttopicsval] = 1
         # Get topics created in the past by this user
     usertopics = Topic.objects.filter(user=userobj, isactive=True)
     for topic in usertopics:
         topicname = topic.topicname.replace(" ", "__")
-        if testtopicname == topic.topicname:
-            create_test_dict['testtopics'] += "<option value=&quot;%s&quot; selected>%s</option>"%(topicname, topic.topicname)
-        else:
-            create_test_dict['testtopics'] += "<option value=&quot;%s&quot;>%s</option>"%(topicname, topic.topicname)
+        topicname = topic.topicname.replace('""', '"')
+        if testtopicname == topic.topicname and not unique_topics.has_key(topicname):
+            create_test_dict['testtopics'] += "<option value=%s selected>%s</option>"%(topicname, topic.topicname)
+            unique_topics[topicname] = 1
+        elif not unique_topics.has_key(topicname):
+            create_test_dict['testtopics'] += "<option value=%s>%s</option>"%(topicname, topic.topicname)
+            unique_topics[topicname] = 1
     create_test_dict['totalscore'] = testobj.maxscore
     create_test_dict['evendistribution'] = 1 # Need to find from the existing challenges as to what its value should be.
     challengeqset = Challenge.objects.filter(test=testobj)
@@ -2875,29 +2917,29 @@ def gettestdata(request):
              irregularities. \
              Thanks, \
              %s "%(testobj.testname, useremail, testevallink, fromaddr)
-	    try:
-	        retval = send_mail(emailsubject, emailmessage, fromaddr, [ evalemailid, ], False)
-	        message = "Successfully sent email to evaluator identified by '%s' for test identified by name '%s' and Id '%s' and candidate identified by email '%s'"%(evalemailid, testobj.testname, testid, useremail)
+        try:
+            retval = send_mail(emailsubject, emailmessage, fromaddr, [ evalemailid, ], False)
+            message = "Successfully sent email to evaluator identified by '%s' for test identified by name '%s' and Id '%s' and candidate identified by email '%s'"%(evalemailid, testobj.testname, testid, useremail)
                 if log is not None:
-	            log.logmessage(message)
+                log.logmessage(message)
                 else:
                     print message
                 emailsent = True # Just for maintaining uniformity
-	    except: # Log this error with all the variables used above in try block. This will be used by admins to manually send the email.
-	        message = "Could not send email to evaluator '%s' regarding completion of test identified by name '%s' and Id '%s' for user identified by emailaddress '%s' with record in table '%s' and table Id '%s'"%(evalemailid, testobj.testname, testid, useremail, tabref, tabid)
+        except: # Log this error with all the variables used above in try block. This will be used by admins to manually send the email.
+            message = "Could not send email to evaluator '%s' regarding completion of test identified by name '%s' and Id '%s' for user identified by emailaddress '%s' with record in table '%s' and table Id '%s'"%(evalemailid, testobj.testname, testid, useremail, tabref, tabid)
                 if log is not None:
-	            log.logmessage(message)
+                log.logmessage(message)
                 else:
                     print message
                 emailsent = False
-	    # Also send an email to test creator informing about the exception.
-	    creatoremail = ""
+        # Also send an email to test creator informing about the exception.
+        creatoremail = ""
             if not emailsent or emailsent == False:
-	        try:
-	            retval = send_mail("Could not send email to evaluator", message, fromaddr, [creatoremail,], False)
-	        except:
-	            pass # worthless email service!!! (cursing...).
-	#return HttpResponse(message)
+            try:
+                retval = send_mail("Could not send email to evaluator", message, fromaddr, [creatoremail,], False)
+            except:
+                pass # worthless email service!!! (cursing...).
+    #return HttpResponse(message)
     message = "Success: Test in progress."
     return HttpResponse(message)
 """
@@ -3098,7 +3140,7 @@ def sendtestinvitations(request):
         emailsubject = "A test has been scheduled for you on testyard"
         emailmessage = """Dear %s,
 
-	A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+    A test with the name '%s' has been scheduled for you by <i>%s</i>. 
         """%(candidatename, testobj.testname, userobj.displayname)
         if validtill == 'onwards':
             emailmessage += """ This test will remain valid from %s %s, """%(validfrom, validtill)
@@ -3669,42 +3711,42 @@ def createtestbulkupload(request):
     testlinkid, exist_test_id, upload1, upload2, upload3, upload4, upload5, upload6, upload7, upload8, upload9, upload10 = [ "" for i in range(12)]
     uploaddict = {}
     if request.POST.has_key('testlinkid'):
-	testlinkid = request.POST['testlinkid']
+        testlinkid = request.POST['testlinkid']
     if request.POST.has_key('exist_test_id'):
-	exist_test_id = request.POST['exist_test_id']
+        exist_test_id = request.POST['exist_test_id']
     username = userobj.displayname
     uploadPattern = re.compile(r"upload\d+")
     for postparam in request.FILES.keys():
-	uploadfilename = None
+        uploadfilename = None
         #print request.FILES[postparam].name
-	if request.FILES.has_key(postparam) and request.FILES[postparam].name != "" and uploadPattern.search(postparam):
+        if request.FILES.has_key(postparam) and request.FILES[postparam].name != "" and uploadPattern.search(postparam):
             uploadfilename = request.FILES[postparam].name.split(".")[0]
-	else:
-	    continue
+        else:
+            continue
         uploadedext = skillutils.get_extension2(request.FILES[postparam].name)
         if uploadedext.lower() != 'csv' and uploadedext.lower() != 'xls' and uploadedext.lower() != 'xlsx' and uploadedext.lower() != 'xml':
-	    message = "Invalid test file format for POST parameter '%s'. Please upload 'csv' or 'xls(x)' or 'xml' files only."%postparam
+            message = "Invalid test file format for POST parameter '%s'. Please upload 'csv' or 'xls(x)' or 'xml' files only."%postparam
             continue
         fpath, message, testmedia = skillutils.handleuploadedfile2(request.FILES[postparam], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload", uploadfilename)
         uploadedfile = request.FILES[postparam].name
-	uploaddict[uploadedfile] = [fpath, uploadedext]
+    uploaddict[uploadedfile] = [fpath, uploadedext]
     # At this point, all files have been uploaded. So we are ready to start creating the tests and their challenges.
     # Note: We will delete the entire 'bulkupload' folder (along with its contents) once all tests from those files have been created.
     testcount = 0
     for filename in uploaddict.keys():
         filepath = uploaddict[filename][0]
         fileext = uploaddict[filename][1] # This can be bogus if extension is greater than 3 chars long, e.g xlsx.
-	if fileext == "xlsx":
+        if fileext == "xlsx":
             testcount += create_test_from_xlsx(filename, filepath, testlinkid, userobj)
         elif fileext == "xls":
             testcount += create_test_from_xls(filename, filepath, testlinkid, userobj)
-	elif fileext == "csv":
-	    testcount += create_test_from_csv(filename, filepath, testlinkid, userobj)
-	elif fileext == "xml":
-	    testcount += create_test_from_xml(filename, filepath, testlinkid, userobj)
-	else:
-	    print "Unsupported format %s\n", fileext
-	    continue
+        elif fileext == "csv":
+            testcount += create_test_from_csv(filename, filepath, testlinkid, userobj)
+        elif fileext == "xml":
+            testcount += create_test_from_xml(filename, filepath, testlinkid, userobj)
+        else:
+            print "Unsupported format %s\n", fileext
+            continue
     try:
         allfiles = os.listdir(mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload")
         for filename in allfiles:
@@ -4885,9 +4927,9 @@ def copytest(request):
     existingtestobj = Test.objects.get(id=testid)
     newtestobj = skillutils.copy_test(existingtestobj, userobj)
     message = """New test has been created successfully. Please note the following: 
-	1. The evaluator for this test is you. You may change it later. 
-	2. The publish date and activation date are scheduled 10 days ahead. You may change them as you wish. 
-	3. To view the copied test, please refresh the screen."""
+    1. The evaluator for this test is you. You may change it later. 
+    2. The publish date and activation date are scheduled 10 days ahead. You may change them as you wish. 
+    3. To view the copied test, please refresh the screen."""
     return HttpResponse(message)
 
 
@@ -4973,7 +5015,7 @@ def gettestschedule(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
-def setschedule(request):			
+def setschedule(request):           
     message = ""
     if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')
@@ -5085,7 +5127,7 @@ def setschedule(request):
             emailsubject = "A test has been scheduled for you on testyard"
             emailmessage = """Dear %s,
 
-	     A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+         A test with the name '%s' has been scheduled for you by <i>%s</i>. 
              """%(candidatename, testobj.testname, userobj.displayname)
             emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
             emailmessage += """and hence you are kindly requested to take the test
@@ -5461,7 +5503,7 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", "", "", "Add Intro", "intro.wav", "", ""
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", "", "", "Add Intro", "intro.wav", "", "", 0
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
     # Check to see if an interview with the same title exists in the current user's list.
@@ -5488,14 +5530,15 @@ def createinterview(request):
     #    scheduledatetime = request.POST['scheduledatetime']
     if request.POST.has_key('language') and request.POST['language'] != "":
         language = request.POST['language']
-    if request.POST.has_key('realtime'):
+    if request.POST.has_key('realtime') and request.POST.has_key('scheduledatetime'):
         realtime = request.POST['realtime']
         scheduledatetime = request.POST['scheduledatetime']
     else:  
-	realtime = 0
+        realtime = 0
+        scheduledatetime = ''
     if realtime: # Email invitation to all interviewees should be sent.
-        emailinvitationtarget = request.POST['invitationemailaddr']
-        scheduledatetime = request.POST['scheduledatetime']
+      emailinvitationtarget = request.POST['invitationemailaddr']
+      #scheduledatetime = request.POST['scheduledatetime']
     if request.POST.has_key('skilltarget'):
         skilltarget = request.POST['skilltarget']
     if request.POST.has_key('interviewscope'):
@@ -5506,6 +5549,8 @@ def createinterview(request):
         randomsequencing = 0
     if request.POST.has_key('interviewlinkid'):
         interviewlinkid = request.POST['interviewlinkid']
+    if request.POST.has_key('chkrightnow'):
+        chkrightnow = 1
     if request.POST.has_key('introfilename'):
         introfilename = request.POST['introfilename']
     else:
@@ -5517,15 +5562,14 @@ def createinterview(request):
     if intqset.__len__() > 0:
         resp = HttpResponse(error_msg('1170'))
         return resp
-    interviewobj = None
-    if introbtntext == 'Add Intro': # We are here for the first time
-        interviewobj = Interview()
+    interviewobj = Interview()
+    if introbtntext == 'Add Intro'  or introbtntext == 'Create Interview': # We are here for the first time
         interviewobj.title = interviewtitle
     elif introbtntext == 'Open Intro':
         try:
             interviewobj = Interview.objects.filter(title=interviewtitle, interviewer=userobj)[0]
         except:
-            interviewobj = Interview()
+            pass
         interviewobj.title = interviewtitle
     interviewobj.challengescount = numchallenges
     interviewobj.maxresponsestarttime = maxresponsestarttime
@@ -5550,10 +5594,11 @@ def createinterview(request):
     #interviewobj.quality = skilltarget
     interviewobj.challengesfilepath = ""
     interviewobj.introfilepath = introfilename
+    hashtoken = binascii.hexlify(os.urandom(16))
     if emailinvitationtarget: # Send an email invitation link to the email address.
         message = """Dear Candidate,
                      
-                     This is an invitation to attend an interview with %s on %s. Please click on the 
+                     This is an invitation to attend an interview with %s on %s hours. Please click on the 
                      link below to load the interview interface. If it doesn't work, then copy
                      the link and paste it in your browser's address bar and hit <enter>.
 
@@ -5566,7 +5611,7 @@ def createinterview(request):
                      Good Luck!
 
                      The TestYard Interview Team.
-	"""%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid)
+    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         # Send email
@@ -5593,21 +5638,26 @@ def createinterview(request):
     # URLs will be sent to both the users through email. Additionally, the interviewer will have the 
     # URL listed in her/his list of interviews. If the interviewee is also a member of TestYard, then
     # she too will have the URL listed  in her/his list of interviews.
-    if realtime:
+    if realtime and medium == 'audiovisual':
         intcandidateobj = InterviewCandidates()
         intcandidateobj.interview = interviewobj
         intcandidateobj.emailaddr = emailinvitationtarget
-        if scheduledatetime == 'YYYY-MM-DD hh:mm:ss':
+        if scheduledatetime == 'YYYY-MM-DD hh:mm:ss' or scheduledatetime == "":
             scheduledatetime = datetime.datetime.now()
         intcandidateobj.scheduledtime = scheduledatetime
         intcandidateobj.interviewlinkid = interviewlinkid
+        #caur = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/" + "?lid=" + interviewlinkid
         try:
-            intcandidateobj.interviewurl = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/" + "?lid=" + interviewlinkid
+            intcandidateobj.interviewurl = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + interviewlinkid + "/" + "?lid=" + interviewlinkid + "&hash=" + hashtoken
             intcandidateobj.save()
         except:
             print "Error: %s"%sys.exc_info()[1].__str__()
         currentdatetime = datetime.datetime.now()
-        scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
+        if not chkrightnow:
+            scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
+        else:
+            scheduledatetime_dt = scheduledatetime
+        #if datetime.datetime.strptime(scheduledatetime_dt, "%Y-%m-%d %H:%M:%S") > currentdatetime:
         if scheduledatetime_dt > currentdatetime:
             message = """Dear Candidate,
                      
@@ -5624,7 +5674,7 @@ def createinterview(request):
                      Good Luck!
 
                      The TestYard Interview Team.
-	"""%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
+    """%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
             # Send email
@@ -5636,30 +5686,38 @@ def createinterview(request):
                     return HttpResponse(retmsg)
             # Now, send a similar email to the creator/conductor of the interview with the appropriate interview URL.
             message = """Dear Interviewer,
-		You have successfully set up an interview for %s at %s. You may click on the following link to access the interview application
-		that will assist you in conducting the interview at the aforementioned time.
+        You have successfully set up an interview for %s at %s hours. You may click on the following link to access the interview application
+        that will assist you in conducting the interview at the aforementioned time.
 
-		%s
+        %s
 
-		Good Luck!
+        Good Luck!
 
-		The TestYard Team.
-	    """%(emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl)
-	    subject = "Interview Scheduled"
-	    fromaddr = userobj.emailid
-   	    toaddr = userobj.emailid
-	    try:
-		retval = send_mail(subject, message, fromaddr, [toaddr,], False)
-	    except:
- 		if mysettings.DEBUG:
-		    retmsg = "sendmail failed for %s - %s\n"%(toaddr, sys.exc_info()[1].__str__())
-		    return HttpResponse(retmsg)
-            html = "The interview has been scheduled at %s, and the candidate has been informed about it by email."%scheduledatetime
+        The TestYard Team.
+        """%(emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl)
+            subject = "Interview Scheduled"
+            fromaddr = userobj.emailid
+            toaddr = userobj.emailid
+            try:
+                retval = send_mail(subject, message, fromaddr, [toaddr,], False)
+            except:
+                if mysettings.DEBUG:
+                    retmsg = "sendmail failed for %s - %s\n"%(toaddr, sys.exc_info()[1].__str__())
+                    return HttpResponse(retmsg)
+            html = "The interview has been scheduled at %s hours, and the candidate has been informed about it by email."%scheduledatetime
             html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
-            html += "The interview link (above) has also been sent to your email address."
+            #html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%caur
+            html += "<br />The interview link (above) has also been sent to your email address."
             return HttpResponse(html)
         else:
             pass
+    elif realtime and medium == 'audio':
+        pass
+    elif not realtime and medium == 'audio':
+        pass
+    else: # This will handle the case where medium is audiovisual but the realtime flag is off. You can have an audiovisual interview only at realtime.
+        pass
+        
     int_user_dict['challengestoreurl'] = mysettings.CHALLENGE_STORE_URL
     int_user_dict['interviewlinkid'] = interviewlinkid
     int_user_dict['askquestionurl'] = mysettings.ASK_QUESTION_URL
@@ -5668,10 +5726,22 @@ def createinterview(request):
     int_user_dict['question_num'] = "0"
     int_user_dict['medium'] = medium
     int_user_dict['interview_url'] = intcandidateobj.interviewurl
+    int_user_dict['hashtoken'] = hashtoken
+    int_user_dict['interviewtitle'] = interviewtitle
+    int_user_dict['scheduledatetime'] = scheduledatetime
+    int_user_dict['email'] = userobj.emailid
     if medium == 'audio':
         tmpl = get_template("tests/audio.html")
     else:
-        tmpl = get_template("tests/audiovisual.html")
+        currentdatetime = datetime.datetime.now()
+        if not chkrightnow:
+            scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
+        else:
+            scheduledatetime_dt = scheduledatetime
+        if scheduledatetime_dt > currentdatetime:
+            tmpl = get_template("tests/waitscreen.html")
+        else:
+            tmpl = get_template("tests/audiovisual.html")
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
     audiovisualhtml = tmpl.render(cxt)
@@ -5736,6 +5806,7 @@ def attendinterview(request):
         response = HttpResponse(message)
         return response
     interviewlinkid = request.GET['lid']
+    hashtoken = request.GET['hash']
     intobjqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
     if intobjqset.__len__() > 0:
         intobj = intobjqset[0]
@@ -5743,9 +5814,21 @@ def attendinterview(request):
         intobj = None
     intcandobj = InterviewCandidates.objects.get(interview=intobj)
     intcandobj.actualstarttime = datetime.datetime.now()
+    scheduledatetime = intcandobj.scheduledtime
+    curdatetime = datetime.datetime.now()
+    curdatetime = pytz.utc.localize(curdatetime)
+    #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
     intcandobj.save()
-    tmpl = get_template("tests/interview_candidate_screen.html")
     int_user_dict = {}
+    if scheduledatetime <= curdatetime:
+        tmpl = get_template("tests/audiovisual.html")
+    else:
+        tmpl = get_template("tests/waitscreen.html")
+        int_user_dict['interviewtitle'] = intobj.title
+        int_user_dict['scheduledatetime'] = scheduledatetime
+        int_user_dict['email'] = intcandobj.emailaddr
+    int_user_dict['hashtoken'] = hashtoken
+    int_user_dict['curdatetime'] = curdatetime
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
     intcandscreen = tmpl.render(cxt)
@@ -6584,7 +6667,7 @@ def mobile_setschedule(request):
         emailsubject = "A test has been scheduled for you on testyard"
         emailmessage = """Dear %s,
 
-	     A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+         A test with the name '%s' has been scheduled for you by <i>%s</i>. 
              """%(candidatename, testobj.testname, userobj.displayname)
         emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
         emailmessage += """and hence you are kindly requested to take the test

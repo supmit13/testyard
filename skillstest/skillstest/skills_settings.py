@@ -91,7 +91,7 @@ MAILSENDER = "admin@testyard.com"
 
 ####### URLCONF SETTINGS #######
 ROOT_URL = "/"
-HTTP_URL = "^http://192.168.1.4/"
+HTTP_URL = "^http://54.201.126.160/"
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
@@ -280,10 +280,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '***************'
-OAUTH_SECRET_KEY = '******************'
-OAUTH_USER_TOKEN = '********************************************'
-OAUTH_USER_SECRET = '********************************************'
+OAUTH_API_KEY = '***********'
+OAUTH_SECRET_KEY = '****************'
+OAUTH_USER_TOKEN = '****************'
+OAUTH_USER_SECRET = '*********************'
 
 # Number of complimentary tests a newly registered user can conduct:
 NEW_USER_FREE_TESTS_COUNT = 50
@@ -294,13 +294,13 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = '***************' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = '***********' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "**********************************************"
+BITLY_OAUTH_ACCESS_TOKEN = "*****************************"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
-LOG_PATH = "/home/supriyo/work/testyard/logs"
+LOG_PATH = "/home/ec2-user/testyard/logs"
 
 # Private groups needs the owner to allow members to be a part of it. Open groups may be joined by anyone. A hidden group will not
 # be listed by a search of the group by its name, but accessing its page will allow an user to request its owner to allow her/him in 
@@ -363,16 +363,16 @@ PAYPAL_LIVE_URL = "https://api.paypal.com"
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
 
-CUSTOMER_IP_ADDRESS = '192.168.1.4:8080'
+CUSTOMER_IP_ADDRESS = '54.201.126.160'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '*********'
-EASYAPI_KEY = '****************************'
+EASYAPI_PASSWORD = '*******'
+EASYAPI_KEY = '*********************'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 GO_DADDY_CUST_NUM = 73165291
-GO_DADDY_PASSWD = "***********"
+GO_DADDY_PASSWD = "************"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -383,23 +383,18 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "***************************"
-SECRET_ACCESS_KEY = "**************************************"
+ACCESS_KEY_ID = "****************"
+SECRET_ACCESS_KEY = "******************"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
 AMAZON_ACCT_PASSWD = "**********"
 
-AMAZON_ACCT_ID = "**************"
+AMAZON_ACCT_ID = "***********"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "***********"
+IAM_PASSWD = "**************"
 
-IAM_SIGNIN_URL = "https://*************.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
+IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
-
-##### reCaptcha Info #####
-SITE_KEY = "*****************************************"
-RECAPTCHA_SECRET = "*****************************************"
-#### reCaptcha Info ends ####
 
 
