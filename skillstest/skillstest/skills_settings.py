@@ -93,9 +93,9 @@ SECURE_HSTS_SECONDS = 31536000
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = 'xtmt365i'
+EMAIL_HOST_PASSWORD = 'xxxxxxxx'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = 'spmprx13'
+#EMAIL_HOST_PASSWORD = 'xxxxxxx'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -298,9 +298,9 @@ PAYMENT_PLATFORMS = {}
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
 OAUTH_API_KEY = '78wxi7pqmstzbg'
-OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
-OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
-OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
+OAUTH_SECRET_KEY = 'xxxxxxxxxxx'
+OAUTH_USER_TOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxx'
+OAUTH_USER_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxx'
 
 # Number of complimentary tests a newly registered user can conduct:
 NEW_USER_FREE_TESTS_COUNT = 50
@@ -311,10 +311,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'xxxxxxxxxxxxxxxxxx' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
+BITLY_OAUTH_ACCESS_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxx"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/ec2-user/testyard/logs"
@@ -384,12 +384,12 @@ CUSTOMER_IP_ADDRESS = '54.201.126.160'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = 'spmprx13'
+EASYAPI_PASSWORD = 'xxxxxxxxxx'
 EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 GO_DADDY_CUST_NUM = 73165291
-GO_DADDY_PASSWD = "Xtmt365i@"
+GO_DADDY_PASSWD = "xxxxxxxxxx"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -401,24 +401,24 @@ PROCESSED_SCRIPT_DUMP = "processed"
 ###### AMAZON AWS API INFO ######
 
 ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
-SECRET_ACCESS_KEY = "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"
+SECRET_ACCESS_KEY = "xxxxxxxxxxxxxxxxxxxxx"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "spmprx13"
+AMAZON_ACCT_PASSWD = "xxxxxxxxx"
 
 AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "spmprx13"
+IAM_PASSWD = "xxxxxxxx"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "kwrwmse5en8a3l66"
+REPL_SECRET = "xxxxxxxxxxxxxxxxxxx"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "spmprx13"
+REPL_PASSWORD = "xxxxxxxxxxxxxxxxxxx"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
