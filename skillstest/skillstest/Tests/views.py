@@ -37,6 +37,8 @@ import xml.etree.ElementTree as et
 from itertools import chain
 import pyaudio, wave
 import binascii
+from BeautifulSoup import BeautifulSoup
+
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
@@ -55,7 +57,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -106,6 +108,7 @@ def get_user_tests(request):
     testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')
     user_creator_other_evaluators_dict = {}
     tests_creator_ordered_createdate = []
+    uniqevalgroups = {}
     for test in testlist_ascreator:
         tests_creator_ordered_createdate.append(test.testname)
         user_creator_other_evaluators_dict[test.testname] = ( test.evaluator.groupmember1, test.evaluator.groupmember2, \
@@ -137,8 +140,15 @@ def get_user_tests(request):
         test.evaluator.evalgroupname = test.evaluator.evalgroupname.replace("@", "__")
         test.evaluator.evalgroupname = test.evaluator.evalgroupname.replace(".", "__")
         assocevalgrps += "evalgrpsdict.%s = '%s';"%(test.evaluator.evalgroupname, evalgrpemails)
-        evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, test.evaluator.evalgroupname)
-        evalgroupslitags = evalgroupslitags.replace('&quot;', '\\"')
+        #evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, test.evaluator.evalgroupname)
+        if not uniqevalgroups.has_key(test.evaluator.evalgroupname):
+            shortevalgrpname = test.evaluator.evalgroupname
+            if shortevalgrpname.__len__() > 20:
+                shortevalgrpname = shortevalgrpname[:20] + "..."
+            #evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot; draggable=&quot;true&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, shortevalgrpname)
+            evalgroupslitags += "<option value=&quot;%s&quot; title=&quot;%s&quot; draggable=&quot;true&quot;>%s</option>"%(test.evaluator.evalgroupname, evalgrpemails, shortevalgrpname)
+            evalgroupslitags = evalgroupslitags.replace('&quot;', '\\"')
+            uniqevalgroups[test.evaluator.evalgroupname] = test.evaluator.evalgroupname
 
     user_evaluator_creator_other_evaluators_dict = {}
     tests_evaluator_ordered_createdate = []
@@ -302,6 +312,8 @@ def get_user_tests(request):
     tests_user_dict['tests_candidate_ordered_createdate'] = tests_candidate_ordered_createdate
     tests_user_dict['secret_key'] = mysettings.DES3_SECRET_KEY
     tests_user_dict['realtime'] = 1
+    tests_user_dict['repl_token'] = skillutils.repl_token_generator()
+    tests_user_dict['codepadexecuteurl'] = skillutils.gethosturl(request) + "/" + codepadexecuteurl
     tests_user_dict['chkintnameavailabilityurl'] = skillutils.gethosturl(request) + "/" + chkintnameavailabilityurl
     return  tests_user_dict
 
@@ -2482,6 +2494,7 @@ def showtestcandidatemode(request):
     testdict['targetemail'] = targetemail
     testdict['tabtype'] = tabtype
     testdict['tabid'] = tabid
+    testdict['codepadexecuteurl'] = skillutils.gethosturl(request) + "/" + mysettings.CODEPAD_EXECUTE_URL
     #testdict['testlink'] = request.META['HTTP_REFERER']
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
@@ -4809,16 +4822,100 @@ def savedrawing(request):
         response = HttpResponse(mediafilename)
         return response
 
-"""
-Method to disqualify a candidate. Basically it sets the 'disqualified' 
-flag in 'Tests_usertest' or 'Tests_wouldbeusers' tables. Note that
-a candidate may be disqualified only by the owner/creator of the 
-concerned test.
-"""
+
+def executecodepad(request):
+    """
+    Method to execute code written by a test taker.
+    """
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    codecontent_enc = request.POST['code']
+    codecontent = base64.b64decode(codecontent_enc)
+    #codecontent = codecontent.replace("__GT__", ">")
+    #codecontent = codecontent.replace("__LT__", "<")
+    #fp = open("/home/supriyo/work/stuff/codepadview.html", "w")
+    #fp.write(codecontent)
+    #fp.close()
+    progenv = request.POST['progenv']
+    # Now, enter codepad.org. Then navigate to the designated page where the run takes place.
+    # Execute the code there and collect the output. Send the output back to the page from where the request originated.
+    pagecontent = skillutils.getCodePadEditorPage()
+    langradlist = []
+    if pagecontent is None:
+        response = HttpResponse("Could not get response from codepad.org. The site may be temporarily down or our programs may be having some difficulty. Please skip this operation or try again later.")
+        #return response
+    else:
+        soup = BeautifulSoup(pagecontent)
+        langradlist = soup.findAll("input", {'name' : 'lang'})
+    reqdenv = progenv
+    client_ip = skillutils.get_client_ip(request)
+    client_port = skillutils.get_client_port(request)
+    langfoundflag = 0;
+    for langelem in langradlist:
+        langname = langelem["value"]
+        if langname is None or langname == "":
+            continue
+        if reqdenv.lower() == langname.lower():
+            langfoundflag = 1
+            break
+    if not langfoundflag or langfoundflag == 0: # Requested environment not found in codepad. So run this on local environment.
+        coderesult = skillutils.runCodeOnLocalResources(reqdenv, codecontent_enc, client_ip, client_port)
+        return HttpResponse(coderesult)
+    if not codecontent:
+        message = "There is no code to run. Please enter some code to execute."
+        response = HttpResponse(message)
+        return response
+    postdata = "lang=" + progenv + "&code=" + codecontent + "&run=True&submit=Submit"
+    requestUrl = "http://codepad.org/"
+    pageRequest = urllib2.Request(requestUrl, postdata, skillutils.gHttpHeaders)
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    pageResponse = None
+    codepadsuccess = 0
+    try:
+        pageResponse = opener.open(pageRequest)
+        respHeaders = pageResponse.info()
+        if not respHeaders.has_key('Location') and not respHeaders.has_key('location'):
+            coderesult = skillutils.runCodeOnLocalResources(reqdenv, codecontent_enc, client_ip, client_port)
+            return HttpResponse(coderesult)
+        requestUrl = respHeaders['Location']
+        codepadsuccess = 1
+    except:
+        print "Could not make HTTP request to codepad: %s"%sys.exc_info()[1].__str__()
+        coderesult = skillutils.runCodeOnLocalResources(reqdenv, codecontent_enc, client_ip, client_port)
+        return HttpResponse(coderesult)
+    pageRequest = urllib2.Request(requestUrl, None, skillutils.gHttpHeaders)
+    try:
+        pageResponse = opener.open(pageRequest)
+    except:
+        print "Redirect to the answer page failed: %s"%sys.exc_info()[1].__str__()
+        coderesult = skillutils.runCodeOnLocalResources(reqdenv, codecontent_enc, client_ip, client_port)
+        return HttpResponse(coderesult)
+    currentPageContent = skillutils._decodeGzippedContent(skillutils.getPageContent(pageResponse))
+    anchorPattern = re.compile('<a\s+name=[\"\']output[\"\']>', re.IGNORECASE)
+    pageParts = re.split(anchorPattern, currentPageContent)
+    morePageParts = pageParts[1].split("</table>")
+    #soup = BeautifulSoup(currentPageContent)
+    #anchortag = soup.find("a", {'name' : 'output'})
+    #divtag = anchortag.findNext("div", {'class' : 'code'})
+    #response = HttpResponse(divtag.renderContents())
+    response = HttpResponse(morePageParts[0] + "</table>")
+    return response
+
+
+
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
 def disqualifycandidate(request):
+    """
+    Method to disqualify a candidate. Basically it sets the 'disqualified' 
+    flag in 'Tests_usertest' or 'Tests_wouldbeusers' tables. Note that
+    a candidate may be disqualified only by the owner/creator of the 
+    concerned test.
+    """
     message = ""
     if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')
@@ -5488,6 +5585,29 @@ def uploadblobdata(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
+def uploadrecording(request):
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    # Get the data from the request - recording, interviewtitle and csrfmiddlewaretoken
+    recordingblob = request.POST['recording']
+    interviewtitle = request.POST['interviewtitle']
+    return HttpResponse("")
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def createinterview(request):
     message = ""
     if request.method != 'POST':
@@ -5503,7 +5623,7 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", "", "", "Add Intro", "intro.wav", "", "", 0
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
     # Check to see if an interview with the same title exists in the current user's list.
@@ -5543,10 +5663,7 @@ def createinterview(request):
         skilltarget = request.POST['skilltarget']
     if request.POST.has_key('interviewscope'):
         interviewscope = request.POST['interviewscope']
-    if request.POST.has_key('randomsequencing'):
-        randomsequencing = request.POST['randomsequencing']
-    else:
-        randomsequencing = 0
+    randomsequencing = 0
     if request.POST.has_key('interviewlinkid'):
         interviewlinkid = request.POST['interviewlinkid']
     if request.POST.has_key('chkrightnow'):
@@ -5588,7 +5705,8 @@ def createinterview(request):
     interviewobj.status = False # The interview is being created... so this ought to be false.
     interviewobj.maxscore = totalscore
     interviewobj.maxduration = interviewduration
-    interviewobj.randomsequencing = randomsequencing
+    #interviewobj.randomsequencing = randomsequencing
+    interviewobj.randomsequencing = 0
     interviewobj.interviewlinkid = interviewlinkid
     interviewobj.scope = interviewscope
     #interviewobj.quality = skilltarget
@@ -5638,6 +5756,7 @@ def createinterview(request):
     # URLs will be sent to both the users through email. Additionally, the interviewer will have the 
     # URL listed in her/his list of interviews. If the interviewee is also a member of TestYard, then
     # she too will have the URL listed  in her/his list of interviews.
+    intcandidateobj = None
     if realtime and medium == 'audiovisual':
         intcandidateobj = InterviewCandidates()
         intcandidateobj.interview = interviewobj
@@ -5667,9 +5786,8 @@ def createinterview(request):
 
                      %s
 
-                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.
-                     Browsers other than these 3 may not support every feature used by the inter-
-                     view application.
+                     Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview.
+                     Browsers other than these 3 may not support every feature used by the interview application.
 
                      Good Luck!
 
@@ -5706,7 +5824,6 @@ def createinterview(request):
                     return HttpResponse(retmsg)
             html = "The interview has been scheduled at %s hours, and the candidate has been informed about it by email."%scheduledatetime
             html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
-            #html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%caur
             html += "<br />The interview link (above) has also been sent to your email address."
             return HttpResponse(html)
         else:
@@ -5725,11 +5842,26 @@ def createinterview(request):
     int_user_dict['pagetitle'] = "^ Please click on 'Allow' button above to allow the computer to use webcam and microphone. ^ Add an Introductory Comment"
     int_user_dict['question_num'] = "0"
     int_user_dict['medium'] = medium
-    int_user_dict['interview_url'] = intcandidateobj.interviewurl
+    if intcandidateobj:
+        int_user_dict['interview_url'] = intcandidateobj.interviewurl
+    else:
+        int_user_dict['interview_url'] = ""
+    int_user_dict['interview_data_upload_url'] = mysettings.INTERVIEW_DATA_UPLOAD_URL
     int_user_dict['hashtoken'] = hashtoken
     int_user_dict['interviewtitle'] = interviewtitle
+    interviewfilename = interviewtitle
+    interviewfilename = interviewfilename.replace("-", "_")
+    interviewfilename = interviewfilename.replace(" ", "_")
+    targetpart = emailinvitationtarget
+    targetpart = targetpart.replace("-", "_")
+    targetpart = targetpart.replace(".", "_")
+    targetpart = targetpart.replace("@", "_AT_")
+    interviewfilename += "_" + targetpart
+    interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
+    int_user_dict['interviewfilename'] = interviewfilename
     int_user_dict['scheduledatetime'] = scheduledatetime
     int_user_dict['email'] = userobj.emailid
+    int_user_dict['emailinvitationtarget'] = emailinvitationtarget
     if medium == 'audio':
         tmpl = get_template("tests/audio.html")
     else:
@@ -5746,6 +5878,75 @@ def createinterview(request):
     cxt = Context(int_user_dict)
     audiovisualhtml = tmpl.render(cxt)
     return HttpResponse(audiovisualhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def uploadinterviewdata(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message) # TODO: Need to handle this case in a more user-friendly way.
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    imagefilename, audiofilename, imagecontent, audiocontent, interviewlinkid, hashtoken, filename = "", "", None, None, "", "", ""
+    if request.POST.has_key('image'):
+        # handle image content
+        imagecontent = base64.b64decode(request.POST['image'])
+    elif request.POST.has_key('audio'):
+        # handle audio content
+        audiocontent = base64.b64decode(request.POST['audio'])
+    if request.POST.has_key('interviewlinkid'):
+        interviewlinkid = request.POST['interviewlinkid']
+    else:
+        message = "No interview link Id found. Cannot save data for this interview. Please save the data locally for future reference."
+        response = HttpResponse(message) 
+        return response
+    if request.POST.has_key('hashtoken'):
+        hashtoken = request.POST['hashtoken']
+    if request.POST.has_key('filename'):
+        filename = request.POST['filename']
+    else:
+        message = "Could not upload interview data as filename is missing. Please save the data locally for future reference."
+        response = HttpResponse(message)
+        return response
+    intobj = None
+    intobjqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
+    if intobjqset.__len__() > 0:
+        intobj = intobjqset[0]
+    else:
+        message = "Could not find the interview record identified by the interview link Id '%s'"%interviewlinkid
+        response = HttpResponse(message)
+        return response
+    intdirname = intobj.title
+    intdirname = intdirname.replace(" ", "_")
+    mediapath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "interviews" + os.path.sep + intdirname
+    if not os.path.exists(mediapath):
+        os.makedirs(mediapath)
+    filepath = mediapath + os.path.sep + filename
+    fp = open(filepath, "wb")
+    if imagecontent is not None:
+        fp.write(imagecontent)
+    elif audiocontent is not None:
+        fp.write(audiocontent)
+    else:
+        message = "Unhandled content type. Interview data could not be saved."
+        fp.close()
+        response = HttpResponse(message)
+        return response
+    fp.close()
+    message = "Successfully uploaded interview data file."
+    resp = HttpResponse(message)
+    return resp
 
 
 @skillutils.is_session_valid
@@ -5822,9 +6023,21 @@ def attendinterview(request):
     int_user_dict = {}
     if scheduledatetime <= curdatetime:
         tmpl = get_template("tests/audiovisual.html")
+        if intobj:
+            int_user_dict['interviewtitle'] = intobj.title
+            interviewfilename = intobj.title
+            interviewfilename = interviewfilename.replace("-", "_")
+            interviewfilename = interviewfilename.replace(" ", "_")
+            interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
+            int_user_dict['interviewfilename'] = interviewfilename
     else:
         tmpl = get_template("tests/waitscreen.html")
         int_user_dict['interviewtitle'] = intobj.title
+        interviewfilename = intobj.title
+        interviewfilename = interviewfilename.replace("-", "_")
+        interviewfilename = interviewfilename.replace(" ", "_")
+        interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
+        int_user_dict['interviewfilename'] = interviewfilename
         int_user_dict['scheduledatetime'] = scheduledatetime
         int_user_dict['email'] = intcandobj.emailaddr
     int_user_dict['hashtoken'] = hashtoken
@@ -5833,6 +6046,7 @@ def attendinterview(request):
     cxt = Context(int_user_dict)
     intcandscreen = tmpl.render(cxt)
     return HttpResponse(intcandscreen)
+
 
 
 @skillutils.is_session_valid
@@ -5995,7 +6209,6 @@ def mobile_listtestsandinterviews(request):
         print "Could not 'dumps' jsonResponse - Error: %s"%sys.exc_info()[1].__str__()
         jsonstr = "{}"
     respobj = HttpResponse(jsonstr)
-    #print "================================", jsonstr
     return respobj
  
 

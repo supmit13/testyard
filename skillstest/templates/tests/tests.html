@@ -1,8 +1,7 @@
-	<!-- Code pertaining to drag and drop functionality of evaluator groups --> 	
 	
-	<script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script>
+	<script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script> 
 	<script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script> 
-	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script> 
+	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -58,7 +57,32 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     border: 1px solid #ccc;
     border-top: none;
 }
-        </style>
+</style>
+
+
+<style>
+
+.textarea
+        {
+            border: 2px solid #bbb;
+        }
+
+#dragspan
+	{
+            width: 180px;
+            height: 400px;
+            float: left;
+        }
+
+#evaluators
+	{
+	    width: 280px;
+            height: 250px;
+            background-color: #F9F887;
+            float: right;
+            margin-right: 10px;
+	}
+</style>
 	<script language='javascript'>
         function openTab(evt, dataName){
           var i, tabcontent, tablinks;
@@ -73,43 +97,37 @@ ul.tab li a:focus, .active {background-color: #ccc;}
           document.getElementById(dataName).style.display = "block";
           evt.currentTarget.className += " active";
         }
+	
 	{{ assocevalgrps }}
-	var draggableevalgrps = function () {
-            $('#grpnames li').draggable({ 
-                appendTo: 'body', 
-                helper: 'clone', 
-                cursor: 'select', 
-                revert: 'invalid' 
-            }); 
-            initDroppable($('evaluators')); 
-            function initDroppable($elements) { 
-                $elements.droppable({ 
-                    hoverClass: 'textarea', 
-                    accept: ':not(.ui-sortable-helper)', 
-                    drop: function(event, ui) { 
-                        var $this = $(this); 
-                        var tempid = ui.draggable.text(); 
-                        var dropText; 
-                        dropText = ',' + tempid; 
-                        var droparea = document.getElementById('evaluators'); 
-                        var val = droparea.value; 
-			droparea.value = val + dropText;
-                    } 
-                }); 
-            } 
-        }
+
+        function updateEmailslist(){
+	  //alert("Howwwwwwwoooooo");
+    	  groupnames = document.getElementById('grpnames');
+	  selectedEmailIds = "";
+	  for(var i=0; i < groupnames.length; i++){
+	    grpname = groupnames[i];
+	    if(grpname.selected){
+	      emails = grpname.title;
+	      selectedEmailIds += emails + ",";
+	      //alert(selectedEmailIds);
+	    }
+	  }
+	  selectedEmailIds = selectedEmailIds.slice(0, -1);
+	  // Create a list of unique Ids only.
+	  allEmailIds = selectedEmailIds.split(",");
+	  uniqueIds = {};
+ 	  for(var j=0; j < allEmailIds.length; j++){
+	    emid = allEmailIds[j];
+	    if(emid in uniqueIds){
+	      continue;
+	    }
+	    uniqueIds[emid] = emid;
+	  }
+	  uniqueidslist = Object.keys(uniqueIds);
+	  uniqueidsstr = uniqueidslist.join(", ");
+  	  document.createtestform.evaluators.value = uniqueidsstr;
+	}
 	</script> 
-	<style>
-	.textarea{background: #fff;}
-	.dragitems{width: 20%; float: left; background: #f1f1f1;color:#000000; padding-left:10px;} 
-        .dropitems{width: 25%;float: left;background: #f1f1f1;margin-left: 20px;padding:5px 5px 5px 5px;} 
-        .dragitems ul{list-style-type: none;padding-left: 5px;display: block;} 
-        #content{height: 400px;width: 650px;}
-
-        
-
-	</style> 
-	<!-- Code pertaining to drag/drop evaluator group names ends here -->
 	
 	{% include "inc/html_head.html" %}	
 
@@ -877,15 +895,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 
 		function othertopicfield(){
-		  if(document.getElementById('testtopic').value=='&quot;Other&quot;'){ // this is ugly, needs to be sanitized.
+		  if(document.getElementById('testtopic') && document.getElementById('testtopic').value=='&quot;Other&quot;'){ // this is ugly, needs to be sanitized.
 		    othertopicdiv = document.getElementById('othertopic')
 		    othertopicdiv.style.display = "";
 		    othertopicdiv.innerHTML = "<input type='text' name='othertopicname' value='if other, please specify here' onfocus=this.value='';>"
 		  }
-		  else{
-		    othertopicdiv = document.getElementById('othertopic')
-		    othertopicdiv.style.display = "none";
-		    othertopicdiv.innerHTML = ""
+		  else{ 
+                    if(document.getElementById('othertopic')){
+		      othertopicdiv = document.getElementById('othertopic')
+		      othertopicdiv.style.display = "none";
+		      othertopicdiv.innerHTML = ""
+                    }
 		  }
 		}
 
@@ -2365,6 +2385,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    }
 	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'><font style='font-weight:bold;' size=-1 color='#0000AA'>Please bear with us while we prepare and launch the interview window...</font>";
 	    xmlhttp.onreadystatechange = function(){
+		//var p = window.open('', 'test', 'width=1000, height=700, left=24, top=24, scrollbars=1, resizable');
+		//p.document.write(xmlhttp.responseText);
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    // Open a popup window here to add challenges for the interview
 		    errorpattern = new RegExp('Error:');
@@ -2427,12 +2449,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		invitationspan.style.display = "";
 		//invitationspan.innerHTML = "<font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'> <img src='static/datetimepicker/images/cal.gif' onclick=\"javascript:NewCssCal('scheduledatetime', 'yyyyMMdd', 'dropdown', true, 24, true, 'future');\" style='cursor:pointer'/> <br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br />";
 		invitationspan.innerHTML = "<font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'> <br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br />";
-		document.createinterviewform.randomsequencing.disabled=true;
+		//document.createinterviewform.randomsequencing.disabled=true;
 	    }
 	    else{
 		invitationspan.style.display = "none";
 		invitationspan.innerHTML = "";
-		document.createinterviewform.randomsequencing.disabled=false;
+		//document.createinterviewform.randomsequencing.disabled=false;
 		document.createinterviewform.medium.value = "audio";
 	    }
 	    // Also, clear any date specified in 'Publish this interview on' field and set it to current date

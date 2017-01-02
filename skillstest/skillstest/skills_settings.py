@@ -24,12 +24,15 @@ BLACKLISTED_MEMBERS = ()
 COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Perl' : '/usr/bin/perl', \
                          'Python' : '/home/supriyo/work/testyard/pyenv/bin/python', \
+                         'Python3' : '', \
                          'Ruby' : '/usr/local/bin/ruby', \
                          'Curl' : '/usr/bin/curl', \
                          'Bash' : '/bin/bash', \
                          'Cshell' : '/bin/csh', \
                          'C++' : '/usr/bin/g++', \
                          'C#' : '/usr/bin/mono', \
+                         'F#' : '/usr/bin/fsharp', \
+                         'Go' : '/usr/bin/go', \
                          'Java' : '/usr/bin/java', \
                          'JavaScript' : '/usr/bin/js', \
                          'Lua' : '/usr/local/bin/lua', \
@@ -45,7 +48,14 @@ COMPILER_LOCATIONS = {'C' : '/usr/bin/gcc', \
                          'Tcl' : '/usr/bin/tclsh', \
                          'Ada95' : '', \
                          'Delphi' : '', \
+                         'Rust' : '', \
+                         'Scheme' : '', \
+                         'Swift' : '', \
                          'ColdFusion' : '',}
+
+CODE_EXECUTE_SERVICE_HOST = "127.0.0.1"
+CODE_EXECUTE_SERVICE_PORT = 5555
+SOCK_CONN_CREATE_TIMEOUT = 60 # timeout is 1 minute
 
 # Some application related variables:
 PROFILE_PHOTO_NAME = "profilepic"
@@ -83,7 +93,9 @@ SECURE_HSTS_SECONDS = 31536000
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = '**********'
+EMAIL_HOST_PASSWORD = 'xtmt365i'
+#EMAIL_HOST_USER = 'testyard.in@gmail.com'
+#EMAIL_HOST_PASSWORD = 'spmprx13'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -91,7 +103,8 @@ MAILSENDER = "admin@testyard.com"
 
 ####### URLCONF SETTINGS #######
 ROOT_URL = "/"
-HTTP_URL = "^http://54.201.126.160/"
+#HTTP_URL = "^http://54.201.126.160/"
+HTTP_URL = "^http://192.168.1.4/"
 
 LOGIN_URL = "skillstest/login/"
 REGISTER_URL = "skillstest/newuser/"
@@ -150,6 +163,9 @@ BLOB_UPLOAD_URL = "skillstest/test/interview/uploadblob/"
 ASK_QUESTION_URL = "skillstest/test/interview/askquestion/"
 ATTEND_INTERVIEW_URL = "skillstest/test/interview/attend/"
 UPDATE_INTERVIEW_META_URL = "skillstest/test/interview/updatemeta/"
+UPLOAD_RECORDING_URL = "/skillstest/interview/uploadrecording/"
+INTERVIEW_DATA_UPLOAD_URL = "/skillstest/interview/uploaddata/"
+CODEPAD_EXECUTE_URL = "skillstest/test/execute/codepad/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"
@@ -230,24 +246,24 @@ HTML_ENTITIES_CHAR_MAP = { \
 INV_HEXCODE_CHAR_MAP = { \
         " " : '%20', \
         "'" : '%27', \
-	'"' : '%22', \
-	'$' : '%24', \
-	'&' : '%26', \
-	'*' : '%2A', \
-	'+' : '%2B', \
-	'.' : '%2E', \
-	'/' : '%2F', \
+    '"' : '%22', \
+    '$' : '%24', \
+    '&' : '%26', \
+    '*' : '%2A', \
+    '+' : '%2B', \
+    '.' : '%2E', \
+    '/' : '%2F', \
     }
 
 INV_HTML_ENTITIES_CHAR_MAP = { \
-	'<' : '&lt;', \
-	'>' : '&gt;', \
-	'&' : '&amp;', \
-	' ' : '&nbsp;', \
-	'"' : '&quot;', \
-	'[' : '&#91;', \
-	']' : '&#93;', \
-	'"' : '&#39;', \
+    '<' : '&lt;', \
+    '>' : '&gt;', \
+    '&' : '&amp;', \
+    ' ' : '&nbsp;', \
+    '"' : '&quot;', \
+    '[' : '&#91;', \
+    ']' : '&#93;', \
+    '"' : '&#39;', \
     }
 
 EMAIL_PATTERN = re.compile("[\w\.]*\@[\w\.]*", re.MULTILINE|re.DOTALL)
@@ -265,6 +281,7 @@ RULES_DICT = { \
         #'norevisit' : 'Attempted challenges may not be revisited', \
         'showatonce' : 'Show all challenges at the begining of the test', \
         #'showonebyone' : 'Display challenges to the user one at a time.',\
+        'noconsultextmat' : 'User may not consult online material on the subject of the test', \
         #'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
         }
@@ -280,10 +297,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '***********'
-OAUTH_SECRET_KEY = '****************'
-OAUTH_USER_TOKEN = '****************'
-OAUTH_USER_SECRET = '*********************'
+OAUTH_API_KEY = '78wxi7pqmstzbg'
+OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
+OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
+OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 
 # Number of complimentary tests a newly registered user can conduct:
 NEW_USER_FREE_TESTS_COUNT = 50
@@ -294,10 +311,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = '***********' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "*****************************"
+BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/ec2-user/testyard/logs"
@@ -310,39 +327,39 @@ GROUP_TYPES_DICT = { 'PRIV' : 'Private', 'OPEN' : 'Public', 'HIDN' : 'Hidden' }
 CONNECT_INVITATION_TEXT = "I would like to connect with you on TestYard."
 
 BANKS_DICT = {  'SBI_INDIA' : 'State Bank of India', \
-	        'PNB_INDIA' : 'Punjab National Bank', \
-		'PNSB_INDIA' : 'Punjab and Sind Bank', \
-		'AXIS_INDIA' : 'Axis Bank',\
-		'ICICI_INDIA' : 'ICICI Bank', \
-		'HDFC_INDIA' : 'HDFC Bank',\
-		'CITI_INDIA' : 'Citi Bank', \
-		'RBS_INDIA' : 'Royal Bank of Scotland',\
-		'SBM_INDIA' : 'State Bank of Mysore', \
-		'SBT_INDIA' : 'State Bank of Travancore', \
-		'SBJ_INDIA' : 'State Bank of Bikaner and Jaipur', \
-		'SBP_INDIA' : 'State Bank of Patiala', \
-		'SBH_INDIA' : 'State Bank of Hyderabad',\
-		'CORP_INDIA' : 'Corporation Bank', \
-		'DHANALAKSHMI_INDIA' : 'Dhanalakshmi Bank',\
-		'INDIANBANK' : 'Indian Bank',\
-		'HSBC_INDIA' : 'HSBC Bank', \
-		'STANCHART_INDIA' : 'Standard Chartered Bank',\
-		'BOI_INDIA' : 'Bank of India',\
-		'IOB_INDIA' : 'Indian Overseas Bank',\
-		'CANBANK_INDIA' : 'Canara Bank', \
-		'DENA_INDIA' : 'Dena Bank', \
-		'BOB_INDIA' : 'Bank of Baroda', \
-		'VIJ_INDIA' : 'Vijaya Bank', \
-		'UCO_INDIA' : 'UCO Bank', \
-		'UBI_INDIA' : 'Union Bank of India',\
-		'SYND_INDIA' : 'Syndicate Bank', \
-		'UTD_INDIA' : 'United Bank of India',\
-		'OBC_INDIA' : 'Oriental Bank of Commerce',\
-		'CBI_INDIA' : 'Central Bank of India',\
-		'ANDH_INDIA' : 'Andhra Bank',\
-		'ALHD_INDIA' : 'Allahabad Bank',\
-		'MAH_INDIA' : 'Maharashtra Bank',\
-		'IDBI_INDIA' : 'IDBI Bank',\
+            'PNB_INDIA' : 'Punjab National Bank', \
+        'PNSB_INDIA' : 'Punjab and Sind Bank', \
+        'AXIS_INDIA' : 'Axis Bank',\
+        'ICICI_INDIA' : 'ICICI Bank', \
+        'HDFC_INDIA' : 'HDFC Bank',\
+        'CITI_INDIA' : 'Citi Bank', \
+        'RBS_INDIA' : 'Royal Bank of Scotland',\
+        'SBM_INDIA' : 'State Bank of Mysore', \
+        'SBT_INDIA' : 'State Bank of Travancore', \
+        'SBJ_INDIA' : 'State Bank of Bikaner and Jaipur', \
+        'SBP_INDIA' : 'State Bank of Patiala', \
+        'SBH_INDIA' : 'State Bank of Hyderabad',\
+        'CORP_INDIA' : 'Corporation Bank', \
+        'DHANALAKSHMI_INDIA' : 'Dhanalakshmi Bank',\
+        'INDIANBANK' : 'Indian Bank',\
+        'HSBC_INDIA' : 'HSBC Bank', \
+        'STANCHART_INDIA' : 'Standard Chartered Bank',\
+        'BOI_INDIA' : 'Bank of India',\
+        'IOB_INDIA' : 'Indian Overseas Bank',\
+        'CANBANK_INDIA' : 'Canara Bank', \
+        'DENA_INDIA' : 'Dena Bank', \
+        'BOB_INDIA' : 'Bank of Baroda', \
+        'VIJ_INDIA' : 'Vijaya Bank', \
+        'UCO_INDIA' : 'UCO Bank', \
+        'UBI_INDIA' : 'Union Bank of India',\
+        'SYND_INDIA' : 'Syndicate Bank', \
+        'UTD_INDIA' : 'United Bank of India',\
+        'OBC_INDIA' : 'Oriental Bank of Commerce',\
+        'CBI_INDIA' : 'Central Bank of India',\
+        'ANDH_INDIA' : 'Andhra Bank',\
+        'ALHD_INDIA' : 'Allahabad Bank',\
+        'MAH_INDIA' : 'Maharashtra Bank',\
+        'IDBI_INDIA' : 'IDBI Bank',\
 }
 
 REQUEST_ACTIVE_INTERVAL = 90 # Amount of time (in days) for which a request to join a group or to connect with another user remains valid.
@@ -367,12 +384,12 @@ CUSTOMER_IP_ADDRESS = '54.201.126.160'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '*******'
-EASYAPI_KEY = '*********************'
+EASYAPI_PASSWORD = 'spmprx13'
+EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 GO_DADDY_CUST_NUM = 73165291
-GO_DADDY_PASSWD = "************"
+GO_DADDY_PASSWD = "Xtmt365i@"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -383,18 +400,26 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "****************"
-SECRET_ACCESS_KEY = "******************"
+ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
+SECRET_ACCESS_KEY = "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"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "**********"
+AMAZON_ACCT_PASSWD = "spmprx13"
 
-AMAZON_ACCT_ID = "***********"
+AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "**************"
+IAM_PASSWD = "spmprx13"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
+
+########### REPL SETTINGS ############
+REPL_HOST = "api.repl.it"
+REPL_SECRET = "kwrwmse5en8a3l66"
+REPL_USERNAME = "supmit"
+REPL_PASSWORD = "spmprx13"
+REPL_EMAIL = "codexaddict@gmail.com"
+########## REPL SETTINGS END ##########
 
 

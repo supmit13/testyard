@@ -2365,8 +2365,54 @@ Mon, July 26, 2016, 15:10 HRS.
 17.templates/tests/create_interview_form.html
 18.templates/tests/getscheduleinfo.html
 19.templates/tests/interview_candidate_screen.html
+20.templates/authentication/newuser.html
 20.node_modules/*
 21.skillstest/settings.py
 22.files_to_commit.txt 
+
+==================================
+Sun, Jan 01, 2017, 22:10 HRS.
+-------------------------------
+
+1. git add skillstest/utils.py
+2. git add skillstest/views.py
+3. git add templates/authentication/login.html
+4. git add templates/tests/audiovisual.html
+5. git add skillstest/Tests/views.py
+6. git add static/webaudiovisual/main.js
+7. git add skillstest/Tests/models.py
+8. git add static/webaudiovisual/audiodisplay.js
+9. git add static/webaudiovisual/recorder.js
+10.git add static/webaudiovisual/recorderWorker.js
+11.git add skillstest/skills_settings.py
+12.git add skillstest/urls.py
+13.git add skillstest/errors.py
+14.git add templates/inc/html_head.html
+15.git add templates/tests/tests.html
+16.git add templates/tests/create_interview_form.html
+17.git add templates/tests/getscheduleinfo.html
+18.git add templates/tests/interview_candidate_screen.html
+19.git add templates/authentication/newuser.html
+20.git add node_modules/*
+21.git add skillstest/settings.py
+22.git add templates/tests/test_summary.html
+23.git add templates/tests/test_wrapper.html
+24.git add templates/tests/create_test_form.html
+25.git add templates/tests/getscheduleinfo.html
+26.git add templates/tests/waitscreen.html
+27.git add skillstest/Tests/tasks.py
+28.git add ../services/exec_server.c
+29.git add uwsgi.ini
+30.git add static/codemirror/*
+31.git add templates/tests/upload_test_form.html
+32.git add templates/tests/challenge_user_view.html
+33.git add templates/tests/manageinvitations.html
+34.git add templates/tests/invitecandidatesform.html
+35.git add templates/tests/challenge_user_view.html
+36.git add templates/tests/edit_challenge.html
+37.git add templates/network/network.html
+38.git add skillstest_nginx.conf
+39.git add ../services/vmcreate.sh
+40.git add files_to_commit.txt
 
 

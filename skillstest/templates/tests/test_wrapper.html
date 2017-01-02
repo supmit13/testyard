@@ -97,7 +97,16 @@ div.sec {
 
 <script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
 <script language='JavaScript' type="text/javascript" src='static/javascript/scrollclock.js'></script>
-<script language='JavaScript' type='text/javascript' src='static/javascript/jquery-2.1.3.min.js'></script> 
+<script language='JavaScript' type='text/javascript' src='static/javascript/jquery-2.1.3.min.js'></script>
+
+<!-- Code editor related libraries -->
+<script src="static/codemirror/lib/codemirror.js"></script>
+<link rel="stylesheet" href="static/codemirror/lib/codemirror.css">
+<!-- Code editor related libraries end here -->
+
+<!-- Repl.it libraries -->
+<script src="https://repl.it/lib/api.js" type="text/javascript" charset="utf-8"></script>
+<!-- Repl.it library ends -->
 
 <!-- Prevent usage of 'Back' and 'Refresh' buttons -->
 <script language='JavaScript'>
@@ -128,6 +137,7 @@ div.sec {
 
 <script language='JavaScript'>
 var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+
 
 
 var months = {};
@@ -443,7 +453,7 @@ function rememberresponse(testpagesstr){
 		    testpagesparts = testpages[i][0].split("<textarea ");
 		    if(testpagesparts.length == 2){
 			valuepattern = new RegExp("value='([^\\']+)'");
-			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
+			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' >";
 			testpages[i][0] = testpagesparts[0] + testpagesparts[1];
 		    }
 		    else{ // There is some problem. Deal with such issues later
@@ -852,7 +862,7 @@ function displaydisabledresponse1by1(elem){
     }
     }
     challengeresponsescreen = testpages[elem][0];
-    alert(challengeresponsescreen);
+    //alert(challengeresponsescreen);
     patt1 = new RegExp("<textarea ");
     patt2 = new RegExp(" type='checkbox' ");
     patt3 = new RegExp(" type='radio' ");
@@ -891,6 +901,7 @@ function displaydisabledresponse1by1(elem){
     qareadiv.innerHTML = challengeresponsescreen;
 }
 
+var myCodeMirror;
 
 // We will collect the responses to the challenges here and send them to the server at the end of the test.
 // This will reduce the dependence on the internet connection while taking the test.
@@ -900,6 +911,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     challengeendtime = new Date();
     challengeendtime = challengeendtime.getTime();
     timespentsecs = 0;
+    multiwhitespaceregex = new RegExp("\\s+");
     if(document.getElementById('atoncestart')){
     	challengestarttime = document.getElementById('atoncestart').value;
     // First, grab the user's response to the current challenge
@@ -910,12 +922,31 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
  	curchallengeid = document.frmchallenge.challengeid.value;
 	if(curchallengetype == 'SUBJ' || curchallengetype == 'ALGO' || curchallengetype == 'CODN'){
 	    textval = document.getElementsByTagName('textarea')[0].value;
+            if(curchallengetype == 'CODN'){
+                textval = myCodeMirror.getValue();
+	    }
+	    //alert(textval);
+	    gth = new RegExp(">", 'g');
+	    lst = new RegExp("<", 'g');
+	    textval = textval.replace(lst, "&amp;lt;");
+	    textval = textval.replace(gth, "&amp;gt;");
+	    //alert(textval);
+	    txtareas = document.getElementsByTagName('textarea');
+            //alert(txtareas.length);
 	    for(j=0; j < testpages.length - 1; j++){
 		challengestatement = testpages[j][2];
+		challengestatement = challengestatement.replace(multiwhitespaceregex, " ");
+		curchallengestatement = curchallengestatement.replace(multiwhitespaceregex, " ");
+		//alert("CHA = " + challengestatement);
+		//alert("CUR = " + curchallengestatement);
 		if(challengestatement == curchallengestatement){
 		    testpagesparts = testpages[j][0].split('<textarea ');
-		    if(testpagesparts.length == 2){
+		    if(testpagesparts.length >= 2){
 			valuepattern = new RegExp("value='([^\\']+)'");
+			//alert(textval);
+			if(testpagesparts.length > 2){
+			    testpagesparts[1] = testpagesparts[1] + "<textarea" + testpagesparts[2];
+			}
 			if(valuepattern.test(testpagesparts[1])){
 			    testpagesparts1parts = testpagesparts[1].split("<input");
 		    	    testpagesparts1parts[0] = testpagesparts1parts[0].replace(valuepattern, "", 1);
@@ -1029,6 +1060,10 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    textval = document.getElementsByName('filb_' + curchallengeid)[0].value;
 	    textval = textval.replace("'", '__SINGLEQUOTE__');
 	    textval = textval.replace('"', '__DOUBLEQUOTE__');
+            grt = new RegExp(">", 'g');
+	    lst = new RegExp("<", 'g');
+	    textval = textval.replace(lst, "&amp;lt;");
+	    textval = textval.replace(grt, "&amp;gt;");
 	    //alert(textval);
 	    for(j=0; j < testpages.length - 1; j++){
 		challengestatement = testpages[j][2];
@@ -1041,8 +1076,6 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    	    testpagesparts1parts[0] = testpagesparts1parts[0].replace(valuepattern, "", 1);
 			    testpagesparts[1] = testpagesparts1parts.join("<input");
 			}
-			//textval = textval.replace('__SINGLEQUOTE__', "&quot;");
-			//textval = textval.replace('__DOUBLEQUOTE__', "&quot;");
 			testpagesparts[1] = " value='" + textval + "' " + testpagesparts[1];
 		    	testpages[j][0] = testpagesparts[0] + "<input type='text' " + testpagesparts[1];
 			timeavailable = testpages[j][1];
@@ -1083,6 +1116,23 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     challengestarttime = new Date();
     challengestarttime = challengestarttime.getTime();
     responsescreendiv.innerHTML = testpages[elem][0] + "<input type='hidden' name='atoncestart' id='atoncestart' value='" + challengestarttime + "'>";
+    // Identify the challenge type
+    codingtypepattern = new RegExp("CODN");
+    progdiv = document.getElementById('progeditor');
+    var progenv = "{{progenv}}".toLowerCase();
+    cmscript = document.createElement('script');
+    cmscript.src = "static/codemirror/mode/" + progenv + "/" + progenv + ".js";
+    progdiv.appendChild(cmscript);
+    if(codingtypepattern.exec(testpages[elem][0])){
+        var progenv = "{{progenv}}".toLowerCase();
+        s = document.createElement('script');
+        configstr = "{'mode' : '" + progenv + "', 'indentUnit' : 4, 'lineWrapping' : true, 'lineNumbers' : true}";
+        s.innerHTML = "textarealist = document.getElementsByTagName('textarea');codearea = textarealist[0];myCodeMirror = CodeMirror.fromTextArea(codearea," + configstr + ");";
+        progdiv.appendChild(s);
+    }
+    else{
+	progdiv.innerHTML = "";
+    }
     if(testpages[elem][1] > 0){
     	mytime = window.setTimeout(disablechallenge, testpages[elem][1] * 1000, testpagesenc, testpages[elem][2], challengetype, elem, 1);
     }
@@ -1146,6 +1196,23 @@ function showchallengesonebyone (index, randomlist, testpagesstr, starttime, tab
     testpage = testpages[elem][0];
     pages = testpages; // This one is for nextchallenge function.
     qareadiv.innerHTML = testpage;
+    // Identify the challenge type
+    codingtypepattern = new RegExp("CODN");
+    progdiv = document.getElementById('progeditor');
+    var progenv = "{{progenv}}".toLowerCase();
+    cmscript = document.createElement('script');
+    cmscript.src = "static/codemirror/mode/" + progenv + "/" + progenv + ".js";
+    progdiv.appendChild(cmscript);
+    if(codingtypepattern.exec(testpage)){
+        var progenv = "{{progenv}}".toLowerCase();
+        s = document.createElement('script');
+        configstr = "{'mode' : '" + progenv + "', 'indentUnit' : 4, 'lineWrapping' : true, 'lineNumbers' : true}";
+        s.innerHTML = "textarealist = document.getElementsByTagName('textarea');codearea = textarealist[0];var myCodeMirror = CodeMirror.fromTextArea(codearea," + configstr + ");";
+        progdiv.appendChild(s);
+    }
+    else{
+	progdiv.innerHTML = "";
+    }
 
     challengestarttime = new Date();
     challengestarttime = challengestarttime.getTime();
@@ -1211,6 +1278,68 @@ function facethemusic(encjson, starttime){
 }
 
 
+function code_exec(){
+  var progenv = "{{progenv}}";
+  var repl_token = {'msg_mac' : "nfQ9mqPIArQO8lmgmdAogPsgHNh4koL0hR3Qtbq/2Vk=", 'time_created' : 1478372849000};
+  var repl = new ReplitClient('trial.repl.it', 80, "{{progenv}}", repl_token);
+  var codecontent = myCodeMirror.getValue();
+  var errstr = "";
+  //alert(codecontent);
+  if(codecontent == ""){
+    alert("No code to execute");
+    return(0);
+  }
+  repl.evaluateOnce(
+    codecontent, {
+    stdout: function(output) {
+      alert(output);
+    }
+  }).then(
+   function success(result) {
+     alert(result);
+     if (result.error) {
+       alert('Error: ', result.error);
+     } else {
+       alert('Result: ', result.data);
+     }
+   },
+   function error(error) {
+     alert('Error connecting to repl.it: ' + error);
+   }
+ );
+  //if(error == "Invalid language"){ // try using codepad.org
+    //alert("Could not get Repl to execute your code... trying codepad to execute your code.");
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+        if(xmlhttp.responseText != ''){
+          outputdiv = document.getElementById('output');
+          outputdiv.innerHTML = xmlhttp.responseText;
+	}
+	else{
+	  alert("The program did not generate any output. This may happen in case of an error condition. Please check your program and try again.");
+	  outputdiv.innerHTML= "";
+	}
+      }
+    };
+    outputdiv = document.getElementById('output');
+    outputdiv.innerHTML = "";
+    xmlhttp.open("POST", '{{ codepadexecuteurl }}', true);
+    codecontent_enc = Base64.encode(codecontent);
+    postdata = "code=" + codecontent_enc + "&progenv={{progenv}}&csrfmiddlewaretoken=" + document.frmchallenge.csrfmiddlewaretoken.value;
+    //alert(postdata);
+    xmlhttp.send(postdata);
+    outputdiv.innerHTML = "<img src='static/images/loading_small.gif'> Please wait while we execute your code. Might take a few minutes.";
+  //}
+}
+
+
 function getchallenges(encjson, starttime, mytime, ruleflag){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
@@ -1223,6 +1352,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
     if(ruleflag == 1){
 	alllist = new Array();
     }
+    scriptsetflag = 0;
     for (challenge in jsonobj.challenges){
         pages[pagectr] = Array();
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action=''>";
@@ -1238,9 +1368,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
-	    //alert(pages[pagectr][0]);
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
-	    //pages[pagectr][0] += "<scr" + "ipt language='javascript'>var myCodeMirror = CodeMirror.fromTextArea(id_" + jsonobj.challenges[challenge].chid + ");</scr" + "ipt>";// Avoid running the javascript code at this phase.
+            pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec();'><div id='output' style='color:blue;'></div><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
             pages[pagectr][0] += "<b>Select from below:</b><br />";
@@ -1275,8 +1403,9 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	else{ // showatonce
 	    pages[pagectr][0] += "<input type='button' name='btnendtest' value='End test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
 	}
-	challengestmt = challenge.replace("'", "");
-	challengestmt = challengestmt.replace('"', '');
+	challengestmt = challenge.replace("'", "&amp;apos;");
+	challengestmt = challengestmt.replace('"', '&amp;quot;');
+	challengestmt = challengestmt.replace('`', '&amp;grave;');
         pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challengestmt + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>{% csrf_token %}";
         pages[pagectr][0] += "</form>";
         //alert(challenge);
@@ -1322,6 +1451,15 @@ function tripledesdecrypt(encstr){
 <style type="text/css">
 html { min-height: 400%; margin-bottom: 1px; }
 </style>
+<style type="text/css" media="screen">
+    #editor { 
+        position: absolute;
+        top: 100;
+        right: 100;
+        bottom: 480;
+        left: 550;
+    }
+</style>
 </head>
 <body onload="javascript:decryptwrapper('####ENCJSON####');">
 <script language='JavaScript'>
@@ -1349,9 +1487,13 @@ checkbrowser();
     <br />
     <div id="qarea">
     </div>
+    <div id="progeditor">
+    </div>
+    
 </div>
 <input type='text' name='qindx' id='qindx' value=0>
 </span>
 </body>
 </html>
 {% endautoescape %}
+

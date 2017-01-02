@@ -20,7 +20,7 @@ class Topic(models.Model):
     createdate = models.DateField(auto_now=True)
     isactive = models.BooleanField(default=True)
 
-    class Meta:
+    class Meta:	
         verbose_name = "Topics Table"
         db_table = 'Tests_topic'
 
@@ -402,7 +402,7 @@ class Interview(models.Model):
     # schedule this interview for any candidate.
     maxscore = models.IntegerField(default=0, null=True, blank=True)
     maxduration = models.IntegerField(default=3600) # Max length (in seconds) of time of the interview.
-    randomsequencing = models.BooleanField(default=True, null=False, blank=False)
+    randomsequencing = models.BooleanField(default=False, null=False, blank=False)
     interviewlinkid = models.CharField(max_length=200, null=False, blank=False)
     scope = models.CharField(max_length=50, null=False, default='public')
     quality = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()), default='INT') # Determines the class of users the 'Interview' is for.

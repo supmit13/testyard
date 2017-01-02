@@ -8,6 +8,10 @@ import string, random
 import StringIO, gzip
 import mimetypes, mimetools
 from Crypto.Cipher import DES3
+import hashlib,hmac
+import base64
+import socket
+import simplejson as json
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -31,11 +35,29 @@ numericpattern = re.compile("\d+")
 
 hextoascii = { '%3C' : '<', '%3E' : '>', '%20' : ' ', '%22' : '"', '%5B' : '[', '%5D' : ']', '%5C' : '\\', '%3A' : ':', '%3B' : ';', '%28' : '(', '%29' : ')', '%2D' : '-', '%2B' : '+'}
 
-"""
-Creates and returns a session object if the request is a
-valid and authenticated session. Returns None otherwise.
-"""
+gHttpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive', 'Host' : 'codepad.org' }
+requestUrl = ""
+
+
+# Class to implement NoRedirectHandler
+class NoRedirectHandler(urllib2.HTTPRedirectHandler):
+    def http_error_302(self, req, fp, code, msg, headers):
+        infourl = urllib.addinfourl(fp, headers, req.get_full_url())
+        infourl.status = code
+        infourl.code = code
+        return infourl
+    http_error_300 = http_error_302
+    http_error_301 = http_error_302
+    http_error_303 = http_error_302
+    http_error_307 = http_error_302
+
+
+
 def isloggedin(request):
+    """
+    Creates and returns a session object if the request is a
+    valid and authenticated session. Returns None otherwise.
+    """
     if not request.COOKIES.has_key('sessioncode'):
         if mysettings.DEBUG:
             print "Invalid session code.\n"
@@ -60,12 +82,125 @@ def isloggedin(request):
         if sessobj.status == 1:
             return True
         return False
-        
 
-"""
-Function to destroy a session object and return a request object.
-"""
+
+def getPageContent(pageResponse):
+    if pageResponse:
+        content = pageResponse.read()
+        currentPageContent = content
+        # Remove the line with 'DOCTYPE html PUBLIC' string. It sometimes causes BeautifulSoup to fail in parsing the html
+        currentPageContent = re.sub(r"<.*DOCTYPE\s+html\s+PUBLIC[^>]+>", "", content)
+        return currentPageContent
+    else:
+        return None
+
+
+def _getCookieFromResponse(lastResponse):
+    """
+    Function to extract cookies from HttpResponse object passed in as the only parameter.
+    """
+    cookies = ""
+    lastResponseHeaders = lastResponse.info()
+    responseCookies = lastResponseHeaders.getheaders("Set-Cookie")
+    pathCommaPattern = re.compile(r"path=/\s*;?", re.IGNORECASE)
+    domainPattern = re.compile(r"Domain=[^;]+;?", re.IGNORECASE)
+    expiresPattern = re.compile(r"Expires=[^;]+;?", re.IGNORECASE)
+    deletedPattern = re.compile(r"=deleted;", re.IGNORECASE)
+    if responseCookies.__len__() >= 1:
+        for cookie in responseCookies:
+            cookieParts = cookie.split("Path=/")
+            cookieParts[0] = re.sub(domainPattern, "", cookieParts[0])
+            cookieParts[0] = re.sub(expiresPattern, "", cookieParts[0])
+            deletedSearch = deletedPattern.search(cookieParts[0])
+            if deletedSearch:
+                continue
+            cookies += "; " + cookieParts[0]
+        multipleWhiteSpacesPattern = re.compile(r"\s+")
+        cookies = re.sub(multipleWhiteSpacesPattern, " ", cookies)
+        multipleSemicolonsPattern = re.compile(";\s*;")
+        cookies = re.sub(multipleSemicolonsPattern, "; ", cookies)
+        if re.compile("^\s*;").search(cookies):
+            cookies = re.sub(re.compile("^\s*;"), "", cookies)
+        return(cookies)
+    else:
+        return(None)
+
+
+def getCodePadEditorPage():
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), NoRedirectHandler())
+    homeDir = os.getcwd()
+    requestUrl = "http://codepad.org/"
+    pageRequest = urllib2.Request(requestUrl, None, gHttpHeaders)
+    pageResponse = None
+    try:
+        pageResponse = opener.open(pageRequest)
+        sessionCookies = _getCookieFromResponse(pageResponse)
+        gHttpHeaders["Cookie"] = sessionCookies
+    except:
+        print __file__.__str__() + ": Couldn't fetch page due to limited connectivity. Please check your internet connection and try again - %s\n"%(sys.exc_info()[1].__str__())
+        return(None)
+    gHttpHeaders['Referer'] = requestUrl
+    gHttpHeaders["Cache-Control"] = 'max-age=0'
+    gHttpHeaders["Origin"] = 'http://codepad.org/'
+    gHttpHeaders["Content-Type"] = 'application/x-www-form-urlencoded'
+    #print "REQUEST URL = " + requestUrl
+    currentPageContent = _decodeGzippedContent(getPageContent(pageResponse))
+    return currentPageContent
+
+
+def runCodeOnLocalResources(targetenv, enccode, client_ip, client_port):
+    datadict = {'enc_code' : enccode, 'code_env' : targetenv, 'client_ip' : client_ip, 'client_port' : client_port }
+    servicehost = mysettings.CODE_EXECUTE_SERVICE_HOST
+    serviceport = mysettings.CODE_EXECUTE_SERVICE_PORT
+    # Create a socket connection to the above mentioned host and port
+    sockfd = None
+    try:
+        sockfd = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    except:
+        msg = "Failed to create a socket: %s"%sys.exc_info()[1].__str__()
+        print msg
+        return msg
+    sockaddress = (servicehost, serviceport)
+    try:
+        sockfd.connect(sockaddress)
+        #sockfd.create_connection(sockaddress, mysettings.SOCK_CONN_CREATE_TIMEOUT)
+    except:
+        msg = "Failed to create connection to the code execution service: %s"%sys.exc_info()[1].__str__()
+        print msg
+        return msg
+    jsondata = json.dumps(datadict)
+    try:
+        sockfd.send(jsondata)
+        #sockfd.sendall(jsondata)
+    except:
+        msg = "Trying to send data over the socket failed. Reason: %s"%sys.exc_info()[1].__str__()
+        print msg
+        return msg
+    sockfd.close()
+    msg = "sent data to execute... <img src='static/images/loading_small.gif'>"
+    print jsondata + "\n"
+    print msg
+    return msg
+
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+def get_client_port(request):
+    client_port = request.META.get('REMOTE_PORT')
+    return client_port
+
+
 def destroysession(request, sessobj):
+    """
+    Function to destroy a session object and return a request object.
+    """
     try:
         del request.COOKIES['sessioncode']
     except:
@@ -75,13 +210,13 @@ def destroysession(request, sessobj):
     return request
 
 
-"""
-Wrapper over isloggedin to redirect the user to login page if the
-session is found to have expired or invalid for some reason.
-Use this as it is a standard way to check the session and redirect
-to the login page if session is invalid.
-"""
 def checksession(request):
+    """
+    Wrapper over isloggedin to redirect the user to login page if the
+    session is found to have expired or invalid for some reason.
+    Use this as it is a standard way to check the session and redirect
+    to the login page if session is invalid.
+    """
     if not isloggedin(request):
         message = error_msg('1006')
         return HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
@@ -89,10 +224,10 @@ def checksession(request):
         return request
 
 
-"""
-Decorator version of checksession to check the validity of  a session. Uses the same isloggedin function above internally.
-"""
 def is_session_valid(func):
+    """
+    Decorator version of checksession to check the validity of  a session. Uses the same isloggedin function above internally.
+    """
     def sessioncheck(request):
         if not isloggedin(request):
             message = error_msg('1006')
@@ -103,10 +238,10 @@ def is_session_valid(func):
     return sessioncheck
 
 
-"""
-Decorator to match the session and location info stored in DB and the ones retrieved from the request
-"""
 def session_location_match(func):
+    """
+    Decorator to match the session and location info stored in DB and the ones retrieved from the request
+    """
     def checkconsistency(request):
         sesscode = request.COOKIES['sessioncode']
         usertype = request.COOKIES['usertype']
@@ -144,14 +279,13 @@ def gethosturl(request):
     return url
 
 
-
-"""
-Method to send an email to the email id of the user passed in as the argument.
-Should be done asynchronously - put the email in a queue from where the email
-handler will pick in batches of (say) 10 emails at a time and send them before
-running to pick up the next batch.
-"""
 def sendemail(userobj, subject, message, fromaddr):
+    """
+    Method to send an email to the email id of the user passed in as the argument.
+    Should be done asynchronously - put the email in a queue from where the email
+    handler will pick in batches of (say) 10 emails at a time and send them before
+    running to pick up the next batch.
+    """
     retval = 0
     try:
         retval = send_mail(subject, message, fromaddr, [userobj.emailid,], False)
@@ -162,10 +296,11 @@ def sendemail(userobj, subject, message, fromaddr):
         return None
 
 
-"""
-Generate a random string
-"""
+
 def generate_random_string():
+    """
+    Generate a random string
+    """
     random = str(uuid.uuid4())
     random = random.replace("-","")
     tstr = str(int(time.time() * 1000))
@@ -178,10 +313,11 @@ def mkdir_p(path):
         os.makedirs(path)
         os.chmod(path, 0666)
 
-"""
-Get the extension of a temporary file created using tempfile.mkstemp
-"""
+
 def get_extension(tmpfilepath):
+    """
+    Get the extension of a temporary file created using tempfile.mkstemp
+    """
     fileparts = tmpfilepath.split(".")
     if fileparts.__len__() < 2:
         return ""
@@ -189,12 +325,12 @@ def get_extension(tmpfilepath):
     return ext
 
 
-"""
-Replica of 'get_extension' defined in earlier. In previous version,
-the file extension is assumed to be 3 chars long only. Hence, in this present
-scenario, it doesn't work. This version handles that scenario.
-"""
 def get_extension2(filename):
+    """
+    Replica of 'get_extension' defined in earlier. In previous version,
+    the file extension is assumed to be 3 chars long only. Hence, in this present
+    scenario, it doesn't work. This version handles that scenario.
+    """
     extPattern = re.compile("\.(\w{3,4})$")
     extMatch = extPattern.search(filename)
     ext = ""
@@ -203,12 +339,13 @@ def get_extension2(filename):
     return ext
 
 
-"""
-Handle uploaded file. Create the destination path if required.
-Returns a list containing the path to the uploaded file and a message
-(which would be '' in case of success).
-"""
+
 def handleuploadedfile(uploaded_file, targetdir, filename=mysettings.PROFILE_PHOTO_NAME):
+    """
+    Handle uploaded file. Create the destination path if required.
+    Returns a list containing the path to the uploaded file and a message
+    (which would be '' in case of success).
+    """
     mkdir_p(targetdir)
     if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
         message = error_msg['1005']
@@ -224,14 +361,12 @@ def handleuploadedfile(uploaded_file, targetdir, filename=mysettings.PROFILE_PHO
     return [ destinationfile, '', filename + "." + ext ]
 
 
-
-
-"""
-Replica of 'handleuploadedfile' defined in earlier. In previous version,
-the file extension is assumed to be 3 chars long only. Hence, in this present
-scenario, it doesn't work. This version handles that scenario.
-"""
 def handleuploadedfile2(uploaded_file, targetdir, filename=mysettings.PROFILE_PHOTO_NAME):
+    """
+    Replica of 'handleuploadedfile' defined in earlier. In previous version,
+    the file extension is assumed to be 3 chars long only. Hence, in this present
+    scenario, it doesn't work. This version handles that scenario.
+    """
     mkdir_p(targetdir)
     if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
         message = error_msg['1005']
@@ -247,11 +382,11 @@ def handleuploadedfile2(uploaded_file, targetdir, filename=mysettings.PROFILE_PH
     return [ destinationfile, '', filename + "." + ext ]
 
 
-"""
-Function to form the img tag for profile image based on whether
-the user has a profile image or not.
-"""
 def getprofileimgtag(request):
+    """
+    Function to form the img tag for profile image based on whether
+    the user has a profile image or not.
+    """
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
@@ -267,11 +402,11 @@ def getprofileimgtag(request):
     return profileimgtag
 
 
-"""
-Format message (with color and font) and return it as a displayable string
-(after removing all hexcoded characters and HTML entities, if present).
-"""
 def formatmessage(msg, msg_color):
+    """
+    Format message (with color and font) and return it as a displayable string
+    (after removing all hexcoded characters and HTML entities, if present).
+    """
     var, msg = msg.split("=")
     for hexkey in mysettings.HEXCODE_CHAR_MAP.keys():
         msg = msg.replace(hexkey, mysettings.HEXCODE_CHAR_MAP[hexkey])
@@ -279,12 +414,7 @@ def formatmessage(msg, msg_color):
     return msg
     
 
-"""
-Function to check the strength of the password. Returns
-an integer between 1 and 5 with 5 being the strongest and
-1 being the weakest. 0 denotes the absence of any character 
-(empty string '').
-"""
+
 def check_password_strength(passwd):
     if passwd.__len__() == 0:
         return 0
@@ -315,15 +445,16 @@ def check_password_strength(passwd):
     return strength
 
 
-"""
-Method to copy a given Test object and create a new (duplicate) Test
-object which is owned by the User who requested the copy. Returns the copied Test
-object, None on failure. The primary owner/creator of the test has to
-transfer the rights to the new copied  test to the new user in order for
-the new user to access it. However, the 'evaluator' field will not
-be copied in the duplicate test.
-"""
+
 def copy_test(testobj, userobj):
+    """
+    Method to copy a given Test object and create a new (duplicate) Test
+    object which is owned by the User who requested the copy. Returns the copied Test
+    object, None on failure. The primary owner/creator of the test has to
+    transfer the rights to the new copied  test to the new user in order for
+    the new user to access it. However, the 'evaluator' field will not
+    be copied in the duplicate test.
+    """
     newtest = Test()
     newtest.testname = "Copy of " + testobj.testname
     newtest.subtopic = testobj.subtopic
@@ -389,10 +520,11 @@ def copy_test(testobj, userobj):
     return newtest
 
 
-"""
-pagetitle is expected to be the title string of the page with first letter in uppercase.
-"""
+
 def includedtemplatevars(pagetitle, request):
+    """
+    pagetitle is expected to be the title string of the page with first letter in uppercase.
+    """
     curdate = datetime.datetime.now()
     select_profile = ""
     select_dashboard = ""
@@ -444,11 +576,10 @@ def includedtemplatevars(pagetitle, request):
     return cntxt
 
 
-
-"""
-Function to get the current plans a given user has subscribed to.
-"""
 def getcurrentplans(userobj):
+    """
+    Function to get the current plans a given user has subscribed to.
+    """
     currentplans = {}
     userplans = UserPlan.objects.filter(user=userobj).order_by('-subscribedon') # Getting all UserPlans for the User.
     for usrpln in userplans: # userplans is a queryset object...
@@ -493,10 +624,11 @@ def mysqltopythondatetime(mysqldatetime):
     pythondatetime = datetime.datetime(int(mysqlyyyy), int(mysqlmon), int(mysqldd), int(mysqlhh), int(mysqlmm), int(mysqlss))
     return pythondatetime
 
-"""
-The parameter should be a string representation of datetime.datetime object. e.g. datetime.datetime.now()
-"""
+
 def pythontomysqldatetime(dt_date):
+    """
+    The parameter should be a string representation of datetime.datetime object. e.g. datetime.datetime.now()
+    """
     dt_date_parts = dt_date.split(' ')
     timepattern = re.compile(r"(\d{1,2}:\d{1,2}:\d{1,2})\.?\d*$")
     timematch = timepattern.search(dt_date_parts[1])
@@ -507,10 +639,10 @@ def pythontomysqldatetime(dt_date):
     return mysqlcompatibledate
 
 
-"""
-The parameter should be a string representation of datetime.datetime object. e.g. datetime.datetime.now()
-"""
 def pythontomysqldatetime2(dt_date):
+    """
+    The parameter should be a string representation of datetime.datetime object. e.g. datetime.datetime.now()
+    """
     dt_date_parts = dt_date.split(' ')
     timepattern = re.compile(r"(\d{1,2}:\d{1,2}:\d{1,2})\.?\d*$")
     timematch = None
@@ -528,10 +660,10 @@ def pythontomysqldatetime2(dt_date):
     return mysqlcompatibledate
 
 
-"""
-The name suggests the purpose and attempt. (uugh!!!)
-"""
 def yetanotherpythontomysqldatetime(dt_date):
+    """
+    The name suggests the purpose and attempt. (uugh!!!)
+    """
     year = str(dt_date.year)
     mon = str(dt_date.month)
     day = str(dt_date.day)
@@ -552,13 +684,13 @@ def yetanotherpythontomysqldatetime(dt_date):
     return mysqldt
 
 
-"""
-This will receive a date formatted like: 2015-03-24 16:59:34+00:00
-The return value would be '24 Mar 2015, 16:59:34'. If the date comes
-in any other format, the returned value would in the format 
-YYYY-MM-DD hh:mm:ss.
-"""
 def readabledatetime(mysqldatefmt):
+    """
+    This will receive a date formatted like: 2015-03-24 16:59:34+00:00
+    The return value would be '24 Mar 2015, 16:59:34'. If the date comes
+    in any other format, the returned value would in the format 
+    YYYY-MM-DD hh:mm:ss.
+    """
     if not mysqldatefmt:
         return ""
     datepart, timepart = "", ""
@@ -599,7 +731,7 @@ def converttimeunit(secs):
     daysecs = 86400
     hoursecs = 3600
     minutesecs = 60
-    years, months, days, hours, minutes, seconds = 0, 0, 0, 0, 0, 0
+    years, months, days, hour, minutes, seconds = 0, 0, 0, 0, 0, 0
     if secs > yearsecs:
         years = int(secs / yearsecs)
         secs = secs % yearsecs 
@@ -649,11 +781,7 @@ def fetch_currency_rate(fromcurr, tocurr):
         return 0
 
 
-"""
-Function to decode encoded HTML content extracted from 
-websites. The input parameter is the gzipped encoded
-content of the concerned website. 
-"""
+
 def decodeGzippedContent(encoded_content):
     response_stream = StringIO.StringIO(encoded_content)
     decoded_content = ""
@@ -664,6 +792,7 @@ def decodeGzippedContent(encoded_content):
         decoded_content = encoded_content
     return(decoded_content)
 
+_decodeGzippedContent = decodeGzippedContent
 
 class Logger(object):
 
@@ -698,14 +827,31 @@ def get_client_ip(request):
         ip = request.META.get('REMOTE_ADDR')
     return ip
 
-# Method to decrypt DES3 encrypted strings.
-# For now, this is just a placeholder.
+
 def des3Decrypt(encString, key, iv):
+    # Method to decrypt DES3 encrypted strings.
+    # For now, this is just a placeholder.
     """
     des3 = DES3.new(key, DES3.MODE_CFB, iv)
     des3.decrypt(encString)
     """
     return encString
+
+
+def repl_token_generator():
+    """
+    This is the token generator function, but it is not complete as yet.
+    Also, it is erroneous and takes up ATM card after dispensing the aaaaaaaaaaaaaaa
+    """
+    h = hashlib.sha256()
+    h.update(mysettings.REPL_SECRET)
+    hdig = h.hexdigest()
+
+    t = int(time.time() * 1000).__str__()
+    digest_maker = hmac.new(hdig)
+    digest_maker.update(t)
+    digest = digest_maker.hexdigest()
+    return digest
 
 
 
