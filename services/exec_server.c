@@ -21,7 +21,7 @@
 #include <json/json_tokener.h>
 
 /* Some Constants */
-#define NUM_THREADS 10
+#define NUM_THREADS 5
 #define INI_LINE_SIZE 80 /* Do not want anybody to write a config param with more than these many chars */
 #define MAX_QUEUE_LENGTH 1000
 #define PORT_NUM 5555
@@ -45,6 +45,9 @@
 #define MAX_PRIMARY_MEMORY 1 /* Maximum amount of RAM in gigabytes. This should be a configurable option. */
 #define MAX_HARD_DISK_SIZE 40 /*Maximum amount of space (in Gigs) available on hard disk. Should be a configurable option. */
 #define MAX_NETWORK_IFACE_CARD_COUNT 1 /* There will be a single NIC for each VM instance */
+
+#define MAX_VM_INSTANCES_LIN = 10
+#define MAX_VM_INSTANCES_WIN = 5
 
 /* Constants pertaining to base64 encoding and decoding operations */
 #define WHITESPACE 64
@@ -382,12 +385,6 @@ char * processTasks(int threadctr){
 		/*fprintf(fp, "%s", client_port);  */ 
 		continue;                                                   
 	    }
-	    /* I spent the whole fucking afternoon trying to figure why the above code was not working.
-	       In the end I realized that I had been checking for a boolean TRUE value from the strcmp
- 	       function for a successful match. Actually it should be a 0 if strcmp succeeds and the 
-	       strings being compared are identical. I had absolutely forgotten this for that period of
- 	       time, and hence I got frustrated to tear my pubic hairs. Sorry for the language, but I am
-	       just stating the state of my mind right now. It was a shameful mistake after all. */
 	}
 	/* Create a taskrequest instance out of the above data. */
 	tr = (taskrequest *)malloc(sizeof(taskrequest));
@@ -400,11 +397,11 @@ char * processTasks(int threadctr){
 	printf("ENC_CODE = %s\n",enc_code);
 	status = base64decode(enc_code, strlen(enc_code), exec_code, &p);
 	printf("STATUS CODE = %d\n",status);
-    printf("EXEC CODE = %s\n",exec_code);
+    	printf("EXEC CODE = %s\n",exec_code);
 	/* 
-	****************************************************************************************************
-	***** CHECK THE VALUE OF exec_code HERE. MALICIOUS CODE SHOULD BE TAKEN CARE OF AT THIS POINT ******
-	****************************************************************************************************
+	***********************************************************************************************************
+	***** TO DO: CHECK THE VALUE OF exec_code HERE. MALICIOUS CODE SHOULD BE TAKEN CARE OF AT THIS POINT ******
+	***********************************************************************************************************
 	*/
 	tr->code = (char *)malloc((strlen(exec_code) + 1) * sizeof(char));
 	strcpy(tr->code, exec_code);
@@ -561,12 +558,12 @@ int manageVMInstances(){
     envlist = (char **)malloc(MAX_LIST_SIZE * sizeof(char));
     vms = (vminstance **) malloc(MAX_LIST_SIZE * sizeof(int)); /* Pointers are integers, so we initialize them as such. */
     forkretval = (int *)malloc(MAX_LIST_SIZE * sizeof(int));
-    /* Now create each VM instance with one of the supported environments. The environments have 
-       2 main attributes - the OS and the programming environment. Besides installing these we
-       will also install frequently used modules that are part of the programming environment. 
+    /* Now create each VM instance with one of the supported environments. Besides installing that we
+       will also install frequently used modules that are part of the programming environments. 
        Since at this point of time, the user or test creator cannot choose the OS, we will install
        "Ubuntu" for all non-microsoft technology applications, and "Windows7" for all Microsoft
-       technology apps.
+       technology apps. So, in the case of creation, we will create 2 VM instances at a time, one for
+       'Ubuntu Linux (14.0498)' and another for 'Windows 7'.
     */
     for(int i=0; i < MAX_LIST_SIZE; i++){
 	*(vms + i) = (vminstance *)malloc(sizeof(vminstance));
@@ -574,19 +571,31 @@ int manageVMInstances(){
 	*(envlist + i) = (char *) malloc(MAX_INSTANCE_NAME_LEN * sizeof(char));
 	env = *(envlist + i);
 	/* 
-	   We have a little problem here. In order to create a virtual machine, we can either create it
-           programtically, or we can create instances of virtual machines manually and handle these from
-	   our program using the VIX API. To create the VMs programatically, we need to use the Python
-	   API as there is no C/C++ API to create a VM. The VIX API can handle VMs that are already in
-	   circulation, whereas the Python API creates as well as handles the management functions as
-	   required by the application. However, the python API is a bit slower than the VIX API (which
-	   is written in C). But since we do not know before hand if we would require creation of VMs
-	   dynamically due to extra load on the server, we are opting for the use of the Python API. We
-	   will have this thread spawn a child process and use execvp/execlp to write the python code
-	   to create the required VM(s). Once that is done, we would use the VIX API to manage them for
-	   adding external libraries, handle CPU and memory management, handle program execution and 
-	   getting the results to pass them on to the front end, and so on. This is a compromise we
-	   need to make in the absence of a better alternative.  
+	   Note: I am considering vmware player for this functionality. We can create a VMWare player
+	   instance with a certain environment automatically, and use it for our purposes. This will
+	   be lightweight and since we are only going to use it to test code written by test takers, we
+	   don't need an enterprise class machine. We can preconfigure vmware player instances for all
+	   supported environments. In order to handle a surge in connections, there can be multiple
+	   instances of identical vmware player running concurrently, each having a task queue of its 
+	   own. The vmware player instances will be launched automatically by the code here.
+
+	   Another Thought: We can have a number of preconfigured VMWare Player instances in a pool and 
+	   each of them will contain all linux programming environments or windows programming environments.
+	   That way, each instance will be able to keep a queue with various programming environments.
+	   Every such instance will have a max lifetime value, after which they will be purged and a new
+	   instance created in its place. The list of task requests (queue) belonging to the new instance
+	   will be automatically transferred to the newly created instance. The number of such instances
+	   operating at any given instance will be a configurable value set in the config file.
+
+	   This method will possibly be the fastest way to execute code. The reason is that it eliminates
+	   the time required to create a virtual machine when a request comes to the webserver. All it
+	   would need is to start up the VM Player for the first time when a request comes to the app or
+	   once a newly created  server is started after purging a running server.In all other cases, the
+	   only activity the VM has to do is execute the given code in an appropriate 
+	   
+	   In the above scheme, purging means shutting down the server and rebooting it again to perform
+	   the desired activities. The shutting down and rebooting will eliminate chances ofrunning malicious
+	   code on the VM.
 
 	   S.
         */
@@ -637,13 +646,10 @@ int main(int argc, char** argv){
   /*
   The above thread will do the following: 
   1. Purge a virtual machine instance if the lifetime of the instance exceeds the MAX_INSTANCE_LIFE value.
-  2. During purging a virtual machine instance, if the instance has a queue of task request objects pending,
-  then a new virtual machine instance with the same environment and other params should be created by this
-  thread and the queue of task requests of the purged VM instance will be assigned to this new instance.
-
+  
   The rationale behind doing this is to destroy the environment in which any malicious bit of code has been 
   executed.
-  3. This thread will keep checking all virtual machine instances in a round robin method, with a time interval
+  2. This thread will keep checking all virtual machine instances in a round robin method, with a time interval
   of MGR_RR_INTRVL seconds.
   */
   vmpool = (vminstancepool *)malloc(sizeof(vminstancepool)); 
@@ -715,7 +721,7 @@ int main(int argc, char** argv){
       while(lock_flag){
           sleep(1);
       }
-      nd = insert(recvBuff);
+      nd = insert(recvBuff); /* A global queue of tasks */
   }
 }
 
