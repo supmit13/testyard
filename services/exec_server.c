@@ -15,6 +15,10 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/ioctl.h>
+
+/* VIX Library */
+#include "vix.h"
 
 /* Data serialization libraries */
 #include <json/json.h>
