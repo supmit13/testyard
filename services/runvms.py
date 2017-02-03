@@ -2,10 +2,11 @@
 
 import os, sys, re, time
 import subprocess
+from skillstest import settings as mysettings
 
 
 if __name__ == "__main__":
-    vmscount = 2
+    vmscount = mysettings.MAX_VM_INSTANCES_LIN
     runcmd = "/home/supriyo/work/testyard/testyard/services/poweron" 
     runsetIp = "/home/supriyo/work/testyard/testyard/services/setIP"
     runcmdargbeg = "/home/supriyo/work/testyard/testyard/vminstances/Linux/"

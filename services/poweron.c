@@ -137,7 +137,7 @@ int main(int argc, char **argv){
     }
     Vix_ReleaseHandle(waitHandle);
     
-    /* Login to the guest here.... */
+    /* Login to the guest here.... */                                                                                                                                                                                                      
     loginHandle = VixVM_LoginInGuest(vmHandle, USERNAME, PASSWORD, 0, NULL, NULL);
     err = VixJob_Wait(loginHandle, VIX_PROPERTY_NONE);
     if (VIX_OK != err) {

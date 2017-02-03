@@ -265,7 +265,7 @@ else
     instcmd="$(apt-get -y install tclsh)"
     echo $instcmd
     echo $instcmd >>$logfile
-fi
+fiSH
 
 locada="$(which ada95)";
 if [[ $locada =~ $rex ]]; then 
@@ -340,12 +340,22 @@ echo $instcmd >>$logfile
 
 curdir=$(pwd)
 testdir="$curdir/testcode"
+ipscriptdir="$curdir/scripts"
+ipchange_exec_dir="$(mkdir -p $ipscriptdir)"
 code_exec_dir="$(mkdir -p $testdir)"
-if [! -d $testdir]; then
+# CreationZ
+if [! -d $t estdir]; then
     echo "Could not create the directory ($testdir) in which the user's code should be run.\n"
     echo "PLEASE CREATE THAT DIRECTORY MANUALLY TO START USING THIS VM WORKSTATION PLAYER.\n"
+if [! -d $ipscriptdir]; then
+    echo "Could not create the directory ($ipscriptdir) in which the IP modification code should be run.\n"
+    echo "PLEASE CREATE THAT DIRECTORY MANUALLY TO START USING THIS VM WORKSTATION PLAYER.\n"
+if [! -d $testdir || ! -d $ipsriptdir ]; then
+    echo "Please create the directories above manually. The program failed to create them. This might \
+	because of lack of privileges.
 else
-    # set up the IP manipulation code here...
+    # set up the IP manipulation code here... Just get the setIP executable in the '/home/supmit/testcode' directory.
+    ${rsync -v -e ssh supmit@172.16.16.131:/home/supmit/work/testyard/testyard/services/setIP /home/supmit/testcode/} 
     echo "Thats it! Your machine has been set up to handle all supported languages/technologies. "
     echo "Bye.\n"
 endif
