@@ -1,7 +1,6 @@
-#!/usr/bin/python
-
 import os, sys, re, time
 import subprocess
+sys.path.insert(0, "/home/supriyo/work/testyard/testyard/skillstest")
 from skillstest import settings as mysettings
 
 
