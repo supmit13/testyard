@@ -53,285 +53,287 @@ rex="^/";
 export DEBIAN_FRONTEND=noninteractive 
 
 logdir="$(mkdir -p log)"
+"$(chmod 777 log)"
 logfile = "log/prepare_env.log"
-echo "Starting environment creation on VM Workstation Player...\n" >$logfile
+touch $logfile
+echo "Starting environment creation on VM Workstation Player...\n" >"$logfile"
 
 locgcc="$(which gcc)";
 if [[ $locgcc =~ $rex ]]; then 
     echo "gcc exists"
-    echo "* gcc exists\n" >>$logfile
+    echo "* gcc exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install gcc)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locgpp="$(which g++)";
 if [[ $locgpp =~ $rex ]]; then 
     echo "g++ exists"
-    echo "* g++ exists\n" >>$logfile
+    echo "* g++ exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install g++)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locperl="$(which perl)";
 if [[ $locperl =~ $rex ]]; then 
     echo "perl exists"
-    echo "* perl exists\n" >>$logfile
+    echo "* perl exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install perl)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locpython="$(which python)";
 if [[ $locpython =~ $rex ]]; then 
     echo "python exists"
-    echo "* python2.x exists\n" >>$logfile
+    echo "* python2.x exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install python)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locpython3="$(which python3)";
 if [[ $locpython3 =~ $rex ]]; then 
     echo "python3 exists"
-    echo "* python3 exists\n" >>$logfile
+    echo "* python3 exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install python3)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locruby="$(which ruby)";
 if [[ $locruby =~ $rex ]]; then 
     echo "ruby exists"
-    echo "* ruby exists\n" >>$logfile
+    echo "* ruby exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install ruby)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 loccurl="$(which curl)";
 if [[ $loccurl =~ $rex ]]; then 
     echo "curl exists"
-    echo "* curl exists\n" >>$logfile
+    echo "* curl exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install curl)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locmono="$(which mono)";
 if [[ $locmono =~ $rex ]]; then 
     echo "mono exists"
-    echo "* mono exists\n" >>$logfile
+    echo "* mono exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install mono)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo $instcmd >> "$logfile"
 fi
 
 locfsharp="$(which fsharp)";
 if [[ $locfsharp =~ $rex ]]; then 
     echo "fsharp exists"
-    echo "* fsharp exists\n" >>$logfile
+    echo "* fsharp exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install fsharp)"
+    instcmd="$(apt-get -y install mono-complete fsharp)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locgo="$(which go)";
 if [[ $locgo =~ $rex ]]; then 
     echo "go exists"
-    echo "* go exists\n" >>$logfile
+    echo "* go exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install go)"
+    instcmd="$(apt-get -y install golang)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locjava="$(which java)";
 if [[ $locjava =~ $rex ]]; then 
     echo "java exists"
-    echo "* java exists\n" >>$logfile
+    echo "* java exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install java)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locjs="$(which javascript)";
 if [[ $locjs =~ $rex ]]; then 
     echo "javascript exists"
-    echo "* javascript exists\n" >>$logfile
+    echo "* javascript exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install javascript)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 loclua="$(which lua)";
 if [[ $loclua =~ $rex ]]; then 
     echo "lua exists"
-    echo "* lua exists\n" >>$logfile
+    echo "* lua exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y  install lua)"
+    instcmd="$(apt-get -y  install lua5.1)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locobjc="$(which clang)";
 if [[ $locobjc =~ $rex ]]; then 
     echo "objective-c exists"
-    echo "* objective-c -y exists\n" >>$logfile
+    echo "* objective-c -y exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install clang)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locphp="$(which php5)";
 if [[ $locphp =~ $rex ]]; then 
     echo "php exists"
-    echo "* php exists\n" >>$logfile
+    echo "* php exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install php5)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locpascal="$(which fpc)";
 fpc
 if [[ $locpascal =~ $rex ]]; then 
     echo "Pascal exists"
-    echo "* Pascal exists\n" >>$logfile
+    echo "* Pascal exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install fpc)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locfortran="$(which gfortran)";
 if [[ $locfortran =~ $rex ]]; then 
     echo "fortran exists"
-    echo "* fortran exists\n" >>$logfile
+    echo "* fortran exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install gfortran)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 loclisp="$(which lisp)";
 if [[ $loclisp =~ $rex ]]; then 
     echo "lisp exists"
-    echo "* lisp exists\n" >>$logfile
+    echo "* lisp exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install lisp)"
+    instcmd="$(apt-get -y install clisp)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locsmalltalk="$(which smalltalk)";
 if [[ $locsmalltalk =~ $rex ]]; then 
     echo "smalltalk exists"
-    echo "* smalltalk exists\n" >>$logfile
+    echo "* smalltalk exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install smalltalk)"
+    instcmd="$(apt-get -y install squeak-vm)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locscala="$(which scala)";
 if [[ $locscala =~ $rex ]]; then 
     echo "scala exists"
-    echo "* scala exists\n" >>$logfile
+    echo "* scala exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install scala)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 loctcl="$(which tclsh)";
 if [[ $loctcl =~ $rex ]]; then 
     echo "tclsh exists"
-    echo "* tclsh exists\n" >>$logfile
+    echo "* tclsh exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install tclsh)"
+    instcmd="$(apt-get -y install tcl)"
     echo $instcmd
-    echo $instcmd >>$logfile
-fiSH
+    echo "$instcmd" >> "$logfile"
+fi
 
 locada="$(which ada95)";
 if [[ $locada =~ $rex ]]; then 
     echo "ada95 exists"
-    echo "* ada95 exists\n" >>$logfile
+    echo "* ada95 exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install ada95)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locdelphi="$(which delphi)";
 if [[ $locdelphi =~ $rex ]]; then 
     echo "delphi exists"
-    echo "* delphi exists\n" >>$logfile
+    echo "* delphi exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install delphi)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locrust="$(which rust)";
 if [[ $locrust =~ $rex ]]; then 
     echo "Rust exists"
-    echo "* Rust exists\n" >>$logfile
+    echo "* Rust exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install rust)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locscheme="$(which scheme)";
 if [[ $locscheme =~ $rex ]]; then 
     echo "scheme exists"
-    echo "* Scheme exists\n" >>$logfile
+    echo "* Scheme exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install scheme)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 locswift="$(which swift)";
 if [[ $locswift =~ $rex ]]; then 
     echo "swift exists"
-    echo "* Swift exists\n" >>$logfile
+    echo "* Swift exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install swift)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 loccfm="$(which coldfusion)";
 if [[ $loccfm =~ $rex ]]; then 
     echo "coldfusion exists"
-    echo "* coldfusion exists\n" >>$logfile
+    echo "* coldfusion exists\n" >> "$logfile"
 else 
     instcmd="$(apt-get -y install coldfusion)"
     echo $instcmd
-    echo $instcmd >>$logfile
+    echo "$instcmd" >> "$logfile"
 fi
 
 # Add openssh server and client on the VM. This will enable another host to
 # transfer code to be run on this VM in a secure manner.
 instcmd="$(apt-get -y install openssh-server openssh-client)"
 echo $instcmd
-echo $instcmd >>$logfile
+echo $instcmd >>"$logfile"
 
 # Now create a directory called 'testcode' in the home directory of the user 
 # running this script. The code sent by the execute server (exec_server.c)
@@ -344,20 +346,24 @@ ipscriptdir="$curdir/scripts"
 ipchange_exec_dir="$(mkdir -p $ipscriptdir)"
 code_exec_dir="$(mkdir -p $testdir)"
 
-if [! -d $testdir]; then
+if [ ! -d $testdir ]; then
     echo "Could not create the directory ($testdir) in which the user's code should be run.\n"
     echo "PLEASE CREATE THAT DIRECTORY MANUALLY TO START USING THIS VM WORKSTATION PLAYER.\n"
-if [! -d $ipscriptdir]; then
+fi
+if [ ! -d $ipscriptdir ]; then
     echo "Could not create the directory ($ipscriptdir) in which the IP modification code should be run.\n"
     echo "PLEASE CREATE THAT DIRECTORY MANUALLY TO START USING THIS VM WORKSTATION PLAYER.\n"
-if [! -d $testdir || ! -d $ipsriptdir ]; then
+fi
+if [ ! -d $testdir ] || [ ! -d $ipsriptdir ]; then
     echo "Please create the directories above manually. The program failed to create them. This might \
 	because of lack of privileges.\n"
 else
-    # set up the IP manipulation code here... Just get the setIP executable in the '/home/supmit/testcode' directory.
-    ${rsync -v -e ssh supmit@192.168.0.101:/home/supmit/work/testyard/testyard/services/setIP /home/supmit/testcode/} 
+    # set up the IP manipulation code here... Just get the setIP executable in the '/home/supriyo/testcode' directory.
+    ${rsync -v -e ssh supmit@192.168.0.101:/home/supmit/work/testyard/testyard/services/setIP /home/supriyo/scripts/testcode/} 
     echo "Thats it! Your machine has been set up to handle all supported languages/technologies. "
     echo "Bye.\n"
-endif
+fi
+
+# rsync -v -e ssh prepare_env.sh supriyo@172.16.16.132:/home/supriyo/scripts
 
 
