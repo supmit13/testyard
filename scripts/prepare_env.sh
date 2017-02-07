@@ -43,6 +43,8 @@
 # 'supmit@172.16.16.131:/home/supmit/scripts/'. Please change this to the values 
 # used by you.
 
+# Note: You might need to run "sudo dpkg --configure -a" to rectify any dpkg issues.
+
 # -- S.
 
 # Here we go...
@@ -55,7 +57,7 @@ export DEBIAN_FRONTEND=noninteractive
 logdir="$(mkdir -p log)"
 "$(chmod 777 log)"
 logfile = "log/prepare_env.log"
-touch $logfile
+echo $logfile, "+++++++++++++++++++++++++++++++++"
 echo "Starting environment creation on VM Workstation Player...\n" >"$logfile"
 
 locgcc="$(which gcc)";
@@ -65,7 +67,7 @@ if [[ $locgcc =~ $rex ]]; then
 else 
     instcmd="$(apt-get -y install gcc)"
     echo $instcmd
-    echo "$instcmd" >> "$logfile"
+    echo "$(instcmd >> $logfile)"
 fi
 
 locgpp="$(which g++)";
@@ -75,7 +77,7 @@ if [[ $locgpp =~ $rex ]]; then
 else 
     instcmd="$(apt-get -y install g++)"
     echo $instcmd
-    echo "$instcmd" >> "$logfile"
+    echo "$(instcmd >> $logfile)"
 fi
 
 locperl="$(which perl)";
@@ -239,12 +241,12 @@ else
     echo "$instcmd" >> "$logfile"
 fi
 
-locsmalltalk="$(which smalltalk)";
+locsmalltalk="$(which gnu-smalltalk)";
 if [[ $locsmalltalk =~ $rex ]]; then 
     echo "smalltalk exists"
     echo "* smalltalk exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install squeak-vm)"
+    instcmd="$(apt-get -y install gnu-smalltalk)"
     echo $instcmd
     echo "$instcmd" >> "$logfile"
 fi
@@ -269,22 +271,22 @@ else
     echo "$instcmd" >> "$logfile"
 fi
 
-locada="$(which ada95)";
+locada="$(which ada95 )";
 if [[ $locada =~ $rex ]]; then 
     echo "ada95 exists"
     echo "* ada95 exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install ada95)"
+    instcmd="$(apt-get -y install gnat-4.4)"
     echo $instcmd
     echo "$instcmd" >> "$logfile"
 fi
 
-locdelphi="$(which delphi)";
+locdelphi="$(which lazarus)";
 if [[ $locdelphi =~ $rex ]]; then 
     echo "delphi exists"
     echo "* delphi exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install delphi)"
+    instcmd="$(apt-get -y install lazarus)"
     echo $instcmd
     echo "$instcmd" >> "$logfile"
 fi
@@ -294,7 +296,7 @@ if [[ $locrust =~ $rex ]]; then
     echo "Rust exists"
     echo "* Rust exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install rust)"
+    instcmd="$(curl -sSf https://static.rust-lang.org/rustup.sh | sh)"
     echo $instcmd
     echo "$instcmd" >> "$logfile"
 fi
@@ -304,7 +306,7 @@ if [[ $locscheme =~ $rex ]]; then
     echo "scheme exists"
     echo "* Scheme exists\n" >> "$logfile"
 else 
-    instcmd="$(apt-get -y install scheme)"
+    instcmd="$(apt-get -y install libmhash2:i386 mit-scheme:i386)"
     echo $instcmd
     echo "$instcmd" >> "$logfile"
 fi
@@ -340,7 +342,7 @@ echo $instcmd >>"$logfile"
 # will be copied here and run from this directory. Once they have been run
 # and the output/result relayed back, the file(s) will be purged.
 
-curdir=$(pwd)
+curdir="$(pwd)"
 testdir="$curdir/testcode"
 ipscriptdir="$curdir/scripts"
 ipchange_exec_dir="$(mkdir -p $ipscriptdir)"
@@ -350,6 +352,7 @@ if [ ! -d $testdir ]; then
     echo "Could not create the directory ($testdir) in which the user's code should be run.\n"
     echo "PLEASE CREATE THAT DIRECTORY MANUALLY TO START USING THIS VM WORKSTATION PLAYER.\n"
 fi
+"$(chmod 777 $testdir)"
 if [ ! -d $ipscriptdir ]; then
     echo "Could not create the directory ($ipscriptdir) in which the IP modification code should be run.\n"
     echo "PLEASE CREATE THAT DIRECTORY MANUALLY TO START USING THIS VM WORKSTATION PLAYER.\n"
@@ -359,7 +362,7 @@ if [ ! -d $testdir ] || [ ! -d $ipsriptdir ]; then
 	because of lack of privileges.\n"
 else
     # set up the IP manipulation code here... Just get the setIP executable in the '/home/supriyo/testcode' directory.
-    ${rsync -v -e ssh supmit@192.168.0.101:/home/supmit/work/testyard/testyard/services/setIP /home/supriyo/scripts/testcode/} 
+    "$(rsync -v -e ssh supriyo@192.168.0.101:/home/supriyo/work/testyard/testyard/services/setIP /home/supriyo/scripts/testcode/)"
     echo "Thats it! Your machine has been set up to handle all supported languages/technologies. "
     echo "Bye.\n"
 fi
