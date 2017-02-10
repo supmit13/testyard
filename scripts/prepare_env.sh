@@ -368,5 +368,6 @@ else
 fi
 
 # rsync -v -e ssh prepare_env.sh supriyo@172.16.16.132:/home/supriyo/scripts
-
+# Remove earlier ssh keys: ssh-keygen -f "/root/.ssh/known_hosts" -R 172.16.16.136
+#--S
 
