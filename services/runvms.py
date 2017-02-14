@@ -23,7 +23,7 @@ if __name__ == "__main__":
     runcmdargbeg = "/home/supriyo/work/testyard/testyard/vminstances/Linux/"
     ipAddresseslist = ['192.168.0.102', '192.168.0.103', '192.168.0.104', '192.168.0.105', '192.168.0.106', '192.168.0.107', '192.168.0.108', '192.168.0.109', '192.168.0.110', '192.168.0.111' ]
     # Iterate through the VM instances for starting them one by one.
-    for i in range(4, vmscount):
+    for i in range(6, vmscount):
         istr = str(i)
         if len(istr) < 2:
             istr = '0' + istr

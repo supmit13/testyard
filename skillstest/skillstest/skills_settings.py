@@ -424,7 +424,20 @@ REPL_EMAIL = "codexaddict@gmail.com"
 
 
 ########### MAX VMWare Player Instances ###########
-MAX_VM_INSTANCES_LIN = 10
+#MAX_VM_INSTANCES_LIN = 10 #Number of VM instances that may be run conurrently.
+
+# NOTE:\n **** THIS SHOULD NOT BE DONE LOCAL/EXPERIMENTAL INSTALLATIONS WHERE RUNNING 10 VMs CONCURRENTLY MAY FREEZE THE OS.THIS SHOULD BE
+# DONE ON ANOTHER SYSTEM THAT HAS ENOUGH CPU's AND MEMORY TO HANDLE THE OPERATION. IDEALLY I WOULD LIKE THE MACHINE (PHYSICAL OR 
+# OTHERWISE) TO HAVE 16 GIGS MEMORY AND 8 DUAL CORE PROCESSORS (freferably AMD). ****\n
+# 
+# Disclaimer: Please also note that such a system should have a very powerful auxilliary cooling system especially for the AMD CPUs, as 
+# AMD CPUs have the notorious habit of heating up exorbitantly while performing little complex executions of code. AMD has  a lot of cool 
+# features as well, so I am not discouraging anyone to use it, but this heating is a known issue. Kindly use your judgement to buy your 
+# components.
+
+# S.
+
+MAX_VM_INSTANCES_LIN = 7 # figure for tests implementation.
 MAX_VM_INSTANCES_WIN = 5
 ################################################### 
 
