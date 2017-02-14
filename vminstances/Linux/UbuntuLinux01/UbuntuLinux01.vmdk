@@ -1,0 +1,23 @@
+# Disk DescriptorFile
+version=1
+encoding="UTF-8"
+CID=24ed3f85
+parentCID=ffffffff
+isNativeSnapshot="no"
+createType="twoGbMaxExtentSparse"
+
+# Extent description
+RW 8323072 SPARSE "UbuntuLinux01-s001.vmdk"
+RW 8323072 SPARSE "UbuntuLinux01-s002.vmdk"
+RW 4325376 SPARSE "UbuntuLinux01-s003.vmdk"
+
+# The Disk Data Base 
+#DDB
+
+ddb.adapterType = "lsilogic"
+ddb.geometry.cylinders = "1305"
+ddb.geometry.heads = "255"
+ddb.geometry.sectors = "63"
+ddb.longContentID = "412030abce46545ad72b979724ed3f85"
+ddb.uuid = "60 00 C2 9e 91 21 4f 13-92 87 71 6b 9a 99 fb 63"
+ddb.virtualHWVersion = "12"
