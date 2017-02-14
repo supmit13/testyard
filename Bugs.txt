@@ -1,4 +1,30 @@
 1. In Tests => Schedule Test functionality, the date entered from the date and time widget is in the format yyyy-mm-dd hh:mm. It should also have the seconds component, and currently we are entering it manually. This needs to be fixed.
 2. In android app, the splash screen doesn't appear anymore. It used to work till I manipulated the user login process to handle the erroneous inputs.
 3. In android, if the user enters an erroneous username and/or password, the app needs to be closed and reopened now to enter the correct password. This needs to be fixed.
+4. If you post a comment to an ongoing discussion with an attached file (in the Network tab), the attached file download link appears incorrect when the post is submitted and it appears as part of the discussion thread. Needs to be fixed.
+5. When you are trying to give a test to all members of a specified group, the response doesn't show the status of the operation when the members have been sent the email. There should be more clarity for the users in this aspect.
+6. While creating a test or an interview, a check is made on the name to find if a test or interview with the same name exists in the db. This should be modified to check if same name exists for just the user's tests and interviews, not all tests and interviews in the DB.
+7. While creating an interview, it is possible to set the "Publish Date" in the past. This should not be allowed.
+8. When displaying a test to the candidate, the start page of the test says "The duration of the test is 1.5 hours and 30 minutes". This needs to be fixed.
+9. While activating a test or interview, the "Activate Test Now" doesn't change even after the display of the activation message until the page is refreshed. This needs to be changed such that the "Activate Test Now" caption becomes "Deactivate Test Now" and the underlying link changes accordingly, and is displayed immediately after the activation message is displayed.
+10. While inviting candidates to take a test using the "invite" link, the "Valid Till" field computes the date after a 3 month period from the current date incorrectly. The month part becomes '13' if the "Valid From" field has a month value of 10, and so on. Needs to be fixed.
+11. If a test has already been taken by a candidate and the candidate clicks on the test link again, the message displayed erroneously says the "test is not active as yet". This needs to be rectified to display a message saying the test has already been taken the candidate.
+12. When a test is created, the publish date and the activation date are not exactly the same as entered by the user. The time of the day differs from what is entered. This needs to be fixed on priority.
+13. While taking the "FSharp Test", the answer to the question "Explain Djikstra's algorithm and implement a solution in C to compute smallest path between start and end points in the following graph." is not saved. The response input area is a simple textarea, and it becomes empty if the user navigates to some other question. This is a very important bug and needs to be fixed asap.
+14. While taking the "FSharp Test", if the test taker writes a chunk of code in the code window associated with a particular challenge/question and then if she/he navigates to another challenge/question and finally returns back to the challenge/question for which she/he wrote the code, the code multiplies and displays all instances of itself in the code window one after the other. This is a very important bug and needs to be fixed asap.
+ 15. In case of questions/challenges whose response is descriptive, if there is any character that is recognized as HTML entity character, then all instances of that character is changed automatically to its corresponding HTML entity. Example: character '>' is converted to '&gt;', and '&' is converted to '&amp;'. This should not happen in any circumstance. This needs to be fixed on priority.
+Note for Bug #15:
+This has been fixed for tests with type 'CODN'. This needs to be fixed for tests with types 'ALGO' and 'SUBJ'.
+16. During answering questions in a test, the '>' symbol in the answer causes havoc with the input area. It doesn't allow responses to other questions to be entered. Basically it breaks the page. Needs to be fixed urgently. Refer to line numbers 927 and 930 in test_wrapper.html file. The above issue occurs in case of CODN, ALGO and SUBJ type of questions.
+17. The textboxes and the code input boxes on the answering screens do not handle HTML text and certain special characters correctly. They  basically break the page and the user cannot navigate to any other question through that screen. Needs fixing ugently.
 
+===================================================================
+Bugs pertaining to the exec_server execution of user entered code:
+===================================================================
+
+1. Sometimes the task queue doesn't get cleared after a successful execution of one of the submitted code. [Done]
+2. Currently, the encoded code is not getting decoded by the C based base64 decoding function. Needs to be looked into. [Done]
+3. Need to look at how to hook up the VMware machine instance with the code received from the user. This is actually a "todo".
+4. In case of Multiple Choice Questions (MCP), modifying the response by deselecting one of the options doesn't work. The option remains selected no matter how many times you deselect it. In case of selecting another option, the effect is as desired - that is the new selection is shown in subsequent views of the response to the question. However, the old selections remain as they are.
+5.In case of "Free Pascal Compiler"installation, all user prompts should be made automatic with preferable values.
+5. 

@@ -46,3 +46,16 @@ TestYard Mobile Screens:
 The first screen after the splash screen displays the search test/interview widget, a create test widget, a conduct interview widget and a schedule a test widget. 
 The search test/interview widget results in a page that displays all scheduled tests and interviews pertaining to the user. 
 
+
+=================================================================================================================================
+
+How to handle recorded interview sessions:
+------------------------------------------
+
+1. During the interview, the system will record the output of both the local and the remote video elements. These will be stored in separate files on the client. Once the interview is over (either the user clicks on 'Stop Recording' or tries to close the interview screen), these 2 files will be automatically uploaded to the server. 
+2. Once on the server, the system will run "ffmpeg -i infile.mp4 out.mp4" on each of them. This will strip the files of all errors.
+3. Once ffmpeg has striped the errors, the files will be super-imposed on one another to create a single file. This will be stored in a location on the server. The path to this file will be stored in the appropriate DB table. The related tables will be updated with the data.
+[Figure out which tables will be affected and how and where this file's location is stored]
+
+
+

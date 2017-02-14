@@ -1,0 +1,1 @@
+Basis of VMWare ESXi instance creation script: http://www.tamas.io/automatic-virtual-machine-creation-from-command-line-in-vmwares-esxi/

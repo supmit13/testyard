@@ -81,7 +81,7 @@ Configure findings:
   FFI:        no (user requested: default)
   readline:   yes (user requested: default)
   libsigsegv: no, consider installing GNU libsigsegv
-./configure: libsigsegv was not detected, thus some features, such as
+./configtesture: libsigsegv was not detected, thus some features, such as
   generational garbage collection and
   stack overflow detection in interpreted Lisp code
 cannot be provided.
@@ -128,7 +128,12 @@ Login in to mysql client: mysql -u root
 Install django-like
 Download django-like, and untar the tar gzipped file. cd into it and run 'python setup.py install'.
 
+======================================================================================
 
+Directory for shared virtual machines: /var/lib/vmware/SharedVMs
+--------------------------------------
+
+Port to use for https access to workstation: 444
 
 
 
