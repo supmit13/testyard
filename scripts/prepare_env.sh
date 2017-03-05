@@ -28,7 +28,7 @@
 # directory in which this script resides. For example, if it resides in the directory
 # ~/work/testyard/testyard/script, do it in the console from that directory.
 # 
-# rsync -v -e ssh prepare_env.sh supmit@172.16.16.131:/home/supmit/scripts/ <enter>
+# rsync -v -e ssh prepare_env.sh supriyo@172.16.16.131:/home/supriyo/scripts/ <enter>
 #
 # We are transferring the file over ssh, so you will be prompted for your password
 # of the guest system. Once you type that in, your file should be transferred without
@@ -362,6 +362,10 @@ if [ ! -d $testdir ] || [ ! -d $ipsriptdir ]; then
 else
     # set up the IP manipulation code here... Just get the setIP executable in the '/home/supriyo/testcode' directory.
     "$(rsync -v -e ssh supriyo@192.168.0.101:/home/supriyo/work/testyard/testyard/services/setIP /home/supriyo/scripts/testcode/)"
+    # Make root own setIP so that we may set the sticky bit
+    "$(sudo chown root:root /home/supriyo/scripts/testcode/setIP)"
+    # Now set the sticky bit.
+    "$(sudo chmod 4755 /home/supriyo/scripts/testcode/setIP)"
     echo "Thats it! Your machine has been set up to handle all supported languages/technologies. "
     echo "Bye.\n"
 fi

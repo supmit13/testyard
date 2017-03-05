@@ -16,7 +16,7 @@
 
 #define  HOSTNAME "192.168.0.101"
 #define  HOSTPORT 8333
-#define  USERNAME "supmit"
+#define  USERNAME "supriyo"
 #define  PASSWORD "spmprx"
 
 #define  VMPOWEROPTIONS   VIX_VMPOWEROP_LAUNCH_GUI   // Launches the VMware Workstaion UI
@@ -40,7 +40,7 @@
  * of the URL.
 */
 #define HOSTPORT 0
-#define USERNAME "supmit"
+#define USERNAME "supriyo"
 #define PASSWORD "spmprx"
 
 #define  VMPOWEROPTIONS VIX_VMPOWEROP_NORMAL
@@ -91,8 +91,8 @@ int main(int argc, char **argv){
         if(argc > 2){
             ipaddress = (char *)malloc(strlen(argv[2]) * sizeof(char));
             strcpy(ipaddress, argv[2]);
-	    setupIpProg = (char *)malloc(strlen("/home/supmit/testcode/setIP") * sizeof(char));
-	    strcpy(setupIpProg, "/home/supmit/testcode/setIP");
+	    setupIpProg = (char *)malloc(strlen("/home/supriyo/scripts/testcode/setIP") * sizeof(char));
+	    strcpy(setupIpProg, "/home/supriyo/scripts/testcode/setIP");
         }
     }
     else{
@@ -130,39 +130,47 @@ int main(int argc, char **argv){
     waitHandle = VixVM_WaitForToolsInGuest(vmHandle, BOOT_WAIT_TIME, NULL, NULL); // wait for 180 seconds
     printf("Waiting for the VM to boot\n\n");
     err = VixJob_Wait(waitHandle, VIX_PROPERTY_NONE);
-    if (VIX_OK != err) {
+    if (VIX_FAILED(err)){
        // Handle the error...
        goto abort;
     }
     Vix_ReleaseHandle(waitHandle);
+    printf("VM booted successfully.\n");
     // Login to the guest machine
     loginHandle = VixVM_LoginInGuest(vmHandle, USERNAME, PASSWORD, 0, NULL, NULL);
+    printf("Trying to login into the guest system...\n");
     err = VixJob_Wait(loginHandle, VIX_PROPERTY_NONE);
-    if (VIX_OK != err) {
-       goto abort;
+    if (VIX_FAILED(err)){
+        printf("Login to the guest system failed: %s\n\n", Vix_GetErrorText(err, NULL));
+        goto abort;
+    }
+    else{
+        printf("Successfully logged in to the guest system...\n");
     }
     Vix_ReleaseHandle(loginHandle);
 
+    printf("Calling setIP with IP address %s - %s\n",ipaddress, setupIpProg);
     runHandle = VixVM_RunProgramInGuest(vmHandle, setupIpProg, ipaddress, 0, VIX_INVALID_HANDLE, NULL, NULL);
     err = VixJob_Wait(runHandle, VIX_PROPERTY_NONE);
     if (VIX_FAILED(err)){
+        printf("setIP call failed - %s\n\n",Vix_GetErrorText(err, NULL));
         goto abort;
     }
     Vix_ReleaseHandle(runHandle);
     
-abort:
-    Vix_ReleaseHandle(jobHandle);
-    Vix_ReleaseHandle(vmHandle);
-    Vix_ReleaseHandle(runHandle);
-    Vix_ReleaseHandle(loginHandle);
-    Vix_ReleaseHandle(waitHandle);
-    VixHost_Disconnect(hostHandle);
+    abort:
+        Vix_ReleaseHandle(jobHandle);
+        Vix_ReleaseHandle(vmHandle);
+        Vix_ReleaseHandle(runHandle);
+        Vix_ReleaseHandle(loginHandle);
+        Vix_ReleaseHandle(waitHandle);
+        VixHost_Disconnect(hostHandle);
 
     return 0;
 }
 
 /*
 Compile: gcc -I/usr/include/vmware-vix poweron.c -o poweron -lvixAllProducts -ldl -lpthread
-Run: ./poweron "/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux01/UbuntuLinux01.vmx"
+Run: ./poweron "/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_01/UbuntuLinux64_01.vmx"
 */
 
