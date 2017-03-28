@@ -146,7 +146,8 @@ months = { 'Jan' : '01', 'Feb' : '02', 'Mar' : '03', 'Apr' : '04', 'May' : '05',
 var mytime;
 var qalist = {};
 var alllist = {};
-testpages = {}
+testpages = {};
+ruleselected = 0;
 
 Object.size = function(obj) {
     var size = 0, key;
@@ -190,8 +191,14 @@ function nomorechallenges(testname, testid, starttime, tabref, tabid){
 }
 
 
-function testendscreen(){
-    testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
+function testendscreen(testid, starttime, tabref, tabid){
+    alert(ruleselected);
+    if(ruleselected != 0){
+        testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
+    }
+    else{
+        //testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnendtest' value='Save All Responses and End Test' onclick="javascript:endtest('{{testname}}', " + testid + ", '" + starttime + "', '" + tabref + "', '" + tabid + "');">&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
+    }
     // Enable F5
     $(document).off('keydown', disableF5);
     return(testendhtml);
@@ -253,7 +260,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
 // to close the window.
 function stoptest(tabref, tabid){
     testtakerdiv = document.getElementById('testtaker');
-    testtakerdiv.innerHTML = testendscreen();
+    testtakerdiv.innerHTML = testendscreen('{{ testid }}', starttime, tabref, tabid);
     endtime = new Date();
     endtime = jsdatetomysqldatetime(String(endtime));
     postdata = encodeURI("starttest=1&mode=2&starttime=" + starttime + "&endtime=" + endtime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}')) + "&status=2&tabref=" + tabref + "&tabid=" + tabid;
@@ -484,7 +491,7 @@ function rememberresponse(testpagesstr){
 				testpagesparts = testpages[i][0].split("name=");
 				for(var l=0; l < testpagesparts.length; l++){
 				    if(checkboxnamepattern.test(testpagesparts[l])){
-					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked='checked'");
+					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked='checked'" + " disabled=false");
 				    }
 				}
 				testpages[i][0] = testpagesparts.join("name=");
@@ -502,7 +509,7 @@ function rememberresponse(testpagesstr){
 				testpages[i][0] = testpages[i][0].replace(checkedpattern, '');// Get rid of previous checked values
 				for(var l=0; l < testpagesparts.length; l++){
 				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
-					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
+					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'" + " disabled=false");
 				    }
 				}
 				testpages[i][0] = testpagesparts.join("value=");
@@ -596,6 +603,7 @@ function getruleset(encjson){
 	    break;
 	}
     }
+    ruleselected = ruleflag;
     return (ruleflag); // Possible values are 0, 1, 2, 3.
 }
 
@@ -609,7 +617,7 @@ function nextchallenge(index, randomlist, mytime, ruleflag, tabref, tabid){
     window.clearTimeout(mytime);
     pagesstr = Base64.encode(JSON.stringify(testpages));
     index = document.getElementById('qindx').value;
-    showchallengesonebyone(index, randomlist, pagesstr, tabref, tabid);
+    showchallengesonebyone(index, randomlist, pagesstr, mytime, tabref, tabid);
 }
 
 
@@ -891,6 +899,180 @@ function displaydisabledresponse1by1(elem){
     else if(patt4.test(challengeresponsescreen)){
 	challengeresponsescreenparts = challengeresponsescreen.split(" name='filb_");
 	challengeresponsescreenparts[0] = challengeresponsescreenparts[0] + " disabled=true ";
+	challengeresponsescreen = challengeresponsescreenparts.join(" name='filb_");
+    }
+    else{
+        alert("Invalid challenge type - Challenge types should be one of 'SUBJ', 'ALGO', 'CODN', 'MULT', and 'FILB'.");
+	//alert(challengeresponsescreen);
+    }
+    qareadiv = document.getElementById('qarea');
+    qareadiv.innerHTML = challengeresponsescreen;
+}
+
+// We need not compute endtime here as the user gets only one chance to respond to it.
+function displaychallengesresponse1by1(elem){
+    window.clearTimeout(mytime);
+    //challengeresponsescreen = Base64.decode(responsescreenencoded);
+    if(document.frmchallenge){
+    curchallengetype = document.frmchallenge.challengetype.value;
+    curchallengestatement = document.frmchallenge.challengestatement.value;
+    curchallengeid = document.frmchallenge.challengeid.value;
+    //alert(curchallengetype);
+    if(curchallengetype == 'SUBJ' || curchallengetype == 'CODN' || curchallengetype == 'ALGO'){
+	textval = document.getElementById('id_' + curchallengeid).value;
+	for(j=0;j < testpages.length; j++){
+	    if(testpages[j][2] == curchallengestatement){
+		pagecontent = testpages[j][0];
+		pagecontentparts = pagecontent.split("<textarea ");
+		pagecontentparts[1] = "value='" + textval + "' " + pagecontentparts[1];
+		pagecontent = pagecontentparts[0] + "<textarea " + pagecontentparts[1];
+		testpages[j][0] = pagecontent;
+	    }
+	}
+    }
+    else if(curchallengetype == 'MULT'){
+	inputtags = document.getElementsByTagName("input");
+	    checkboxes = Array();
+	    radiobuttons = Array();
+	    for(var i=0; i < inputtags.length; i++){
+		if(inputtags[i].type == 'checkbox'){
+		    checkboxes.push(inputtags[i]);
+		}
+		else if(inputtags[i].type == 'radio'){
+		    radiobuttons.push(inputtags[i]);
+	 	}
+	    }
+	    if(checkboxes.length > 0){
+		checkedpattern = new RegExp("checked='checked'");
+		for(j=0; j < testpages.length; j++){
+		    tpquestion = testpages[j][2].replace(/\s+/g, "");
+		    curquestion = curchallengestatement.replace(/\s+/g, "");
+		    tpquestion = tpquestion.replace('"', '');
+		    tpquestion = tpquestion.replace("'", "");
+		    if(tpquestion == curquestion){
+			testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+		    }
+		}
+		for(k=0; k < checkboxes.length; k++){
+		    if(checkboxes[k].checked == true){
+			checkboxname = checkboxes[k].name;
+			checkboxnamepattern = new RegExp(checkboxname);
+			checkboxvalue = checkboxes[k].value;
+			for(j=0; j < testpages.length; j++){
+			    tpquestion = testpages[j][2].replace(/\s+/g, "");
+			    curquestion = curchallengestatement.replace(/\s+/g, "");
+			    tpquestion = tpquestion.replace('"', '');
+		    	    tpquestion = tpquestion.replace("'", "");
+			    //alert("testpages, j, 2 = " + tpquestion);
+			    //alert("current q = " + curquestion);
+			    if(tpquestion == curquestion){
+				testpagesparts = testpages[j][0].split("name=");
+				for(var l=0; l < testpagesparts.length; l++){
+				    if(checkboxnamepattern.test(testpagesparts[l])){
+					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked='checked'");
+				    }
+				}
+				testpages[j][0] = testpagesparts.join("name=");
+				timeavailable = testpages[j][1];
+				timeleft = timeavailable - deltatime;
+				testpages[j][1] = timeleft;
+			    }
+			}
+		    }
+		}
+	    }
+	    else if(radiobuttons.length > 0){
+		checkedpattern = new RegExp("checked='checked'");
+		for(k=0;k < radiobuttons.length;k++){
+		    if(radiobuttons[k].checked == true){
+			radiobuttonvalue = radiobuttons[k].value;
+			radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+			for(j=0; j < testpages.length; j++){
+			    tpquestion = testpages[j][2].replace(/\s+/g, "");
+			    curquestion = curchallengestatement.replace(/\s+/g, "");
+			    tpquestion = tpquestion.replace('"', '');
+		    	    tpquestion = tpquestion.replace("'", "");
+			    //alert("testpages, j, 2 = " + tpquestion);
+			    //alert("current q = " + curquestion);
+			    if(tpquestion == curquestion){
+				testpagesparts = testpages[j][0].split("value=");
+				testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+				for(var l=0; l < testpagesparts.length; l++){
+				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
+				    }
+				}
+				testpages[j][0] = testpagesparts.join("value=");
+				timeavailable = testpages[j][1];
+				timeleft = timeavailable - deltatime;
+				testpages[j][1] = timeleft;
+			    }
+			}
+		    }
+		}
+	}
+    }
+    else if(curchallengetype == 'FILB'){
+    textval = document.getElementsByName('filb_' + curchallengeid)[0].value;
+    textval = textval.replace("'", '__SINGLEQUOTE__');
+    textval = textval.replace('"', '__DOUBLEQUOTE__');
+    //alert(textval);
+    for(j=0; j < testpages.length - 1; j++){
+	challengestatement = testpages[j][2];
+	if(challengestatement == curchallengestatement){
+	    testpagesparts = testpages[j][0].split("<input type='text'");
+	    if(testpagesparts.length == 2){
+	    	valuepattern = new RegExp("value='([^\\']*)'");
+		if(valuepattern.test(testpagesparts[1])){
+		    testpagesparts1parts = testpagesparts[1].split("<input");
+	    	    testpagesparts1parts[0] = testpagesparts1parts[0].replace(valuepattern, "", 1);
+		    testpagesparts[1] = testpagesparts1parts.join("<input");
+		}
+		//textval = textval.replace('__SINGLEQUOTE__', "&quot;");
+		//textval = textval.replace('__DOUBLEQUOTE__', "&quot;");
+		testpagesparts[1] = " value='" + textval + "' " + testpagesparts[1];
+	    	testpages[j][0] = testpagesparts[0] + "<input type='text' " + testpagesparts[1];
+		timeavailable = testpages[j][1];
+		timeleft = timeavailable - deltatime;
+		testpages[j][1] = timeleft;
+	    }
+	    else{
+		alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
+	    }
+        }
+    }
+    }
+    }
+    challengeresponsescreen = testpages[elem][0];
+    //alert(challengeresponsescreen);
+    patt1 = new RegExp("<textarea ");
+    patt2 = new RegExp(" type='checkbox' ");
+    patt3 = new RegExp(" type='radio' ");
+    patt4 = new RegExp(" name='filb_");
+    if(patt1.test(challengeresponsescreen)){
+        challengeresponsescreenparts = challengeresponsescreen.split("<textarea ");
+	challengeresponsescreenparts[1] = " " + challengeresponsescreenparts[1];
+	challengeresponsescreen = challengeresponsescreenparts[0] + "<textarea " + challengeresponsescreenparts[1];
+    }
+    else if(patt2.test(challengeresponsescreen)){
+	challengeresponsescreenparts = challengeresponsescreen.split("'checkbox'");
+	//alert(challengeresponsescreen);
+        for(i=1; i <  challengeresponsescreenparts.length; i++){
+	    challengeresponsescreenparts[i] = " " + challengeresponsescreenparts[i];
+	}
+	challengeresponsescreen = challengeresponsescreenparts.join("'checkbox'");
+    }
+    else if(patt3.test(challengeresponsescreen)){
+	challengeresponsescreenparts = challengeresponsescreen.split("'radio'");
+	//alert(challengeresponsescreen);
+        for(i=1; i <  challengeresponsescreenparts.length; i++){
+	    challengeresponsescreenparts[i] = " " + challengeresponsescreenparts[i];
+	}
+	challengeresponsescreen = challengeresponsescreenparts.join("'radio'");
+    }
+    else if(patt4.test(challengeresponsescreen)){
+	challengeresponsescreenparts = challengeresponsescreen.split(" name='filb_");
+	challengeresponsescreenparts[0] = challengeresponsescreenparts[0] + " ";
 	challengeresponsescreen = challengeresponsescreenparts.join(" name='filb_");
     }
     else{
@@ -1222,7 +1404,7 @@ function showchallengesonebyone (index, randomlist, testpagesstr, starttime, tab
     qindxelement.value = index;
     //testpageenc = Base64.encode(testpage);
     //alert(timeframe_ms);
-    mytime = window.setTimeout(displaydisabledresponse1by1, timeframe_ms, elem);
+    mytime = window.setTimeout(displaychallengesresponse1by1, timeframe_ms, elem);
 }
 
 

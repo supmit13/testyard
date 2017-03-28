@@ -27,10 +27,6 @@
 
 #else    // USE_WORKSTATION
 
-/*
- * For VMware Server 2.0
- */
-
 #define CONNTYPE VIX_SERVICEPROVIDER_VMWARE_PLAYER
 
 #define HOSTNAME "https://192.168.0.101:8333/sdk"
@@ -45,7 +41,7 @@
 
 #define  VMPOWEROPTIONS VIX_VMPOWEROP_NORMAL
 
-#endif    // USE_WORKSTATION
+#endif
 
 #define VM_READY_INTERVAL 180 /* This is the time period (in seconds) in which the VM is expected to be up and running */
 

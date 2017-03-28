@@ -2391,6 +2391,7 @@ def showtestcandidatemode(request):
     testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
     tabtype = 'usertest'
     testtakeruserobj = None
+    print targetemail
     if testtakeruserqset.__len__() == 0:
         testtakeruserqset = WouldbeUsers.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
         tabtype = 'wouldbeusers'

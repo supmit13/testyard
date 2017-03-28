@@ -93,9 +93,9 @@ SECURE_HSTS_SECONDS = 31536000
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = 'xxxxxxxxx'
+EMAIL_HOST_PASSWORD = 'xtmt365i'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = 'xxxxxxxx'
+#EMAIL_HOST_PASSWORD = 'spmprx13'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -280,7 +280,7 @@ RULES_DICT = { \
         #'responsenoreturn' : 'Responded challenges may not be revisited', \
         #'norevisit' : 'Attempted challenges may not be revisited', \
         'showatonce' : 'Show all challenges at the begining of the test', \
-        #'showonebyone' : 'Display challenges to the user one at a time.',\
+        'showonebyone' : 'Display challenges to the user one at a time.',\
         'noconsultextmat' : 'User may not consult online material on the subject of the test', \
         #'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
@@ -297,10 +297,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = 'xxxxxxxxxxxxxxxxxxx'
-OAUTH_SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxx'
+OAUTH_API_KEY = '78wxi7pqmstzbg'
+OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
 OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
-OAUTH_USER_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 
 # Number of complimentary tests a newly registered user can conduct:
 NEW_USER_FREE_TESTS_COUNT = 50
@@ -311,10 +311,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxx' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/ec2-user/testyard/logs"
@@ -370,7 +370,7 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 # Payment gateway settings
 # PayU settings
 PAYU_POS_ID = 145227
-PAYU_SECOND_ID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
 PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -384,12 +384,12 @@ CUSTOMER_IP_ADDRESS = '192.168.43.55'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = 'xxxxxxxxxxxxx'
-EASYAPI_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+EASYAPI_PASSWORD = 'spmprx13'
+EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
-GO_DADDY_CUST_NUM = 222222222
-GO_DADDY_PASSWD = "xxxxxxxxxxxxxxxxxxx"
+GO_DADDY_CUST_NUM = 73165291
+GO_DADDY_PASSWD = "Xtmt365i@"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -401,24 +401,24 @@ PROCESSED_SCRIPT_DUMP = "processed"
 ###### AMAZON AWS API INFO ######
 
 ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
-SECRET_ACCESS_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+SECRET_ACCESS_KEY = "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"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "xxxxxxxxxxxxxxxxxx"
+AMAZON_ACCT_PASSWD = "spmprx13"
 
 AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "xxxxxxxxxxxxxxxx"
+IAM_PASSWD = "spmprx13"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "xxxxxxxxxxxxxxxxxxxx"
+REPL_SECRET = "kwrwmse5en8a3l66"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "xxxxxxxxxxxxxx"
+REPL_PASSWORD = "spmprx13"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 

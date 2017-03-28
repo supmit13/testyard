@@ -7,6 +7,7 @@
 #include <string.h>
 #include <sys/mman.h>
 #include <inttypes.h>
+#include <time.h>
 
 /* POSIX threads library */
 #include <pthread.h>
@@ -45,10 +46,6 @@
 
 /* Some VMWare instance specific values. All of these should be moved to the config file when it gets implemented in version 2.0 */
 #define MAX_INSTANCE_NAME_LEN 40 /* Maximum length (in chars) of the size of an instance name. */
-#define CPU_CORES_COUNT 2 /* This is the minimal value of the number of cores in the CPU. This should be a configurable option. */
-#define MAX_PRIMARY_MEMORY 1 /* Maximum amount of RAM in gigabytes. This should be a configurable option. */
-#define MAX_HARD_DISK_SIZE 40 /*Maximum amount of space (in Gigs) available on hard disk. Should be a configurable option. */
-#define MAX_NETWORK_IFACE_CARD_COUNT 1 /* There will be a single NIC for each VM instance */
 
 #define MAX_VM_INSTANCES_LIN = 10
 #define MAX_VM_INSTANCES_WIN = 5
@@ -58,14 +55,44 @@
 #define EQUALS     65
 #define INVALID    66
 
+
+#define USE_PLAYER
+
+#ifdef USE_PLAYER
+
+#define  CONNTYPE VIX_SERVICEPROVIDER_VMWARE_PLAYER
+#define  HOSTNAME "192.168.0.101"
+#define  HOSTPORT 8333
+#define  USERNAME "supriyo"
+#define  PASSWORD "spmprx"
+
+#else
+
+#define CONNTYPE VIX_SERVICEPROVIDER_VMWARE_VI_SERVER
+#define HOSTNAME "https://192.168.0.101:8333/sdk"
+#define HOSTPORT 0
+#define USERNAME "supriyo"
+#define PASSWORD "spmprx"
+
+#endif
+
+/* 
+The above directory is the place where we create files for the code received.
+The files should be removed/deleted as soon as they are copied to the VM.
+In case of files for compiled languages, the compiled files created after compilation 
+should be deleted as well. It is the duty of this program to see that this
+is done without fail.
+-- S.
+*/
+
+
 /*
 The Base64 encoding and decoding code is based heavily on the code available at
 "http://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c". 
 Some changes have been made to it to satisfy the needs of the application in 
 which it is being used. I thank the creator of this code. My understanding is that
 this code is in the freeware domain (since any bit of code posted on stackoverflow
-may be used without explicit permission of its creator). However, should the creator
-expect any monetary benefit for this code from me, I would be glad to satisfy that.
+may be used without explicit permission of its creator).
 -- S.
 */
 
@@ -104,6 +131,14 @@ static const unsigned char d[] = {
     66,66,66,66,66,66 };
 /* Got over with it. There should be a better way to do this. */
 
+static char *vmlinipaddresses[MAX_VM_INSTANCES_LIN] = { '192.168.0.102', '192.168.0.103', '192.168.0.104', '192.168.0.105', '192.168.0.106', '192.168.0.107', '192.168.0.108', '192.168.0.109', '192.168.0.110', '192.168.0.111' };
+static char *vmwinipaddresses[MAX_VM_INSTANCES_WIN] = { '192.168.0.112', '192.168.0.113', '192.168.0.114', '192.168.0.115', '192.168.0.116' };
+
+static char *vmlinvmxpath[MAX_VM_INSTANCES_LIN] = { '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_01/UbuntuLinux64_01.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_02/UbuntuLinux64_02.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_03/UbuntuLinux64_03.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_04/UbuntuLinux64_04.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_05/UbuntuLinux64_05.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_06/UbuntuLinux64_06.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_07/UbuntuLinux64_07.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_08/UbuntuLinux64_08.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_09/UbuntuLinux64_09.vmx' };
+
+static char *vmwinvmxpath[MAX_VM_INSTANCES_WIN] = { '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_10/UbuntuLinux64_10.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_11/UbuntuLinux64_11.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_12/UbuntuLinux64_12.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_13/UbuntuLinux64_13.vmx', '/home/supriyo/work/testyard/testyard/vminstances/Linux/UbuntuLinux64_14/UbuntuLinux64_14.vmx' };
+
+
 /* Now need to create some self referential structures.... I love them. */
 typedef struct taskrequest{
 	char* code;
@@ -126,39 +161,12 @@ typedef struct queue{
 	struct node *back;
 	int nodescount;
 }queue;
-
-
-typedef struct vminstance{
-	int cpucores; /* Number of CPU cores available */
-	int memory; /* This is the amount of primary memory available (in Gigs) */
-	int harddiskmem; /* Amount of hard disk space available (in Gigs) */
-	int nic_count; /* Number of network interface cards available on this instance */
-	char **ip_addresses; /* Available IP addresses on the NICs */
-	int state; /* Status of the instance - 0 is inactive (switched off), 1 is active (switched on and running), 2 is active but in hibernation */
-	char *os; /* Operating system of the instance */
-	char **envslist; /* list of programming environments available on the instance */
-	char *privilege; /* privileges of the user logged into the system - default will be 'root' on linux/unix systems and 'administrator' on windows systems.  */
-	long int create_timestamp; /* Unix/Linux timestamp (seconds) at which the instance was created. */
-	int inuse; /* Whether the VM instance is currently being used by a client request or not. */
-	/* If the value is TRUE, then the instance will not be purged immediately. The purging agent will wait for the value to become FALSE. */
-	taskrequest **trqueue; /* Pointer to a list of pointers to taskrequest objects. This is the queue of requests that this instance has to handle. */
-	int trqueuelen; /* Length of the above queue of taskrequest objects. */
-}vminstance;
-
-
-typedef struct vminstancepool{
-	vminstance *instance_list[MAX_LIST_SIZE]; /* A list of pointers to VM instances */
-	int cur_instance_count; /* Number of concurrent instances available at the current instant */
-	int cur_instances_in_use; /* Number of the available instances that are actually in use at the current instant */
-}vminstancepool;
 /* Structs are over */
 
 queue *tasksqueue = NULL;
 /* Supported queue operations: insert (from back), delete (from front), traverse_bf (traverse from back to front), traverse_fb (traverse from front to back */
 /* Note: At this point we haven't defined 'traverse_bf' and 'traverse_fb'. We will implement them if and when required. */
 int lock_flag = 0;
-
-vminstancepool *vmpool; /* This is the global pool of VM instances. We initialize it as an empty pool */
 
 /* Function to handle addition of a node at the back of the queue. */
 node *insert(char *d){
@@ -275,6 +283,22 @@ int base64decode (char *in, size_t inLen, char *out, size_t *outLen){
 }
 
 
+char *randstr(size_t length) {
+    char *dest, *d;
+    char charset[] = "abcdefghijklmnopqrstuvwxyz"
+                     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    dest = (char *)malloc((length + 1) * sizeof(char));
+    d = dest;
+    while (length-- > 0) {
+        size_t index = (double) rand() / RAND_MAX * (sizeof charset - 1);
+        *dest++ = charset[index];
+    }
+    *dest = '\0';
+    return(d);
+}
+
+
+
 char *remove_char_from_str(char ch, char *str){
     char *newstr;
     int ctr, len, newctr;
@@ -297,10 +321,8 @@ char *remove_char_from_str(char ch, char *str){
 }
 
 /* Forward Decarations */
-char * executeCodeOnVM(taskrequest *, int, int, char **);
+char * executeCodeOnVM(taskrequest *, char *);
 int returnResultToRequestorPage(taskrequest *, char *);
-vminstance *lookupSuitableVMinPool(taskrequest *);
-vminstance *createNewVmInstance(taskrequest *, int , int , char **);
 
 /* 
 This function takes an entry from the task requests queue 'tasksqueue', runs
@@ -311,14 +333,14 @@ char * processTasks(int threadctr){
 	/* Get the node from the front of the queue */
 	node *codenode;
 	char *exec_code;
-        char *enc_code;
+    char *enc_code;
 	char *code_resp;
 	char *task_info;
 	int s = 0;
 	int p, status;
 	json_object * jobj;
 	taskrequest *tr;
-	char *progenv, *client_ip, *client_port;	
+	char *progenv, *client_ip, *client_port;
 	/* FILE *fp;
         fp = fopen("/tmp/mainlogger.log", "a+"); */
 	codenode = (node *)malloc(sizeof(node));
@@ -432,8 +454,8 @@ char * processTasks(int threadctr){
 	The virtual machine instance needs to know the programming environment that needs to be loaded. It
 	should also handle all dependencies and external libraries that are necessary to run the code.
 	*/
-	code_resp = executeCodeOnVM(tr, 2, 4, NULL); /* Empty set of IP addresses */
-	printf("PAST VM CREATION....\n");
+	code_resp = executeCodeOnVM(tr, progenv); /* Empty set of IP addresses */
+	printf("Executing code on VM....\n");
 	returnResultToRequestorPage(tr, code_resp);
         }/* while(TRUE) ends */
     return ("Terminating thread\n");
@@ -441,32 +463,323 @@ char * processTasks(int threadctr){
 
 
 /* 
-Function to create a virtual machine instance with the environment specified in the 
-taskrequest struct variable. It will have a default value for memory and CPU cores, but
-these may be set by explicitly specifying a value for each of them. Once the VM is set
-up, we will execute the code on it and return the response/error/whatever. THe resuts
-of the executed program will be returned in case it runs successfully, otherwise the 
-error message will be returned. 
+Function to execute code on a randomly selected virtual machine. 
 */
-char *executeCodeOnVM(taskrequest *trqst, int cpucores, int hdmemgigs, char **ip_addresses){
-    	char *resp;
-	vminstance *vm; /* Pointer to a suitable VM found in the vmpool for this task request. */
-	vm = (vminstance *)malloc(sizeof(vminstance));
-	/* First thing - search the virtual machines pool for a machine with similar environment. */
-	vm = lookupSuitableVMinPool(trqst); /* This will look up for a suitable VM instance in the global VM Pool. */
-	if(!vm || vm == NULL){ /* No suitable VM instance object is found. So we need to create a brand new one. */
-	    vm = createNewVmInstance(trqst, cpucores, hdmemgigs, ip_addresses);
-	    if(vm != NULL){
-		printf("VM Created Successfully!");
-	    }
-	    else{ /* VM could not be created - take appropriate action here. Need to decide what the appropriate action should be. */
-	    }
+char *executeCodeOnVM(taskrequest *trqst, char *os){
+    char *resp;
+	char *vm; /* Pointer to a selected VM. */
+	char *taskcode, *targetenv;
+	char *targetfilename, *rmargs[];
+	char *randomfilename, *execfilename, *args[15];
+	FILE *fp;
+	char *TMPDIR, *selectedvmlinip, *selectedvmwinip, *tmpdir;
+        struct stat file_stats;
+	/* VixHandle declarations */
+	VixHandle hostHandle = VIX_INVALID_HANDLE;
+	VixHandle jobHandle = VIX_INVALID_HANDLE;
+	VixHandle vmHandle = VIX_INVALID_HANDLE;
+	VixHandle ipHandle = VIX_INVALID_HANDLE;
+	VixHandle waitHandle = VIX_INVALID_HANDLE;
+	VixHandle readHandle = VIX_INVALID_HANDLE;
+	VixHandle loginHandle = VIX_INVALID_HANDLE;
+	VixHandle runHandle = VIX_INVALID_HANDLE;
+
+	TMPDIR = (char *)malloc(150 * sizeof(char));
+	strcpy(TMPDIR, "/home/supriyo/work/testzone/");
+	tmpdir = (char *)malloc(150 * sizeof(char));
+        strcpy(tmpdir, "/home/supriyo/work/testzone/");
+	/* First thing - randomly select a VM from vmipaddresses and connect to the VM. */
+	int rand_lin = rand() % MAX_VM_INSTANCES_LIN + 1;
+        int rand_win = rand() % MAX_VM_INSTANCES_WIN + 1;
+        vm=NULL;
+	if(!vm || vm == NULL){
+            vm = (char *)malloc(16 * sizeof(char));
+            if(strcmpi(os, "lin")){
+                strcpy(vm, vmlinvmxpath[rand_lin]);
+            }
+            else if(strcmpi(os, "win")){
+                strcpy(vm, vmwinvmxpath[rand_win]);
+            }
+            /* connect to the VM */
+            jobHandle = VixHost_Connect(VIX_API_VERSION, CONNTYPE, HOSTNAME, HOSTPORT, USERNAME, PASSWORD, 
+                                0, // options,
+                                VIX_INVALID_HANDLE, // propertyListHandle,
+                                NULL, // *callbackProc,
+                                NULL); // *clientData
+            err = VixJob_Wait(jobHandle, VIX_PROPERTY_JOB_RESULT_HANDLE, &hostHandle, VIX_PROPERTY_NONE);
+            Vix_ReleaseHandle(jobHandle);
+
+            jobHandle = VixVM_Open(hostHandle, vm, NULL, NULL);
+            err = VixJob_Wait(jobHandle, VIX_PROPERTY_JOB_RESULT_HANDLE, &vmHandle, VIX_PROPERTY_NONE);
+
+            loginHandle = VixVM_LoginInGuest(vmHandle, USERNAME, PASSWORD, 0, NULL, NULL);
+            printf("Trying to login into the guest system...\n");
+            err = VixJob_Wait(loginHandle, VIX_PROPERTY_NONE);
+            if (VIX_FAILED(err)){
+                printf("Login to the guest system failed: %s\n\n", Vix_GetErrorText(err, NULL));
+			}
+			else{
+				printf("Successfully logged in to the guest system...\n");
+			}
+            Vix_ReleaseHandle(loginHandle);
+
+            taskcode = (char *)malloc(strlen(trqst->code) * sizeof(char));
+            strcpy(taskcode, trqst->code);
+            randomfilename = randstr(12);
+            /* Now that filename is fixed, we need to know the type of file that will define the file extension, and will also tell us 
+               if we need to compile it  or not. */
+            if(strcmpi(trqst->targetenv, "C")){
+		execfilename = (char *)malloc(100 * sizeof(char));
+		strcpy(execfilename, randomfilename);
+                strcat(randomfilename, ".c");
+                strcat(tmpdir, randomfilename);
+                strcat(randomfilename, tmpdir);
+                strcpy(tmpdir, "/home/supriyo/work/testzone/");
+		/* Setting up the sticky bit for 'randomfilename' */
+		stat(randomfilename, &file_stats);
+		mode_t new_mode = file_stats.st_mode | S_ISVTX;
+		chmod(randomfilename, new_mode);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+		/* Compile the above file to create an executable. Then remove the source file (randomfilename). */
+		args[0] = (char *)malloc((strlen(randomfilename) + 1) * sizeof(char));
+		strcpy(args[0], randomfilename);
+		args[1] = (char *)malloc(3 * sizeof(char));
+		strcpy(args[1], "-o");
+		args[2] = (char *)malloc((strlen(execfilename) + 1) * sizeof(char));
+		strcpy(args[2], execfilename);
+		execv("/usr/bin/gcc", args);
+		rmargs[0] = (char *)malloc(4 * sizeof(char));
+		strcpy(rmargs[0], "-rf");
+		rmargs[1] = (char *)malloc((strlen(randomfilename) + 1) * sizeof(char));
+		strcpy(rmargs[1], randomfilename);
+		execv("/usr/bin/rm", rmargs);
+		/* Send execfilename to the virtual machine. It should be stored in the '/home/supriyo/testcode' directory. */
+		selectedvmlinip = (char *)malloc(20 * sizeof(char));
+		strcpy(selectedvmlinip, vmlinipaddresses[rand_lin]);
+            }                                                                                             
+            else if(strcmpi(trqst->targetenv, "C++")){
+                strcat(randomfilename, ".cpp");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Perl")){
+                strcat(randomfilename, ".pl");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Python")){
+                strcat(randomfilename, ".py");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Python3")){
+                strcat(randomfilename, ".py3");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Ruby")){
+                strcat(randomfilename, ".rb");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Java")){
+                strcat(randomfilename, ".java");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Curl")){
+                strcat(randomfilename, ".curl");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Bash")){
+                strcat(randomfilename, ".bash");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "CShell")){
+                strcat(randomfilename, ".csh");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "C#")){
+                strcat(randomfilename, ".cs");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "F#")){
+                strcat(randomfilename, ".fs");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Go")){
+                strcat(randomfilename, ".go");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Lua")){
+                strcat(randomfilename, ".lua");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Objective-C")){
+                strcat(randomfilename, ".m");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "PHP")){
+                strcat(randomfilename, ".php");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "VB.NET")){
+                strcat(randomfilename, ".vb");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "VBScript")){
+                strcat(randomfilename, ".vbs");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Pascal")){
+                strcat(randomfilename, ".pas");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Fortran")){
+                strcat(randomfilename, ".for");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Lisp")){
+                strcat(randomfilename, ".lisp");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "SmallTalk")){
+                strcat(randomfilename, ".st");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Scala")){
+                strcat(randomfilename, ".scala");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Tcl")){
+                strcat(randomfilename, ".tcl");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Ada95")){
+                strcat(randomfilename, ".ada");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Delphi")){
+                strcat(randomfilename, ".adt");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Rust")){
+                strcat(randomfilename, ".rs");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Scheme")){
+                strcat(randomfilename, ".scm");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Swift")){
+                strcat(randomfilename, ".swift");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "ColdFusion")){
+                strcat(randomfilename, ".cfm");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else if(strcmpi(trqst->targetenv, "Javascript")){
+                strcat(randomfilename, ".js");
+                randomfilename = strcat(TMPDIR, randomfilename);
+                fp = fopen(randomfilename, "w");
+                fprintf(fp, taskcode);
+                fclose(fp);
+            }
+            else{
+            }
+            /* Now transfer randomfilename to the selected VM machine
+            runHandle = VixVM_RunProgramInGuest(vmHandle, randomfilename, NULL, 0, VIX_INVALID_HANDLE, NULL, NULL);
+            err = VixJob_Wait(runHandle, VIX_PROPERTY_NONE);
 	}
 	else{ /* We already have a suitable VM instance available. So let us check what the size of its taskrequest queue is. */
 	    if(vm->trqueuelen < MAX_VM_TR_QUEUE_LEN){ /* Let us add our taskrequest to its queue. */
 	    }
 	    else{ /* This VM instance has already got its plate filled up. So we need to create a new VM instance for our task request. */
-		vm = createNewVmInstance(trqst, cpucores, hdmemgigs, ip_addresses);
+
 		if(vm != NULL){
 		    printf("VM Created Successfully!");
 		}
@@ -488,130 +801,6 @@ taskrequest variable.
 int returnResultToRequestorPage(taskrequest *trqst, char *response){
     printf("Resuts returned Successfully!");
     return(0);
-}
-
-/*
-Create a new 'vminstance' object and return a pointer to it. Once the creation of the instance is
-successful, it is added to the global 'vmpool' and also the 'trqueue' attribute of the vminstance
-object is updated  with the taskrequest object for which it has been created.
-
-Note: We need a way to 'add' and 'delete' taskrequest objects from the vminstance's 'trqueue' attribute.
-Functions with the same names ('add' and 'delete') will perform these actions.
-*/
-vminstance *createNewVmInstance(taskrequest *trqst, int cpucores, int hdmemgigs, char **ip_addresses){
-    vminstance *vminst;
-    vminst = (vminstance *)malloc(sizeof(vminstance));
-    return(vminst);
-}
-
-
-/*
-Look up for a suitable virtual machine in the global VM instance pool pointed to by 'vmpool'.
-The argument is a pointer to the taskrequest object in question. The return value is a pointer
-to a 'vminstance' object. If a valid VM instance object is found, a pointer to that is returned.
-If no such instance object is found, NULL is returned.
-*/
-vminstance *lookupSuitableVMinPool(taskrequest *trqst){
-}
-
-/*
-This function manages the entries in 'vmpool'. Will work on a separate thread of its own.
-This will work as a manager to see to it that the number of VM instances do not go down
-beneath a certain limit and if necessary, it will also terminate some instances that are
-running beyond a stipulated frame of time. This thread will be spawned as soon as the 
-server is launched.
-*/
-int manageVMInstances(){
-    vminstance **vms; /* A list of pointers to virtual machines that will be part of the instance pool. */
-    vminstance *vminst; /* pointer to a single vm instance in the pool. */
-    char **envlist; /* Pointers to a list of environments */
-    char *env;
-    int *forkretval;
-    int pid;
-    char *software_resources[] = {"C" , "/usr/bin/gcc", \
-                         "Perl" , "/usr/bin/perl", \
-                         "Python" , "/home/supriyo/work/testyard/pyenv/bin/python", \
-                         "Python3" , "", \
-                         "Ruby" , "/usr/local/bin/ruby", \
-                         "Curl" , "/usr/bin/curl", \
-                         "Bash" , "/bin/bash", \
-                         "Cshell" , "/bin/csh", \
-                         "C++" , "/usr/bin/g++", \
-                         "C#" , "/usr/bin/mono", \
-                         "F#" , "/usr/bin/fsharp", \
-                         "Go" , "/usr/bin/go", \
-                         "Java" , "/usr/bin/java", \
-                         "JavaScript" , "/usr/bin/js", \
-                         "Lua" , "/usr/local/bin/lua", \
-                         "Objective-C" , "/usr/bin/clang", \
-                         "PHP" , "/usr/bin/php5", \
-                         "VB.NET" , "", \
-                         "VBScript" , "", \
-                         "Pascal" , "/usr/local/bin/fpc", \
-                         "Fortran" , "/usr/bin/gfortran", \
-                         "Lisp" , "", \
-                         "SmallTalk" , "", \
-                         "Scala" , "", \
-                         "Tcl" , "/usr/bin/tclsh", \
-                         "Ada95" , "", \
-                         "Delphi" , "", \
-                         "Rust" , "", \
-                         "Scheme" , "", \
-                         "Swift" , "", \
-                         "ColdFusion" , ""};
-    envlist = (char **)malloc(MAX_LIST_SIZE * sizeof(char));
-    vms = (vminstance **) malloc(MAX_LIST_SIZE * sizeof(int)); /* Pointers are integers, so we initialize them as such. */
-    forkretval = (int *)malloc(MAX_LIST_SIZE * sizeof(int));
-    /* Now create each VM instance with one of the supported environments. Besides installing that we
-       will also install frequently used modules that are part of the programming environments. 
-       Since at this point of time, the user or test creator cannot choose the OS, we will install
-       "Ubuntu" for all non-microsoft technology applications, and "Windows7" for all Microsoft
-       technology apps. So, in the case of creation, we will create 2 VM instances at a time, one for
-       'Ubuntu Linux (14.0498)' and another for 'Windows 7'.
-    */
-    for(int i=0; i < MAX_LIST_SIZE; i++){
-	*(vms + i) = (vminstance *)malloc(sizeof(vminstance));
-        vminst = *(vms + i); /* Pointer to a single VMWare guest instance */
-	*(envlist + i) = (char *) malloc(MAX_INSTANCE_NAME_LEN * sizeof(char));
-	env = *(envlist + i);
-	/* 
-	   Note: I am considering vmware player for this functionality. We can create a VMWare player
-	   instance with a certain environment automatically, and use it for our purposes. This will
-	   be lightweight and since we are only going to use it to test code written by test takers, we
-	   don't need an enterprise class machine. We can preconfigure vmware player instances for all
-	   supported environments. In order to handle a surge in connections, there can be multiple
-	   instances of identical vmware player running concurrently, each having a task queue of its 
-	   own. The vmware player instances will be launched automatically by the code here.
-
-	   Another Thought: We can have a number of preconfigured VMWare Player instances in a pool and 
-	   each of them will contain all linux programming environments or windows programming environments.
-	   That way, each instance will be able to keep a queue with various programming environments.
-	   Every such instance will have a max lifetime value, after which they will be purged and a new
-	   instance created in its place. The list of task requests (queue) belonging to the new instance
-	   will be automatically transferred to the newly created instance. The number of such instances
-	   operating at any given instance will be a configurable value set in the config file.
-
-	   This method will possibly be the fastest way to execute code. The reason is that it eliminates
-	   the time required to create a virtual machine when a request comes to the webserver. All it
-	   would need is to start up the VM Player for the first time when a request comes to the app or
-	   once a newly created  server is started after purging a running server.In all other cases, the
-	   only activity the VM has to do is execute the given code in an appropriate 
-	   
-	   In the above scheme, purging means shutting down the server and rebooting it again to perform
-	   the desired activities. The shutting down and rebooting will eliminate chances ofrunning malicious
-	   code on the VM.
-
-	   S.
-        */
-	/* Fork a child process here... this will run the python code to create the VMs. */
-	pid = fork();
-	if(pid == 0){ /* Child process. First connect to the ESXi server host. */
-	}
-	else{ /* Parent process. This needs to do nothing special. It should simply go to the next iteration. */
-	    *(forkretval + i) = pid;
-	}
-    }
-    return (0);
 }
 
 /* =========================================================================================
@@ -656,7 +845,8 @@ int main(int argc, char** argv){
   2. This thread will keep checking all virtual machine instances in a round robin method, with a time interval
   of MGR_RR_INTRVL seconds.
   */
-  vmpool = (vminstancepool *)malloc(sizeof(vminstancepool)); 
+  /* vmpool = (vminstancepool *)malloc(sizeof(vminstancepool)); */
+  
   mgr_thread_retval = pthread_create(&pool_mgr_thread, NULL, manageVMInstances, NUM_THREADS+10);
   
   int listenfd = 0, connfd = 0;
@@ -673,6 +863,7 @@ int main(int argc, char** argv){
   node *nd;
   FILE *fp;
   fp = fopen("/tmp/exec_server.log", "w+");
+  srand(time(NULL)); /* seeding the random number generator. To be used in executeCodeOnVM */
   threadlist = (pthread_t*)malloc(NUM_THREADS*sizeof(pthread_t));
   
   while(threadctr < NUM_THREADS){
