@@ -2559,47 +2559,49 @@ def showtestcandidatemode(request):
         statement = challenge.statement
         challengetype = challenge.challengetype
         maxresponsesizeallowable = challenge.maxresponsesizeallowable
-        oftheabovePattern = re.compile("\w+\s+of\s+the\s+above", re.IGNORECASE|re.DOTALL)
+        oftheabovePattern = re.compile("\s+of\s+the\s+above", re.IGNORECASE|re.DOTALL)
         challengesdict[statement] = {'challengetype' : challengetype, 'maxresponsesizeallowable' : maxresponsesizeallowable}
-        #validoptionscount = 0
+        validoptionscount = 0
         if challengetype == 'MULT' or challengetype == 'FILB':
             if challenge.option1 and challenge.option1 != "":
                 challengesdict[statement]['option1'] = challenge.option1
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option2 and challenge.option2 != "":
                 challengesdict[statement]['option2'] = challenge.option2
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option3 and challenge.option3 != "":
                 challengesdict[statement]['option3'] = challenge.option3
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option4 and challenge.option4 != "":
                 challengesdict[statement]['option4'] = challenge.option4
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option5 and challenge.option5 != "":
                 challengesdict[statement]['option5'] = challenge.option5
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option6 and challenge.option6 != "":
                 challengesdict[statement]['option6'] = challenge.option6
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option7 and challenge.option7 != "":
                 challengesdict[statement]['option7'] = challenge.option7
-                #validoptionscount += 1
+                validoptionscount += 1
             if challenge.option8 and challenge.option8 != "":
                 challengesdict[statement]['option8'] = challenge.option8
-                #validoptionscount += 1
-            """
+                validoptionscount += 1
+            log = Logger(mysettings.LOG_PATH + "/testyard.log")
             for opt in challengesdict[statement].keys():
                 optval = challengesdict[statement][opt]
                 if type(optval) != str and type(optval) != unicode:
                     optval = str(optval)
+                log.logmessage(optval)
                 if oftheabovePattern.search(optval.encode('utf-8')):
                     tempval = challengesdict[statement][opt]
-                    lastoption = 'option' + str(validoptionscount)
+                    #lastoption = 'option' + str(validoptionscount)
+                    lastoption = 'option1'
                     challengesdict[statement][opt] = challengesdict[statement][lastoption]
                     challengesdict[statement][lastoption] = tempval
                 else:
                     pass
-            """
+            
         challengesdict[statement]['challengescore'] = challenge.challengescore
         challengesdict[statement]['negativescore'] = challenge.negativescore
         challengesdict[statement]['mustrespond'] = challenge.mustrespond

@@ -801,6 +801,8 @@ class Logger(object):
             parentdir = os.path.dirname(logfilewithpath)
             if not os.path.exists(parentdir):
                 os.makedirs(parentdir)
+        else:
+            parentdir = os.path.dirname(logfilewithpath)
         self.logfile = os.pathsep.join([parentdir, os.path.basename(logfilewithpath)])
         self.logfilehandle = open(self.logfile, 'w')
 
