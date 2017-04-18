@@ -184,7 +184,7 @@ function nomorechallenges(testname, testid, starttime, tabref, tabid){
 
 
 function testendscreen(testid, starttime, tabref, tabid){
-    alert(ruleselected);
+    //alert(ruleselected);
     if(ruleselected != 0){
         testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
     }
@@ -212,7 +212,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
     resp = confirm("This will take you away from this page by closing the window. The test will be considered as completed by you. Do you want to continue?");
     if(resp){
         testtakerdiv = document.getElementById('testtaker');
-        testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thanks you for choosing testyard to take your test.</i></font></center>";
+        testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
 	q = "&testpages=" + Base64.encode(encodeURI(JSON.stringify(testpages)));
         endtime = new Date();
         endtime = jsdatetomysqldatetime(String(endtime));
@@ -460,6 +460,9 @@ function rememberresponse(testpagesstr){
 		    testpagesparts = testpages[i][0].split("<textarea ");
 		    if(testpagesparts.length == 2){
 			valuepattern = new RegExp("value='([^\\']*)'");
+			textval = textval.replace(/quot;/g, "'");
+			textval = textval.replace(/dquot;/g, '"');
+			//valuepattern = new RegExp("value='(.*)'\\s+name");
 			testpagesparts[1] = testpagesparts[1].replace(valuepattern, " name=");
 			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
 			testpages[i][0] = testpagesparts[0] + testpagesparts[1];
@@ -1132,6 +1135,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		if(challengestatement == curchallengestatement){
 		    testpagesparts = testpages[j][0].split('<textarea ');
 		    if(testpagesparts.length >= 2){
+			//valuepattern = new RegExp("value='(.*)'\\s+name=");
 			valuepattern = new RegExp("value='([^\\']+)'");
 			//alert(textval);
 			if(testpagesparts.length > 2){
@@ -1488,7 +1492,7 @@ function code_exec(){
   repl.evaluateOnce(
     codecontent, {
     stdout: function(output) {
-      alert(output);
+      alert("AAA " + output);
     }
   }).then(
    function success(result) {
