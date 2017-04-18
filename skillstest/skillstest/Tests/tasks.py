@@ -119,16 +119,13 @@ def process_answer_scripts():
                 testpagesenc = jsondata[dk]
             else:
                 pass
-        #print testpagesenc
         missing_padding = 4 - len(testpagesenc) % 4
         padding = "=" * missing_padding
-        testpagesstr = (base64.b64decode(testpagesenc + padding)).decode('iso-8859-1')
+        testpagesstr = (base64.b64decode(testpagesenc + padding)).decode('iso-8859-1') 
         for hexkey in skillutils.hextoascii.keys():
             testpagesstr = testpagesstr.replace(hexkey, skillutils.hextoascii[hexkey])
-        #print testpagesstr
         testpages = json.loads(testpagesstr, strict=False)
         testendmessage = testpages.pop() # The last entity contains the test end message
-        #print testpages
         for challengeresp in testpages:
             testobj = Test.objects.get(id=testid)
             # First, create an UserResponse object
@@ -139,6 +136,7 @@ def process_answer_scripts():
             userrespobj.responsedatetime = starttime
             userrespobj.emailaddr = useremail
             resp = challengeresp[0]
+            #print "CHALLENGE RESPONSE: " + resp + "\n"
             timereqd = challengeresp[1]
             challengestatement = challengeresp[2]
             try:
@@ -150,12 +148,14 @@ def process_answer_scripts():
             inputdatatag, inputdata = None, ""
             # Now parse the resp variable to find the user's response
             soup = BeautifulSoup(resp)
+            #print resp
             challengetypetag = soup.find('input', {'name' : 'challengetype'})
             challengetype = challengetypetag['value']
-            #print challengestatement + " ====>> " + challengetype
             if challengetype == 'SUBJ' or challengetype == 'ALGO' or challengetype == 'CODN':
                 inputdatatag = soup.find("textarea")
                 inputdata = inputdatatag.renderContents()
+                if inputdata == "" and inputdatatag.has_key("value"):
+                    inputdata = inputdatatag["value"]
             elif challengetype == 'FILB':
                 inputdatatag = soup.find("input", {'type' : 'text'})
                 inputdata = inputdatatag['value']
