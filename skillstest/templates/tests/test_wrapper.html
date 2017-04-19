@@ -460,8 +460,8 @@ function rememberresponse(testpagesstr){
 		    testpagesparts = testpages[i][0].split("<textarea ");
 		    if(testpagesparts.length == 2){
 			valuepattern = new RegExp("value='([^\\']*)'");
-			textval = textval.replace(/quot;/g, "'");
-			textval = textval.replace(/dquot;/g, '"');
+			textval = textval.replace(/'/g,"__SINGLEQUOTE__");
+			textval = textval.replace(/"/g,"__DOUBLEQUOTE__");
 			//valuepattern = new RegExp("value='(.*)'\\s+name");
 			testpagesparts[1] = testpagesparts[1].replace(valuepattern, " name=");
 			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
