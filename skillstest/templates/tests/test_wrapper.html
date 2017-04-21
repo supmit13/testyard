@@ -459,9 +459,16 @@ function rememberresponse(testpagesstr){
 		    //alert(textval);
 		    testpagesparts = testpages[i][0].split("<textarea ");
 		    if(testpagesparts.length == 2){
-			valuepattern = new RegExp("value='([^\\']*)'");
+			//valuepattern = new RegExp("value='([^\\']*)'");
+		        valuepattern = new RegExp("value='(.*?)'\\s+name\\s*=");
+			//valuepattern = new RegExp("value='(["'])(?:(?=(\\?))\2.)*?\1'");
 			textval = textval.replace(/'/g,"__SINGLEQUOTE__");
 			textval = textval.replace(/"/g,"__DOUBLEQUOTE__");
+                        textval = textval.replace(/>/g,"__GREATERTHAN__");
+                        textval = textval.replace(/</g,"__LESSERTHAN__");
+                        textval = textval.replace(/>=/g,"__GREATERTHANEQUALTO__");
+                        textval = textval.replace(/<=/g,"__LESSERTHANEQUALTO__");
+			// In the decode function when we show the user these questions, we need to decode them too.
 			//valuepattern = new RegExp("value='(.*)'\\s+name");
 			testpagesparts[1] = testpagesparts[1].replace(valuepattern, " name=");
 			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
@@ -1670,7 +1677,7 @@ html { min-height: 400%; margin-bottom: 1px; }
 </style>
 </head>
 <body onload="javascript:decryptwrapper('####ENCJSON####');">
-<script language='JavaScript'>
+<script language="JavaScript">
 checkbrowser();
 </script>
 <div id="container">
