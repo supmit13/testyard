@@ -209,6 +209,13 @@ SAVE_OPTIONAL_INFO_URL = "skillstest/optionaluserinfo/"
 
 DETAIL_HELP_URL = "skillstest/helpndocs/detailedhelp/"
 
+ANALYTICS_URL = "skillstest/analytics/"
+GET_TESTS_BY_TOPIC_URL = "skillstest/analytics/gettestsbytopic/"
+COMPARE_WITH_TOPPERS_URL = "skillstest/analytics/comparewithtoppers/"
+COMPARE_WITH_ALL_URL = "skillstest/analytics/comparewithall/"
+COMPARE_TOPIC_SCORES_URL = "skillstest/analytics/comparetopicscores/"
+COMPARE_CHALLENGE_SCORES_URL = "skillstest/analytics/comparechallengescores/"
+
 MOBILE_VERIFY_CREDS_URL = "skillstest/mobile/verifycreds/"
 MOBILE_LIST_TESTS_INTERVIEWS_URL = "skillstest/mobile/listtestsinterviews/"
 MOBILE_TEST_CREATE_URL = "skillstest/mobile/tests/create/"
@@ -317,7 +324,7 @@ DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 byte
 BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
-LOG_PATH = "/home/ec2-user/testyard/logs"
+LOG_PATH = "/home/supriyo/work/testyard/logs"
 
 # Private groups needs the owner to allow members to be a part of it. Open groups may be joined by anyone. A hidden group will not
 # be listed by a search of the group by its name, but accessing its page will allow an user to request its owner to allow her/him in 

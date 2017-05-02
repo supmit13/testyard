@@ -452,7 +452,7 @@ def manage(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
     tests_user_dict = get_user_tests(request)
-    inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Dashboard' page for the user.
+    inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Tests' page for the user.
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
     testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()

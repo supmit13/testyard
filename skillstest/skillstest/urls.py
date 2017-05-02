@@ -138,6 +138,13 @@ urlpatterns += patterns('',
 
     url(r'%s$'%mysettings.DETAIL_HELP_URL, 'skillstest.views.detailedhelp', name='detailedhelp'),
 
+    url(r'%s$'%mysettings.ANALYTICS_URL, 'skillstest.Analytics.views.analytics', name='mainanalytics'),
+    url(r'%s$'%mysettings.GET_TESTS_BY_TOPIC_URL, 'skillstest.Analytics.views.gettestsbytopic', name='gettestsbytopic'),
+    url(r'%s$'%mysettings.COMPARE_WITH_TOPPERS_URL, 'skillstest.Analytics.views.comparewithtoppers', name='comparewithtoppers'),
+    url(r'%s$'%mysettings.COMPARE_WITH_ALL_URL, 'skillstest.Analytics.views.comparewithall', name='comparewithall'),
+    url(r'%s$'%mysettings.COMPARE_TOPIC_SCORES_URL, 'skillstest.Analytics.views.comparetopicscores', name='comparetopicscores'),
+    url(r'%s$'%mysettings.COMPARE_CHALLENGE_SCORES_URL, 'skillstest.Analytics.views.comparechallengescores',name='comparechallengescores'),
+
     url(r'%s$'%mysettings.MOBILE_VERIFY_CREDS_URL, 'skillstest.Auth.views.mobile_verifypassword', name='mobile_verifypassword'),
     url(r'%s$'%mysettings.MOBILE_LIST_TESTS_INTERVIEWS_URL, 'skillstest.Tests.views.mobile_listtestsandinterviews', name='mobile_listtestsandinterviews'),
     url(r'%s$'%mysettings.MOBILE_TEST_CREATE_URL, 'skillstest.Tests.views.mobile_createtest', name='mobile_createtest'),

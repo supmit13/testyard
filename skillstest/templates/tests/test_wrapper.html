@@ -158,6 +158,18 @@ Object.size = function(obj) {
 
 
 
+
+window.onload = function () {
+    //decrypteddata = Base64.decode(encjson);
+    //jsonobj = JSON.parse(decrypteddata);
+    //duration = jsonobj.duration;
+    duration = 600; // 10 minutes - hard coded value, should be made dynamic later on.
+    var timesecs = duration,
+        display = document.querySelector('#timestopwatch');
+    startTimer(timesecs, display);
+};
+
+
 function jsdatetomysqldatetime(jsdate){
     jsdateparts = jsdate.split(" ");
     mon = jsdateparts[1];
@@ -1686,6 +1698,7 @@ checkbrowser();
 		<h1><a href="#">TEST<span>YARD</span></a></h1>
 		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Committed to identifying the best professionals for your business...</p>
         </div>
+<!--<div align='center'><b><font color="#FF0000">Test ends in <span id="timestopwatch"></span> minutes!</font></b></div> -->
 </div>
 <span id='testtaker' class='semitranstesttaker'>
 <div class="left col" valign='middle'>
