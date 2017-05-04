@@ -70,6 +70,10 @@ def analytics(request):
     analytics_dict['comparewithallurl'] = mysettings.COMPARE_WITH_ALL_URL
     analytics_dict['comparetopicscoresurl'] = mysettings.COMPARE_TOPIC_SCORES_URL
     analytics_dict['comparechallengescoresurl'] = mysettings.COMPARE_CHALLENGE_SCORES_URL
+    analytics_dict['comparescoresmmmurl'] = mysettings.COMPARE_SCORES_MMM_URL
+    analytics_dict['comparecohorturl'] = mysettings.COMPARE_COHORT_URL
+    analytics_dict['comparesbturl'] = mysettings.COMPARE_SBT_URL
+
     inc_context = skillutils.includedtemplatevars("Test Analytics", request)
     for inc_key in inc_context.keys():
         analytics_dict[inc_key] = inc_context[inc_key]
@@ -408,12 +412,213 @@ def comparechallengescores(request):
     return response
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def comparescoresmmm(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    testinfodict = {}
+    utqset = UserTest.objects.filter(test=testobj)
+    wuqset = WouldbeUsers.objects.filter(test=testobj)
+    userfound = ""
+    testscoresdict = {}
+    testscoreslist = []
+    for utobj in utqset:
+        username = utobj.user.displayname
+        score = utobj.score
+        if testscoresdict.has_key(username):
+            if testscoresdict[username] < score:
+                testscoresdict[username] = score
+        else:
+            testscoresdict[username] = score
+        if utobj.user == userobj:
+            userfound = score
+    for wuobj in wuqset:
+        emailaddr = wuobj.emailaddr
+        score = wuobj.score
+        if testscoresdict.has_key(emailaddr):
+            if testscoresdict[emailaddr] < score:
+                testscoresdict[emailaddr] = score
+        else:
+            testscoresdict[emailaddr] = score
+        if emailaddr == useremail:
+            userfound = score
+    testscoreslist = testscoresdict.values()
+    scoresum = 0.0
+    for s in testscoreslist:
+        scoresum += s
+    smean = scoresum/testscoreslist.__len__()
+    mindx = 0
+    if testscoreslist.__len__() % 2 == 1:
+        mindx = int(testscoreslist.__len__())/2 + 1
+    testscoreslist.sort()
+    smedian = testscoreslist[mindx]
+    scoresdict = {}
+    for score in testscoreslist:
+        if scoresdict.has_key(score):
+            scoresdict[score] += 1
+        else:
+            scoresdict[score] = 1
+    maxrepeat = [ 0, 0]
+    for score in scoresdict.keys():
+        if scoresdict[score] > maxrepeat[0]:
+            maxrepeat[0] = scoresdict[score]
+            maxrepeat[1] = score
+        else:
+            pass
+    smode = maxrepeat[1]
+    if maxrepeat[0] == 1:
+        smode = 0 # No mode is available
+    testinfodict['mean'] = [userfound, smean]
+    testinfodict['median'] = [userfound, smedian]
+    testinfodict['mode'] = [userfound, smode]
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+    
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def comparecohort(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    testinfodict = {}
+    # Find out all users who have taken this test
+    testusersemaillist = []
+    utqset = UserTest.objects.filter(test=testobj)
+    wuqset = WouldbeUsers.objects.filter(test=testobj)
+    testinfodict = {}
+    for utobj in utqset:
+        useremailid = utobj.emailaddr
+        testusersemaillist.append(useremailid)
+    for wuobj in wuqset:
+        useremailid = wuobj.emailaddr
+        testusersemaillist.append(useremailid)
+    # So we now have all users (their email Ids in fact), who have taken this test
+    # Now lets find out what tests each of the users have taken.
+    for emailid in testusersemaillist:
+        utqset2 = UserTest.objects.filter(emailaddr=emailid)
+        for utobj2 in utqset2:
+            try:
+                tname = utobj2.test.testname
+            except:
+                continue
+                #return HttpResponse(sys.exc_info()[1].__str__() + tname) # Test matching query does not exist
+            if testinfodict.has_key(tname):
+                testinfodict[tname] += 1
+            else:
+                testinfodict[tname] = 1
+        wuqset2 = WouldbeUsers.objects.filter(emailaddr=emailid)
+        for wuobj2 in wuqset2:
+            testname = wuobj2.test.testname
+            if testinfodict.has_key(testname):
+                testinfodict[testname] += 1
+            else:
+                testinfodict[testname] = 1
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+    
 
 
-
-
-
-
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def comparesbt(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    testinfodict = {}
 
 

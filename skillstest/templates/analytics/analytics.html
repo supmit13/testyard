@@ -1,9 +1,68 @@
 	{% include "inc/html_head.html" %}
 	
 	{% include "inc/mission_statement.html" %}
+	   <style>
+
+		.container { position: relative; }
+			  .imageView { border: 1px solid #0000AA; }
+			</style>
+
+		<style>
+			  ul.tab {
+		    list-style-type: none;
+		    margin: 0;
+		    padding: 0;
+		    overflow: hidden;
+		    border: 1px solid #ccc;
+		    background-color: #f1f1f1;
+		}
+		/* Float the list items side by side */
+		ul.tab li {float: left;}
+
+		/* Style the links inside the list items */
+		ul.tab li a {
+		    display: inline-block;
+		    color: black;
+		    text-align: center;
+		    padding: 14px 16px;
+		    text-decoration: none;
+		    transition: 0.3s;
+		    font-size: 17px;
+		}
+
+		/* Change background color of links on hover */
+		ul.tab li a:hover {background-color: #ddd;}
+
+		/* Create an active/current tablink class */
+		ul.tab li a:focus, .active {background-color: #ccc;}
+
+		/* Style the tab content */
+		.tabcontent {
+		    display: none;
+		    padding: 6px 12px;
+		    border: 1px solid #ccc;
+		    border-top: none;
+		}
+	   </style>
 	   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
            <script type='text/javascript'>
+
+		function openTab(evt, dataName){
+		  var i, tabcontent, tablinks;
+		  tabcontent = document.getElementsByClassName("tabcontent");
+		  for (i = 0; i < tabcontent.length; i++) {
+		    tabcontent[i].style.display = "none";
+		  }
+		  tablinks = document.getElementsByClassName("tablinks");
+		  for (i = 0; i < tablinks.length; i++) {
+		    tablinks[i].className = tablinks[i].className.replace(" active", "");
+		  }
+		  document.getElementById(dataName).style.display = "block";
+		  evt.currentTarget.className += " active";
+	       }
+
+
 	        google.charts.load('current', {'packages':['bar']});
 
 		function display_tests(){
@@ -25,6 +84,17 @@
   		    };
   		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
   		    xmlhttp.send(postdata);
+		}
+
+
+		function displaynote(){
+		    notesdiv = document.getElementById('notes');
+		    if(document.frmanalytics.analytic_technique.options[document.frmanalytics.analytic_technique.options.selectedIndex].value == "comp_mmm"){
+			notesdiv.innerHTML = "<font color='#AA0000' size=-1>Disclaimer: The values and displays for this analytic are only relevant when test sessions of most of the test takers have been evaluated. If not, the values and plots for this analytic are meaningless.</font>";
+		    }
+		    else{
+			notesdiv.innerHTML = "";
+		    }
 		}
 
     		function display_plot(){
@@ -59,6 +129,12 @@
 			}
 			else if(analytic_technique == "comp_chlg"){
 			    headers = [ 'Challenge', 'My Score', 'Max Score' ];
+			}
+			else if(analytic_technique == "comp_mmm"){
+			    headers = [ 'Statname',  'My Score', 'Stat Score' ];
+			}
+			else if(analytic_technique == "comp_cohort"){
+			    headers = [ 'testname',  'Candidates Count' ];
 			}
   			chartdata[0] = headers;
 			if(analytic_technique == "comp_topper"){
@@ -142,6 +218,46 @@
 			        bars: 'vertical'
 			    };
 			}
+			else if(analytic_technique == "comp_mmm"){
+			    statname = "";
+			    i = 1;
+		    	    for (statname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(statname)){
+       			            score = chartdataobj[statname];
+				    myscore = score[0];
+				    statscore = score[1];
+			            scoredata = [statname, parseFloat(myscore), parseFloat(statscore) ];
+			            chartdata[i] = scoredata;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Statistical Scores in a Test',
+			    	    subtitle: 'Statistical scores in selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_cohort"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Cohort Analysis',
+			    	    subtitle: 'Cohort Analysis for users of a selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
 			var data = google.visualization.arrayToDataTable(chartdata);
 			var chart = new google.charts.Bar(displaydata);
 			chart.draw(data, google.charts.Bar.convertOptions(options));
@@ -159,6 +275,15 @@
 		    else if(analytic_technique == "comp_chlg"){
 			xmlhttp.open("POST", '{{ comparechallengescoresurl }}', true);
 		    }
+		    else if(analytic_technique == "comp_mmm"){
+			xmlhttp.open("POST", '{{ comparescoresmmmurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_cohort"){
+			xmlhttp.open("POST", '{{ comparecohorturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_sbt"){
+			xmlhttp.open("POST", '{{ comparesbturl }}', true);
+		    }
   		    xmlhttp.send(postdata);
 		}
 	   </script>
@@ -170,18 +295,28 @@
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<form name='frmanalytics'>
+			<ul class="tab" style="white-space:nowrap;width:900px">
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
+			  <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'interviewsattended')">Interviews Attended</a></li>
+                        </ul>
+			<div id='testsascandidate' style="display:block" class="tabcontent">
 			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
 			<tr>
 			    <td width='30%' valign='top'><span>
 			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
-			    <select name='analytic_technique'>
+			    <select name='analytic_technique' onchange='javascript:displaynote();'>
 				<option value='comp_topper'>Compare with toppers (should select a single test topic)</option>
 				<option value='comp_all'>Compare with all (should select a single test after selecting topic)</option>
 				<option value='comp_cats'>Compare your scores on a topic (should select a single test topic)</option>
 				<option value='comp_chlg'>Compare your scores by challenge with topper(should select a single test)</option>
-				<option value='comp_median'>Compare the mean scores of all test topics</option>
-				<option value='comp_stdvar'>Display standard deviation (should select a single test topic)</option>
+				<option value='comp_mmm'>Compare mean, median and mode of all scores in a test (select a test)</option>
+				<option value='comp_cohort'>Other tests taken by users who took the selected test (select a test)</option>
+				<option value='comp_sbt'>Tests scores (under selected topic) against time (select a topic)</option>
 			    </select>
+			    <div id='notes'></div>
 			    <br /><br />
 			    <font color='#00BB00'><b>Select a Skill Topic:</b></font>
 			    <select name='test_cat' onChange='javascript:display_tests();'>
@@ -201,6 +336,15 @@
 			    </td>
 			</tr>
 			</table>
+			</div>
+			<div id='testsascreator' style="display:block" class="tabcontent">
+			</div>
+			<div id='testsasevaluator' style="display:block" class="tabcontent">
+			</div>
+			<div id='testsasinterviewer' style="display:block" class="tabcontent">
+			</div>
+			<div id='testsasinterviewee' style="display:block" class="tabcontent">
+			</div>
 			{% csrf_token %}
 			</form>
 			</div>
