@@ -73,6 +73,10 @@ def analytics(request):
     analytics_dict['comparescoresmmmurl'] = mysettings.COMPARE_SCORES_MMM_URL
     analytics_dict['comparecohorturl'] = mysettings.COMPARE_COHORT_URL
     analytics_dict['comparesbturl'] = mysettings.COMPARE_SBT_URL
+    analytics_dict['compareppturl'] = mysettings.COMPARE_PPT_URL
+    analytics_dict['comparettperfurl'] = mysettings.COMPARE_TTPERF_URL
+    analytics_dict['compareperfturl'] = mysettings.COMPARE_PERFT_URL
+    analytics_dict['comparepassfailurl'] = mysettings.COMPARE_PASSFAIL_URL
 
     inc_context = skillutils.includedtemplatevars("Test Analytics", request)
     for inc_key in inc_context.keys():
@@ -544,17 +548,25 @@ def comparecohort(request):
         response = HttpResponse(message)
         return response
     testobj = Test.objects.get(id=testid)
-    testinfodict = {}
     # Find out all users who have taken this test
     testusersemaillist = []
     utqset = UserTest.objects.filter(test=testobj)
     wuqset = WouldbeUsers.objects.filter(test=testobj)
     testinfodict = {}
+    uniqemailiddict = {}
     for utobj in utqset:
         useremailid = utobj.emailaddr
+        if uniqemailiddict.has_key(useremailid):
+            continue
+        else:
+            uniqemailiddict[useremailid] = 1
         testusersemaillist.append(useremailid)
     for wuobj in wuqset:
         useremailid = wuobj.emailaddr
+        if uniqemailiddict.has_key(useremailid):
+            continue
+        else:
+            uniqemailiddict[useremailid] = 1
         testusersemaillist.append(useremailid)
     # So we now have all users (their email Ids in fact), who have taken this test
     # Now lets find out what tests each of the users have taken.
@@ -612,13 +624,241 @@ def comparesbt(request):
         message = "Required parameter (test_topic) missing."
         response = HttpResponse(message)
         return response
-    if request.POST.has_key('testid'):
-        testid = request.POST['testid']
+    testinfodict = {}
+    # Get all tests taken by this user
+    allurqset = UserResponse.objects.filter(emailaddr=useremail)
+    uniqtestsdict = {}
+    for urobj in allurqset:
+        if urobj.test.topicname != test_topic and urobj.test.topic.topicname != test_topic:
+            continue
+	if uniqtestsdict.has_key(urobj.test.testname):
+	    continue
+        testobj = urobj.test
+	uniqtestsdict[testobj.testname] = 1
+	utqset = UserTest.objects.filter(test=testobj, user=userobj)
+	utobj = None
+	if utqset.__len__() > 0:
+	    utobj = utqset[0]
+	else:
+	    continue
+        testtime = utobj.starttime
+        if not testtime: # Test has not been started yet. We do not consider these tests
+            continue
+        mon = str(testtime.month)
+        day = str(testtime.day)
+        hour = str(testtime.hour)
+        minute = str(testtime.minute)
+        second = str(testtime.second)
+        if mon.__len__() < 2:
+            mon = '0' + mon
+        if day.__len__() < 2:
+            day = '0' + day
+        if hour.__len__() < 2:
+            hour = '0' + hour
+        if minute.__len__() < 2:
+            minute = '0' + minute
+        if second.__len__() < 2:
+            second = '0' + second
+        testtime_str = str(testtime.year) + "-" + mon + "-" + day + " " + hour + ":" + minute + ":" + second
+	testscore = utobj.score
+	testinfodict[testobj.testname] = [testtime_str, testscore ]
+	wuqset = WouldbeUsers.objects.filter(test=testobj, emailaddr=useremail)
+        wuobj = None
+	if wuqset.__len__() > 0:
+	    wuobj = wuqset[0]
+	else:
+	    continue
+        testtime = wuobj.starttime
+        if not testtime: # Test has not been started yet. We do not consider these tests.
+            continue
+        mon = str(testtime.month)
+        day = str(testtime.day)
+        hour = str(testtime.hour)
+        minute = str(testtime.minute)
+        second = str(testtime.second)
+        if mon.__len__() < 2:
+            mon = '0' + mon
+        if day.__len__() < 2:
+            day = '0' + day
+        if hour.__len__() < 2:
+            hour = '0' + hour
+        if minute.__len__() < 2:
+            minute = '0' + minute
+        if second.__len__() < 2:
+            second = '0' + second
+        testtime_str = str(testtime.year) + "-" + mon + "-" + day + " " + hour + ":" + minute + ":" + second
+	testscore = wuobj.score
+	testinfodict[testobj.testname] = [testtime_str, testscore ]
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def comparescoreperc(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
     else:
-        message = "Required parameter (testid) missing."
+        message = "Required parameter (analytic_technique) missing."
         response = HttpResponse(message)
         return response
-    testobj = Test.objects.get(id=testid)
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
     testinfodict = {}
+    # First, get all tests taken by the user in ascending order of the 'starttime' field in UserTest and WouldbeUsers models.
+    try:
+        utqset = UserTest.objects.filter(user=userobj, test__topicname=test_topic, starttime__isnull = False).order_by('starttime')
+        wbuqset = WouldbeUsers.objects.filter(emailaddr=useremail, test__topicname=test_topic, starttime__isnull = False).order_by('starttime')
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    # Sanitize the data
+    utlist = list(utqset)
+    wbulist = list(wbuqset)
+    ctr = 0
+    while ctr < utlist.__len__():
+        if utlist[ctr].starttime == "":
+            utlist.pop(ctr)
+        ctr += 1
+    ctr = 0
+    while ctr < wbulist.__len__():
+        if wbulist[ctr].starttime == "":
+            wbulist.pop(ctr)
+        ctr += 1
+    # Now, we take the earliest date/time and the current date/time and divide the time range in periods of 1 month duration.
+    if utlist.__len__() == 0 and wbulist.__len__() == 0:
+        message = "There is no data available to plot this statistic."
+        response = HttpResponse(message)
+        return response
+    elif utlist.__len__() == 0 and wbulist.__len__() > 0:
+        utlist = wbulist
+    elif utlist.__len__() > 0 and wbulist.__len__() == 0:
+        wbulist = utlist
+    t01, t02 = "", ""
+    if utlist.__len__() > 0:
+        t01 = utlist[0].starttime
+    if wbulist.__len__() > 0:
+        t02 = wbulist[0].starttime
+    curdatetime = datetime.datetime.now()
+    t01 = str(t01).split("+")[0]
+    t02 = str(t02).split("+")[0]
+    try:
+        t01_d = datetime.datetime.strptime(t01, '%Y-%m-%d %H:%M:%S')
+        t02_d = datetime.datetime.strptime(t02, '%Y-%m-%d %H:%M:%S')
+        timeperiods = []
+        t0 = t02_d
+        if t01_d < t02_d:
+            t0 = t01_d
+        t = t0
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    while t < curdatetime:
+        try:
+            mon = t.month
+            year = t.year
+            if(str(mon).__len__() < 2):
+                mon = '0' + str(mon)
+            timetuple = (str(mon), str(year))
+            timeperiods.append(timetuple)
+            mon = int(mon) + 1
+            if mon == 13:
+                mon = '01'
+                year = year + 1
+            if str(mon).__len__() < 2:
+                mon = "0" + str(mon)
+            tstr = str(year) + "-" + str(mon) + "-01 00:00:00"
+            t = datetime.datetime.strptime(tstr, '%Y-%m-%d %H:%M:%S')
+        except:
+            HttpResponse(sys.exc_info()[1].__str__())
+    for period in timeperiods:
+        monbyyear = str(period[0]) + "/" + str(period[1])
+        testinfodict[monbyyear] = 0
+    percentagedict = {}
+    for utobj in utlist:
+        score = utobj.score
+        maxscore = utobj.test.maxscore
+        uttime = str(utobj.starttime)
+        uttimeparts = uttime.split(" ")
+        if uttimeparts.__len__() < 1:
+            continue
+        uttimedateparts = uttimeparts[0].split("-")
+        mon = str(uttimedateparts[1])
+        year = str(uttimedateparts[0])
+        if mon.__len__() < 2:
+            mon = '0' + mon
+        percentage = (float(score)/float(maxscore)) * 100
+        monbyyear = mon + "/" + year
+        if percentagedict.has_key(monbyyear):
+            percentagedict[monbyyear].append(percentage)
+        else:
+            percentagedict[monbyyear] = [percentage ]
+    for wbuobj in wbulist:
+        score = wbuobj.score
+        maxscore = wbuobj.test.maxscore
+        wbutime = str(wbuobj.starttime)
+        wbutimeparts = wbutime.split(" ")
+        if wbutimeparts.__len__() < 1:
+            continue
+        wbutimedateparts = wbutimeparts[0].split("-")
+        mon = str(wbutimedateparts[1])
+        year = str(wbutimedateparts[0])
+        if mon.__len__() < 2:
+            mon = '0' + mon
+        percentage = (float(score)/float(maxscore)) * 100
+        monbyyear = mon + "/" + year
+        if percentagedict.has_key(monbyyear):
+            percentagedict[monbyyear].append(percentage)
+        else:
+            percentagedict[monbyyear] = [percentage ]
+    for period in testinfodict.keys():
+        if percentagedict.has_key(period):
+            perclist = percentagedict[period]
+            count = perclist.__len__()
+            percsum = 0
+            for perc in perclist:
+                percsum += perc
+            percentageval = float(percsum)/count
+            testinfodict[period] = percentageval
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+    
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def comparettperf(request):
+    pass
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def compareperft(request):
+    pass
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def comparepassfail(request):
+    pass

@@ -2,10 +2,9 @@
 	
 	{% include "inc/mission_statement.html" %}
 	   <style>
-
 		.container { position: relative; }
-			  .imageView { border: 1px solid #0000AA; }
-			</style>
+	        .imageView { border: 1px solid #0000AA; }
+	    </style>
 
 		<style>
 			  ul.tab {
@@ -63,7 +62,12 @@
 	       }
 
 
-	        google.charts.load('current', {'packages':['bar']});
+	        google.charts.load('current', {'packages':['bar', 'scatterchart']});
+
+		function showStatHelp(){
+		    examplediv = document.getElementById('example');
+		    // Display help explanation and example for every statistic served on this page.
+		}
 
 		function display_tests(){
 		   var xmlhttp; 
@@ -87,6 +91,49 @@
 		}
 
 
+		function creator_display_tests(){
+		   var xmlhttp;
+		   if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		   }
+		   else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		   }
+		   ttopic = document.frmanalytics.creator_test_cat.options[document.frmanalytics.creator_test_cat.options.selectedIndex].value;
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        testsdiv = document.getElementById('creator_testnames');
+			testsdiv.innerHTML = xmlhttp.responseText;
+			document.frmanalytics.creator_btndisplay.disabled= false;
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
+  		    xmlhttp.send(postdata);
+		}
+
+		function evaluator_display_tests(){
+		   var xmlhttp;
+		   if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		   }
+		   else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		   }
+		   ttopic = document.frmanalytics.evaluator_test_cat.options[document.frmanalytics.evaluator_test_cat.options.selectedIndex].value;
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        testsdiv = document.getElementById('evaluator_testnames');
+			testsdiv.innerHTML = xmlhttp.responseText;
+			document.frmanalytics.evaluator_btndisplay.disabled= false;
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
+  		    xmlhttp.send(postdata);
+		}
+
+
 		function displaynote(){
 		    notesdiv = document.getElementById('notes');
 		    if(document.frmanalytics.analytic_technique.options[document.frmanalytics.analytic_technique.options.selectedIndex].value == "comp_mmm"){
@@ -100,6 +147,7 @@
     		function display_plot(){
 		    analytic_technique = document.frmanalytics.analytic_technique.options[document.frmanalytics.analytic_technique.options.selectedIndex].value;
 		    ttopic = document.frmanalytics.test_cat.options[document.frmanalytics.test_cat.options.selectedIndex].value;
+		    //alert(document.frmanalytics.test_cat.options.selectedIndex);
 		    var xmlhttp; 
 		    if (window.XMLHttpRequest){
 		        xmlhttp=new XMLHttpRequest();
@@ -108,7 +156,12 @@
 		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		    }
 		    postdata = "";
+                    //nodataflag = 1;
  		    //alert(analytic_technique);
+		    if(!document.frmanalytics.usertests || !document.frmanalytics.usertests.options){
+			alert("The screen needs to be refreshed to plot the new data. Please click Ok to continue.");
+			location.reload();
+		    }
 		    testid = document.frmanalytics.usertests.options[document.frmanalytics.usertests.options.selectedIndex].value;
 		    postdata += "analytic_technique=" + analytic_technique + "&test_topic=" + ttopic + "&testid=" + testid + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
 		    //alert(postdata);
@@ -136,6 +189,21 @@
 			else if(analytic_technique == "comp_cohort"){
 			    headers = [ 'testname',  'Candidates Count' ];
 			}
+			else if(analytic_technique == "comp_sbt"){
+    			    headers = [ 'Time', 'Score' ];
+			}
+			else if(analytic_technique == "comp_ppt"){
+			    headers = [ 'Period', 'Score %' ];
+			}
+			else if(analytic_technique == "comp_ttperf"){
+			    headers = [ 'Time', 'Pass %' ];
+			}
+			else if(analytic_technique == "comp_perft"){
+			    headers = [ 'Time', 'Pass %' ];
+			}
+			else if(analytic_technique == "comp_passfail"){
+			    headers = [ 'Time', 'Pass %' ];
+			}
   			chartdata[0] = headers;
 			if(analytic_technique == "comp_topper"){
 			    // chartdataobj is an associative array... iterate over it.
@@ -148,6 +216,7 @@
 			            maxscore = scores[1];
 			            scoredata = [testname, parseFloat(myscore), parseFloat(maxscore) ];
 			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
 			            i++;
     			        }
 		    	    }
@@ -167,6 +236,7 @@
 				    score = chartdataobj[username];
 				    scoredata = [ username, parseFloat(score) ];
 				    chartdata[i] = scoredata;
+				    //nodataflag = 0;
 				    i++;
 				}
 			    }
@@ -186,6 +256,7 @@
        			            score = chartdataobj[testname];
 			            scoredata = [testname, parseFloat(score) ];
 			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
 			            i++;
     			        }
 		    	    }
@@ -207,6 +278,7 @@
 				    maxscore = score[1];
 			            scoredata = [challenge, parseFloat(myscore), parseFloat(maxscore) ];
 			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
 			            i++;
     			        }
 		    	    }
@@ -228,6 +300,7 @@
 				    statscore = score[1];
 			            scoredata = [statname, parseFloat(myscore), parseFloat(statscore) ];
 			            chartdata[i] = scoredata;
+				    //nodataflag  0;
 			            i++;
     			        }
 		    	    }
@@ -247,6 +320,7 @@
        			            count = chartdataobj[testname];
 			            scoredata = [testname, parseFloat(count) ];
 			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
 			            i++;
     			        }
 		    	    }
@@ -258,9 +332,92 @@
 			        bars: 'vertical'
 			    };
 			}
-			var data = google.visualization.arrayToDataTable(chartdata);
-			var chart = new google.charts.Bar(displaydata);
-			chart.draw(data, google.charts.Bar.convertOptions(options));
+			else if(analytic_technique == "comp_sbt"){
+			    testname = "";
+			    i = 1;
+			    minval = 0;
+			    maxval = 0;
+			    dateslist = Array();
+			    for (testname in chartdataobj){
+				scorelist = chartdataobj[testname];
+				timedata = scorelist[0];
+				dateslist.push(timedata);
+			    }
+			    dateslist.sort();
+			    for (testname in chartdataobj){
+				if (chartdataobj.hasOwnProperty(testname)){
+				    score = chartdataobj[testname];
+					if(minval > score[1]){
+					    minval = score[1];
+					}
+					if(maxval < score[1]){
+					    maxval = score[1];
+					}
+					datetime = chartdataobj[testname][0];
+				    scoredata = [datetime, parseFloat(score[1]) ];
+				    chartdata[i] = scoredata;
+				    //nodataflag = 0;
+				    i++;
+				}
+			    }
+			    //chartdata_sorted = Array();
+			    //var j = 0;
+			    //for (timedata in dateslist){
+			    //   for(var k=0;k < chartdata.length;k++){
+			    //	    if(timedata == chartdata[k][0]){
+			    //		chartdata_sorted[j] = [timedata, chartdata[k][1]];
+			    //		j++;
+			    //	    }
+			    //	}
+		 	    //}
+			    var options = {
+				  title: 'Time wise tests',
+				  hAxis: {title: 'Time', minValue: chartdata[0], maxValue: chartdata[chartdata.length - 1], textStyle : {color: '0000FF', fontSize : 8}, gridlines: {units :{months : {format: 'M/d/yyyy'}}, count: 10}},
+			      vAxis: {title: 'Score', minValue: minval - 1, maxValue: maxval + 1},
+				  legend: 'none',
+				  colors:['blue','#004411']
+				  
+				};
+			}
+			else if(analytic_technique == "comp_ppt"){
+			    period = "";
+			    i = 1;
+		    	    for (period in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(period)){
+       			            percentage = chartdataobj[period];
+			            scoredata = [period, parseFloat(percentage) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Average Percentage Scores',
+			    	    subtitle: 'Average of percentage scores in 1 month time periods',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_ttperf"){
+			}
+			else if(analytic_technique == "comp_perft"){
+			}
+			else if(analytic_technique == "comp_passfail"){
+			}
+			//if(nodataflag){
+			    //displaydata.innerHTML = "<font color='#AA0000' style='bold'>There is no data for the selected plot variables.</font>";
+			//}
+			if (analytic_technique == "comp_sbt"){
+			    var data = google.visualization.arrayToDataTable(chartdata);
+			    var chart = new google.visualization.ScatterChart(document.getElementById('displaydata'));
+			    chart.draw(data, options);
+			}
+			else{
+			    var data = google.visualization.arrayToDataTable(chartdata);
+			    var chart = new google.charts.Bar(displaydata);
+			    chart.draw(data, google.charts.Bar.convertOptions(options));
+			}
   		    }
   		    };
 		    if(analytic_technique == "comp_topper"){
@@ -283,6 +440,18 @@
 		    }
 		    else if(analytic_technique == "comp_sbt"){
 			xmlhttp.open("POST", '{{ comparesbturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_ppt"){
+			xmlhttp.open("POST", '{{ compareppturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_ttperf"){
+			xmlhttp.open("POST", '{{ comparettperfurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_perft"){
+			xmlhttp.open("POST", '{{ compareperfturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_passfail"){
+			xmlhttp.open("POST", '{{ comparepassfailurl }}', true);
 		    }
   		    xmlhttp.send(postdata);
 		}
@@ -315,6 +484,10 @@
 				<option value='comp_mmm'>Compare mean, median and mode of all scores in a test (select a test)</option>
 				<option value='comp_cohort'>Other tests taken by users who took the selected test (select a test)</option>
 				<option value='comp_sbt'>Tests scores (under selected topic) against time (select a topic)</option>
+				<option value='comp_ppt'>Scores in percentage over time (under a selected topic)</option>
+				<option value='comp_ttperf'>Performance on different challenge types (under a topic)</option>
+				<option value='comp_perft'>Performance in tests under a given topic against time (select topic)</option>
+				<option value='comp_passfail'>Pass and Fail in tests under a given topic against time (select topic)</option>
 			    </select>
 			    <div id='notes'></div>
 			    <br /><br />
@@ -337,9 +510,75 @@
 			</tr>
 			</table>
 			</div>
-			<div id='testsascreator' style="display:block" class="tabcontent">
+			<div id='testsascreator' style="" class="tabcontent">
+			 
+			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
+			<tr>
+			    <td width='30%' valign='top'><span>
+			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
+			    <select name='creator_analytic_technique' onchange='javascript:creator_displaynote();'>
+				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
+				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
+				<option value='creator_show_testtimes'>Times at which selected test has been taken by candidates</option>
+				<option value='creator_comp_mmm'>Max, Min, Mean, Median and Mode of scores of selected test(s)</option>
+				<option value='creator_comp_testusage'>Pie chart to display test usages in selected topic</option>
+				<option value='creator_comp_cohort'>Other tests taken by users who took the selected test</option>
+				
+			    </select>
+			    <div id='creator_notes'></div>
+			    <br /><br />
+			    <font color='#00BB00'><b>Select a Skill Topic:</b></font>
+			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();'>
+				<option value='' selected>Click to select topic</option>
+				{% for ttopic in test_topics %}
+				<option value='{{ttopic}}'>{{ttopic}}</option>
+				{%  endfor %}
+			    </select>
+			    <br /><br />
+			    <div id='creator_testnames'></div>
+			    <br /><br />
+			    <input type='button' name='creator_btndisplay' value='Display' onclick='javascript:creator_display_plot();' disabled=true>
+			    </span></td>
+			    <td width='70%'>
+				<div id='creator_displaydata' style="width: 900px; height: 500px;">
+				</div>
+			    </td>
+			</tr>
+			</table>
+			
 			</div>
-			<div id='testsasevaluator' style="display:block" class="tabcontent">
+			<div id='testsasevaluator' style="" class="tabcontent">
+			  <table border='0' width='100%' cellspacing='2' cellpadding='4'>
+			<tr>
+			    <td width='30%' valign='top'><span>
+			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
+			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();'>
+				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
+				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.</option>
+				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.</option>
+				<option value='evaluator_ans_eval_all_topics_by_time'>Plot of answer scripts evaluated for each topic over a span of time</option>
+				<option value='evaluator_perc_pass_fail_pie'>Percentage of candidates passed and failed in a topic or test (pie chart)</option>
+			    </select>
+			    <div id='evaluator_notes'></div>
+			    <br /><br />
+			    <font color='#00BB00'><b>Select a Skill Topic:</b></font>
+			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();'>
+				<option value='' selected>Click to select topic</option>
+				{% for ttopic in test_topics %}
+				<option value='{{ttopic}}'>{{ttopic}}</option>
+				{%  endfor %}
+			    </select>
+			    <br /><br />
+			    <div id='evaluator_testnames'></div>
+			    <br /><br />
+			    <input type='button' name='evaluator_btndisplay' value='Display' onclick='javascript:evaluator_display_plot();' disabled=true>
+			    </span></td>
+			    <td width='70%'>
+				<div id='displaydata' style="width: 900px; height: 500px;">
+				</div>
+			    </td>
+			</tr>
+			</table>
 			</div>
 			<div id='testsasinterviewer' style="display:block" class="tabcontent">
 			</div>
@@ -348,6 +587,7 @@
 			{% csrf_token %}
 			</form>
 			</div>
+			<div id='example'><font color='#00AA00' size=-1><a href='#' onClick='javascript:showStatHelp();'>What does this statistic mean?</a></font></div>
 			</span>
 		</div>
 		
