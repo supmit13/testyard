@@ -146,8 +146,11 @@ def network(request):
         if not groupsdict.has_key(groupmember.group.id):
             groupsdict[groupmember.group.id] = groupmember.group.groupname
     usertestqset = UserTest.objects.filter(user=userobj).distinct()
-    for utobj in usertestqset:
-        testtakersdict[utobj.test.id] = utobj.test.testname
+    try:
+        for utobj in usertestqset:
+            testtakersdict[utobj.test.id] = utobj.test.testname
+    except:
+        pass
     alltopicsdict = {}
     for topic in mysettings.TEST_TOPICS:
         topicunderscored = topic.replace(" ", "_")

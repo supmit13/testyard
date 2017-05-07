@@ -167,8 +167,11 @@ def get_user_tests(request):
         usertestqset = WouldbeUsers.objects.filter(user=userobj)
     testlist_ascandidate = []
     tests_candidate_ordered_createdate = []
-    for usertest in usertestqset:
-        testlist_ascandidate.append(usertest.test)
+    try:
+        for usertest in usertestqset:
+            testlist_ascandidate.append(usertest.test)
+    except:
+        pass
     user_candidate_other_creator_evaluator_dict = {}
     for test in testlist_ascandidate:
         testcreator = test.creator
