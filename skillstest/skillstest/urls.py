@@ -151,6 +151,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.COMPARE_TTPERF_URL, 'skillstest.Analytics.views.comparettperf', name='comparettperf'),
     url(r'%s$'%mysettings.COMPARE_PERFT_URL, 'skillstest.Analytics.views.compareperft', name='compareperft'),
     url(r'%s$'%mysettings.COMPARE_PASSFAIL_URL, 'skillstest.Analytics.views.comparepassfail', name='comparepassfail'),
+    url(r'%s$'%mysettings.CREATOR_COMPSCORE_URL, 'skillstest.Analytics.views.creatorcompscores', name='creatorcompscores'),
 
     url(r'%s$'%mysettings.MOBILE_VERIFY_CREDS_URL, 'skillstest.Auth.views.mobile_verifypassword', name='mobile_verifypassword'),
     url(r'%s$'%mysettings.MOBILE_LIST_TESTS_INTERVIEWS_URL, 'skillstest.Tests.views.mobile_listtestsandinterviews', name='mobile_listtestsandinterviews'),

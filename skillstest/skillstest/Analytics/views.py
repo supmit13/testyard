@@ -77,6 +77,7 @@ def analytics(request):
     analytics_dict['comparettperfurl'] = mysettings.COMPARE_TTPERF_URL
     analytics_dict['compareperfturl'] = mysettings.COMPARE_PERFT_URL
     analytics_dict['comparepassfailurl'] = mysettings.COMPARE_PASSFAIL_URL
+    analytics_dict['creatorcompscoreurl'] = mysettings.CREATOR_COMPSCORE_URL
 
     inc_context = skillutils.includedtemplatevars("Test Analytics", request)
     for inc_key in inc_context.keys():
@@ -787,7 +788,7 @@ def comparescoreperc(request):
             tstr = str(year) + "-" + str(mon) + "-01 00:00:00"
             t = datetime.datetime.strptime(tstr, '%Y-%m-%d %H:%M:%S')
         except:
-            HttpResponse(sys.exc_info()[1].__str__())
+            return HttpResponse(sys.exc_info()[1].__str__())
     for period in timeperiods:
         monbyyear = str(period[0]) + "/" + str(period[1])
         testinfodict[monbyyear] = 0
@@ -847,18 +848,222 @@ def comparescoreperc(request):
 @skillutils.session_location_match
 @csrf_protect
 def comparettperf(request):
-    pass
-
-
-@skillutils.is_session_valid
-@skillutils.session_location_match
-@csrf_protect
-def compareperft(request):
-    pass
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    testinfodict = {}
+    testtypes = {}
+    try:
+        for k,v in mysettings.TEST_TYPES.iteritems():
+            testtypes[k] = v
+        for chtype in testtypes.keys():
+            urespqset = UserResponse.objects.filter(emailaddr=useremail, test__topicname=test_topic, challenge__challengetype=chtype)
+            for urespobj in urespqset:
+                maxscore = urespobj.challenge.challengescore
+                obtainedscore = urespobj.evaluation
+                if testinfodict.has_key(chtype):
+                    scorelist= testinfodict[chtype]
+                    scorelist[0] += obtainedscore
+                    scorelist[1] += maxscore
+                    testinfodict[chtype] = scorelist
+                else:
+                    testinfodict[chtype] = [obtainedscore, maxscore]
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
 
 
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
 def comparepassfail(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    testinfodict = {}
+    try:
+        utqset = UserTest.objects.filter(user=userobj, test__topicname=test_topic, starttime__isnull = False, outcome__isnull=False).order_by('starttime')
+        wbuqset = WouldbeUsers.objects.filter(emailaddr=useremail, test__topicname=test_topic, starttime__isnull = False, outcome__isnull=False).order_by('starttime')
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    # Sanitize the data
+    utlist = list(utqset)
+    wbulist = list(wbuqset)
+    ctr = 0
+    while ctr < utlist.__len__():
+        if utlist[ctr].starttime == "":
+            utlist.pop(ctr)
+        ctr += 1
+    ctr = 0
+    while ctr < wbulist.__len__():
+        if wbulist[ctr].starttime == "":
+            wbulist.pop(ctr)
+        ctr += 1
+    # Now, we take the earliest date/time and the current date/time and divide the time range in periods of 1 month duration.
+    if utlist.__len__() == 0 and wbulist.__len__() == 0:
+        message = "There is no data available to plot this statistic."
+        response = HttpResponse(message)
+        return response
+    elif utlist.__len__() == 0 and wbulist.__len__() > 0:
+        utlist = wbulist
+    elif utlist.__len__() > 0 and wbulist.__len__() == 0:
+        wbulist = utlist
+    t01, t02 = "", ""
+    if utlist.__len__() > 0:
+        t01 = utlist[0].starttime
+    if wbulist.__len__() > 0:
+        t02 = wbulist[0].starttime
+    curdatetime = datetime.datetime.now()
+    t01 = str(t01).split("+")[0]
+    t02 = str(t02).split("+")[0]
+    try:
+        t01_d = datetime.datetime.strptime(t01, '%Y-%m-%d %H:%M:%S')
+        t02_d = datetime.datetime.strptime(t02, '%Y-%m-%d %H:%M:%S')
+        timeperiods = []
+        t0 = t02_d
+        if t01_d < t02_d:
+            t0 = t01_d
+        t = t0
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    while t < curdatetime:
+        try:
+            mon = t.month
+            year = t.year
+            if(str(mon).__len__() < 2):
+                mon = '0' + str(mon)
+            timetuple = (str(mon), str(year))
+            timeperiods.append(timetuple)
+            mon = int(mon) + 1
+            if mon == 13:
+                mon = '01'
+                year = year + 1
+            if str(mon).__len__() < 2:
+                mon = "0" + str(mon)
+            tstr = str(year) + "-" + str(mon) + "-01 00:00:00"
+            t = datetime.datetime.strptime(tstr, '%Y-%m-%d %H:%M:%S')
+        except:
+            return HttpResponse(sys.exc_info()[1].__str__())
+    for period in timeperiods:
+        monbyyear = str(period[0]) + "/" + str(period[1])
+        testinfodict[monbyyear] = 0
+    outcomedict = {}
+    for utobj in utlist:
+        outcome = utobj.outcome
+        uttime = str(utobj.starttime)
+        uttimeparts = uttime.split(" ")
+        if uttimeparts.__len__() < 1:
+            continue
+        uttimedateparts = uttimeparts[0].split("-")
+        mon = str(uttimedateparts[1])
+        year = str(uttimedateparts[0])
+        if mon.__len__() < 2:
+            mon = '0' + mon
+        monbyyear = mon + "/" + year
+        if outcomedict.has_key(monbyyear):
+            outcomelist = outcomedict[monbyyear]
+            if outcome:
+                outcomelist[0] += 1 # Passes
+            else:
+                outcomelist[1] += 1 # Fails
+            outcomedict[monbyyear] = outcomelist
+        else:
+            outcomelist = [0, 0]
+            if outcome:
+                outcomelist = [1, 0]
+            else:
+                outcomelist = [0, 1]
+            outcomedict[monbyyear] = outcomelist
+    for wbuobj in wbulist:
+        outcome = utobj.outcome
+        wbutime = str(wbuobj.starttime)
+        wbutimeparts = wbutime.split(" ")
+        if wbutimeparts.__len__() < 1:
+            continue
+        wbutimedateparts = wbutimeparts[0].split("-")
+        mon = str(wbutimedateparts[1])
+        year = str(wbutimedateparts[0])
+        if mon.__len__() < 2:
+            mon = '0' + mon
+        monbyyear = mon + "/" + year
+        if outcomedict.has_key(monbyyear):
+            outcomelist = outcomedict[monbyyear]
+            if outcome:
+                outcomelist[0] += 1 # Passes
+            else:
+                outcomelist[1] += 1 # Fails
+            outcomedict[monbyyear] = outcomelist
+        else:
+            outcomelist = [0, 0]
+            if outcome:
+                outcomelist = [1, 0]
+            else:
+                outcomelist = [0, 1]
+            outcomedict[monbyyear] = outcomelist
+    for period in testinfodict.keys():
+        if outcomedict.has_key(period):
+            outcomelist = outcomedict[period]
+            testinfodict[period] = outcomelist
+        else:
+            testinfodict[period] = [0, 0]
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def creatorcompscores(request):
     pass
+
+
+
+
+

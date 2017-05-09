@@ -222,6 +222,7 @@ COMPARE_PPT_URL = "skillstest/analytics/compareppt/"
 COMPARE_TTPERF_URL = "skillstest/analytics/comparettperf/"
 COMPARE_PERFT_URL = "skillstest/analytics/compareperft/"
 COMPARE_PASSFAIL_URL = "skillstest/analytics/comparepassfail/"
+CREATOR_COMPSCORE_URL = "skillstest/analytics/creator/comparescores/"
 
 MOBILE_VERIFY_CREDS_URL = "skillstest/mobile/verifycreds/"
 MOBILE_LIST_TESTS_INTERVIEWS_URL = "skillstest/mobile/listtestsinterviews/"
