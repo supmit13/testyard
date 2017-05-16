@@ -78,6 +78,15 @@ def analytics(request):
     analytics_dict['compareperfturl'] = mysettings.COMPARE_PERFT_URL
     analytics_dict['comparepassfailurl'] = mysettings.COMPARE_PASSFAIL_URL
     analytics_dict['creatorcompscoreurl'] = mysettings.CREATOR_COMPSCORE_URL
+    analytics_dict['creatortestpopurl'] = mysettings.CREATOR_TESTPOP_URL
+    analytics_dict['creatortesttimesurl'] = mysettings.CREATOR_TESTTIMES_URL
+    analytics_dict['creatortestmmmurl'] = mysettings.CREATOR_TESTMMM_URL
+    analytics_dict['creatortestusageurl'] = mysettings.CREATOR_TESTUSAGE_URL
+    analytics_dict['creatortestcohorturl'] = mysettings.CREATOR_TESTCOHORT_URL
+    analytics_dict['evaluatordisplayurl'] = mysettings.EVALUATOR_DISPLAY_URL
+    analytics_dict['evaluatorratiopassurl'] = mysettings.EVALUATOR_PASS_RATIO_URL
+    analytics_dict['evaluatorcounttestsurl'] = mysettings.EVALUATOR_COUNT_TESTS_URL
+    analytics_dict['evaluatoransbytimeurl'] = mysettings.EVALUATOR_ANSTIME_URL
 
     inc_context = skillutils.includedtemplatevars("Test Analytics", request)
     for inc_key in inc_context.keys():
@@ -106,14 +115,47 @@ def gettestsbytopic(request):
     userobj = sessionobj[0].user
     useremail = userobj.emailid
     test_topic = ""
+    role = ""
     if request.POST.has_key('test_topic'):
         test_topic = request.POST['test_topic']
     else:
         message = "Required parameter missing in post data."
         response = HttpResponse(message)
         return response
-    utqset = UserTest.objects.filter(user=userobj)
-    wuqset = WouldbeUsers.objects.filter(emailaddr=useremail)
+    if request.POST.has_key('role'):
+        role = request.POST['role']
+    else:
+        role = ""
+    utqset, wuqset = None, None
+    if role == "": # Default is candidate role
+        utqset = UserTest.objects.filter(user=userobj)
+        wuqset = WouldbeUsers.objects.filter(emailaddr=useremail)
+    elif role == "creator":
+        utqset = UserTest.objects.filter(test__creator=userobj)
+        wuqset = WouldbeUsers.objects.filter(test__creator__emailid=useremail)
+    elif role == "evaluator":
+        utqset1 = UserTest.objects.filter(test__evaluator__groupmember1=userobj)
+        utqset2 = UserTest.objects.filter(test__evaluator__groupmember2=userobj)
+        utqset3 = UserTest.objects.filter(test__evaluator__groupmember3=userobj)
+        utqset4 = UserTest.objects.filter(test__evaluator__groupmember4=userobj)
+        utqset5 = UserTest.objects.filter(test__evaluator__groupmember5=userobj)
+        utqset6 = UserTest.objects.filter(test__evaluator__groupmember6=userobj)
+        utqset7 = UserTest.objects.filter(test__evaluator__groupmember7=userobj)
+        utqset8 = UserTest.objects.filter(test__evaluator__groupmember8=userobj)
+        utqset9 = UserTest.objects.filter(test__evaluator__groupmember9=userobj)
+        utqset10 = UserTest.objects.filter(test__evaluator__groupmember10=userobj)
+        utqset = list(chain(utqset1, utqset2, utqset3, utqset4, utqset5, utqset6, utqset7, utqset8, utqset9, utqset10))
+        wuqset1 = WouldbeUsers.objects.filter(test__evaluator__groupmember1__emailid=useremail)
+        wuqset2 = WouldbeUsers.objects.filter(test__evaluator__groupmember2__emailid=useremail)
+        wuqset3 = WouldbeUsers.objects.filter(test__evaluator__groupmember3__emailid=useremail)
+        wuqset4 = WouldbeUsers.objects.filter(test__evaluator__groupmember4__emailid=useremail)
+        wuqset5 = WouldbeUsers.objects.filter(test__evaluator__groupmember5__emailid=useremail)
+        wuqset6 = WouldbeUsers.objects.filter(test__evaluator__groupmember6__emailid=useremail)
+        wuqset7 = WouldbeUsers.objects.filter(test__evaluator__groupmember7__emailid=useremail)
+        wuqset8 = WouldbeUsers.objects.filter(test__evaluator__groupmember8__emailid=useremail)
+        wuqset9 = WouldbeUsers.objects.filter(test__evaluator__groupmember9__emailid=useremail)
+        wuqset10 = WouldbeUsers.objects.filter(test__evaluator__groupmember10__emailid=useremail)
+        wuqset = list(chain(wuqset1, wuqset2, wuqset3, wuqset4, wuqset5, wuqset6, wuqset7, wuqset8, wuqset9, wuqset10))
     alltestshtml = "<font color='#00BB00'><b>Select a Test:</b></font>"
     alltestshtml += "<select name='usertests'><option value='all' selected>Select Test</option>"
     uniqtestnames = {}
@@ -1061,8 +1103,727 @@ def comparepassfail(request):
 @skillutils.session_location_match
 @csrf_protect
 def creatorcompscores(request):
-    pass
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    if testid == 'all':
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    #Check if the user is the creator of this test. If not, send a message back informing the user about it.
+    if testobj.creator != userobj:
+        message = "You are not the creator of this test. Hence it would not be possible for you to view the scores of the takers of this test."
+        response = HttpResponse(message)
+        return response
+    # Find out all users who have taken this test
+    testusersemaillist = []
+    utqset = UserTest.objects.filter(test=testobj, evalcommitstate=True, disqualified=False, starttime__isnull = False, cancelled=False)
+    wuqset = WouldbeUsers.objects.filter(test=testobj, evalcommitstate=True, disqualified=False, starttime__isnull = False, cancelled=False)
+    testinfodict = {}
+    for utobj in utqset:
+        username = utobj.user.displayname
+        score = utobj.score
+        if testinfodict.has_key(username) and testinfodict[username] < score: # Display highest score if user has taken multiple attempts.
+            testinfodict[username] = score
+        elif not testinfodict.has_key(username):
+            testinfodict[username] = score
+        else:
+            pass
+    for wbuobj in wuqset:
+        emailid = wbuobj.emailaddr
+        score = wbuobj.score
+        if testinfodict.has_key(emailid) and testinfodict[emailid] < score: # Display highest score if user has taken multiple attempts.
+            testinfodict[emailid] = score
+        elif not testinfodict.has_key(emailid):
+            testinfodict[emailid] = score
+        else:
+            pass
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
 
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def creatortestpopularity(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        if request.POST['testid'] == 'all':
+            testid = ""
+        else:
+            testid = request.POST['testid']
+    else:
+        pass
+    testobj = None
+    testslist = []
+    if testid != "":
+        testobj = Test.objects.get(id=testid)
+    if testobj is not None:
+        if testobj.creator != userobj:
+            message = "You are not the creator of this test. Hence you may not view the popularity of this test. Please select a topic to view the popularity of all tests under that topic of which you are the creator."
+            response = HttpResponse(message)
+            return response
+        else:
+            testslist.append(testobj)
+    else:
+        # Create a list of tests under the given topic
+        try:
+            testsqset = Test.objects.filter(topicname=test_topic, creator=userobj)
+            moretests = Test.objects.filter(topic__topicname=test_topic, creator=userobj)
+            testslist = list(chain(testsqset, moretests))
+        except:
+            return HttpResponse(sys.exc_info()[1].__str__())
+    testinfodict = {}
+    for tobj in testslist:
+        testname = tobj.testname
+        utqset = UserTest.objects.filter(test=tobj)
+        wbuqset = WouldbeUsers.objects.filter(test=tobj)
+        takerscount = list(utqset).__len__() + list(wbuqset).__len__()
+        testinfodict[testname] = takerscount
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def creatortesttimes(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    if testid == 'all':
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    if testobj.creator != userobj:
+        message = "You are not the creator of this test. Hence you may not view details of this test. Please select a test you created to view its details."
+        response = HttpResponse(message)
+        return response
+    testinfodict = {}
+    utqset = UserTest.objects.filter(test=testobj, starttime__isnull=False)
+    wbuqset = WouldbeUsers.objects.filter(test=testobj, starttime__isnull=False)
+    for utobj in utqset:
+        starttime = utobj.starttime
+        username = utobj.user.displayname
+        if testinfodict.has_key(username):
+            timeslist = testinfodict[username]
+            timeslist.append(starttime)
+            testinfodict[username] = timeslist
+        else:
+            timeslist = []
+            timeslist.append(starttime)
+            testinfodict[username] = timeslist
+    for wbuobj in wbuqset:
+        emailid = wbuobj.emailaddr
+        starttime = wbuobj.starttime
+        if testinfodict.has_key(emailid):
+            timeslist = testinfodict[emailid]
+            timeslist.append(starttime)
+            testinfodict[emailid] = timeslist
+        else:
+            timeslist = []
+            timeslist.append(starttime)
+            testinfodict[emailid] = timeslist
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def creatortestmmm(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    if testid == 'all':
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    try:
+        testobj = Test.objects.get(id=testid)
+        if testobj.creator != userobj:
+            message = "You are not the creator of this test. Hence you may not view details of this test. Please select a test you created to view its details."
+            response = HttpResponse(message)
+            return response
+        testinfodict = {}
+        utqset = UserTest.objects.filter(test=testobj)
+        wbuqset = WouldbeUsers.objects.filter(test=testobj)
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    testscoresdict = {}
+    testscoreslist = []
+    for utobj in utqset:
+        username = utobj.user.displayname
+        score = utobj.score
+        if testscoresdict.has_key(username):
+            if testscoresdict[username] < score:
+                testscoresdict[username] = score
+        else:
+            testscoresdict[username] = score
+    for wbuobj in wbuqset:
+        emailaddr = wbuobj.emailaddr
+        score = wbuobj.score
+        if testscoresdict.has_key(emailaddr):
+            if testscoresdict[emailaddr] < score:
+                testscoresdict[emailaddr] = score
+        else:
+            testscoresdict[emailaddr] = score
+    testscoreslist = testscoresdict.values()
+    scoresum = 0.0
+    for s in testscoreslist:
+        scoresum += s
+    smean = scoresum/testscoreslist.__len__()
+    mindx = 0
+    if testscoreslist.__len__() % 2 == 1:
+        mindx = int(testscoreslist.__len__())/2 + 1
+    testscoreslist.sort()
+    smedian = testscoreslist[mindx]
+    scoresdict = {}
+    for score in testscoreslist:
+        if scoresdict.has_key(score):
+            scoresdict[score] += 1
+        else:
+            scoresdict[score] = 1
+    maxrepeat = [ 0, 0]
+    for score in scoresdict.keys():
+        if scoresdict[score] > maxrepeat[0]:
+            maxrepeat[0] = scoresdict[score]
+            maxrepeat[1] = score
+        else:
+            pass
+    smode = maxrepeat[1]
+    if maxrepeat[0] == 1:
+        smode = 0 # No mode is available
+    testinfodict['mean'] = smean
+    testinfodict['median'] = smedian
+    testinfodict['mode'] = smode
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def creatortestusage(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    # Get all tests created by this user under the given topic
+    testsqset = Test.objects.filter(creator=userobj, topicname=test_topic)
+    moretestsqset = Test.objects.filter(creator=userobj, topic__topicname=test_topic)
+    testinfodict = {}
+    try:
+        for testobj in testsqset:
+            utqset = UserTest.objects.filter(test=testobj)
+            wbuqset = WouldbeUsers.objects.filter(test=testobj)
+            testname = testobj.testname
+            testscount = list(utqset).__len__() + list(wbuqset).__len__()
+            testinfodict[testname] = testscount
+        for testobj in moretestsqset:
+            utqset = UserTest.objects.filter(test=testobj)
+            wbuqset = WouldbeUsers.objects.filter(test=testobj)
+            testname = testobj.testname
+            testscount = list(utqset).__len__() + list(wbuqset).__len__()
+            if testinfodict.has_key(testname):
+                testinfodict[testname] += testscount
+            else:
+                testinfodict[testname] = testscount
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def creatortestcohort(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    if testid == "all":
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    if testobj.creator != userobj:
+        message = "You are not the creator of this test. Hence you may not view details of this test. Please select a test you created to view its details."
+        response = HttpResponse(message)
+        return response
+    testinfodict = {}
+    utqset = UserTest.objects.filter(test=testobj)
+    wbuqset = WouldbeUsers.objects.filter(test=testobj)
+    testuserslist = []
+    uniqusers = {}
+    for utobj in utqset:
+        username = utobj.user.displayname
+        if uniqusers.has_key(username):
+            pass
+        else:
+            testuserslist.append(username)
+            uniqusers[username] = 1
+    for wbuobj in wbuqset:
+        emailid = wbuobj.emailaddr
+        if uniqusers.has_key(emailid):
+            pass
+        else:
+            testuserslist.append(emailid)
+            uniqusers[emailid] = 1
+    for usr in testuserslist:
+        emailpat = re.compile("@")
+        # Check if the usr value is an email or a username
+        foundflag = re.search(emailpat, usr)
+        uobj = None
+        utqset2 = None
+        wbuqset2 = None
+        if not foundflag: # User is a registered user. So find the user object for this user.
+            uobj = User.objects.get(displayname=usr)
+            try:
+                utqset2 = UserTest.objects.filter(user=uobj).exclude(test = testobj)
+                for utobj2 in utqset2:
+                    testname = utobj2.test.testname
+                    if testinfodict.has_key(testname):
+                        testinfodict[testname] += 1
+                    else:
+                        testinfodict[testname] = 1
+            except:
+                continue
+        else:
+            try:
+                wbuqset2 = WouldbeUsers.objects.filter(emailaddr = usr).exclude(test=testobj)
+                for wbuobj2 in wbuqset2:
+                    testname = wbuobj2.test.testname
+                    if testinfodict.has_key(testname):
+                        testinfodict[testname] += 1
+                    else:
+                        testinfodict[testname] = 1
+            except:
+                continue
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def evaluatorpassratio(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('testid'):
+        testid = request.POST['testid']
+    else:
+        message = "Required parameter (testid) missing."
+        response = HttpResponse(message)
+        return response
+    testobj = Test.objects.get(id=testid)
+    canview = False
+    creatorobj = testobj.creator
+    evaluator = testobj.evaluator
+    if userobj == creatorobj:
+        canview = True
+    if canview == False:
+        if (evaluator.groupmember1 and userobj == evaluator.groupmember1) or (evaluator.groupmember2 and userobj == evaluator.groupmember2) or (evaluator.groupmember3 and userobj == evaluator.groupmember3) or (evaluator.groupmember4 and userobj == evaluator.groupmember4) or (evaluator.groupmember5 and userobj == evaluator.groupmember5) or (evaluator.groupmember6 and userobj == evaluator.groupmember6) or (evaluator.groupmember7 and userobj == evaluator.groupmember7) or (evaluator.groupmember8 and userobj == evaluator.groupmember8) or (evaluator.groupmember9 and userobj == evaluator.groupmember9) or (evaluator.groupmember10 and userobj == evaluator.groupmember10):
+            canview = True
+    if canview == False: # user is not an evaluator or creator of this test. Hence, she cannot view the stats.
+        message = "You are not an evaluator or creator of this test. Hence, you may not view the stats for this test. Select a test in which you have played the role of an evaluator or creator to view its stats."
+        response = HttpResponse(message)
+        return response
+    # User may view the stats for this test.
+    utqset = UserTest.objects.filter(test=testobj)
+    wbuqset = WouldbeUsers.objects.filter(test=testobj)
+    testinfodict = {}
+    total_tests = list(utqset).__len__() + list(wbuqset).__len__()
+    pass_count = 0
+    fail_count = 0
+    not_evaluated = 0
+    for utobj in utqset:
+        if utobj.outcome == True:
+            pass_count += 1
+        elif utobj.outcome == False:
+            fail_count += 1
+        elif utobj.outcome == "" or utobj.outcome == None:
+            not_evaluated += 1
+        else:
+            pass
+    for wbuobj in wbuqset:
+        if wbuobj.outcome == True:
+            pass_count += 1
+        elif wbuobj.outcome == False:
+            fail_count += 1
+        elif wbuobj.outcome == "" or wbuobj.outcome == None:
+            not_evaluated += 1
+        else:
+            pass
+    testinfodict['passed'] = pass_count
+    testinfodict['failed'] = fail_count
+    testinfodict['not evaluated'] = not_evaluated
+    testinfodict['total'] = total_tests
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def evaluatorcounttests(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    utqset = UserTest.objects.filter(test__topicname=test_topic, score__isnull = False)
+    wbuqset = WouldbeUsers.objects.filter(test__topicname=test_topic, score__isnull = False)
+    testinfodict = {}
+    for utobj in utqset:
+        tobj = utobj.test
+        isevaluator = False
+        if tobj.creator == userobj:
+            isevaluator = True
+        evalobj = utobj.test.evaluator
+        if isevaluator == False and (evalobj.groupmember1 and evalobj.groupmember1 == userobj) or (evalobj.groupmember2 and evalobj.groupmember2 == userobj) or (evalobj.groupmember3 and evalobj.groupmember3 == userobj) or (evalobj.groupmember4 and evalobj.groupmember4 == userobj) or (evalobj.groupmember5 and evalobj.groupmember5 == userobj) or (evalobj.groupmember6 and evalobj.groupmember6 == userobj) or (evalobj.groupmember7 and evalobj.groupmember7 == userobj) or (evalobj.groupmember8 and evalobj.groupmember8 == userobj) or (evalobj.groupmember9 and evalobj.groupmember9 == userobj) or (evalobj.groupmember10 and evalobj.groupmember10 == userobj):
+            isevaluator = True
+        if isevaluator == False:
+            continue # The user is not an evaluator of this test.
+        testname = tobj.testname
+        if testinfodict.has_key(testname):
+            testinfodict[testname] += 1
+        else:
+            testinfodict[testname] = 1
+    for wbuobj in wbuqset:
+        tobj = wbuobj.test
+        isevaluator = False
+        if tobj.creator == userobj:
+            isevaluator = True
+        evalobj = wbuobj.test.evaluator
+        if isevaluator == False and (evalobj.groupmember1 and evalobj.groupmember1 == userobj) or (evalobj.groupmember2 and evalobj.groupmember2 == userobj) or (evalobj.groupmember3 and evalobj.groupmember3 == userobj) or (evalobj.groupmember4 and evalobj.groupmember4 == userobj) or (evalobj.groupmember5 and evalobj.groupmember5 == userobj) or (evalobj.groupmember6 and evalobj.groupmember6 == userobj) or (evalobj.groupmember7 and evalobj.groupmember7 == userobj) or (evalobj.groupmember8 and evalobj.groupmember8 == userobj) or (evalobj.groupmember9 and evalobj.groupmember9 == userobj) or (evalobj.groupmember10 and evalobj.groupmember10 == userobj):
+            isevaluator = True
+        if isevaluator == False:
+            continue # The user is not an evaluator of this test.
+        testname = tobj.testname
+        if testinfodict.has_key(testname):
+            testinfodict[testname] += 1
+        else:
+            testinfodict[testname] = 1
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def evaluatoranswerscriptsbytime(request):
+    """
+    Line Plot number of answerscripts evaluated in a monthly periods starting from the user's sign up time.  
+    """
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    useremail = userobj.emailid
+    analytic_technique = ""
+    test_topic = ""
+    testid = ""
+    if request.POST.has_key('analytic_technique'):
+        analytic_technique = request.POST['analytic_technique']
+    else:
+        message = "Required parameter (analytic_technique) missing."
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('test_topic'):
+        test_topic = request.POST['test_topic']
+    else:
+        message = "Required parameter (test_topic) missing."
+        response = HttpResponse(message)
+        return response
+    utqset = UserTest.objects.filter(test__topicname=test_topic, score__isnull = False).order_by('starttime')
+    wbuqset = WouldbeUsers.objects.filter(test__topicname=test_topic, score__isnull = False).order_by('starttime')
+    testinfodict = {}
+    signuptime = userobj.joindate
+    curdatetime = datetime.datetime.now()
+    signuptime = signuptime.replace(tzinfo=None) # make signuptime offset naive... we don't need offset aware datetime here.
+    t = signuptime
+    timeperiods = []
+    try:
+        while t < curdatetime:
+            try:
+                mon = t.month
+                year = t.year
+                if(str(mon).__len__() < 2):
+                    mon = '0' + str(mon)
+                timetuple = (str(mon), str(year))
+                timeperiods.append(timetuple)
+                mon = int(mon) + 1
+                if mon == 13:
+                    mon = '01'
+                    year = year + 1
+                if str(mon).__len__() < 2:
+                    mon = "0" + str(mon)
+                tstr = str(year) + "-" + str(mon) + "-01 00:00:00"
+                t = datetime.datetime.strptime(tstr, '%Y-%m-%d %H:%M:%S')
+            except:
+                return HttpResponse(sys.exc_info()[1].__str__())
+    except:
+        return HttpResponse(sys.exc_info()[1].__str__())
+    for tp in timeperiods:
+        tpstr = tp[0] + "/" + tp[1]
+        testinfodict[tpstr] = 0
+    for utobj in utqset:
+        isevaluator = False
+        if utobj.test.creator == userobj:
+            isevaluator = True
+        evalobj = utobj.test.evaluator
+        if isevaluator == False and (evalobj.groupmember1 and evalobj.groupmember1 == userobj) or (evalobj.groupmember2 and evalobj.groupmember2 == userobj) or (evalobj.groupmember3 and evalobj.groupmember3 == userobj) or (evalobj.groupmember4 and evalobj.groupmember4 == userobj) or (evalobj.groupmember5 and evalobj.groupmember5 == userobj) or (evalobj.groupmember6 and evalobj.groupmember6 == userobj) or (evalobj.groupmember7 and evalobj.groupmember7 == userobj) or (evalobj.groupmember8 and evalobj.groupmember8 == userobj) or (evalobj.groupmember9 and evalobj.groupmember9 == userobj) or (evalobj.groupmember10 and evalobj.groupmember10 == userobj):
+            isevaluator = True
+        if isevaluator == False:
+            continue # The user is not an evaluator of this test.
+        evalts = utobj.first_eval_timestamp
+        if not evalts or evalts == "":
+            continue
+        evaldt = datetime.datetime.fromtimestamp(float(evalts))
+        evalmon = evaldt.month
+        evalyear = evaldt.year
+        if str(evalmon).__len__() < 2:
+            evalmon = "0" + str(evalmon)
+        evalperiod = str(evalmon) + "/" + str(evalyear)
+        testinfodict[evalperiod] += 1
+    for wbuobj in wbuqset:
+        isevaluator = False
+        if wbuobj.test.creator == userobj:
+            isevaluator = True
+        evalobj = wbuobj.test.evaluator
+        if isevaluator == False and (evalobj.groupmember1 and evalobj.groupmember1 == userobj) or (evalobj.groupmember2 and evalobj.groupmember2 == userobj) or (evalobj.groupmember3 and evalobj.groupmember3 == userobj) or (evalobj.groupmember4 and evalobj.groupmember4 == userobj) or (evalobj.groupmember5 and evalobj.groupmember5 == userobj) or (evalobj.groupmember6 and evalobj.groupmember6 == userobj) or (evalobj.groupmember7 and evalobj.groupmember7 == userobj) or (evalobj.groupmember8 and evalobj.groupmember8 == userobj) or (evalobj.groupmember9 and evalobj.groupmember9 == userobj) or (evalobj.groupmember10 and evalobj.groupmember10 == userobj):
+            isevaluator = True
+        if isevaluator == False:
+            continue # The user is not an evaluator of this test.
+        evalts = wbuobj.first_eval_timestamp
+        if not evalts or evalts == "":
+            continue
+        evaldt = datetime.datetime.fromtimestamp(float(evalts))
+        evalmon = evaldt.month
+        evalyear = evaldt.year
+        if str(evalmon).__len__() < 2:
+            evalmon = "0" + str(evalmon)
+        evalperiod = str(evalmon) + "/" + str(evalyear)
+        testinfodict[evalperiod] += 1
+    jsonstr = json.dumps(testinfodict)
+    response = HttpResponse(jsonstr)
+    return response 
 
 
 

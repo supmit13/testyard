@@ -62,7 +62,7 @@
 	       }
 
 
-	        google.charts.load('current', {'packages':['bar', 'scatterchart']});
+	        google.charts.load('current', {'packages':['bar', 'scatterchart', 'calendar']});
 
 		function showStatHelp(){
 		    examplediv = document.getElementById('example');
@@ -100,7 +100,8 @@
 		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		   }
 		   ttopic = document.frmanalytics.creator_test_cat.options[document.frmanalytics.creator_test_cat.options.selectedIndex].value;
-		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
+		   postdata += "&role=creator";
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		        testsdiv = document.getElementById('creator_testnames');
@@ -121,7 +122,8 @@
 		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		   }
 		   ttopic = document.frmanalytics.evaluator_test_cat.options[document.frmanalytics.evaluator_test_cat.options.selectedIndex].value;
-		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
+		   postdata += "&role=evaluator";
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		        testsdiv = document.getElementById('evaluator_testnames');
@@ -177,9 +179,19 @@
 		}
 
 
-    		function display_plot(){
+    		function display_plot(usertype){
+		    if(usertype == "" || usertype == "candidate"){
 		    analytic_technique = document.frmanalytics.analytic_technique.options[document.frmanalytics.analytic_technique.options.selectedIndex].value;
 		    ttopic = document.frmanalytics.test_cat.options[document.frmanalytics.test_cat.options.selectedIndex].value;
+		    }
+		    else if(usertype == "creator"){
+		        analytic_technique = document.frmanalytics.creator_analytic_technique.options[document.frmanalytics.creator_analytic_technique.options.selectedIndex].value;
+		    	ttopic = document.frmanalytics.creator_test_cat.options[document.frmanalytics.creator_test_cat.options.selectedIndex].value;
+		    }
+		    else if(usertype == "evaluator"){
+		        analytic_technique = document.frmanalytics.evaluator_analytic_technique.options[document.frmanalytics.evaluator_analytic_technique.options.selectedIndex].value;
+		    	ttopic = document.frmanalytics.evaluator_test_cat.options[document.frmanalytics.evaluator_test_cat.options.selectedIndex].value;
+		    }
 		    //alert(document.frmanalytics.test_cat.options.selectedIndex);
 		    var xmlhttp; 
 		    if (window.XMLHttpRequest){
@@ -202,6 +214,12 @@
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 			//alert(xmlhttp.responseText);
 			displaydata = document.getElementById('displaydata');
+			if(usertype == "creator"){
+			    displaydata = document.getElementById('creator_displaydata');
+			}
+			else if(usertype == "evaluator"){
+			    displaydata = document.getElementById('evaluator_displaydata');
+			}
 			chartdataobj = {};
 			try{
 			    chartdataobj = JSON.parse(xmlhttp.responseText)
@@ -242,6 +260,30 @@
 			}
 			else if(analytic_technique == "creator_comp_scores"){
 			    headers = [ 'User', 'Score' ];
+			}
+			else if(analytic_technique == "creator_comp_testpop"){
+			    headers = [ 'Testname', 'Takers Count' ];
+			}
+			else if(analytic_technique == "creator_show_testtimes"){
+			    headers = [ 'Testname', 'Time' ];
+			}
+			else if(analytic_technique == "creator_comp_mmm"){
+			    headers = [ 'Testname', 'Mean, Median and Mode Scores' ];
+			}
+			else if(analytic_technique == "creator_comp_testusage"){
+			    headers = [ 'Testname', 'No. of Takers' ];
+			}
+			else if(analytic_technique == "creator_comp_cohort"){
+			    headers = [ 'Testname', 'No. of Takers' ];
+			}
+			else if(analytic_technique == "evaluator_ratio_pass_total"){
+			    headers = [ 'Statistic', 'Count' ];
+			}
+			else if(analytic_technique == "evaluator_count_evaluated_tests"){
+			    headers = [ 'Testname', 'Count' ];
+			}
+			else if(analytic_technique == "evaluator_ans_evaluated_by_time"){
+			    headers = [ 'Time', 'Count' ];
 			}
   			chartdata[0] = headers;
 			if(analytic_technique == "comp_topper"){
@@ -504,6 +546,199 @@
 				};
 			}
 			else if(analytic_technique == "creator_comp_scores"){
+			    candidatename = "";
+			    i = 1;
+		    	    for (candidatename in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(candidatename)){
+       			            count = chartdataobj[candidatename];
+			            scoredata = Array(candidatename, parseFloat(count));
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Compare Scores of Candidates',
+			    	    subtitle: 'Compare scores of candidates of the selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_testpop"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Test Popularity',
+			    	    subtitle: 'Test popularity based on count of times a test has been taken',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_show_testtimes"){
+			    uname = "";
+			    i = 1;
+		    	    for (uname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(uname)){
+       			            times = chartdataobj[uname];
+				    for(time in times){
+					//alert(times);
+					scoredata = [time, uname ];
+			            	chartdata[i] = scoredata;
+				    }
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Show Test Taking Times',
+			    	    subtitle: 'Display times at which the selected test has been taken',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_mmm"){
+			    statname = "";
+			    i = 1;
+		    	    for (statname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(statname)){
+       			            count = chartdataobj[statname];
+			            scoredata = [statname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Mean, Median and Mode of Test Scores',
+			    	    subtitle: 'Mean, Median and Mode of Test Scores',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_testusage"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Test Usage',
+			    	    subtitle: 'Test usage based on count of times the test has been taken',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_cohort"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Cohort Analysis',
+			    	    subtitle: 'Other tests taken by candidates who have taken the selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "evaluator_ratio_pass_total"){
+			    statname = "";
+			    i = 1;
+			    for (statname in chartdataobj){
+				//alert(statname);
+				if (chartdataobj.hasOwnProperty(statname)){
+				    count = chartdataobj[statname];
+				    scoredata = [statname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Pass Fail Counts',
+			    	    subtitle: 'Pass Fail Counts in selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "evaluator_count_evaluated_tests"){
+			    testname = "";
+			    i = 1;
+			    for (testname in chartdataobj){
+				//alert(testname);
+				if (chartdataobj.hasOwnProperty(testname)){
+				    count = chartdataobj[testname];
+				    scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Count of tests evaluated under selected topics',
+			    	    subtitle: 'Count of tests evaluated under selected topics',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "evaluator_ans_evaluated_by_time"){
+			    evalperiod = "";
+			    sortedchartobjects = Array();
+			    i = 0;
+			    for (evalperiod in chartdataobj){
+    				sortedchartobjects[i] = evalperiod;
+				i++;
+			    }
+			    sortedchartobjects = sortmmyyyy(sortedchartobjects);
+			    //alert(sortedchartobjects);
+			    i = 1;
+		    	    for (j=0; j < sortedchartobjects.length;j++){
+				if(sortedchartobjects[j] == '' || sortedchartobjects[j] == null){
+				    continue;
+				}
+				evalperiod = sortedchartobjects[j];
+				if (chartdataobj.hasOwnProperty(evalperiod)){
+				    count = chartdataobj[evalperiod];
+				    scoredata = [evalperiod, parseFloat(count) ];
+				    chartdata[i] = scoredata;
+				    //nodataflag = 0;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Count of evaluations made by time (monthly basis)',
+			    	    subtitle: 'Count of evaluations made by time (monthly basis)',
+			        },
+			        bars: 'vertical'
+			    };
 			}
 			//if(nodataflag){
 			    //displaydata.innerHTML = "<font color='#AA0000' style='bold'>There is no data for the selected plot variables.</font>";
@@ -511,6 +746,11 @@
 			if (analytic_technique == "comp_sbt"){
 			    var data = google.visualization.arrayToDataTable(chartdata);
 			    var chart = new google.visualization.ScatterChart(document.getElementById('displaydata'));
+			    chart.draw(data, options);
+			}
+			else if(analytic_technique == "creator_show_testtimes"){
+			    var data = google.visualization.arrayToDataTable(chartdata);
+			    var chart = new google.visualization.Calendar(document.getElementById('creator_displaydata'));
 			    chart.draw(data, options);
 			}
 			else{
@@ -552,6 +792,30 @@
 		    }
 		    else if(analytic_technique == "creator_comp_scores"){
 			xmlhttp.open("POST", '{{ creatorcompscoreurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_testpop"){
+			xmlhttp.open("POST", '{{ creatortestpopurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_show_testtimes"){
+			xmlhttp.open("POST", '{{ creatortesttimesurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_mmm"){
+			xmlhttp.open("POST", '{{ creatortestmmmurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_testusage"){
+			xmlhttp.open("POST", '{{ creatortestusageurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_cohort"){
+			xmlhttp.open("POST", '{{ creatortestcohorturl }}', true);
+		    }
+		    else if(analytic_technique == "evaluator_ratio_pass_total"){
+			xmlhttp.open("POST", '{{ evaluatorratiopassurl }}', true);
+		    }
+		    else if(analytic_technique == "evaluator_count_evaluated_tests"){
+			xmlhttp.open("POST", '{{ evaluatorcounttestsurl }}', true);
+		    }
+		    else if(analytic_technique == "evaluator_ans_evaluated_by_time"){
+			xmlhttp.open("POST", '{{ evaluatoransbytimeurl }}', true);
 		    }
   		    xmlhttp.send(postdata);
 		}
@@ -600,7 +864,7 @@
 			    <br /><br />
 			    <div id='testnames'></div>
 			    <br /><br />
-			    <input type='button' name='btndisplay' value='Display' onclick='javascript:display_plot();' disabled=true>
+			    <input type='button' name='btndisplay' value='Display' onclick='javascript:display_plot("");' disabled=true>
 			    </span></td>
 			    <td width='70%'>
 				<div id='displaydata' style="width: 900px; height: 500px;">
@@ -615,12 +879,12 @@
 			<tr>
 			    <td width='30%' valign='top'><span>
 			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
-			    <select name='creator_analytic_technique' onchange='javascript:creator_displaynote();'>
+			    <select name='creator_analytic_technique' onchange='javascript:displaynote();'>
 				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
 				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
 				<option value='creator_show_testtimes'>Times at which selected test has been taken by candidates</option>
 				<option value='creator_comp_mmm'>Max, Min, Mean, Median and Mode of scores of selected test(s)</option>
-				<option value='creator_comp_testusage'>Pie chart to display test usages in selected topic</option>
+				<option value='creator_comp_testusage'>Chart to display test usages in selected topic</option>
 				<option value='creator_comp_cohort'>Other tests taken by users who took the selected test</option>
 				
 			    </select>
@@ -636,7 +900,7 @@
 			    <br /><br />
 			    <div id='creator_testnames'></div>
 			    <br /><br />
-			    <input type='button' name='creator_btndisplay' value='Display' onclick='javascript:creator_display_plot();' disabled=true>
+			    <input type='button' name='creator_btndisplay' value='Display' onclick='javascript:display_plot("creator");' disabled=true>
 			    </span></td>
 			    <td width='70%'>
 				<div id='creator_displaydata' style="width: 900px; height: 500px;">
@@ -653,10 +917,8 @@
 			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
 			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();'>
 				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
-				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.</option>
-				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.</option>
-				<option value='evaluator_ans_eval_all_topics_by_time'>Plot of answer scripts evaluated for each topic over a span of time</option>
-				<option value='evaluator_perc_pass_fail_pie'>Percentage of candidates passed and failed in a topic or test (pie chart)</option>
+				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.(Select a topic only).</option>
+				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.(Select a topic only).</option>
 			    </select>
 			    <div id='evaluator_notes'></div>
 			    <br /><br />
@@ -670,10 +932,10 @@
 			    <br /><br />
 			    <div id='evaluator_testnames'></div>
 			    <br /><br />
-			    <input type='button' name='evaluator_btndisplay' value='Display' onclick='javascript:evaluator_display_plot();' disabled=true>
+			    <input type='button' name='evaluator_btndisplay' value='Display' onclick='javascript:display_plot("evaluator");' disabled=true>
 			    </span></td>
 			    <td width='70%'>
-				<div id='displaydata' style="width: 900px; height: 500px;">
+				<div id='evaluator_displaydata' style="width: 900px; height: 500px;">
 				</div>
 			    </td>
 			</tr>
