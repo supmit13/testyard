@@ -35,8 +35,6 @@ def subscriptions(request):
     message = ''
     if request.method != "GET" and request.method != 'POST': # Illegal bad request... 
         message = error_msg('1004')
-        # A logging mechanism may be used to track how many and from where
-        # such requests come and that may, sometimes, tell a curious story.
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.SUBSCRIPTION_URL + "?msg=%s"%message)
         return response
     # If request method is 'GET', then retrieve Session and User info from the DB
@@ -44,29 +42,24 @@ def subscriptions(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
-    userplans = UserPlan.objects.filter(user=userobj) # Getting all UserPlans for the User.
+    plans = Plan.objects.all() # Getting all Plans.
     current_plans_dict = {}
     past_plans_dict = {}
     subscription_data_dict = {}
     curdatetime = datetime.datetime.now()
-    for upln in userplans:
-        planname = upln.plan.planname
-        planstartdate = upln.planstartdate
-        startdate, starttime = planstartdate.split(" ")
-        startyyyy, startmon, startdd = startdate.split("-")
-        starthh, startmm, startss = starttime.split(":")
-        planenddate = upln.planenddate
-        enddate, endtime = planenddate.split(" ")
-        endyyyy, endmon, enddd = enddate.split("-")
-        endhh, endmm, endss = endtime.split(":")
-        planstatus = upln.planstatus
-        discountpercent = upln.discountpercentapplied
-        totalcost = upln.totalcost
-        amtpaid = upln.amountpaid
-        amtdue = upln.amountdue
-        lastpaydate = upln.lastpaydate
-        subscribedon = upln.subscribedon
-        discountamountapplied = upln.discountamountapplied
+    for pln in plans:
+        planname = pln.planname
+        createdate = pln.createdate
+        startdate, starttime = str(createdate).split(" ")
+        planstatus = pln.status
+        discountpercent = pln.discountpercent
+        """
+        totalcost = pln.totalcost
+        amtpaid = pln.amountpaid
+        amtdue = pln.amountdue
+        lastpaydate = pln.lastpaydate
+        subscribedon = pln.subscribedon
+        discountamountapplied = pln.discountamountapplied
         if curdatetime > datetime.datetime(int(startyyyy), int(startmon), int(startdd), int(starthh), int(startmm), int(startss)) and curdatetime < datetime.datetime(int(endyyyy), int(endmon), int(enddd), int(endhh), int(endmm), int(endss)) and planstatus:
             current_plans_dict[planname] = ( planname, planstartdate, planenddate, discountpercent, \
                                              discountamountapplied, totalcost, amtpaid, amtdue, \
@@ -75,6 +68,7 @@ def subscriptions(request):
             past_plans_dict[planname] = ( planname, planstartdate, planenddate, discountpercent, \
                                              discountamountapplied, totalcost, amtpaid, amtdue, \
                                              lastpaydate, subscribedon )
+        """
     subscription_data_dict['current'] = current_plans_dict
     subscription_data_dict['past'] = past_plans_dict
     subscription_data_dict['displayname'] = userobj.displayname
@@ -82,10 +76,25 @@ def subscriptions(request):
     inc_context = skillutils.includedtemplatevars("Subscription", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         subscription_data_dict[inc_key] = inc_context[inc_key]
-    tmpl = get_template("user/subscription.html")
+    tmpl = get_template("subscription/subscription.html")
     subscription_data_dict.update(csrf(request))
     cxt = Context(subscription_data_dict)
     subscriptionhtml = tmpl.render(cxt)
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         subscriptionhtml = subscriptionhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(subscriptionhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showplans(request):
+    message = ''
+    if request.method != "GET" and request.method != 'POST': # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.SUBSCRIPTION_URL + "?msg=%s"%message)
+        return response
+
+
+
+

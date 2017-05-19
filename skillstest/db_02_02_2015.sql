@@ -874,6 +874,33 @@ ALTER table `Tests_interview` drop column `responseendcharacter`;
 
 ALTER table `Tests_interviewcandidates` add column `interviewurl` text default '';
 
+alter table Tests_interview add column autouploadrecording boolean default True;
+alter table Tests_interview drop column autouploadrecording;
+
+create table `Subscription_coupon` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `coupon_code` VARCHAR(100) NOT NULL,
+    `coupon_description` VARCHAR (255) DEFAULT "",
+    `valid_from` DATETIME DEFAULT (select now();),
+    `valid_till` DATETIME DEFAULT '',
+    `discount_value` DOUBLE DEFAULT 0.00,
+    `max_use_count` INTEGER DEFAULT 0,
+    `status` BOOLEAN DEFAULT FALSE,
+    `currency_unit` VARCHAR(3) DEFAULT "USD"
+)ENGINE=Innodb;
+
+COMMIT;
+
+
+alter table Subscription_plan modify column tests integer default 0 not null;
+alter table Subscription_plan add column interviews integer default 0 not null;
+alter table Subscription_plan add column plandescription text default '';
+alter table Subscription_plan add column candidates integer default 0 not null;
+alter table Subscription_plan drop foreign key adminuser_id_refs_id_665322f6;
+alter table Subscription_plan drop column adminuser_id;
+alter table Subscription_plan drop column commissiondate;
+alter table Subscription_plan drop column decommissiondate;
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

@@ -14,11 +14,10 @@ import inspect
 Pricing will be based on 2 main factors:
 
 1. Number of candidates taking the test
-2. Length of the test in minutes.
+2. Number of tests.
 
-The reason behind choosing these 2 factors as primary ones is simple - number of candidates X number of
-minutes is directly proportional to the amount of load on the system. The more the load, higher is the
-price.
+The reason behind choosing the first factor as primary one is simple - number of candidates is directly 
+proportional to the amount of load on the system. The more the load, higher is the price.
 
 Since a coding test consumes more resources (compiler, environment, etc) than any other form of test (
 subjective, algo writing, multiple choice, etc), it would be costlier than the other types of tests. A
@@ -28,25 +27,23 @@ to be used as a guideline only for fixing up the costs associated with a 'Plan'.
 for conducting the tests will be billed to the conductor and not the candidates, with only one exception:
 certification type tests (for MCSD, MCP, CCNA, CNE, BrainBench certifications, etc) along with their
 practise tests sessions will be billed to the candidates (since the conductor of the tests conduct them
-as a service from which candidates stand to gain financially and intellectually if  the pass these tests).
+as a service from which candidates stand to gain financially and intellectually if they pass these tests).
 """
 class Plan(models.Model):
     planname = models.CharField(max_length=200, null=False,blank=False, primary_key=True)
-    tests = models.CharField(max_length=200, null=False,blank=False) # Multiple test Ids separated by '|' character.
+    tests = models.IntegerField(null=False, blank=False, default=0) # Number of tests included in the plan.
+    interviews = models.IntegerField(null=False, blank=False, default=0) # Number of interviews included in the plan.
+    plandescription = models.TextField(default='')
+    candidates = models.IntegerField(null=False, blank=False, default=0) # Number of candidates to whom each test may be given.
     price = models.DecimalField(max_digits=10, decimal_places=2) # Price per unit. Unit would be based on context, fixed by the 'admin '.
     # The privilege of the user is determined from the UserPrivilege model. Normal users, like test creators, evaluator, assessees, etc
     # will NOT have an entry in the UserPrivilege table. The only entries in the UserPrivilege table will be that of site-admins.
     validfor_unit = models.CharField(max_length=12, choices=(('D', 'Days'),('M', 'Months'),('Y', 'Years')), default='M')
     planvalidfor = models.IntegerField(null=False, blank=False, default=1) # Default duration of a Plan is 1 month.
-    adminuser = models.ForeignKey(User, null=False, blank=False) # admin user who created this Plan. This user will
-    # need to be an instance of skillstest.Auth.UserPrivilege model.
     status = models.BooleanField(default=True) # status of the availability of a plan
     discountpercent = models.FloatField(null=True, blank=True, default=0.0)
     discountamt = models.FloatField(null=True, blank=True, default=0.0)
     createdate = models.DateTimeField(auto_now=True)
-    commissiondate = models.DateTimeField(null=True, blank=True, default=datetime.datetime.now()) # Date from which the plan becomes available for Users to select
-    decommissiondate = models.DateTimeField(null=True, blank=True, default=datetime.datetime.now()) # Date on which the plan is decommissioned so that Users cannot select it.
-
 
     class Meta:
         verbose_name = "Subscription Plan Table"
@@ -126,4 +123,37 @@ class Transaction(models.Model):
     
     def __unicode__(self):
         return "Plan Name: %s of User: %s\n"%(self.planname, self.username)
+
+
+class Coupon(models.Model):
+    coupon_code = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    coupon_description = models.TextField(default='')
+    valid_from = models.DateTimeField(auto_now=True)
+    valid_till = models.DateTimeField(default=None)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    max_use_count = models.IntegerField(default=0)
+    currency_unit = models.CharField(max_length=3, null=False, blank=False, default='USD')
+    status = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Coupons Table"
+        db_table = 'Subscription_coupon'
+    
+    def __unicode__(self):
+        return "Coupon Code: %s\n"%(self.couponcode)
+
+
+class CouponUser(models.Model):
+    coupon = models.ForeignKey(Coupon, blank=False, null=False)
+    user = models.ForeignKey(User, blank=False, null=False)
+    usedate = models.DateTimeField(auto_now=True)
+    plan = models.ForeignKey(Plan, blank=False, null=False)
+
+    class Meta:
+        verbose_name = "CouponUser Table"
+        db_table = 'Subscription_couponuser'
+
+
+
+
 

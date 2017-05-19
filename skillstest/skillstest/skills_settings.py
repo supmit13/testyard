@@ -93,9 +93,9 @@ SECURE_HSTS_SECONDS = 31536000
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = 'xxxxxxxxxxxxx'
+EMAIL_HOST_PASSWORD = 'xxxxxxxxxx'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = 'xxxxxxx'
+#EMAIL_HOST_PASSWORD = 'xxxxxxxxx'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -321,10 +321,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = 'xxxxxxx'
-OAUTH_SECRET_KEY = 'xxxxxxxxxxxxxxxxx'
+OAUTH_API_KEY = 'xxxxxxxxxxxxxxxx'
+OAUTH_SECRET_KEY = 'xxxxxxxxxxxxxxxxxxx'
 OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
-OAUTH_USER_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+OAUTH_USER_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 # Number of complimentary tests a newly registered user can conduct:
 NEW_USER_FREE_TESTS_COUNT = 50
@@ -335,13 +335,14 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = 'xxxxxxxxxxxxxxxx' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'xxxxxxxxxxxx' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
+SUBSCRIPTION_INFO_PATH = "/home/supriyo/work/testyard/testyard/skillstest/etc_conf/plans.csv"
 
 # Private groups needs the owner to allow members to be a part of it. Open groups may be joined by anyone. A hidden group will not
 # be listed by a search of the group by its name, but accessing its page will allow an user to request its owner to allow her/him in 
@@ -394,7 +395,7 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 # Payment gateway settings
 # PayU settings
 PAYU_POS_ID = 145227
-PAYU_SECOND_ID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx'
+PAYU_SECOND_ID = 'xxxxxxxxxxxxxxxxxxxx'
 PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -404,16 +405,16 @@ PAYPAL_LIVE_URL = "https://api.paypal.com"
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
 
-CUSTOMER_IP_ADDRESS = '192.168.43.55'
+CUSTOMER_IP_ADDRESS = '192.168.0.101'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = 'xxxxxxxxxxxxxxxxxxx'
-EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
+EASYAPI_PASSWORD = 'xxxxxxxxxx'
+EASYAPI_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxx'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 GO_DADDY_CUST_NUM = 73165291
-GO_DADDY_PASSWD = "xxxxxxxxxxxx"
+GO_DADDY_PASSWD = "xxxxxxxxxxxxxxx"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -425,24 +426,24 @@ PROCESSED_SCRIPT_DUMP = "processed"
 ###### AMAZON AWS API INFO ######
 
 ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
-SECRET_ACCESS_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+SECRET_ACCESS_KEY = "xxxxxxxxxxxxxxx"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "xxxxxxxxxxxxx"
+AMAZON_ACCT_PASSWD = "xxxxxxxxxxxxxx"
 
 AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "xxxxxxxxxx"
+IAM_PASSWD = "xxxxxxxxxxxxx"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "xxxxxxxxxxxxxxxxxxx"
+REPL_SECRET = "xxxxxxxxxxxx"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "xxxxxxxxxxxxxxx"
+REPL_PASSWORD = "xxxxxxxxxxx"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
