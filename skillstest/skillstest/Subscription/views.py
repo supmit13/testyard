@@ -21,7 +21,7 @@ import decimal, math
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
-from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
@@ -43,35 +43,37 @@ def subscriptions(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     plans = Plan.objects.all() # Getting all Plans.
-    current_plans_dict = {}
-    past_plans_dict = {}
+    plans_dict = {}
     subscription_data_dict = {}
     curdatetime = datetime.datetime.now()
+    planslistseq = []
     for pln in plans:
         planname = pln.planname
+        planslistseq.append(planname)
+        plandesc = pln.plandescription
+        planid = pln.id
         createdate = pln.createdate
         startdate, starttime = str(createdate).split(" ")
         planstatus = pln.status
         discountpercent = pln.discountpercent
-        """
-        totalcost = pln.totalcost
-        amtpaid = pln.amountpaid
-        amtdue = pln.amountdue
-        lastpaydate = pln.lastpaydate
-        subscribedon = pln.subscribedon
-        discountamountapplied = pln.discountamountapplied
-        if curdatetime > datetime.datetime(int(startyyyy), int(startmon), int(startdd), int(starthh), int(startmm), int(startss)) and curdatetime < datetime.datetime(int(endyyyy), int(endmon), int(enddd), int(endhh), int(endmm), int(endss)) and planstatus:
-            current_plans_dict[planname] = ( planname, planstartdate, planenddate, discountpercent, \
-                                             discountamountapplied, totalcost, amtpaid, amtdue, \
-                                             lastpaydate, subscribedon )
-        else: # plans subscribed to in the past...
-            past_plans_dict[planname] = ( planname, planstartdate, planenddate, discountpercent, \
-                                             discountamountapplied, totalcost, amtpaid, amtdue, \
-                                             lastpaydate, subscribedon )
-        """
-    subscription_data_dict['current'] = current_plans_dict
-    subscription_data_dict['past'] = past_plans_dict
+        discountamt = pln.discountamt
+        userplanqset = UserPlan.objects.filter(user=userobj, plan=pln, planstatus=True).order_by('-planenddate')
+        userplanobj = None
+        if list(userplanqset).__len__() > 0:
+            userplanobj = userplanqset[0]
+        plansubscribed = ""
+        if userplanobj:
+            plansubscribed = True
+        testscount = pln.tests
+        interviewscount = pln.interviews
+        candidates = pln.candidates
+        price = pln.price
+        plans_dict[planname] = [planname, plandesc, testscount, interviewscount, candidates, price, planid, createdate, discountpercent, discountamt, plansubscribed]
+    subscription_data_dict['plans'] = plans_dict
+    subscription_data_dict['plansseq'] = planslistseq
     subscription_data_dict['displayname'] = userobj.displayname
+    subscription_data_dict['plansubscribeurl'] = mysettings.PLAN_SUBSCRIBE_URL
+    subscription_data_dict['paymentgwoptionsurl'] = mysettings.PAYMENT_GW_OPTIONS_URL
     subscription_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     inc_context = skillutils.includedtemplatevars("Subscription", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
@@ -88,12 +90,49 @@ def subscriptions(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
-def showplans(request):
+def subscribeplan(request):
     message = ''
     if request.method != "GET" and request.method != 'POST': # Illegal bad request... 
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.SUBSCRIPTION_URL + "?msg=%s"%message)
         return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showpaymentgwoptions(request):
+    message = ''
+    if request.method != 'POST': # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.SUBSCRIPTION_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    planid = None
+    if not request.POST.has_key('planid'):
+        message = "Invalid request - no plan Id was found in the request."
+        return HttpResponse(message)
+    planid = request.POST['planid']
+    contextdict = { 'planid' : planid }
+    # Render content using 'contextdict'
+    tmpl = get_template("subscription/paymentgwoptions.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    try:
+        paymentgwoptionshtml = tmpl.render(cxt)
+    except:
+        print sys.exc_info()[1].__str__()
+        message = error_msg('1132')
+        response = HttpResponse(message)
+        return response
+    response = HttpResponse(paymentgwoptionshtml)
+    return response
+
+
+
 
 
 

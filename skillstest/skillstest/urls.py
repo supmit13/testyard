@@ -162,6 +162,9 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.EVALUATOR_COUNT_TESTS_URL, 'skillstest.Analytics.views.evaluatorcounttests', name='evaluatorcounttests'),
     url(r'%s$'%mysettings.EVALUATOR_ANSTIME_URL, 'skillstest.Analytics.views.evaluatoranswerscriptsbytime', name='evaluatoranswerscriptsbytime'),
 
+    url(r'%s$'%mysettings.PLAN_SUBSCRIBE_URL, 'skillstest.Subscription.views.subscribeplan', name='subscribeplan'),
+    url(r'%s$'%mysettings.PAYMENT_GW_OPTIONS_URL, 'skillstest.Subscription.views.showpaymentgwoptions', name='showpaymentgwoptions'),
+
     url(r'%s$'%mysettings.MOBILE_VERIFY_CREDS_URL, 'skillstest.Auth.views.mobile_verifypassword', name='mobile_verifypassword'),
     url(r'%s$'%mysettings.MOBILE_LIST_TESTS_INTERVIEWS_URL, 'skillstest.Tests.views.mobile_listtestsandinterviews', name='mobile_listtestsandinterviews'),
     url(r'%s$'%mysettings.MOBILE_TEST_CREATE_URL, 'skillstest.Tests.views.mobile_createtest', name='mobile_createtest'),

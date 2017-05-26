@@ -30,7 +30,7 @@ practise tests sessions will be billed to the candidates (since the conductor of
 as a service from which candidates stand to gain financially and intellectually if they pass these tests).
 """
 class Plan(models.Model):
-    planname = models.CharField(max_length=200, null=False,blank=False, primary_key=True)
+    planname = models.CharField(max_length=200, null=False,blank=False)
     tests = models.IntegerField(null=False, blank=False, default=0) # Number of tests included in the plan.
     interviews = models.IntegerField(null=False, blank=False, default=0) # Number of interviews included in the plan.
     plandescription = models.TextField(default='')
@@ -107,7 +107,7 @@ class Transaction(models.Model):
     username = models.CharField(max_length=100, null=False, blank=False, validators=[ validate_user, ])
     user = models.ForeignKey(User, null=False, blank=False)
     orderId = models.CharField(max_length=40, null=False, blank=False)
-    planname = models.CharField(max_length=200, null=True, blank=True, default=None) # This will have a value if user registers for a subscription plan.
+    plan = models.ForeignKey(Plan, null=True, blank=True) # This will have a value if user registers for a subscription plan.
     group = models.ForeignKey(Group, null=True, blank=True) # This will have a value when a user registers for a paid  group.
     usersession = models.CharField(max_length=100, blank=False, null=False, validators=[ validate_session, ])
     payamount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
@@ -143,15 +143,15 @@ class Coupon(models.Model):
         return "Coupon Code: %s\n"%(self.couponcode)
 
 
-class CouponUser(models.Model):
+class UserCoupon(models.Model):
     coupon = models.ForeignKey(Coupon, blank=False, null=False)
     user = models.ForeignKey(User, blank=False, null=False)
     usedate = models.DateTimeField(auto_now=True)
     plan = models.ForeignKey(Plan, blank=False, null=False)
 
     class Meta:
-        verbose_name = "CouponUser Table"
-        db_table = 'Subscription_couponuser'
+        verbose_name = "UserCoupon Table"
+        db_table = 'Subscription_usercoupon'
 
 
 
