@@ -1306,6 +1306,51 @@ def confirmpayment_payu(request):
         buyerfirstname = request.POST['buyerfirstname']
     if request.POST.has_key('buyerlastname'):
         buyerlastname = request.POST['buyerlastname']
+    # First, make a request to get Bearer Id
+    payuposid = mysettings.PAYU_POS_ID
+    payuclientsecret = mysettings.PAYU_CLIENT_SECRET
+    client_ip = skillutils.get_client_ip(request)
+    postdata = "grant_type=client_credentials&client_id=" + payuposid + "&client_secret=" + payuclientsecret;
+    no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'application/json', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive', 'Host' : mysettings.PAYU_DOMAIN, 'Cache-Control' : 'no-cache', 'Pragma' : 'no-cache' }
+    content_length = postdata.__len__()
+    httpHeaders['Content-Length'] = content_length
+    pageRequest = urllib2.Request(mysettings.PAYU_AUTH_BEARER_CODE_URL, postdata, httpHeaders)
+    try:
+        pageResponse = no_redirect_opener.open(pageRequest)
+    except:
+        pageResponse = None
+    if not pageResponse:
+        message = "Could not get the bearer code: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    pageContent = pageResponse.read()
+    bearerinfodict = json.loads(pageContent)
+    bearertoken = bearerinfodict['access_token']
+    # Now, make the call to the PAYU orders API endpoint...
+    ordersUrl = mysettings.PAYU_ORDERS_URL
+    httpHeaders['Authorization'] = "Bearer %s"%bearertoken
+    httpHeaders['Content-Type'] = "application/json"
+    urlnotify = mysettings.URL_PROTOCOL + request.META['SERVER_NAME'] + "/" + mysettings.MY_PAYU_NOTIFY_URL_PATH
+    data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(int(float(totalamount))*100), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(int(float(productunitprice))*100),  "quantity": "1"  }]}
+    jsondata = json.dumps(data)
+    content_length = jsondata.__len__()
+    httpHeaders['Content-Length'] = content_length
+    pageRequest = urllib2.Request(ordersUrl, jsondata, httpHeaders)
+    try:
+        pageResponse = no_redirect_opener.open(pageRequest)
+    except:
+        pageResponse = None
+    if not pageResponse:
+        message = "Could not get the orders page: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    jsonContent = pageResponse.read()
+    contentDict = json.loads(jsonContent)
+    orderId = contentDict['orderId']
+    redirectUri = contentDict['redirectUri']
+    status = contentDict['status']
+    response = HttpResponse(redirectUri)
     # Add a record in the Network_groupjoinrequest table.
     joinreq = GroupJoinRequest()
     groupobj = Group.objects.get(id=groupid)
@@ -1318,15 +1363,15 @@ def confirmpayment_payu(request):
     joinreq.orderId = orderId
     joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
     joinreq.outcome = 'open'
-    joinreq.active = True
+    joinreq.active = False # IMPORTANT NOTE: Remember to set this to 'True' when the transaction completes successfully.
     joinreq.reason = 'payment in progress'
-    
     # Create a transaction object and post the data to payU ordering API
     txnobj = Transaction()
     txnobj.orderId = orderId
     txnobj.username = userobj.displayname
     txnobj.user = userobj
     txnobj.group = groupobj
+    txnobj.plan = None
     txnobj.usersession = sesscode
     joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
     xchngusd = skillutils.fetch_currency_rate('USD', 'INR')
@@ -1341,111 +1386,18 @@ def confirmpayment_payu(request):
         txnobj.payamount = groupobj.entryfee * xchngeur
     else:
         pass
+    txnobj.transactiondate = datetime.datetime.now()
     txnobj.paymode = 'PAYU'
     txnobj.comments = "Join paid group named '%s' by user '%s'"%(groupobj.groupname, userobj.displayname)
     txnobj.invoice_email = buyeremail
     txnobj.trans_status = False # Initialized to False. Once payment is made, it will be updated to True.
-    
-    payuparamsdict = {}
-    #payuparamsdict['customerIp'] = customerIP
-    payuparamsdict['customerIp'] = "127.0.0.1"
-    payuparamsdict['merchantPosId'] = posId
-    payuparamsdict['description'] = orderdesc
-    payuparamsdict['currencyCode'] = mysettings.DEFAULT_CURRENCY
-    payuparamsdict['totalAmount'] = str(txnobj.payamount)
-    payuparamsdict['products[0].name'] = groupobj.groupname
-    payuparamsdict['products[0].unitPrice'] = str(txnobj.payamount)
-    payuparamsdict['products[0].quantity'] = "1"
-    payuparamsdict['continueUrl'] = continueurl
-    payuparamsdict['buyer.email'] = buyeremail
-    payuparamsdict['buyer.phone'] = buyerphone
-    payuparamsdict['buyer.firstName'] = buyerfirstname
-    payuparamsdict['buyer.lastName'] = buyerlastname
-    signature = _create_payu_signature(payuparamsdict, mysettings.PAYU_SECOND_ID, mysettings.PAYU_POS_ID)
-    payuparamsdict['OpenPayu-Signature'] = signature
-    payudata = urllib.urlencode(payuparamsdict)
-    print payudata
-    #payuparamsdict = { 
-    #	"customerIp": customerIP, \
-    #	"merchantPosId": str(posId), \
-    #	"description": str(orderdesc),\
-    #	"currencyCode": mysettings.DEFAULT_CURRENCY, \
-    #	"totalAmount": str(txnobj.payamount), \
-    #	"extOrderId":orderId, \
-    #	"buyer": { \
-    # 		"email": buyeremail, \
-    # 		"phone": str(buyerphone), \
-    # 		"firstName": userobj.firstname, \
-    # 		"lastName": userobj.lastname \
-    #	        },\
-    #	"products": [ \
-    #   		{ \
-    #       	"name": groupobj.groupname,\
-    #       	"unitPrice": str(txnobj.payamount), \
-    #       	"quantity": "1" \
-    #   	        },\
-    #	],\
-    #    "continueUrl" : urllib.quote_plus(continueurl), \
-    #}
-    #payuparamsdict["OpenPayu-Signature"] = _create_payu_signature(payuparamsdict, mysettings.PAYU_SECOND_ID, mysettings.PAYU_POS_ID)
-    #payuparamsdict_str = json.dumps(payuparamsdict)
-    # Create a POST request with the above data and send it to /api/v2_1/orders
-    headers = { 'Host' : 'developers.payu.com', 'Cache-Control' : 'max-age=0', 'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Accept-Language' : 'en-US,en;q=0.8', 'Connection' : 'keep-alive', 'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.120 Chrome/37.0.2062.120 Safari/537.36', 'Cookie' : '_vis_opt_s=1%7C; _vis_opt_test_cookie=1;', 'If-Modified-Since' : '' }
-    #headers['Authorization'] = 'Basic ' + str(base64.b64encode(str(mysettings.PAYU_POS_ID) + ":" + mysettings.PAYU_SECOND_ID))
-    # Throw a GET request at the Start page of payu payment gateway to get the cookies
-    (status, httpresp) = _sendrequest(mysettings.PAYU_START_URL, 'GET', None, headers)
-    if type(httpresp) == str:
-        print "Error sending request: " + httpresp
-        response = HttpResponse(httpresp)
-        return response
-    respheaders = httpresp.info()
-    cookiestr = ""
-    if respheaders.has_key('Set-Cookie'):
-        httponlypattern = re.compile("HttpOnly", re.IGNORECASE)
-        cookies = respheaders['Set-Cookie']
-        cookieparts = cookies.split(";")
-        for cookie in cookieparts:
-            print cookie
-            cookiekeyvals = cookie.split("=")
-            if cookiekeyvals.__len__() == 2:
-                cookiekey, cookieval = cookiekeyvals[0], cookiekeyvals[1]
-            else:
-                continue
-            if cookiekey == 'Path' or cookiekey == 'path' or cookiekey == 'secure' or cookiekey == 'Expires' or cookiekey=='HttpOnly' or cookiekey == 'expires':
-                continue
-            if httponlypattern.search(cookiekey):
-                cookiekey = cookiekey.replace(" HttpOnly, ", "")
-            cookiestr += cookiekey + "=" + cookieval + ";"
-    cookiestr = cookiestr[:-1]
-    print cookiestr, "EEEEEEEEEEEEEEEEEEEEEEEEEEEEE"
-    headers = { 'Content-Type' : "application/x-www-form-urlencoded", 'Host' : 'secure.payu.com', 'Origin' : '', 'Cache-Control' : 'max-age=0', 'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8', 'Accept-Encoding' : 'gzip,deflate', 'Accept-Language' : 'en-US,en;q=0.8', 'Connection' : 'keep-alive', 'User-Agent' : 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/37.0.2062.120 Chrome/37.0.2062.120 Safari/537.36', 'Cookie' : cookiestr }
-    (status, httpresp) = _sendrequest(mysettings.PAYU_ORDER_CREATION_URL, 'POST', payudata, headers)
-    encpayucontent = httpresp.read()
-    responseHeaders = httpresp.info()
-    for hdr in responseHeaders.keys():
-        print hdr + " ===== >> " + responseHeaders[hdr] + "\n"
-    payucontent = skillutils.decodeGzippedContent(encpayucontent)
-    if not status:
-        message += "<font color='#AA0000' style='font-weight:bold'>" + payucontent + "</font>"
-    else:
-        print payucontent
-        """
-        try:
-            txnobj.save()
-        except:
-            message += "Could not save transaction object - Error: %s"%sys.exc_info()[1].__str__()
-            response = HttpResponse(message)
-            return response
-        try:
-            joinreq.save()
-        except:
-            message = "Could not save join request - Error: %s"%sys.exc_info()[1].__str__()
-            response = HttpResponse(message)
-            return response
-        message += "<br>Saved joinrequest and transaction objects.<br>"
-        """
-    #print "\n##############################\n", data, "\n#################################\n"
-    response = HttpResponse(payucontent)
+    txnobj.clientIp = ""
+    txnobj.extOrderId = ""
+    try:
+        txnobj.save()
+        joinreq.save()
+    except:
+        response = HttpResponse(sys.exc_info()[1].__str__())
     return response
 
 
@@ -1463,14 +1415,11 @@ def _sendrequest(target, method, data, headers={}):
     try:
         resp = opener.open(request)
     except:
-        print "DDDDDDDDDDDDDDDDDDDDDD",sys.exc_info()[1].__str__()
         respcode = resp.getcode()
-        print respcode, "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW"
         if respcode == '304':
             respheaders = resp.info()
             if respheaders.has_key('Location'):
                 target = respheaders['Location']
-                print target, "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"
                 (status, resp) = _sendrequest(target, method, data, headers)
                 return (1, resp)
             else:

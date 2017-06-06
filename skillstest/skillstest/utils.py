@@ -25,7 +25,7 @@ from skillstest.Auth.models import User, Session
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse
-from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon
 from skillstest.Network.models import ExchangeRates
 
 multiplecommapattern = re.compile("\,+")
@@ -855,5 +855,26 @@ def repl_token_generator():
     digest = digest_maker.hexdigest()
     return digest
 
+
+def applycoupon(couponobj, xobj, objtype='plan'):
+    """
+    Function to apply a coupon on either the subscription of a plan or
+    the joining in a paid group.
+    """
+    couponamt = couponobj.discount_value
+    actualamt = 0.00
+    if not xobj:
+        return None
+    if objtype == 'plan':
+        actualamt = xobj.price
+    elif objtype == 'group':
+        actualamt = xobj.entryfee
+    else: # objtype is neither 'plan' nor 'group'. Not recognized by this function.
+        return None
+    discountedamt = float(actualamt) - float(couponamt)
+    # if discountedamt is negative, make it 0
+    if discountedamt < float(0):
+        discountedamt = 0.00
+    return discountedamt
 
 

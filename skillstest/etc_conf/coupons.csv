@@ -1,0 +1,4 @@
+"Coupon Code","Coupon Description","Coupon Value","Coupon Start Date (yyyy-mm-dd)","Coupon Expiry Date (yyyy-mm-dd)","Coupon Status","Coupon Currency Unit (Default is USD)","Max use count"
+"MEMDAY","Coupon to commemorate Memorial day","10","2017-05-29","2017-06-29","True","","100"
+"RICOH","Coupon to Ricoh employees","14","2017-05-29","2017-06-29","True","","85"
+

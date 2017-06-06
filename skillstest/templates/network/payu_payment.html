@@ -35,7 +35,9 @@ function makepayment_payu(){
         if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 	    //alert(xmlhttp.responseText);
 	    waiterspan.innerHTML = "";
-	    document.write(xmlhttp.responseText);
+	    payu_url = xmlhttp.responseText;
+	    payuwin = window.open(payu_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+            self.close();
         }
     };
     xmlhttp.open('POST', targeturl, true);
@@ -85,7 +87,7 @@ function makepayment_paypal(){
     <tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Contact Number (Required for transactions through PayU):</font><input type='text' name='buyerphone' id='buyerphone' value='{{buyerphone}}' required> </td></tr>
     </table>
     {% csrf_token %}
-    <center><input type="button" name='btnconfirmpayment_payu' id='btnconfirmpayment_payu' value="Yes, pay using PayU"  onClick="javascript:makepayment_payu();"><span id='waiter'></span>&nbsp;&nbsp;<input type="button" name='btnconfirmpayment_payu' id='btnconfirmpayment_payu' value="Yes, pay using paypal"  onClick="javascript:makepayment_paypal();"><span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
+    <center><input type="button" name='btnconfirmpayment_payu' id='btnconfirmpayment_payu' value="Yes, pay using Bank Transfer/Debit/Credit Cards"  onClick="javascript:makepayment_payu();"><span id='waiter'></span>&nbsp;&nbsp;<!-- <input type="button" name='btnconfirmpayment_paypal' id='btnconfirmpayment_paypal' value="Yes, pay using paypal"  onClick="javascript:makepayment_paypal();"> <a href="/#" data-paypal-button="true" onClick='javascript:makepayment_paypal();'>  <img src="//www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Check out with PayPal" /></a>--><span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
 </form >
 </body>
 </html>

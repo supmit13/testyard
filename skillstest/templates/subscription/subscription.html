@@ -7,7 +7,7 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
+	  background-color:#4D94FF;
 	  color:#FFFFFF;
 	  position:absolute; top:250px; left:100px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
@@ -18,9 +18,9 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
+	  background-color:#4D94FF;
 	  color:#FFFFFF;
-	  position:absolute; top:250px; left:100px; width:80%; height:25%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	  position:absolute; top:250px; left:100px; width:80%; height:35%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
 
 	.tbl-fixed-width{
@@ -83,8 +83,57 @@
 	}
 
 
-	function subscribestep2(planid, method){
+	function subscribepayu(planid){
+	    postdata = "planid=" + planid + "&csrfmiddlewaretoken=" + document.frmsubscription.csrfmiddlewaretoken.value;
+    	    couponcode = document.frmgwchoices.couponcode.value;
+	    postdata += "&couponcode=" + couponcode;
+	    waitspan = document.getElementById('waitwidgetpayu');
+	    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    payu_url = xmlhttp.responseText;
+		    payuwin = window.open(payu_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+		    waitspan.innerHTML = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{plansubscribeurl}}', true);
+	    xmlhttp.send(postdata);
 	}
+
+
+	function subscribepaypal(planid){
+	    postdata = "planid=" + planid + "&csrfmiddlewaretoken=" + document.frmsubscription.csrfmiddlewaretoken.value;
+    	    couponcode = document.frmgwchoices.couponcode.value;
+	    postdata += "&couponcode=" + couponcode;
+	    waitspan = document.getElementById('waitwidgetpaypal');
+	    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    //paypal_url = xmlhttp.responseText;
+		    //paypalwin = window.open(paypal_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+		    waitspan.innerHTML = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{plansubscribepaypalurl}}', true);
+	    xmlhttp.send(postdata);
+ 	}
+
 
 	function closegwoptions(){
 	    targetdiv = document.getElementById('transscreens2');

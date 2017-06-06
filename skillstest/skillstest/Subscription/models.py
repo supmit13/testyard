@@ -53,6 +53,25 @@ class Plan(models.Model):
         return "Tests: %s in %s %s, Price: %s\n"%(self.tests, self.planvalidfor.__str__(), self.validfor_unit, self.price.__str__())
 
 
+class Coupon(models.Model):
+    coupon_code = models.CharField(max_length=100, null=False, blank=False, unique=True)
+    coupon_description = models.TextField(default='')
+    valid_from = models.DateTimeField(auto_now=True)
+    valid_till = models.DateTimeField(default=None)
+    discount_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    max_use_count = models.IntegerField(default=0)
+    currency_unit = models.CharField(max_length=3, null=False, blank=False, default='USD')
+    status = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Coupons Table"
+        db_table = 'Subscription_coupon'
+    
+    def __unicode__(self):
+        return "Coupon Code: %s\n"%(self.couponcode)
+
+
+
 """
 Information of plans bought by various Users. This will just list out which user chose
 which plan and since when. The actual transaction level info is not stored in this table.
@@ -72,6 +91,7 @@ class UserPlan(models.Model):
     subscribedon = models.DateTimeField(auto_now=True) # Creation date of the record. Mostly same as 'planstartdate'
     discountpercentapplied = models.FloatField(null=True, blank=True, default=0.0)
     discountamountapplied = models.FloatField(null=True, blank=True, default=0.0)
+    coupon = models.ForeignKey(Coupon, null=True, blank=True)
 
 
     class Meta:
@@ -116,6 +136,8 @@ class Transaction(models.Model):
     paymode = models.CharField(max_length=50, null=False, blank=False, default='PAYU')
     invoice_email = models.EmailField(validators=[validate_email, ])
     trans_status = models.BooleanField(default=False)
+    clientIp = models.CharField(max_length=20, null=False, blank=True)
+    extOrderId = models.CharField(max_length=40, null=True, blank=True)
 
     class Meta:
         verbose_name = "Transactions Table"
@@ -125,29 +147,11 @@ class Transaction(models.Model):
         return "Plan Name: %s of User: %s\n"%(self.planname, self.username)
 
 
-class Coupon(models.Model):
-    coupon_code = models.CharField(max_length=100, null=False, blank=False, unique=True)
-    coupon_description = models.TextField(default='')
-    valid_from = models.DateTimeField(auto_now=True)
-    valid_till = models.DateTimeField(default=None)
-    discount_value = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    max_use_count = models.IntegerField(default=0)
-    currency_unit = models.CharField(max_length=3, null=False, blank=False, default='USD')
-    status = models.BooleanField(default=True)
-
-    class Meta:
-        verbose_name = "Coupons Table"
-        db_table = 'Subscription_coupon'
-    
-    def __unicode__(self):
-        return "Coupon Code: %s\n"%(self.couponcode)
-
-
 class UserCoupon(models.Model):
     coupon = models.ForeignKey(Coupon, blank=False, null=False)
     user = models.ForeignKey(User, blank=False, null=False)
     usedate = models.DateTimeField(auto_now=True)
-    plan = models.ForeignKey(Plan, blank=False, null=False)
+    transaction = models.ForeignKey(Transaction, blank=False, null=True)
 
     class Meta:
         verbose_name = "UserCoupon Table"
