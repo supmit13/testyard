@@ -93,9 +93,9 @@ SECURE_HSTS_SECONDS = 31536000
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = 'xxxxxxxx'
+EMAIL_HOST_PASSWORD = 'xxxxxxxxxxxxx'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = 'xxxxxxxx'
+#EMAIL_HOST_PASSWORD = 'xxxxxxxxxxx'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -235,6 +235,8 @@ EVALUATOR_ANSTIME_URL = "skillstest/analytics/evaluator/ansbytime/"
 
 PLAN_SUBSCRIBE_URL = "skillstest/subscriptions/subscribe/"
 PAYMENT_GW_OPTIONS_URL = "skillstest/subscriptions/paymentgwoptions/"
+PAYU_NOTIFY_URL = "skillstest/subscription/notify/"
+SUBSCRIBE_PAYPAL_URL = "skillstest/subscriptions/paypal/subscribe/"
 
 MOBILE_VERIFY_CREDS_URL = "skillstest/mobile/verifycreds/"
 MOBILE_LIST_TESTS_INTERVIEWS_URL = "skillstest/mobile/listtestsinterviews/"
@@ -324,10 +326,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = 'xxxxxxxxxxx'
-OAUTH_SECRET_KEY = 'xxxxxxxxxxxxxx'
-OAUTH_USER_TOKEN = 'xxxxxxxxxxxxxxxxxxxxxxxxxx'
-OAUTH_USER_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+OAUTH_API_KEY = 'xxxxxxxxxxxxxxxx'
+OAUTH_SECRET_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxx'
+OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
+OAUTH_USER_SECRET = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 
 # Number of complimentary tests a newly registered user can conduct:
 NEW_USER_FREE_TESTS_COUNT = 50
@@ -338,7 +340,7 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = 'xxxxxxxxxxxx' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'xxxxxxxxxxxxxxxxx' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
 BITLY_OAUTH_ACCESS_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
@@ -347,6 +349,8 @@ BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 LOG_PATH = "/home/supriyo/work/testyard/logs"
 SUBSCRIPTION_INFO_PATH = "/home/supriyo/work/testyard/testyard/skillstest/etc_conf/plans.csv"
 COUPON_INFO_PATH = "/home/supriyo/work/testyard/testyard/skillstest/etc_conf/coupons.csv"
+PLAN_REMOVAL_PATH = "/home/supriyo/work/testyard/testyard/skillstest/etc_conf/plan_delete.csv"
+COUPON_REMOVAL_PATH = "/home/supriyo/work/testyard/testyard/skillstest/etc_conf/coupons_delete.csv"
 
 # Private groups needs the owner to allow members to be a part of it. Open groups may be joined by anyone. A hidden group will not
 # be listed by a search of the group by its name, but accessing its page will allow an user to request its owner to allow her/him in 
@@ -398,13 +402,30 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 
 # Payment gateway settings
 # PayU settings
-PAYU_POS_ID = 145227
-PAYU_SECOND_ID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+#PAYU_POS_ID = 145227
+PAYU_POS_ID = "301085"
+PAYU_CLIENT_SECRET = "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
+PAYU_SECOND_ID = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+PAYU_POS_AUTH_KEY = "xxxxxxxxxxx"
 PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
+MY_PAYU_NOTIFY_URL_PATH = "skillstest/subscription/notify/"
+
+PAYU_AUTH_BEARER_CODE_URL = "https://secure.snd.payu.com/pl/standard/user/oauth/authorize"
+PAYU_ORDERS_URL = "https://secure.snd.payu.com/api/v2_1/orders"
+PAYU_DOMAIN = "secure.snd.payu.com"
+
 PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
+
+PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
+PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
+PAYPAL_RETURN_URL = "http://www.paypal.com/return"
+PAYPAL_CANCEL_URL = "http://www.paypal.com/cancel"
 
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
@@ -413,12 +434,12 @@ CUSTOMER_IP_ADDRESS = '192.168.0.101'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = 'xxxxxxxxxx'
-EASYAPI_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxx'
+EASYAPI_PASSWORD = 'xxxxxxxxxxxxxxxx'
+EASYAPI_KEY = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
 GO_DADDY_CUST_NUM = 73165291
-GO_DADDY_PASSWD = "xxxxxxxxxxxxxx"
+GO_DADDY_PASSWD = "xxxxxxxxxxxxxxx"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -429,16 +450,16 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
+ACCESS_KEY_ID = "xxxxxxxxxxxxxxxxxxxxxx"
 SECRET_ACCESS_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "xxxxxxxxxxx"
+AMAZON_ACCT_PASSWD = "xxxxxxxxxxxxxx"
 
 AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "xxxxxxxxxxxx"
+IAM_PASSWD = "xxxxxxxxxxxxx"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
@@ -447,7 +468,7 @@ IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This wi
 REPL_HOST = "api.repl.it"
 REPL_SECRET = "xxxxxxxxxxxxxxxxxxxx"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "xxxxxxxxxxxxxxxxs"
+REPL_PASSWORD = "xxxxxxxxxxxxxxxxxx"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
