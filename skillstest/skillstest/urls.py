@@ -132,6 +132,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MANAGE_GROUP_MEMBERS_URL, 'skillstest.Network.views.managegroupmembers', name='managegroupmembers'),
     url(r'%s$'%mysettings.SAVE_GROUP_MEMBERS_URL, 'skillstest.Network.views.savegroupmembers', name='savegroupmembers'),
     url(r'%s$'%mysettings.MEMBER_SEARCH_URL, 'skillstest.Network.views.searchmember', name='searchmember'),
+    url(r'%s$'%mysettings.MANAGE_OWNED_GROUPS_URL, 'skillstest.Network.views.manageownedgroups', name='manageownedgroups'),
 
     url(r'%s$'%mysettings.SAVE_OPTIONAL_INFO_URL, 'skillstest.views.saveoptionalinfo', name='saveoptionalinfo'),
     url(r'%s$'%mysettings.SET_TEST_SCHEDULE_URL, 'skillstest.Tests.views.setschedule', name='setschedule'),

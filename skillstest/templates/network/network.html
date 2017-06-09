@@ -1,5 +1,5 @@
 	{% include "inc/html_head.html" %}
-
+	
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -33,6 +33,27 @@
 	   font-family: Verdana, Verdana,Courier";
 	   size: -1;
 	   color: #0000AA;
+	}
+	</style>
+
+	<style type="text/css">
+	.subtable{
+		width:100%; 
+		border:0; 
+	}
+	.subtable td{ 
+		padding:7px; width:100%;
+	}
+	.subtable tr{
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.subtable tr:nth-child(odd){ 
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.subtable tr:nth-child(even){
+		background: #a7eaf2;
 	}
 	</style>
 
@@ -2002,10 +2023,48 @@
             xmlhttp.send(postdata);
         }
 
+	
+	function manageownedgrpsscreen(){
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;        
+	    transdiv = document.getElementById('transscreens');
+            transdiv.style.display = "";
+ 	    waitdiv = document.getElementById('managewait');
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    closemessagescreen();
+                    transdiv.innerHTML = xmlhttp.responseText;
+		    transdiv.style.display = "";
+		    waitdiv.innerHTML = "";
+		    //alert(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open('POST', '{{manageownedgrpsurl}}', true);
+            xmlhttp.send(postdata);
+	    waitdiv.style.display = "";
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function editpaidmetrics(){
+	    alert("Here");
+	}
+
+
+	function savegroupinfo(gid){
+	}
+
 
 	</script>
-	
+		
 		{% include "inc/mission_statement.html" %}
+		
 		<!-- ### Post Entry Begin ###  -->
 
 		<div class="post">
@@ -2017,6 +2076,7 @@
 			<h3><font color='#00AA00'>... or join one <a href='#/' onClick='javascript:displayjoinagroupscreen();'>here</a></font></h3>
 			<h3><font color='#00AA00'>may be, you would like to <a href='#/' onClick='javascript:displayaddcontactscreen();'>add</a> a contact?</font></h3>
 			<h3><font color='#00AA00'>Or you might want to <a href='#/' onClick='javascript:displaypostamessagescreen();'>post</a>  a message</font></h3><br />
+			<h3><font color='#00AA00'><a href='#/' onClick='javascript:manageownedgrpsscreen();'>Manage</a> owned groups</font></h3><div id='managewait'></div><br />
 			<h3><font color='#00AA00'>Give a test to one or more groups <a href='#/' onClick='javascript:givetesttogroups();'>here</a></font></h3><br />
 			</div>
 			<div style='display:none;' id="transscreens" class="semitrans"></div>

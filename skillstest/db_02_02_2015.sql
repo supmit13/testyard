@@ -889,8 +889,6 @@ create table `Subscription_coupon` (
     `currency_unit` VARCHAR(3) DEFAULT "USD"
 )ENGINE=Innodb;
 
-COMMIT;
-
 
 alter table Subscription_plan modify column tests integer default 0 not null;
 alter table Subscription_plan add column interviews integer default 0 not null;
@@ -900,6 +898,57 @@ alter table Subscription_plan drop foreign key adminuser_id_refs_id_665322f6;
 alter table Subscription_plan drop column adminuser_id;
 alter table Subscription_plan drop column commissiondate;
 alter table Subscription_plan drop column decommissiondate;
+
+alter table Subscription_transaction drop column planname;
+alter table Subscription_transaction add column plan_id integer NOT  NULL;
+
+set FOREIGN_KEY_CHECKS=0;
+drop table Subscription_plan;
+CREATE TABLE `Subscription_plan` (
+  id integer AUTO_INCREMENT NOT NULL,
+  planname varchar(200) NOT NULL unique,
+  tests int(11) NOT NULL DEFAULT '0',
+  price decimal(10,2) NOT NULL,
+  validfor_unit varchar(12) NOT NULL,
+  planvalidfor int(11) NOT NULL,
+  status tinyint(1) NOT NULL,
+  discountpercent double DEFAULT NULL,
+  discountamt double DEFAULT NULL,
+  createdate datetime NOT NULL,
+  interviews int(11) NOT NULL DEFAULT '0',
+  plandescription text,
+  candidates int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+create table `Subscription_couponuser` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `coupon_id` INTEGER NOT NULL,
+    `user_id` INTEGER NOT NULL,
+    `usedate` DATETIME NOT NULL,
+    `plan_id` INTEGER NOT NULL,
+    FOREIGN KEY (`coupon_id`) REFERENCES `Subscription_coupon` (`id`),
+    FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`),
+    FOREIGN KEY (`plan_id`) REFERENCES `Subscription_plan` (`id`)
+)ENGINE=Innodb;
+
+rename table `Subscription_couponuser` to `Subscription_usercoupon`;
+
+SET FOREIGN_KEY_CHECKS=0;
+alter table Subscription_usercoupon drop foreign key Subscription_usercoupon_ibfk_3;
+alter table Subscription_usercoupon drop column plan_id;
+SET FOREIGN_KEY_CHECKS=1;
+
+alter table Subscription_usercoupon add column transaction_id INT, add FOREIGN KEY fk_trans(transaction_id) references Subscription_transaction(id) ON DELETE CASCADE;
+
+alter table Subscription_userplan add column coupon_id INT, add FOREIGN KEY fk_coupon(coupon_id) references Subscription_coupon(id) ON DELETE CASCADE;
+
+alter table Subscription_transaction add column clientIp varchar(20) not NULL;
+alter table Subscription_transaction add column extOrderId varchar(40) default '';
+
+alter table Subscription_transaction modify column plan_id int NULL;
+
+COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

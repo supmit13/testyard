@@ -72,6 +72,7 @@ def get_network_template_vars(userobj):
     templatevars['removeuserurl'] = mysettings.REMOVE_USER_URL
     templatevars['sendmessageurl'] = mysettings.SEND_MESSAGE_URL
     templatevars['managemembersurl'] = mysettings.MANAGE_GROUP_MEMBERS_URL
+    templatevars['manageownedgrpsurl'] = mysettings.MANAGE_OWNED_GROUPS_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -120,6 +121,7 @@ def network(request):
     # Display contacts and groups associated with the user.
     contactsqset = Connection.objects.filter(focususer=userobj, deleted=False)
     groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False)
+    groupsownerqset = Group.objects.filter(owner=userobj)
     connectioninvitationsqset = ConnectionInvitation.objects.filter(touser=userobj, invitationstatus='open').order_by('invitationdate')
     contacts = []
     groups = []
@@ -2904,8 +2906,56 @@ def searchmember(request):
     return response
 
 
-
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def manageownedgroups(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    contextdict = {}
+    groupsdict = {}
+    groupsownerqset = Group.objects.filter(owner=userobj)
+    for group in groupsownerqset:
+        gid = str(group.id)
+        groupname = str(group.groupname)
+        tagline = str(group.tagline)
+        description = str(group.description)
+        maxmemberslimit = str(group.maxmemberslimit)
+        status = str(group.status)
+        grouptype = str(group.grouptype)
+        allowentry = group.allowentry
+        groupimagefile = "media/" + group.owner.displayname + "/groups/" + groupname + "/" + str(group.groupimagefile)
+        topic = str(group.basedontopic)
+        ispaid = group.ispaid
+        currency = str(group.currency)
+        entryfee = str(group.entryfee)
+        ownerpermreqd = str(group.require_owner_permission)
+        try:
+            bankacct = OwnerBankAccount.objects.get(groupowner=userobj,group=group)
+            bankname = str(bankacct.bankname)
+            bankbranch = str(bankacct.bankbranch)
+            accountnumber = str(bankacct.accountnumber)
+        except:
+            bankname = ""
+            bankbranch = ""
+            accountnumber = ""
+        if not groupsdict.has_key(gid):
+            groupsdict[gid] = [ gid, groupname, tagline, description, maxmemberslimit, status, grouptype, allowentry, groupimagefile, topic, ispaid, currency, entryfee, ownerpermreqd, bankname, bankbranch, accountnumber ]
+    contextdict['groups'] = groupsdict
+    alltopics = mysettings.TEST_TOPICS
+    contextdict['alltopics'] = alltopics
+    contextdict['alltypes'] = mysettings.TEST_SCOPES
+    tmpl = get_template("network/ownedgrps.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    ownedgrpshtml = tmpl.render(cxt)
+    response = HttpResponse(ownedgrpshtml)
+    return response
 
 
 
