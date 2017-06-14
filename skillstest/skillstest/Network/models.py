@@ -182,5 +182,33 @@ class ExchangeRates(models.Model):
         verbose_name = "Exchange Rates Table"
         db_table = 'Network_exchangerates'
 
+# All amounts are stored as US dollars.
+class SubscriptionEarnings(models.Model):
+    user = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    balance = models.IntegerField(default=0) # This is the amount left after all withdrawals from the earnings.
+    earnings = models.IntegerField(default=0) # This is the total amount earned since the account came into existence.
+    lasttransactdate = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "SubscriptionEarnings Table"
+        db_table = 'Network_subscriptionearnings'
+
+
+# This table keeps track of all individual transactions performed on any paid group
+class GroupPaidTransactions(models.Model):
+    group = models.ForeignKey(Group, related_name="+", null=False, blank=False)
+    payer = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    amount = models.IntegerField(null=False, blank=False, default=0)
+    currency = models.CharField(max_length=3, null=False, blank=False)
+    transdatetime = models.DateTimeField(auto_now=True) # Date and time at which the transaction was made.
+    payeripaddress = models.CharField(max_length=20, null=True, blank=True, default='')
+
+    class Meta:
+        verbose_name = "GroupPaidTransactions Table"
+        db_table = 'Network_grouppaidtransactions'
+
+
+
+
 
 

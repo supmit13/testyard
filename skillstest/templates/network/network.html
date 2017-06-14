@@ -56,7 +56,7 @@
 		background: #a7eaf2;
 	}
 	</style>
-
+	{% load extratemptags %}
 	<script language='JavaScript'>
 
 	var childisborn = 0;
@@ -2024,8 +2024,9 @@
         }
 
 	
-	function manageownedgrpsscreen(){
-	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;        
+	function manageownedgrpsscreen(searchquery){
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&searchquery=" + searchquery;
 	    transdiv = document.getElementById('transscreens');
             transdiv.style.display = "";
  	    waitdiv = document.getElementById('managewait');
@@ -2052,19 +2053,196 @@
 	}
 
 
-	function editpaidmetrics(){
-	    alert("Here");
+	function closepaymentdetails(grpid){
+	    paiddetailsdiv = document.getElementById("paiddetails_" + grpid);
+	    paiddetailsdiv.style.display = "none";
+	    paiddetailsdiv.innerHTML = "";
+	}
+
+
+	function editpaidmetrics(grpid, currency, entryfee, bankname, bankbranch, accountnumber, ifscode, acctownername){
+	    paiddetailsdiv = document.getElementById("paiddetails_" + grpid);
+	    paiddetailsdiv.style.display = "";
+            checkboxelem = document.getElementById("paid_" + grpid);
+	    if(checkboxelem.checked != true){
+		alert("Please mark the ispaid check box as checked to set up the payment parameters");
+		//return (true);
+	    }
+	    else{
+	    	html = "<table border='0'><tr><td>Entry Fee: &nbsp;&nbsp;<input type='text' name='entryfee_" + grpid + "' id='entryfee_" + grpid + "' value='"+ entryfee + "'></td><td>Currency:&nbsp;&nbsp;<select name='currency_" + grpid + "' id='currency_" + grpid + "'>{% for curr in allcurrencies %} <option value='{{curr}}'>{{curr}}</option>{% endfor %}</select></td></tr><tr><td>Bank Name: &nbsp;&nbsp;<input type='text' name='bankname_" + grpid + "' id='bankname_" + grpid + "' value='" + bankname + "'></td><td>Branch Name: &nbsp;&nbsp;<input type='text' name='branchname_" + grpid + "' id='branchname_" + grpid + "' value='" + bankbranch + "'></td></tr><tr><td>Account Number: &nbsp;&nbsp;<input type='text' name='acctnumber_" + grpid + "' id='acctnumber_" + grpid + "' value='" + accountnumber + "'></td><td>IFSCode: &nbsp;&nbsp;<input type='text' name='ifsc_" + grpid + "' id='ifsc_" + grpid + "' value='" + ifscode + "'></td></tr><tr><td>Account Owner's Name:&nbsp;&nbsp;<input type='text' name='acctownername_" + grpid + "' id='acctownername_" + grpid + "' value='" + acctownername + "'></td><td> &nbsp;&nbsp;<input type='button' name='paiddetclose' value='Close Payment Details' onClick='javascript:closepaymentdetails(\"" + grpid + "\");'></td></tr><tr><td colspan='2'><font size=-1>*To save your changes, keep this annexure open and click on the 'Save Info' button at the end of the row.</font></td></tr></table>";
+	    	paiddetailsdiv.innerHTML = html;
+	    }
 	}
 
 
 	function savegroupinfo(gid){
+	    target = "{{grpinfosaveurl}}";
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&groupid=" + gid;
+	    grptopicid = "grptopic_" + gid;
+ 	    grptypeid = "grptype_" + gid;
+	    postdata += "&grouptopic=" + document.getElementById(grptopicid).value;
+	    postdata += "&grouptype=" + document.getElementById(grptypeid).value;
+  	    paidid = "paid_" + gid;
+	    paidelem = document.getElementById(paidid);
+ 	    entryfeeelem = "";
+	    currencyelem = "";
+	    banknameelem = "";
+	    branchnameelem = "";
+ 	    acctnumberelem = "";
+ 	    if(paidelem.checked == true || paidelem.checked == "checked"){
+		entryfeeelem = document.getElementById('entryfee_' + gid);
+		currencyelem = document.getElementById('currency_' + gid);
+		banknameelem = document.getElementById('bankname_' + gid);
+		branchnameelem = document.getElementById('branchname_' + gid);
+		acctnumberelem = document.getElementById('acctnumber_' + gid);
+		ifscelem = document.getElementById('ifsc_' + gid);
+		acctownerelem = document.getElementById('acctownername_' + gid);
+		postdata += "&paid=" + paidelem.value;
+		if(entryfeeelem){
+		    postdata += "&entryfee=" + entryfeeelem.value;
+		}
+		if(currencyelem){
+		    postdata += "&currency=" + currencyelem.value;
+		}
+		if(banknameelem){
+		    postdata += "&bankname=" + banknameelem.value;
+		}
+		if(branchnameelem){
+		    postdata += "&branchname=" + branchnameelem.value;
+		}
+		if(acctnumberelem){
+		    postdata += "&acctnumber=" + acctnumberelem.value;
+		}
+		if(ifscelem){
+		    postdata += "&ifscode=" + ifscelem.value;
+		}
+		if(acctownerelem){
+		    postdata += "&acctownername=" + acctownerelem.value;
+		}
+	    }
+	    taglinevalue = document.getElementById('tagline_' + gid).value;
+	    descriptionvalue = document.getElementById('description_' + gid).value;
+	    descriptionvalue = Base64.encode(descriptionvalue);
+	    maxuserlimitvalue = document.getElementById('maxuserslimit_' + gid).value;
+	    postdata += "&tagline=" + taglinevalue + "&description=" + descriptionvalue + "&maxuserslimit=" + maxuserlimitvalue;
+	    statusid = document.getElementById('status_' + gid);
+	    if(statusid.checked == true){
+		postdata += "&status=" + statusid.value;
+	    }
+	    ownerpermelement = document.getElementById('ownerpermreqd_' + gid);
+	    if(ownerpermelement.checked == true){
+		postdata += "&ownerpermreqd=" + ownerpermelement.value;
+	    }
+ 	    waitdiv = document.getElementById('managepostwait_' + gid);
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waitdiv.innerHTML = "";
+		    alert(xmlhttp.responseText);
+                }
+            };
+	    //alert(postdata);
+            xmlhttp.open('POST', target, true);
+            xmlhttp.send(postdata);
+	    waitdiv.style.display = "";
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function manageposts(gid, managepostsurl){
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&groupid=" + gid;
+ 	    waitdiv = document.getElementById('managepostwait_' + gid);
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waitdiv.innerHTML = "";
+		    //alert(xmlhttp.responseText);
+		    postswin = window.open("postswin", "", "width=800, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    postswin.document.write(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open('POST', managepostsurl, true);
+            xmlhttp.send(postdata);
+	    waitdiv.style.display = "";
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function withdrawfunds(){
+	}
+
+	
+	function searchgroups(){
+	    var searchquery = document.frmsearchownedgrps.searchgrpname.value;
+	    manageownedgrpsscreen(searchquery);
+	}
+
+
+	function changeimg(grpid){
+	    chgimgdiv = document.getElementById('imgchange_' + grpid);
+	    chgimgdiv.style.display = "";
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><input type='file' name='grouppic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
+	}
+
+
+	function closegroupsscreen(){
+	    transdiv = document.getElementById('transscreens');
+            transdiv.style.display = "none";
+	    transdiv.innerHTML = "";
+	}
+
+
+	function uploadgrpimage(){
+	  var targeturl = document.grpimageuploadform.action;
+	  var postdata = new FormData(document.forms.namedItem("grpimageuploadform"));
+	  var xmlhttp;
+	  if (window.XMLHttpRequest){
+	    xmlhttp=new XMLHttpRequest();
+	  }
+	  else{
+	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	  // Register the handler
+	  xmlhttp.onreadystatechange = function(){
+	  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    if(xmlhttp.responseText == 'success'){
+	      alert("Image was uploaded successfully. Please reopen the screen (by clicking on 'Manage owned groups') to view the uploaded image.");
+	      window.location.href = window.location.href; // refresh the window.
+	    }
+	    else{
+	      alert("Error uploading image: " + xmlhttp.responseText);
+	    }
+	    document.getElementById('imgchange').style.display = 'none';
+	    document.getElementById('imgchange').innerHTML = '';
+	  }
+	  };
+	  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
+	  xmlhttp.send(postdata);
+	  // Display the rotating activity small icon
+	  document.getElementById('imgchange').style.display = '';
+	  document.getElementById('imgchange').innerHTML += "<br /><img src='static/images/loading_small.gif'>";
 	}
 
 
 	</script>
 		
 		{% include "inc/mission_statement.html" %}
-		
+
 		<!-- ### Post Entry Begin ###  -->
 
 		<div class="post">
@@ -2076,7 +2254,9 @@
 			<h3><font color='#00AA00'>... or join one <a href='#/' onClick='javascript:displayjoinagroupscreen();'>here</a></font></h3>
 			<h3><font color='#00AA00'>may be, you would like to <a href='#/' onClick='javascript:displayaddcontactscreen();'>add</a> a contact?</font></h3>
 			<h3><font color='#00AA00'>Or you might want to <a href='#/' onClick='javascript:displaypostamessagescreen();'>post</a>  a message</font></h3><br />
-			<h3><font color='#00AA00'><a href='#/' onClick='javascript:manageownedgrpsscreen();'>Manage</a> owned groups</font></h3><div id='managewait'></div><br />
+			<h3><font color='#00AA00'><a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage</a> owned groups</font></h3><div id='managewait'></div>
+			<h3><font color='#00AA00'><a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></font></h3><br />
+
 			<h3><font color='#00AA00'>Give a test to one or more groups <a href='#/' onClick='javascript:givetesttogroups();'>here</a></font></h3><br />
 			</div>
 			<div style='display:none;' id="transscreens" class="semitrans"></div>

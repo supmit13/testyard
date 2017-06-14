@@ -313,6 +313,9 @@ def showpaymentgwoptions(request):
     return response
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def payunotify(request):
     """
     This method receives the notification request from PayU.
@@ -336,8 +339,9 @@ def payunotify(request):
             algo = value
         else:
             pass
+    jsonContent = request.body
     # Verify the signature
-    concatvalue = openPayUSig + mysettings.PAYU_SECOND_ID
+    concatvalue = jsonContent + mysettings.PAYU_SECOND_ID
     m = md5.new()
     m.update(concatvalue)
     digestvalue = m.digest()
@@ -346,7 +350,6 @@ def payunotify(request):
         response = HttpResponseBadRequest(message)
         return response
     #At this point, the 2 signatures match. So we go ahead with the order request received from PayU.
-    jsonContent = request.body
     jsonDict = json.loads(jsonContent)
     # Get the data from the jsonDict, and enter the appropriate data in the DB.
     orderData = jsonDict['order']
@@ -373,7 +376,7 @@ def payunotify(request):
     transobj = Transaction.objects.get(orderId=orderId)
     transobj.comments = description
     transobj.clientIp = customerIp
-    transobj.status = True
+    transobj.trans_status = 1 # True value
     transobj.extOrderId = extOrderId
     transobj.save()
     message = "Order has been successfully placed"

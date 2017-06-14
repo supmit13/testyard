@@ -29,7 +29,7 @@ from threading import Thread
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
-from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates
+from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -73,6 +73,7 @@ def get_network_template_vars(userobj):
     templatevars['sendmessageurl'] = mysettings.SEND_MESSAGE_URL
     templatevars['managemembersurl'] = mysettings.MANAGE_GROUP_MEMBERS_URL
     templatevars['manageownedgrpsurl'] = mysettings.MANAGE_OWNED_GROUPS_URL
+    templatevars['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -2917,9 +2918,17 @@ def manageownedgroups(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
+    searchquery = ""
+    if request.POST.has_key('searchquery'):
+        searchquery = request.POST['searchquery']
     contextdict = {}
     groupsdict = {}
-    groupsownerqset = Group.objects.filter(owner=userobj)
+    groupsownerqset = None
+    if not searchquery or searchquery == "":
+        groupsownerqset = Group.objects.filter(owner=userobj)
+    else:
+        groupsownerqset = Group.objects.filter(owner=userobj, groupname__contains=searchquery)
+    nonepattern = re.compile("/None$")
     for group in groupsownerqset:
         gid = str(group.id)
         groupname = str(group.groupname)
@@ -2930,6 +2939,10 @@ def manageownedgroups(request):
         grouptype = str(group.grouptype)
         allowentry = group.allowentry
         groupimagefile = "media/" + group.owner.displayname + "/groups/" + groupname + "/" + str(group.groupimagefile)
+        if nonepattern.search(groupimagefile):
+            groupimagefile = "static/images/grp_background.png"
+        else:
+            pass
         topic = str(group.basedontopic)
         ispaid = group.ispaid
         currency = str(group.currency)
@@ -2940,22 +2953,267 @@ def manageownedgroups(request):
             bankname = str(bankacct.bankname)
             bankbranch = str(bankacct.bankbranch)
             accountnumber = str(bankacct.accountnumber)
+            ifscode = str(bankacct.ifsccode)
+            accountownername = str(bankacct.accountownername)
         except:
             bankname = ""
             bankbranch = ""
             accountnumber = ""
+            ifscode = ""
+            accountownername = ""
+        paidtransactionsqset = GroupPaidTransactions.objects.filter(group=group)
+        earnings = 0.0
+        inrtousdqset = ExchangeRates.objects.filter(curr_from='INR', curr_to='USD').order_by("-dateofrate")
+        plntousdqset = ExchangeRates.objects.filter(curr_from='PLN', curr_to='USD').order_by("-dateofrate")
+        eurtousdqset = ExchangeRates.objects.filter(curr_from='EUR', curr_to='USD').order_by("-dateofrate")
+        inrexchgrate = 1
+        plnexchgrate = 1
+        eurexchgrate = 1
+        if len(list(inrtousdqset)) > 0:
+            inrexchgrate = inrtousdqset[0]
+        if len(list(plntousdqset)) > 0:
+            plnexchgrate = plntousdqset[0]
+        if len(list(eurtousdqset)) > 0:
+            eurexchgrate = eurtousdqset[0]
+        for transobj in paidtransactionsqset:
+            if transobj.currency == 'USD':
+                earnings += transobj.amount
+            elif transobj.currency == 'PLN':
+                earnings += transobj.amount * plnexchgrate
+            elif transobj.currency == 'INR':
+                earnings += transobj.amount * inrexchgrate
+            elif transobj.currency == 'EUR':
+                earnings += transobj.amount * eurexchgrate
         if not groupsdict.has_key(gid):
-            groupsdict[gid] = [ gid, groupname, tagline, description, maxmemberslimit, status, grouptype, allowentry, groupimagefile, topic, ispaid, currency, entryfee, ownerpermreqd, bankname, bankbranch, accountnumber ]
+            groupsdict[gid] = [ gid, groupname, tagline, description, maxmemberslimit, status, grouptype, allowentry, groupimagefile, topic, ispaid, currency, entryfee, ownerpermreqd, bankname, bankbranch, accountnumber, earnings, ifscode, accountownername ]
     contextdict['groups'] = groupsdict
     alltopics = mysettings.TEST_TOPICS
     contextdict['alltopics'] = alltopics
     contextdict['alltypes'] = mysettings.TEST_SCOPES
+    contextdict['allcurrencies'] = mysettings.SUPPORTED_CURRENCIES
+    contextdict['searchquery'] = searchquery
+    contextdict['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
+    contextdict['managepostsurl'] = mysettings.MANAGE_POSTS_URL
     tmpl = get_template("network/ownedgrps.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     ownedgrpshtml = tmpl.render(cxt)
     response = HttpResponse(ownedgrpshtml)
     return response
+
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def groupimagechange(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    grpid = request.POST['groupid']
+    grpobj = None
+    try:
+        grpobj = Group.objects.get(id=grpid)
+    except:
+        message = "Could not identify the group object with which this image is to be saved"
+        response = HttpResponse(message)
+        return response
+    grpname = grpobj.groupname
+    if request.FILES.has_key('grouppic'):
+        fpath, message, grouppic = skillutils.handleuploadedfile(request.FILES['grouppic'], mysettings.MEDIA_ROOT + os.path.sep + grpobj.owner.displayname + "/groups/" + grpname, grpname)
+        grpobj.groupimagefile = grouppic
+        try:
+            grpobj.save()
+            message = "success"
+        except:
+            message = error_msg('1041')
+    else:
+        message = "failed"
+    return HttpResponse(message)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def groupinfosave(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    groupid = request.POST['groupid']
+    grouptopic = request.POST['grouptopic']
+    grouptype = request.POST['grouptype']
+    groupobj = Group.objects.get(id=groupid)
+    if not groupobj:
+        message = "Could not identify the group to which the changes are to be made"
+        response = HttpResponse(message)
+        return response
+    if groupobj.owner != userobj:
+        message = "You are not the owner of this group. So you may not change anything pertaining to this group."
+        response = HttpResponse(message)
+        return response
+    groupobj.basedontopic = grouptopic
+    groupobj.grouptype = grouptype
+    try:
+        if request.POST.has_key('paid'):
+            groupobj.ispaid = True
+            if request.POST.has_key('entryfee'):
+                groupobj.entryfee = request.POST['entryfee']
+            if request.POST.has_key('currency'):
+                groupobj.currency = request.POST['currency']
+        else:
+            groupobj.ispaid = False
+        if request.POST.has_key('ownerpermreqd'):
+            groupobj.require_owner_permission = True
+        else:
+            groupobj.require_owner_permission = False
+        if request.POST.has_key('status'):
+            groupobj.status = True
+        else:
+            groupobj.status = False
+    except:
+        message = sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    groupobj.tagline = request.POST['tagline']
+    groupobj.description = base64.b64decode(request.POST['description'])
+    groupobj.maxmemberslimit = request.POST['maxuserslimit']
+    ownerbankacctobj = None
+    try:
+        ownerbankacctqset = OwnerBankAccount.objects.filter(group=groupobj)
+        ownerbankacctobj = ownerbankacctqset[0]
+    except:
+        if groupobj.ispaid == True:
+            ownerbankacctobj = OwnerBankAccount() # Create a new bank account for this group
+    if groupobj.ispaid == True:
+        if request.POST.has_key('bankname'):
+            ownerbankacctobj.bankname = request.POST['bankname']
+        if request.POST.has_key('branchname'):
+            ownerbankacctobj.bankbranch = request.POST['branchname']
+        if request.POST.has_key('acctnumber'):
+            ownerbankacctobj.accountnumber = request.POST['acctnumber']
+        if request.POST.has_key('ifscode'):
+            ownerbankacctobj.ifsccode = request.POST['ifscode']
+        if request.POST.has_key('acctownername'):
+            ownerbankacctobj.accountownername = request.POST['acctownername']
+        ownerbankacctobj.groupowner = groupobj.owner
+        ownerbankacctobj.group = groupobj
+        try:
+            ownerbankacctobj.save()
+        except:
+            message = "You will need to set up your bank account for this group. Please click on the 'edit' link in the 'Paid' column of the group to set it up: %s"%sys.exc_info()[1].__str__()
+            response = HttpResponse(message)
+            return response
+    try:
+        groupobj.save()
+    except:
+        message = "Could not save changes to the group object: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    message = "Your changes have been successfully saved."
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def manageposts(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    grpid = request.POST['groupid']
+    grpobj = None
+    try:
+        grpobj = Group.objects.get(id=grpid)
+    except:
+        message = "Could not identify the group object with which this image is to be saved"
+        response = HttpResponse(message)
+        return response
+    grpname = grpobj.groupname
+    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False)
+    contextdict = {}
+    contextdict['groupname'] = grpname
+    contextdict['groupid'] = grpid
+    contextdict['savepostinfourl'] = mysettings.SAVE_POST_INFO_URL
+    postsdict = {}
+    for postobj in postsqset:
+        postid = postobj.id
+        postmsgtag = postobj.postmsgtag
+        postcontent = postobj.postcontent
+        postername = postobj.poster.displayname
+        attachmentfile = postobj.attachmentfile
+        scope = postobj.scope
+        deleted = postobj.deleted
+        hidden = postobj.hidden
+        stars = postobj.stars
+        createdon = postobj.createdon
+        postsdict[postid] = (postmsgtag, postcontent, postername, attachmentfile, scope, deleted, hidden, stars, createdon)
+    contextdict['posts'] = postsdict
+    tmpl = get_template("network/postslist.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    postslisthtml = tmpl.render(cxt)
+    response = HttpResponse(postslisthtml)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def savepostsinfo(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    postid = request.POST['postid']
+    try:
+        postobj = Post.objects.get(id=postid)
+    except:
+        message = "Could not find the post message with the specified Id. Could not save the settings for this post."
+        response = HttpResponse(message)
+        return response
+    scope, hidden, deleted = None, None, None
+    if request.POST.has_key('scope'):
+        scope = request.POST['scope']
+    if request.POST.has_key('hidden'):
+        hidden = request.POST['hidden']
+    if request.POST.has_key('deleted'):
+        deleted = request.POST['deleted']
+    if scope is not None:
+        postobj.scope = scope
+    if hidden is not None:
+        postobj.hidden = True
+    else:
+        postobj.hidden = False
+    if deleted is not None:
+        postobj.deleted = True
+    else:
+        postobj.deleted = False
+    postobj.save()
+    message = "The changes have been successfully saved."
+    response = HttpResponse(message)
+    return response
+
+
 
 
 

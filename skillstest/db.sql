@@ -791,6 +791,28 @@ create table `Subscription_couponuser` (
 
 rename table `Subscription_couponuser` to `Subscription_usercoupon`;
 
+create table `Network_subscriptionearnings` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `user_id` INTEGER NOT NULL,
+    `balance` INTEGER default 0,
+    `earnings` INTEGER default 0,
+    `lasttransactdate` datetime NOT NULL,
+    FOREIGN KEY (`user_id`) REFERENCES `Auth_user` (`id`)
+)ENGINE=Innodb;
+
+
+create table `Network_grouppaidtransactions` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `group_id` INTEGER NOT NULL,
+    `payer_id` INTEGER NOT NULL,
+    `amount` INTEGER default 0,
+    `currency` VARCHAR(3) default 'USD',
+    `transdatetime` DATETIME NOT NULL,
+    `payeripaddress` VARCHAR(20) default '',
+    FOREIGN KEY (`payer_id`) REFERENCES `Auth_user` (`id`),
+    FOREIGN KEY (`group_id`) REFERENCES `Network_group` (`id`)
+)ENGINE=Innodb;
+
 SET FOREIGN_KEY_CHECKS=0;
 alter table Subscription_usercoupon drop foreign key Subscription_usercoupon_ibfk_3;
 alter table Subscription_usercoupon drop column plan_id;
