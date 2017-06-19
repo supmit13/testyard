@@ -2441,14 +2441,37 @@ Tue, Jan 31, 2017, 11:55 HRS.
 4. git add ../services/poweron.c
 5. git add ../services/runvms.py
 6. git add ../scripts/prepare_env.sh
-7. git add skillstest/skillstest/utils.py
-8. git add skillstest/skillstest/errors.py
-9. git add skillstest/skillstest/urls.py
-10.git add skillstest/skillstest/Tests/*.py
-11.git add skillstest/templates/tests/*.html
+7. git add skillstest/utils.py
+8. git add skillstest/errors.py
+9. git add skillstest/urls.py
+10.git add skillstest/Tests/*.py
+11.git add templates/tests/*.html
 12.git add ../services/setIP.c
 13.git add files_to_commit.txt
 
+=========================================
 
+-----------------------------------------
+1. git add templates/inc/mission_statement2.html
+2. git add static/images/open_link.png
+3. git add skillstest/Analytics/views.py
+4. git add templates/inc/html_head.html
+5. git add skillstest/AdvSearch/views.py
+6. git add skillstest/skills_settings.py
+7. git add templates/inc/html_foot.html
+8. git add templates/advsearch/searchscreen.html
+9. git add templates/analytics/analytics.html
+10.git add templates/subscription/subscription.html
+11.git add templates/network/right_panel.html
+12.git add templates/inc/right_panel.html
+13.git add templates/user/profile.html
+14.git add templates/tests/create_test_form.html
+15.git add templates/tests/tests.html
+16.git add templates/inc/mission_statement.html
+17.git add templates/network/network.html
+18.git add skillstest/Network/views.py
+19.git add skillstest/Network/models.py
+20.git add skillstest/urls.py
+21.git add files_to_commit.txt
 
 

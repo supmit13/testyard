@@ -734,8 +734,8 @@
 			    }
 			    var options = {
 			        chart: {
-			    	    title: 'Count of evaluations made by time (monthly basis)',
-			    	    subtitle: 'Count of evaluations made by time (monthly basis)',
+			    	    title: 'Count of evaluations Vs time (monthly basis)',
+			    	    subtitle: 'Count of evaluations Vs time (monthly basis)',
 			        },
 			        bars: 'vertical'
 			    };
@@ -824,11 +824,11 @@
 
 		<div class="post">
 			<span class="meta">
-			<h3>Dear {{ displayname }},</h3>
+			<h3>Welcome {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<form name='frmanalytics'>
-			<ul class="tab" style="white-space:nowrap;width:900px">
+			<ul class="tab" style="white-space:nowrap;width:470px">
                           <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
 			  <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
                           <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
@@ -839,7 +839,7 @@
 			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
 			<tr>
 			    <td width='30%' valign='top'><span>
-			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
+			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
 			    <select name='analytic_technique' onchange='javascript:displaynote();'>
 				<option value='comp_topper'>Compare with toppers (should select a single test topic)</option>
 				<option value='comp_all'>Compare with all (should select a single test after selecting topic)</option>
@@ -854,7 +854,7 @@
 			    </select>
 			    <div id='notes'></div>
 			    <br /><br />
-			    <font color='#00BB00'><b>Select a Skill Topic:</b></font>
+			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
 			    <select name='test_cat' onChange='javascript:display_tests();'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
@@ -878,7 +878,7 @@
 			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
 			<tr>
 			    <td width='30%' valign='top'><span>
-			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
+			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
 			    <select name='creator_analytic_technique' onchange='javascript:displaynote();'>
 				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
 				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
@@ -890,7 +890,7 @@
 			    </select>
 			    <div id='creator_notes'></div>
 			    <br /><br />
-			    <font color='#00BB00'><b>Select a Skill Topic:</b></font>
+			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
 			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
@@ -914,7 +914,7 @@
 			  <table border='0' width='100%' cellspacing='2' cellpadding='4'>
 			<tr>
 			    <td width='30%' valign='top'><span>
-			    <font color='#00BB00'><b>Select a Comparison Technique:</b></font>
+			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
 			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();'>
 				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
 				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.(Select a topic only).</option>
@@ -922,7 +922,7 @@
 			    </select>
 			    <div id='evaluator_notes'></div>
 			    <br /><br />
-			    <font color='#00BB00'><b>Select a Skill Topic:</b></font>
+			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
 			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}

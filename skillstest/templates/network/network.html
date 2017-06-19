@@ -1183,7 +1183,20 @@
 		    posts += "<td align='right' valign='top' width='30%'>&nbsp;</td>";
 		}
 		posts += "</tr></table>";
-		if(imgpattern.test(attachedfile)){
+
+		var xmlhttp;
+		if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		}
+		else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.open('GET', attachedfile, false);
+	    	xmlhttp.send();
+		if(xmlhttp.status==404){
+		    posts += "<br><center>Image has been removed</center>";
+		}
+		else if(imgpattern.test(attachedfile)){
 		    posts += "<br><center><img src='" + attachedfile + "' width='200px' height='150px'></center>";
 	    	}
 	    	else{
@@ -2247,17 +2260,17 @@
 
 		<div class="post">
 			<span class="meta">
-			<h3>Dear {{ displayname }},</h3>
-			{{ msg }}
-			<div class="entry">
-			<h3><font color='#00AA00'>Create a group <a href='#/' onClick='javascript:displaycreategroupscreen();'>here</a>...</font></h3>
-			<h3><font color='#00AA00'>... or join one <a href='#/' onClick='javascript:displayjoinagroupscreen();'>here</a></font></h3>
-			<h3><font color='#00AA00'>may be, you would like to <a href='#/' onClick='javascript:displayaddcontactscreen();'>add</a> a contact?</font></h3>
-			<h3><font color='#00AA00'>Or you might want to <a href='#/' onClick='javascript:displaypostamessagescreen();'>post</a>  a message</font></h3><br />
-			<h3><font color='#00AA00'><a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage</a> owned groups</font></h3><div id='managewait'></div>
-			<h3><font color='#00AA00'><a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></font></h3><br />
+			<h3>Welcome {{ displayname }}</h3>
 
-			<h3><font color='#00AA00'>Give a test to one or more groups <a href='#/' onClick='javascript:givetesttogroups();'>here</a></font></h3><br />
+			<div class="entry">
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaycreategroupscreen();'>Create a group</a></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayjoinagroupscreen();'>Join a group</a></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();'>Add a contact</a></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();'>Post a message</a></h3><br />
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage owned groups</a></h3><div id='managewait'></div>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><br />
+
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();'>Give a test to one or more groups</a></h3><br />
 			</div>
 			<div style='display:none;' id="transscreens" class="semitrans"></div>
 			<div style='display:none;' id="transscreens2" class="semitrans2"></div>

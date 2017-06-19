@@ -2550,18 +2550,19 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		{% include "inc/right_panel.html" %}
 		<div class="post">
 			<span class="meta">
-			<h3>Dear {{ displayname }},</h3>
+			<h3>Welcome {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<!-- Tests HTML goes here. -->
 			<div id='createtestdiv' style='display:none;'></div>
-			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
-			<h3><font color='#00BB00'>Alternatively, you may upload a new test from the screen pointed to by this link: {{ uploadlink }}</font></h3>
-			<h3><font color='#00BB00'>You may create an interview by clicking on this link: {{ interviewlink }}</font></h3>
-			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp; {{ createlink }}</h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp; {{ uploadlink }}</h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp; {{ interviewlink }}</h3>
+			<br />			
+			<h3><font color='#0000AA'>Details of all past tests and interviews (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
 			<form name='frmmaintests' id='frmmaintests' method='POST' action=''>
 			{% csrf_token %}
-                        <ul class="tab" style="white-space:nowrap;width:900px">
+                        <ul class="tab" style="white-space:nowrap;width:800px">
                           <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
                           <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
                           <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>

@@ -142,7 +142,13 @@ def testschallengesearch(request):
             trec.quality = "Beginner"
         else:
             trec.quality = "Unrecognized Quality State"
-        resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : trec.ruleset, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : trec.progenv, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed}
+        rulesetcodes = trec.ruleset.split("#||#")
+        rulesetlist = []
+        for rulesetcode in rulesetcodes:
+            rulesetdesc = mysettings.RULES_DICT[rulesetcode]
+            rulesetlist.append(rulesetdesc)
+        rulesetstr = ", ".join(rulesetlist)
+        resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : trec.progenv, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed}
     datadict['resultrecs'] = resultrecs
     tmpl = get_template("advsearch/testrecords.html")
     cxt = Context(datadict)

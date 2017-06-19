@@ -227,7 +227,7 @@ def network(request):
         else:
             connectinvitesdict[str(invid)][2] = invitationdate
             connectinvitesdict[str(invid)][3] = invitationcontent_short
-    contextdict = { 'displayname' : userobj.displayname, 'msg' : '<b><i>it is social networking time!</i></b>', 'connections' : contacts, 'groups' : groups, 'topics' : alltopicsdict }
+    contextdict = { 'displayname' : userobj.displayname, 'connections' : contacts, 'groups' : groups, 'topics' : alltopicsdict }
     contextdict['image_height'] = mysettings.PROFILE_PHOTO_HEIGHT
     contextdict['image_width'] = mysettings.PROFILE_PHOTO_WIDTH
     inc_context = skillutils.includedtemplatevars("Network", request) # Since this is the 'Network' page for the user.

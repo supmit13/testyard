@@ -30,7 +30,7 @@
 
 		<div class="post">
 			<span class="meta">
-			<h3>Dear {{ displayname }},</h3>
+			<h3>Welcome {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<!-- Profile HTML goes here. -->
@@ -115,7 +115,7 @@
 			</select></font></td></tr>
 			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Field of Study:</td><td valign='bottom'> <input type='text' name='fieldofstudy' id='fieldofstudy' value='{{ fieldofstudy }}'></font></td></tr>
 			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Present Employer or Institution:</td><td valign='bottom'> <input type='text' name='presentemployer_or_institution' id='presentemployer_or_institution' value='{{ presentemployer_or_institution }}'></font></td></tr>
-			<tr><td valign='middle' colspan=2><input type='button' name='btnsaveoptionalinfo' value='Save Info' onClick='javascript:saveoptionalinfo("{{ user_id }}");'>&nbsp;&nbsp;<input type='reset' name='resetbutton' value='Clear All'></td></tr>
+			<tr><td valign='middle' colspan=2><input type='button' name='btnsaveoptionalinfo' value='Save Info' onClick='javascript:saveoptionalinfo("{{ user_id }}");'>&nbsp;&nbsp;<!-- <input type='reset' name='resetbutton' value='Clear All'> --></td></tr>
 			</table>
 			{% csrf_token %}
 			</form>

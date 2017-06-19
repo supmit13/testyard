@@ -77,16 +77,29 @@
 		}
 
 		</script>
+		<style>
+		.box {
+		    width:300px;
+		    height:300px;
+		    background-color:#d9d9d9;
+		    background-repeat: no-repeat;
+        	    background-position: center center; 
+		    position:fixed;
+		    margin-left:-150px; /* half of width */
+		    left:50%;
+		}
+		</style>
 		<div class="post">
 			<span width='40%'>
-			<a href="{{ logout_url }}"><b>Logout</b></a>	
+			<span nowrap style="color:#0000AA;font-style:italic;">Logged in as {{ displayname }}:&nbsp;&nbsp;<a href="{{ logout_url }}"><b>Logout</b></a></span>
 			</span>
 			<span class="meta">
-			<h3>Dear {{ displayname }},</h3>
+			<h3>Welcome {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
+			
 			<div class="entry">
-			<center>
 			<form name='frmadvsearch' id='frmadvsearch' method='POST' action='/search/advsearch/'>
+			<center>
 			<table border=0 cellspacing=3 cellpadding=3 width='80%'>
 			<tr><td align='center' colspan=3 nowrap><font color='#0000AA' style='font-weight:bold'>Search tests, challenges, users and groups</font></td></tr>
 			<tr><td colspan=3><hr></td></tr>
@@ -102,11 +115,13 @@
 			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'></td><td>&nbsp;</td></tr>
 			<tr><td align='center' colspan=3><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'></td></tr>
 			</table>
+			</center>
 			{% csrf_token %}
 			</form>
-			</center>
+			
 			<div id='searchresults'></div>
 			</div>
+			
 			</span>
 		</div>
 		
