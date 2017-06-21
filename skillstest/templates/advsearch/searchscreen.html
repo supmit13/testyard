@@ -76,6 +76,35 @@
 		    xmlhttp.send(postdata);
 		}
 
+
+		function displaytestsdata(displayname){
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "displayname=" + displayname + "&csrfmiddlewaretoken=" + document.frmadvsearch.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			  divscr = document.getElementById('transscreens2');
+			  divscr.style.display = "";
+			  //alert(xmlhttp.responseText);
+			  divscr.innerHTML = xmlhttp.responseText;
+		      }
+		    };
+		    xmlhttp.open("POST", '{{ searchtestinfourl }}', true);
+		    xmlhttp.send(postdata);
+		}
+
+		function closescreen(){
+		    divscr = document.getElementById('transscreens2');
+		    divscr.style.display = "none";
+		    divscr.innerHTML = "";
+		}
+
 		</script>
 		<style>
 		.box {
@@ -89,6 +118,18 @@
 		    left:50%;
 		}
 		</style>
+		<style>
+		.semitrans2 {
+		  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+		  filter: alpha(opacity=90);
+		  opacity: 0.9;
+		  -moz-opacity: .90; 
+		  -khtml-opacity: 0.9;
+		  background-color:#669999;
+		  color:#FFFFFF;
+		  position:absolute; top:250px; left:0px; width:125%; height:250%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+		}
+		</style>
 		<div class="post">
 			<span width='40%'>
 			<span nowrap style="color:#0000AA;font-style:italic;">Logged in as {{ displayname }}:&nbsp;&nbsp;<a href="{{ logout_url }}"><b>Logout</b></a></span>
@@ -96,14 +137,14 @@
 			<span class="meta">
 			<h3>Welcome {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
-			
+			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
 			<div class="entry">
 			<form name='frmadvsearch' id='frmadvsearch' method='POST' action='/search/advsearch/'>
 			<center>
 			<table border=0 cellspacing=3 cellpadding=3 width='80%'>
 			<tr><td align='center' colspan=3 nowrap><font color='#0000AA' style='font-weight:bold'>Search tests, challenges, users and groups</font></td></tr>
 			<tr><td colspan=3><hr></td></tr>
-			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Challenges</font></td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Tests</font></td></tr>
 			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Test Name:</font></td><td><input type='text' name='testname' value='' id='testname'></td><td>&nbsp;</td></tr>
 			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='searchphrase' value='' id='searchphrase'></td><td>&nbsp;</td></tr>
 			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Test Creator:</font></td><td><input type='text' name='testcreator' value='' id='testcreator'></td><td>&nbsp;</td></tr>

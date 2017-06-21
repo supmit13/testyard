@@ -12,7 +12,7 @@
 {% for displayname, otherattribs in resultrecs.items %}
 <tr bgcolor='#99ffcc'>
     <td nowrap><font color='#0000AA'><img src='{{otherattribs.userpic}}' width='35' height='35'></font></td>
-    <td nowrap><font color='#0000AA'>{{displayname}}</font></td>
+    <td nowrap><font color='#0000AA'><a href='#/' onClick='javascript:displaytestsdata("{{displayname}}");'>{{displayname}}</a></font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.firstname}} {{otherattribs.middlename}} {{otherattribs.lastname}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.sex}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.active}}</font></td>

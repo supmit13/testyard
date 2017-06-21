@@ -38,7 +38,7 @@ from itertools import chain
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates
 from skillstest.Tests.views import get_user_tests, iseditable                                                                                                                                                                                                      
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
@@ -54,6 +54,7 @@ def advsearch(request):
     tests_user_dict['testschallengesearchurl'] = mysettings.TESTS_CHALLENGE_SEARCH_URL
     tests_user_dict['copytesturl'] = mysettings.COPY_TEST_URL
     tests_user_dict['usersearchurl'] = mysettings.USER_SEARCH_URL
+    tests_user_dict['searchtestinfourl'] = mysettings.SEARCH_TEST_INFO_URL
     inc_context = skillutils.includedtemplatevars("Search", request)
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
@@ -142,12 +143,15 @@ def testschallengesearch(request):
             trec.quality = "Beginner"
         else:
             trec.quality = "Unrecognized Quality State"
-        rulesetcodes = trec.ruleset.split("#||#")
-        rulesetlist = []
-        for rulesetcode in rulesetcodes:
-            rulesetdesc = mysettings.RULES_DICT[rulesetcode]
-            rulesetlist.append(rulesetdesc)
-        rulesetstr = ", ".join(rulesetlist)
+        try:
+            rulesetcodes = str(trec.ruleset).split("#||#")
+            rulesetlist = []
+            for rulesetcode in rulesetcodes:
+                rulesetdesc = mysettings.RULES_DICT[rulesetcode]
+                rulesetlist.append(rulesetdesc)
+            rulesetstr = ", ".join(rulesetlist)
+        except:
+            rulesetstr = ""
         resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : trec.progenv, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed}
     datadict['resultrecs'] = resultrecs
     tmpl = get_template("advsearch/testrecords.html")
@@ -235,8 +239,141 @@ def usersearch(request):
     return HttpResponse(userrecordshtml)
 
 
-
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def testinfosearch(request):
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.TESTS_CHALLENGE_SEARCH_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    if not userobj:
+        response = HttpResponse("User not found!")
+        return response
+    displayname = ""
+    if not request.POST.has_key('displayname'):
+        message = "Required parameter displayname not found!"
+        response = HttpResponse(message)
+        return response
+    displayname = request.POST['displayname']
+    datadict = {}
+    uobj = None
+    try:
+        uobj = User.objects.get(displayname=displayname)
+    except:
+        message = "Could not find the user object identified by the displayname '%'"%displayname
+        response = HttpResponse(message)
+        return response
+    testscreated = {}
+    testscreatedqset = Test.objects.filter(creator=uobj, scope='public')
+    for testobj in  testscreatedqset:
+        testname = testobj.testname
+        testtopic = testobj.topicname
+        if not testtopic:
+            testtopic = testobj.topic.topicname
+        testtype = testobj.testtype
+        testquality = testobj.quality
+        negativescoring = testobj.negativescoreallowed
+        testtotalscore = testobj.maxscore
+        testpassscore = testobj.passscore
+        testrules = testobj.ruleset
+        testid = testobj.id
+        if not testscreated.has_key(str(testid)):
+            testscreated[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules]
+        else:
+            pass
+    datadict['testscreated'] = testscreated
+    testsevaluated = {}
+    testsevaluatorqset = Test.objects.filter(scope='public')
+    for testobj in testsevaluatorqset:
+        evalobj = testobj.evaluator
+        if (evalobj.groupmember1 and evalobj.groupmember1 == uobj) or (evalobj.groupmember2 and evalobj.groupmember2 == uobj) or (evalobj.groupmember3 and evalobj.groupmember3 == uobj) or (evalobj.groupmember4 and evalobj.groupmember4 == uobj) or (evalobj.groupmember5 and evalobj.groupmember5 == uobj) or (evalobj.groupmember6 and evalobj.groupmember6 == uobj) or (evalobj.groupmember7 and evalobj.groupmember7 == uobj) or (evalobj.groupmember8 and evalobj.groupmember8 == uobj) or (evalobj.groupmember9 and evalobj.groupmember9 == uobj) or (evalobj.groupmember10 and evalobj.groupmember10 == uobj):
+            testname = testobj.testname
+            testtopic = testobj.topicname
+            if not testtopic:
+                testtopic = testobj.topic.topicname
+            testtype = testobj.testtype
+            testquality = testobj.quality
+            negativescoring = testobj.negativescoreallowed
+            testtotalscore = testobj.maxscore
+            testpassscore = testobj.passscore
+            testrules = testobj.ruleset
+            testid = testobj.id
+            testsevaluated[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules]
+        else:
+            pass
+    datadict['testsevaluated'] = testsevaluated
+    teststaken = {}
+    usertestsqset = UserTest.objects.filter(user=uobj, visibility=2)
+    useremail = uobj.emailid
+    wouldbeusersqset = WouldbeUsers.objects.filter(emailaddr=useremail, visibility=2)
+    teststakenqset = list(chain(usertestsqset, wouldbeusersqset))
+    for usertestobj in teststakenqset:
+        testname = usertestobj.test.testname
+        testtopic = usertestobj.test.topicname
+        if not testtopic:
+            testtopic = usertestobj.test.topic.topicname
+        testtype = usertestobj.test.testtype
+        testquality = usertestobj.test.quality
+        negativescoring = usertestobj.test.negativescoreallowed
+        testtotalscore = usertestobj.test.maxscore
+        testpassscore = usertestobj.test.passscore
+        testrules = usertestobj.test.ruleset
+        testid = usertestobj.test.id
+        score = usertestobj.score
+        if not teststaken.has_key(str(testid)):
+            teststaken[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules, score]
+        else:
+            pass
+    datadict['teststaken'] = teststaken
+    interviewsconducted = {}
+    interviewsconductedqset = Interview.objects.filter(interviewer=uobj, scope='public')
+    for interviewobj in interviewsconductedqset:
+        interviewtitle = interviewobj.title
+        interviewtopic = interviewobj.topicname
+        if not interviewtopic:
+            interviewtopic = interviewobj.topic.topicname
+        maxscore = interviewobj.maxscore
+        maxduration = interviewobj.maxduration
+        quality = interviewobj.quality
+        interviewid = interviewobj.id
+        interviewcandidateobj = None
+        candidateemail = ""
+        try:
+            interviewcandidateobj = InterviewCandidates.objects.get(interview=interviewobj)
+            candidateemail = interviewcandidateobj.emailaddr
+        except:
+            pass
+        if not interviewsconducted.has_key(str(interviewid)):
+            interviewsconducted[str(interviewid)] = [interviewtitle, interviewtopic, maxscore, maxduration, quality, candidateemail]
+        else:
+            pass
+    datadict['interviewsconducted'] = interviewsconducted
+    interviewsattended = {}
+    interviewsattendedqset = InterviewCandidates.objects.filter(emailaddr=useremail)
+    for interviewcandidateobj in interviewsattendedqset:
+        interviewtitle = interviewcandidateobj.interview.title
+        interviewer = interviewcandidateobj.interview.interviewer.displayname
+        interviewtopic = interviewcandidateobj.interview.topicname
+        if not interviewtopic:
+            interviewtopic = interviewcandidateobj.interview.topic.topicname
+        interviewdate = interviewcandidateobj.actualstarttime
+        interviewcandidateid = interviewcandidateobj.id
+        if not interviewsattended.has_key(str(interviewcandidateid)):
+            interviewsattended[str(interviewcandidateid)] = [interviewtitle, interviewer, interviewtopic]
+            #interviewsattended[str(interviewcandidateid)] = [interviewtitle, interviewer, interviewtopic, interviewdate]
+        else:
+            pass
+    datadict['interviewsattended'] = interviewsattended
+    tmpl = get_template("advsearch/usertestinfo.html")
+    cxt = Context(datadict)
+    usertestinfohtml = tmpl.render(cxt)
+    return HttpResponse(usertestinfohtml)
 
 
 

@@ -2450,7 +2450,7 @@ Tue, Jan 31, 2017, 11:55 HRS.
 13.git add files_to_commit.txt
 
 =========================================
-
+Mon, Jun 19, 2017, 03:55 HRS.
 -----------------------------------------
 1. git add templates/inc/mission_statement2.html
 2. git add static/images/open_link.png
@@ -2473,5 +2473,33 @@ Tue, Jan 31, 2017, 11:55 HRS.
 19.git add skillstest/Network/models.py
 20.git add skillstest/urls.py
 21.git add files_to_commit.txt
+22.git add db.sql
+23.git add db_02_02_2015.sql
+24.git add skillstest/utils.py
+25.git add templates/network/postslist.html
+
+=========================================
+Wed, Jun 21, 2017, 10:40 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/models.py
+2. git add templates/advsearch/usertestinfo.html
+3. git add templates/inc/html_head.html
+4. git add templates/user/profile.html
+5. git add templates/advsearch/searchscreen.html
+6. git add templates/network/network.html
+7. git add templates/advsearch/userrecords.html
+8. git add templates/tests/tests.html
+9. git add skillstest/AdvSearch/views.py
+10.git add skillstest/utils.py
+11.git add skillstest/urls.py
+12.git add skillstest/skills_settings.py
+13.git add skillstest/errors.py
+14.git add files_to_commit.txt
+
+
+
+
+
+
 
 
