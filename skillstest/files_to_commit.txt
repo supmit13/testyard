@@ -2476,7 +2476,7 @@ Mon, Jun 19, 2017, 03:55 HRS.
 22.git add db.sql
 23.git add db_02_02_2015.sql
 24.git add skillstest/utils.py
-25.git add templates/network/postslist.html
+25.git add templates/network/postslist.htmlA
 
 =========================================
 Wed, Jun 21, 2017, 10:40 HRS.
@@ -2496,7 +2496,33 @@ Wed, Jun 21, 2017, 10:40 HRS.
 13.git add skillstest/errors.py
 14.git add files_to_commit.txt
 
-
+=========================================
+Sat, Jun 24, 2017, 00:35 HRS.
+-----------------------------------------
+1. git add skillstest/errors.py
+2. git add skillstest/urls.py
+3. git add skillstest/utils.py
+4. git add skillstest/AdvSearch/views.py
+5. git add skillstest/skills_settings.py
+6. git add templates/advsearch/testrecords.html
+7. git add templates/advsearch/challengeslist.html
+8. git add templates/advsearch/usertestinfo.html
+9. git add templates/user/profile.html
+10.git add skillstest/Tests/models.py
+11.git add templates/advsearch/searchscreen.html
+12.git add templates/tests/tests.html
+13.git add templates/analytics/analytics.html
+14.git add skillstest/Analytics/views.py
+15.git add templates/tests/create_test_form.html
+16.git add templates/tests/create_interview_form.html
+17.git add templates/network/network.html
+18.git add templates/tests/invitecandidatesform.html
+19.git add templates/tests/edit_challenge.html
+20.git add templates/tests/test_summary.html
+21.git add templates/help.html
+22.git add templates/network/ownedgrps.html
+23.git add skillstest/Tests/views.py
+24.git add files_to_commit.txt
 
 
 

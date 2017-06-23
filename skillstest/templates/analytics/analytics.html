@@ -7,6 +7,19 @@
 	    </style>
 
 		<style>
+		.glowing-border {
+		    border: 2px solid #000088;
+		    border-radius: 4px;
+		}
+
+		.glowing-border:focus { 
+		    outline: none;
+		    border-color: #9ecaed;
+		    box-shadow: 0 0 10px #9ecaed;
+		}
+		</style>
+
+		<style>
 			  ul.tab {
 		    list-style-type: none;
 		    margin: 0;
@@ -840,7 +853,7 @@
 			<tr>
 			    <td width='30%' valign='top'><span>
 			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
-			    <select name='analytic_technique' onchange='javascript:displaynote();'>
+			    <select name='analytic_technique' onchange='javascript:displaynote();' class="glowing-border">
 				<option value='comp_topper'>Compare with toppers (should select a single test topic)</option>
 				<option value='comp_all'>Compare with all (should select a single test after selecting topic)</option>
 				<option value='comp_cats'>Compare your scores on a topic (should select a single test topic)</option>
@@ -855,7 +868,7 @@
 			    <div id='notes'></div>
 			    <br /><br />
 			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
-			    <select name='test_cat' onChange='javascript:display_tests();'>
+			    <select name='test_cat' onChange='javascript:display_tests();' class="glowing-border">
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
 				<option value='{{ttopic}}'>{{ttopic}}</option>
@@ -879,7 +892,7 @@
 			<tr>
 			    <td width='30%' valign='top'><span>
 			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
-			    <select name='creator_analytic_technique' onchange='javascript:displaynote();'>
+			    <select name='creator_analytic_technique' onchange='javascript:displaynote();' class='glowing-border'>
 				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
 				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
 				<option value='creator_show_testtimes'>Times at which selected test has been taken by candidates</option>
@@ -891,7 +904,7 @@
 			    <div id='creator_notes'></div>
 			    <br /><br />
 			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
-			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();'>
+			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();' class='glowing-border'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
 				<option value='{{ttopic}}'>{{ttopic}}</option>
@@ -915,7 +928,7 @@
 			<tr>
 			    <td width='30%' valign='top'><span>
 			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
-			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();'>
+			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();' class='glowing-border'>
 				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
 				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.(Select a topic only).</option>
 				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.(Select a topic only).</option>
@@ -923,7 +936,7 @@
 			    <div id='evaluator_notes'></div>
 			    <br /><br />
 			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
-			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();'>
+			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();' class='glowing-border'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
 				<option value='{{ttopic}}'>{{ttopic}}</option>

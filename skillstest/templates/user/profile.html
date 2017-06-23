@@ -1,4 +1,16 @@
 	{% include "inc/html_head.html" %}
+	<style>
+	.glowing-border {
+	    border: 2px solid #000088;
+	    border-radius: 4px;
+	}
+
+	.glowing-border:focus { 
+	    outline: none;
+	    border-color: #9ecaed;
+	    box-shadow: 0 0 10px #9ecaed;
+	}
+	</style>
 	<script type='text/javascript'>
 	function saveoptionalinfo(uid){
 	    var xmlhttp;
@@ -37,11 +49,11 @@
 			<form name='optionalinfoform' id='optionalinfoform' method='POST' action=''>
 			<p><font color='#0000AA' style='font-weight:bold;' size=-1>Note: The information below is optional and you may choose to fill it up or leave it. If you furnish us with the information, we will use it for statistical purposes only. We will not disclose this information to any other business partner or client. This information will help us provide you with more accurate test information in the future.</font></p>
 			<table border=0 cellspacing=3 cellpadding=2>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>House No. and Street Address:</td><td valign='bottom'> <textarea name='houseno_and_street_address' rows='5' cols='35'>{{ houseno_and_street_address }}</textarea></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>City:</td><td valign='bottom'> <input type='text' name='city' id='city' value='{{ city }}'></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Pin or Zip Code:</td><td valign='bottom'> <input type='text' name='pin_or_zip_code' id='pin_or_zip_code' value='{{ pin_or_zip_code }}'></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Country:</td><td valign='bottom'> <input type='text' name='country' id='country' value='{{ country }}'></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Profession:</td><td valign='bottom'> </font><select name='profession'>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>House No. and Street Address:</td><td valign='bottom'> <textarea name='houseno_and_street_address' rows='5' cols='35' class="glowing-border">{{ houseno_and_street_address }}</textarea></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>City:</td><td valign='bottom'> <input type='text' name='city' id='city' value='{{ city }}' class="glowing-border"></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Pin or Zip Code:</td><td valign='bottom'> <input type='text' name='pin_or_zip_code' id='pin_or_zip_code' value='{{ pin_or_zip_code }}' class="glowing-border"></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Country:</td><td valign='bottom'> <input type='text' name='country' id='country' value='{{ country }}' class="glowing-border"></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Profession:</td><td valign='bottom'> </font><select name='profession' class="glowing-border">
 			{% if profession == 'student' %}
 			    <option value='student' selected>Student</option>
 			{% else %}
@@ -78,10 +90,10 @@
 			    <option value='other'>Other</option>
 			{% endif %}
 			</select></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Age (in years):</td><td valign='bottom'> <input type='text' name='age' id='age' value='{{ age }}'></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Reason for Use:</td><td valign='bottom'> <textarea name='reasonforuse' rows='5' cols='35'>{{ reasonforuse }}</textarea></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Self Description:</td><td valign='bottom'> <textarea name='selfdescription' rows='5' cols='35'>{{ selfdescription }}</textarea></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Highest Qualification:</td><td valign='bottom'> <select name='highestqualification'>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Age (in years):</td><td valign='bottom'> <input type='text' name='age' id='age' value='{{ age }}' class="glowing-border"></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Reason for Use:</td><td valign='bottom'> <textarea name='reasonforuse' rows='5' cols='35' class="glowing-border">{{ reasonforuse }}</textarea></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Self Description:</td><td valign='bottom'> <textarea name='selfdescription' rows='5' cols='35' class="glowing-border">{{ selfdescription }}</textarea></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Highest Qualification:</td><td valign='bottom'> <select name='highestqualification' class="glowing-border">
 			{% if highestqualification == 'graduate' %}
 			    <option value='graduate' selected>Graduate</option>
 			{% else %}
@@ -113,8 +125,8 @@
 			    <option value='none'>None</option>
 			{% endif %}
 			</select></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Field of Study:</td><td valign='bottom'> <input type='text' name='fieldofstudy' id='fieldofstudy' value='{{ fieldofstudy }}'></font></td></tr>
-			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Present Employer or Institution:</td><td valign='bottom'> <input type='text' name='presentemployer_or_institution' id='presentemployer_or_institution' value='{{ presentemployer_or_institution }}'></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Field of Study:</td><td valign='bottom'> <input type='text' name='fieldofstudy' id='fieldofstudy' value='{{ fieldofstudy }}' class="glowing-border"></font></td></tr>
+			<tr><td valign='middle'><font color='#0000AA' size=-1 style='font-weight:bold;'>Present Employer or Institution:</td><td valign='bottom'> <input type='text' name='presentemployer_or_institution' id='presentemployer_or_institution' value='{{ presentemployer_or_institution }}' class="glowing-border"></font></td></tr>
 			<tr><td valign='middle' colspan=2><input type='button' name='btnsaveoptionalinfo' value='Save Info' onClick='javascript:saveoptionalinfo("{{ user_id }}");'>&nbsp;&nbsp;<!-- <input type='reset' name='resetbutton' value='Clear All'> --></td></tr>
 			</table>
 			{% csrf_token %}

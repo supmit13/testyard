@@ -22,7 +22,7 @@
 
 {% for testname, otherattribs in resultrecs.items %}
 <tr bgcolor='#99ffcc'>
-    <td nowrap><font color='#0000AA'>{{testname}}</font></td>
+    <td nowrap><font color='#0000AA'><a href='#/' onClick='javascript:showchallenges("{{otherattribs.id}}", "{{otherattribs.copyable}}");'>{{testname}}</a></font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.topic}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.creator}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.testtype}}</font></td>
@@ -39,9 +39,14 @@
     <td nowrap><font color='#0000AA'>{{otherattribs.scope}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.quality}}</font></td>
     <td nowrap><font color='#0000AA'>{{otherattribs.negativescoreallowed}}</font></td>
+    {% if otherattribs.scope == "public" and otherattribs.copyable == "True" %}
     <td nowrap><font color='#0000AA'><a href='#/' onClick='javascript:copytest("{{otherattribs.id}}");' alttext='Copying a test allows you to create a new test that is identical to the test being copied.'>Copy Test</a></font></td>
+    {% else %}
+    <td nowrap>&nbsp;*</td>
+    {% endif %}
 </tr>
 {% endfor %}
 </table>
+<div style="color:#AA0000;font-style:italic;font-size:-1">* Tests that have 'private' or 'protected' scope or are scheduled in future cannot be copied</div>
 
 

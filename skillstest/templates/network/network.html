@@ -56,6 +56,20 @@
 		background: #a7eaf2;
 	}
 	</style>
+
+	<style>
+	.glowing-border {
+	    border: 2px solid #000088;
+	    border-radius: 4px;
+	}
+
+	.glowing-border:focus { 
+	    outline: none;
+	    border-color: #9ecaed;
+	    box-shadow: 0 0 10px #9ecaed;
+	}
+	</style>
+
 	{% load extratemptags %}
 	<script language='JavaScript'>
 
@@ -530,23 +544,23 @@
 	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action=''>";
 	    html += "{% csrf_token %}";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();'><span id='checkavailability' style='' nowrap></span></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30'></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10'></textarea></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic'>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();' class='glowing-border'><span id='checkavailability' style='' nowrap></span></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic' class='glowing-border'>";
 	    {% for topic in alltopics %}
 		html += "<option value='{{ topic }}'>{{ topic }}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Permissions</font></td><td nowrap>&nbsp;<font color='#0000AA' size=-1>Is Paid:&nbsp;</font><input type='checkbox' name='ispaid' id='ispaid' value='1' onChange='javascript:showpaymentoption();'><br><div id='paymentdiv' style=''></div><font color='#0000AA' size=-1>Group Type:&nbsp;</font><select name='grouptype'>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Permissions</font></td><td nowrap>&nbsp;<font color='#0000AA' size=-1>Is Paid:&nbsp;</font><input type='checkbox' name='ispaid' id='ispaid' value='1' onChange='javascript:showpaymentoption();' class='glowing-border'><br><div id='paymentdiv' style=''></div><font color='#0000AA' size=-1>Group Type:&nbsp;</font><select name='grouptype' class='glowing-border'>";
 	    {% for grptype, grptypename in grouptypes.iteritems %}
 	        html += "<option value='{{ grptype }}'>{{ grptypename }}</option>";
 	    {% endfor %}
 	    html += "</select><br>";
-	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked><br>";
-	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked><br>";
-   	    html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1'><br>";
-	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5><br>";
+	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked class='glowing-border'><br>";
+	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked class='glowing-border'><br>";
+   	    html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1' class='glowing-border'><br>";
+	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5 class='glowing-border'><br>";
 	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'></td></tr>";
 	    html += "</table>";
 	    html += "</form>";
@@ -609,12 +623,12 @@
 	    html += "<form name='joinagroup' id='joinagroup' method='POST' action=''>";
 	    html += "{% csrf_token %}";
 	    html += "<table border='0' cellspacing='3' cellpadding='3'>";
-	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Select Topic(s):</font></td><td align='center'><select name='topic' id='topic' multiple size=4>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Select Topic(s):</font></td><td align='center'><select name='topic' id='topic' multiple size=4 class='glowing-border'>";
 	    {% for topicunderscored, topicname in topics.iteritems %}
 		html += "<option value='{{ topicunderscored }}'>{{ topicname }}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
-	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Enter Keyword:</font></td><td align='center'><input type='text' name='grpkeyword' id='grpkeyword' value=''></td></tr>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Enter Keyword:</font></td><td align='center'><input type='text' name='grpkeyword' id='grpkeyword' value='' class='glowing-border'></td></tr>";
 	    html += "<tr><td nowrap align='center' colspan='2'><input type='button' name='btnsearchgroups' id='btnsearchgroups' value='Search' onClick='searchforgroup();'>&nbsp;&nbsp;<input type='button' name='btncancelsearch' id='btncancelsearch' value='Close' onClick='closecreategroupscreen();'></td></tr>";
 	    html += "</table>";
 	    html += "</form><br><br><div id='searchresultdiv' style=''></div></center>";
@@ -710,9 +724,9 @@
 	    html = "<center><font color='#0000AA' style='font-weight:bold'>Search User using one or more of the following parameters</font></center>";
 	    html += "<form name='frmSearchUser' id='frmSearchUser' method='POST' action=''>";
 	    html += "<center><table border=0 cellspacing='3' cellpadding='4'>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Email Id:</font></td><td><input type='text' name='emailid' id='emailid' value='' size=30 maxlength='100'></td></tr>";
-            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>User's Name:</font></td><td><input type='text' name='targetusername' id='targetusername' value='' size=30 maxlength='100'></td></tr>";
-            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Name of Tests taken by the User (separated by commas):</font></td><td><input type='text' name='teststaken' id='teststaken' value='' size=30 maxlength='200'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Email Id:</font></td><td><input type='text' name='emailid' id='emailid' value='' size=30 maxlength='100' class='glowing-border'></td></tr>";
+            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>User's Name:</font></td><td><input type='text' name='targetusername' id='targetusername' value='' size=30 maxlength='100' class='glowing-border'></td></tr>";
+            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Name of Tests taken by the User (separated by commas):</font></td><td><input type='text' name='teststaken' id='teststaken' value='' size=30 maxlength='200' class='glowing-border'></td></tr>";
 	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnSearch' id='btnSearch' value='Search' onClick='javascript:searchUser();'><span id='searchwaiter'></span>&nbsp;&nbsp;<input type='button' name='btnClose' id='btnClose' value='Close' onClick='javascript:closecreategroupscreen();'></td></tr>";
 	    html += "</table></center>{% csrf_token %}</form>";
 	    html += "<br><br><div id='usersearchdiv' style=''></div>";
@@ -1135,6 +1149,9 @@
 		    discardreply(postid);
 		    window.location.href = window.location.href;
 	        }
+		else if(xmlhttp.readyState == 4 && xmlhttp.status==413){ // Image or file size was too big for upload
+		    alert("The request entity was too large to be uploaded. Please select a file of size less than 1 MB to upload.");
+		}
 	    };
 	    xmlhttp.open('POST', '{{postreplyurl}}', true);
 	    xmlhttp.send(postdata)
@@ -1147,8 +1164,8 @@
 	    replydivcontrol = document.getElementById(replydivid);
 	    html = "<form name='frmreplymsg' method='POST' action='' enctype='multipart/form-data'>";
 	    html += "<table border=0 cellspacing='3' cellpadding='3'>";
-	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>*Reply Message:</font></td><td nowrap><textarea name='replycontent' cols='40' rows='10'></textarea></td></tr>";
-	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>Add Attachment:</font></td><td nowrap><input type='file' name='replyattachment' id='replyattachment' value=''></td></tr>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>*Reply Message:</font></td><td nowrap><textarea name='replycontent' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>Add Attachment:</font></td><td nowrap><input type='file' name='replyattachment' id='replyattachment' value='' class='glowing-border'></td></tr>";
 	    html += "<tr><td nowrap align='center' valign='middle' colspan='2'><input type='button' name='btnreplymsg' id='btnreplymsg' value='Send Reply' onClick='javascript:postreply(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancelreply' id='btncancelreply' value='Discard Reply' onClick='javascript:discardreply(" + postid + ");'></td></tr>";
 	    html += "{% csrf_token %}</table><input type='hidden' name='postid' value='" + postid + "'></form>";
 	    //alert(html);
@@ -1294,26 +1311,26 @@
 	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center>";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
 	    
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30'></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' multiple><option value=''>Groups List - None</option>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' class='glowing-border' multiple><option value=''>Groups List - None</option>";
 	    {% for k,v in groupsdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
             html += "</select>";
 	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
-	    html += "<select name='targetconnections' id='targetconnections' size='3' multiple><option value=''>Connections List - None</option>";
+	    html += "<select name='targetconnections' id='targetconnections' size='3' class='glowing-border' multiple><option value=''>Connections List - None</option>";
 	    {% for k,v in contactsdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
 	    html += "</select>";
 	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
-	    html += "<select name='testtakers' id='testtakers' size='3' multiple><option value=''>Takers of Tests - None</option>";
+	    html += "<select name='testtakers' id='testtakers' size='3' class='glowing-border' multiple><option value=''>Takers of Tests - None</option>";
 	    {% for k,v in testtakersdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10'></textarea></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment'>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment' class='glowing-border'>";
 	    html += "<tr><td width='70%' nowrap colspan=2 align='center'><input type='button' name='postmessage' id='postmessage' value='Post Message' onClick='javascript:postmessagetotarget();'>&nbsp;&nbsp;<input type='button' name='closepostscreen' id='closepostscreen' value='Close Screen' onClick='javascript:closescreen();'></td></tr>";
 	    html += "</table></form>";
 	    screendiv.innerHTML = html;
@@ -1751,13 +1768,13 @@
 		    responsedict = JSON.parse(xmlhttp.responseText);
 		    testsdict = responsedict.tests
 		    groupsdict = responsedict.groups
-		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test'>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test' class='glowing-border'>";
 		    for (testname in testsdict){
 			testid = testsdict[testname];
 			html += "<option value='" + testid + "'>" + testname + "</option>";
 		    }
 	    	    html += "</select></td></tr>";
-		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' multiple>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' class='glowing-border' multiple>";
 		    for (groupname in groupsdict){
 			groupid = groupsdict[groupname];
 			html += "<option value='" + groupid + "'>" + groupname + "</option>";

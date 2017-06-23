@@ -55,6 +55,7 @@ def advsearch(request):
     tests_user_dict['copytesturl'] = mysettings.COPY_TEST_URL
     tests_user_dict['usersearchurl'] = mysettings.USER_SEARCH_URL
     tests_user_dict['searchtestinfourl'] = mysettings.SEARCH_TEST_INFO_URL
+    tests_user_dict['displaytestchallenges'] = mysettings.DISPLAY_SEARCHED_CHALLENGES_URL
     inc_context = skillutils.includedtemplatevars("Search", request)
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
@@ -152,7 +153,37 @@ def testschallengesearch(request):
             rulesetstr = ", ".join(rulesetlist)
         except:
             rulesetstr = ""
-        resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : trec.progenv, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed}
+        copyable = "True"
+        utqset = UserTest.objects.filter(test=trec)
+        wbuqset = WouldbeUsers.objects.filter(test=trec)
+        testschedlist = list(chain(utqset, wbuqset))
+        curdatetime = datetime.datetime.now()
+        for testsched in testschedlist:
+            validtill = testsched.validtill
+            try:
+                if not validtill or validtill == "":
+                    continue
+                validtillstr = str(validtill)
+                validtillstrlist = validtillstr.split("+")
+                validtilldd = datetime.datetime.strptime(validtillstrlist[0], "%Y-%m-%d %H:%M:%S") #This will make this offset-naive
+                if validtilldd > curdatetime:
+                    copyable = "False"
+                    break
+            except:
+                message = sys.exc_info()[1].__str__()
+                return HttpResponse(message)
+        if copyable == True:
+            schedqset = Schedule.objects.filter(test=trec)
+            for schedrec in schedqset:
+                slot = schedrec.slot
+                validfrom, validtill = slot.split("#||#")
+                if not validtill or validtill == "":
+                    continue
+                validtilldd = datetime.datetime.strptime(validtill, "%Y-%m-%d %H:%M:%S")
+                if validtilldd > curdatetime:
+                    copyable = "False"
+                    break
+        resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : trec.progenv, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed, 'copyable' : copyable}
     datadict['resultrecs'] = resultrecs
     tmpl = get_template("advsearch/testrecords.html")
     cxt = Context(datadict)
@@ -326,10 +357,18 @@ def testinfosearch(request):
         testrules = usertestobj.test.ruleset
         testid = usertestobj.test.id
         score = usertestobj.score
-        if not teststaken.has_key(str(testid)):
-            teststaken[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules, score]
+        evalcommitstate = usertestobj.evalcommitstate
+        if teststaken.has_key(str(testid)):
+            if teststaken[str(testid)][8] > score and teststaken[str(testid)][8] != "Not evaluated yet":
+                pass
+            elif teststaken[str(testid)][8] == "Not evaluated yet" and not evalcommitstate:
+                score = "Not evaluated yet"
+            else:
+                teststaken[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules, score]
         else:
-            pass
+            if not evalcommitstate:
+                score = "Not evaluated yet"
+            teststaken[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules, score]
     datadict['teststaken'] = teststaken
     interviewsconducted = {}
     interviewsconductedqset = Interview.objects.filter(interviewer=uobj, scope='public')
@@ -376,9 +415,118 @@ def testinfosearch(request):
     return HttpResponse(usertestinfohtml)
 
 
-
-
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def displaychallenges(request):
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.TESTS_CHALLENGE_SEARCH_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    if not userobj:
+        response = HttpResponse("User not found!")
+        return response
+    testid, testobj = "", None
+    if not request.POST.has_key('testid'):
+        message = "Error: Required parameter test Id missing in request. Cannot process request any further. Quiting."
+        response = HttpResponse(message)
+        return response
+    testid = request.POST['testid']
+    try:
+        testobj = Test.objects.get(id=testid)
+    except:
+        message = "Could not retrieve the test object identified by the given test Id. Cannot process request any further. Quiting."
+        response = HttpResponse(message)
+        return response
+    # First, check to see if the challenges may be shown - the test should be in public scope and it should not have any existing schedule.
+    if testobj.scope != "public":
+        message = "The test identified by name '%s' is not in public domain. Hence, the challenges are not accessible to the logged in user."%testobj.testname
+        response = HttpResponse(message)
+        return response
+    # Check if it has a future schedule
+    curdatetime = datetime.datetime.now()
+    utqset = UserTest.objects.filter(test=testobj)
+    wbuqset = WouldbeUsers.objects.filter(test=testobj)
+    testschedlist = list(chain(utqset, wbuqset))
+    showable = True
+    for testsched in testschedlist:
+        validtill = testsched.validtill
+        try:
+            if not validtill or validtill == "":
+                continue
+            validtillstr = str(validtill)
+            validtillstrlist = validtillstr.split("+")
+            validtilldd = datetime.datetime.strptime(validtillstrlist[0], "%Y-%m-%d %H:%M:%S") #This will make this offset-naive
+            if validtilldd > curdatetime:
+                showable = False
+                break
+        except:
+            message = sys.exc_info()[1].__str__()
+            return HttpResponse(message)
+    if showable:
+        schedqset = Schedule.objects.filter(test=testobj)
+        for schedrec in schedqset:
+            slot = schedrec.slot
+            validfrom, validtill = slot.split("#||#")
+            if not validtill or validtill == "":
+                continue
+            validtilldd = datetime.datetime.strptime(validtill, "%Y-%m-%d %H:%M:%S")
+            if validtilldd > curdatetime:
+                showable = False
+                break
+    if not showable:
+        message = "The test identified by name '%s' has an existing schedule in the future. Hence, the challenges are not accessible to the logged in user."%testobj.testname
+        response = HttpResponse(message)
+        return response
+    # Display the challenges...
+    challengesqset = Challenge.objects.filter(test=testobj)
+    challengesdict = {}
+    for challengeobj in challengesqset:
+        challengestatement = challengeobj.statement
+        challengetype = challengeobj.challengetype
+        challengescore = challengeobj.challengescore
+        negativescore = challengeobj.negativescore
+        responsekey = challengeobj.responsekey
+        if not responsekey:
+            responsekey = "NA"
+        mediafile = challengeobj.mediafile
+        additionalurl = challengeobj.additionalurl
+        timeframe = challengeobj.timeframe
+        challengequality = challengeobj.challengequality
+        oneormore = challengeobj.oneormore
+        options = [challengeobj.option1, challengeobj.option2, challengeobj.option3, challengeobj.option4, challengeobj.option5, challengeobj.option6, challengeobj.option7, challengeobj.option8 ]
+        if challengetype == "MULT":
+            optionsstr = "<ul>"
+            if challengeobj.option1 and challengeobj.option1 != "":
+                optionsstr += "<li>" + challengeobj.option1 + "</li>"
+            if challengeobj.option2 and challengeobj.option2 != "":
+                optionsstr += "<li>" + challengeobj.option2 + "</li>"
+            if challengeobj.option3 and challengeobj.option3 != "":
+                optionsstr += "<li>" + challengeobj.option3 + "</li>"
+            if challengeobj.option4 and challengeobj.option4 != "":
+                optionsstr += "<li>" + challengeobj.option4 + "</li>"
+            if challengeobj.option5 and challengeobj.option5 != "":
+                optionsstr += "<li>" + challengeobj.option5 + "</li>"
+            if challengeobj.option6 and challengeobj.option6 != "":
+                optionsstr += "<li>" + challengeobj.option6 + "</li>"
+            if challengeobj.option7 and challengeobj.option7 != "":
+                optionsstr += "<li>" + challengeobj.option7 + "</li>"
+            if challengeobj.option8 and challengeobj.option8 != "":
+                optionsstr += "<li>" + challengeobj.option8 + "</li>"
+            optionsstr += "</ul>"
+        else:
+            optionsstr = ""
+        challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, optionsstr]
+    tmpl = get_template("advsearch/challengeslist.html")
+    datadict = {'challengesdict' : challengesdict }
+    cxt = Context(datadict)
+    challengesinfohtml = tmpl.render(cxt)
+    return HttpResponse(challengesinfohtml)
 
 
 

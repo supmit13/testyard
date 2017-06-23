@@ -59,6 +59,19 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 }
 </style>
 
+<style>
+.glowing-border {
+    border: 2px solid #000088;
+    border-radius: 4px;
+}
+
+.glowing-border:focus { 
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+</style>
+
 
 <style>
 
@@ -2231,8 +2244,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    alert(xmlhttp.responseText);
-		    elem = document.getElementById('teststatus');
-		    elem.innerHTML = "<font size=-1 color='#AA0000'>Deactivate Test Now</font>";
+		    elem = document.getElementById('teststatus_' + testid);
+		    elem.innerHTML = "<a href='#/' onclick=javascript:deactivatestatusnow('" + testid + "');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a>";
 		}
 	    };
 	    xmlhttp.open("POST", '{{ activatetestbycreator }}', true);
@@ -2253,8 +2266,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    alert(xmlhttp.responseText);
-		    elem = document.getElementById('teststatus');
-		    elem.innerHTML = "<font size=-1 color='#0000AA'>Activate Test Now</font>";
+		    elem = document.getElementById('teststatus_' + testid);
+		    elem.innerHTML = "<font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('" + testid + "');>Activate Test Now</a></font>";
 		}
 	    };
 	    xmlhttp.open("POST", '{{ deactivatetestbycreator }}', true);
@@ -2637,9 +2650,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  </font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
 			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
-			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' id='teststatus' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td>
 			{% else %}
-			  <td nowrap align='right'><a href='#/' id='teststatus' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td>
 			{% endif %}
 			</tr> 
 			{% endfor %}
