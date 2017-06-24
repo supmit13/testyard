@@ -2524,6 +2524,24 @@ Sat, Jun 24, 2017, 00:35 HRS.
 23.git add skillstest/Tests/views.py
 24.git add files_to_commit.txt
 
+=========================================
+Sat, Jun 24, 2017, 00:35 HRS.
+-----------------------------------------
+1. git add static/images/redcross.png
+2. git add skillstest/AdvSearch/views.py
+3. git add skillstest/Tests/models.py
+4. git add templates/advsearch/challengeslist.html
+5. git add templates/advsearch/searchscreen.html
+6. git add templates/advsearch/testrecords.html
+7. git add skillstest/errors.py
+8. git add skillstest/skills_settings.py
+9. git add skillstest/urls.py
+10.git add skillstest/utils.py
+11.git add skillstest/Tests/views.py
+12.git add files_to_commit.txt
+
+
+
 
 
 
