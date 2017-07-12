@@ -1072,6 +1072,8 @@ def groupimgupload(request):
     groupobj = None
     if paramkeyval[0] == 'groupname':
         groupname = paramkeyval[1]
+        groupname = groupname.replace("+", " ")
+        groupname = groupname.replace("%20", " ")
         groupqset = Group.objects.filter(groupname=groupname)
         if groupqset.__len__() == 0:
             message = error_msg('1088')

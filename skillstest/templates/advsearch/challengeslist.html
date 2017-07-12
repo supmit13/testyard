@@ -3,6 +3,7 @@
 <a href="#/" onClick="javascript:closescreen();" style="color:#0000AA;">Close Screen</a>
 </div>
 <table border=0 cellspacing='2' cellpadding='3'>
+
 <tr bgcolor='#00ccff'>
     <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Challenge Statement</font></td>
     <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Challenge Type</font></td>
@@ -21,7 +22,16 @@
     <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:0}}</font></td>
     <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:1}}</font></td>
     <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:2}}</font></td>
-    <td nowrap><font color='#0000AA' nowrap>{{challengesdict|dictlookup:challengeid|getval:10}}</font></td>
+    <td nowrap><font color='#0000AA' nowrap>
+    <ul>
+    {% for option in challengesdict|dictlookup:challengeid|getval:10 %}
+    {% if option != "" %}
+    <li>{{option}}</li>
+    {% endif %}
+    {% endfor %}
+    </ul>
+    </td>
+    <!-- <td nowrap><font color='#0000AA' nowrap>{{challengesdict|dictlookup:challengeid|getval:10}}</font></td> -->
     <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:4}}</font></td>
     <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:3}}</font></td>
     <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:5}}</font></td>

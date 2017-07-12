@@ -129,6 +129,10 @@ function uploadimage(){
     document.getElementById('uploadbox').style.display = 'none';
     document.getElementById('uploadbox').innerHTML = '';
   }
+  else if(xmlhttp.readyState == 3 && xmlhttp.status==413){
+    alert("The uploaded image is larger than the allowed size (in bytes). Please select a smaller image to upload. Kindly keep the size below 1 MB.");
+    return(0);
+  }
   };
   xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
   xmlhttp.send(postdata);

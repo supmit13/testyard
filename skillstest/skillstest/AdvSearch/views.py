@@ -445,7 +445,7 @@ def displaychallenges(request):
         return response
     # First, check to see if the challenges may be shown - the test should be in public scope and it should not have any existing schedule.
     if testobj.scope != "public":
-        message = "The test identified by name '%s' is not in public domain. Hence, the challenges are not accessible to the logged in user."%testobj.testname
+        message = "<span style='color:#AA0000;'>The test identified by name '%s' is not in public domain. Hence, the challenges are not accessible to the logged in user.</span>"%testobj.testname
         response = HttpResponse(message)
         return response
     # Check if it has a future schedule
@@ -500,28 +500,7 @@ def displaychallenges(request):
         challengequality = challengeobj.challengequality
         oneormore = challengeobj.oneormore
         options = [challengeobj.option1, challengeobj.option2, challengeobj.option3, challengeobj.option4, challengeobj.option5, challengeobj.option6, challengeobj.option7, challengeobj.option8 ]
-        if challengetype == "MULT":
-            optionsstr = "<ul>"
-            if challengeobj.option1 and challengeobj.option1 != "":
-                optionsstr += "<li>" + challengeobj.option1 + "</li>"
-            if challengeobj.option2 and challengeobj.option2 != "":
-                optionsstr += "<li>" + challengeobj.option2 + "</li>"
-            if challengeobj.option3 and challengeobj.option3 != "":
-                optionsstr += "<li>" + challengeobj.option3 + "</li>"
-            if challengeobj.option4 and challengeobj.option4 != "":
-                optionsstr += "<li>" + challengeobj.option4 + "</li>"
-            if challengeobj.option5 and challengeobj.option5 != "":
-                optionsstr += "<li>" + challengeobj.option5 + "</li>"
-            if challengeobj.option6 and challengeobj.option6 != "":
-                optionsstr += "<li>" + challengeobj.option6 + "</li>"
-            if challengeobj.option7 and challengeobj.option7 != "":
-                optionsstr += "<li>" + challengeobj.option7 + "</li>"
-            if challengeobj.option8 and challengeobj.option8 != "":
-                optionsstr += "<li>" + challengeobj.option8 + "</li>"
-            optionsstr += "</ul>"
-        else:
-            optionsstr = ""
-        challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, optionsstr]
+        challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, options]
     tmpl = get_template("advsearch/challengeslist.html")
     datadict = {'challengesdict' : challengesdict }
     cxt = Context(datadict)

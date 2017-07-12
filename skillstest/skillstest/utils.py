@@ -820,6 +820,7 @@ def remove_control_chars(s):
     control_char_re = re.compile('[%s]' % re.escape(control_chars))
     return control_char_re.sub('', s)
 
+
 # Taken from an answer on stackoverflow
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
