@@ -2,13 +2,13 @@
 	
 </script>
 <div id="headerpanel">
-    <center><font color='#0000AA' style='font-weight: bold'>{{groupname}}</font> - <font color='#0000AA'><i>{{tagline}}</i></font></center>
+    <center><font color='#0000AA' style='font-weight: bold'>{{groupname}}</font> - <font color='#0000AA'><i>{{tagline}}</i> [<a href='#/' onClick='javascript:closescreen();' style='color:#0000AA;'>Close Screen</a>]</font></center>
     <p><div id='descdiv'><span width='70%' align='center' style="width:80%;overflow:auto;word-wrap:break-word;"><i><font size=-1 color='#0000AA'>{{ description }}</font></i></span></div></p>
 </div>
 
 {% if userisowner %}
 <div id='openclose'>
-<font size=-1 color='#0000AA' style='font-weight: bold'>Settings<a href='#/' onClick='javascript:expandcollapsesettings("{{groupimagefile}}", "{{memberscount}}", "{{maxmemberslimit}}", "{{bsasedontopic}}", "{{grouptype}}", "{{allowentry}}", "{{ispaid}}", "{{entryfee}}", "{{adminremarks}}", "{{groupname}}", "{{bankname}}", "{{bankbranch}}", "{{accountownername}}", "{{accountnumber}}", "{{ifsccode}}", "{{currency}}");'> Open</a></font>
+<font size=-1 color='#0000AA' style='font-weight: bold'>Settings<a href='#/' onClick='javascript:expandcollapsesettings("{{groupimagefile}}", "{{memberscount}}", "{{maxmemberslimit}}", "{{basedontopic}}", "{{grouptype}}", "{{allowentry}}", "{{ispaid}}", "{{entryfee}}", "{{adminremarks}}", "{{groupname}}", "{{bankname}}", "{{bankbranch}}", "{{accountownername}}", "{{accountnumber}}", "{{ifsccode}}", "{{currency}}");'> Open</a></font>
 </div>
 <div id="paramspanel" style="">
 </div>

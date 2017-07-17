@@ -82,8 +82,15 @@ def get_network_template_vars(userobj):
     templatevars['validfrom'] = datepartslist[2] + "-" + datepartslist[1] + "-" + datepartslist[0] + " " + timepart
     alltopics = list(mysettings.TEST_TOPICS)
     extratopicsqset = Topic.objects.filter(user=userobj)
+    uniqextratopicset = {}
     for topic in extratopicsqset:
-        alltopics.append(topic.topicname)
+        tname = topic.topicname
+        tname = tname.replace("+", " ")
+        if uniqextratopicset.has_key(tname):
+            pass
+        else:
+            uniqextratopicset[tname] = '1'
+            alltopics.append(tname)
     templatevars['alltopics'] = alltopics
     grouptypes = {}
     for grptype in mysettings.GROUP_TYPES_DICT.keys():
@@ -512,6 +519,7 @@ def getgroupinfo(request):
         grpdict['ispaid'] = groupobj.ispaid
         grpdict['entryfee'] = groupobj.entryfee
         grpdict['currency'] = groupobj.currency
+        grpdict['basedontopic'] = groupobj.basedontopic
         grpdict['adminremarks'] = groupobj.adminremarks
         grpdict['require_owner_perms'] = groupobj.require_owner_permission
         if groupobj.groupimagefile:
@@ -776,6 +784,7 @@ def getgroupdata(request):
         topicsdict[topickey] = topicname
     contextdict['alltopics'] = topicsdict
     contextdict['memberscount'] = grpobj.memberscount
+    contextdict['basedontopic'] = grpobj.basedontopic
     contextdict['maxmemberslimit'] = grpobj.maxmemberslimit
     contextdict['grouptype'] = grpobj.grouptype
     allgrptypesdict = {}

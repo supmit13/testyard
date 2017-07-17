@@ -95,13 +95,20 @@ function uploader(viewurl, csrftoken){
   var thediv=document.getElementById('uploadbox');
   if(thediv.style.display == "none"){
     thediv.style.display = "";
-    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><center><input type='file' name='profpic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'></form>";
+    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><center><input type='file' name='profpic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();'><input type='button' name='btnclose' value='Close' onClick='javascript:closeimgscreen();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'></form>";
   }
   else{
     thediv.style.display = "none";
     thediv.innerHTML = '';
   }
   return false;
+}
+
+
+function closeimgscreen(){
+  var thediv=document.getElementById('uploadbox');
+  thediv.innerHTML = "";
+  thediv.style.display = "none";
 }
 
 

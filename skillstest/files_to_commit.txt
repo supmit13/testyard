@@ -2540,9 +2540,45 @@ Sat, Jun 24, 2017, 00:35 HRS.
 11.git add skillstest/Tests/views.py
 12.git add files_to_commit.txt
 
+=========================================
+Sat, Jul 12, 2017, 21:19 HRS.
+-----------------------------------------
+1. git add skillstest/AdvSearch/views.py
+2. git add skillstest/Network/models.py
+3. git add skillstest/Network/views.py
+4. git add skillstest/errors.py
+5. git add skillstest/skills_settings.py
+6. git add skillstest/urls.py
+7. git add skillstest/utils.py
+8. git add templates/advsearch/challengeslist.html
+9. git add templates/advsearch/searchscreen.html
+10.git add templates/advsearch/testrecords.html
+11.git add templates/advsearch/usertestinfo.html
+12.git add templates/authentication/login.html
+13.git add skillstest/Tests/models.py
+14.git add templates/network/network.html
+15.git add static/javascript/pageutils.js
+16.git add files_to_commit.txt
 
+=========================================
+Sat, Jul 13, 2017, 21:14 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add templates/network/network.html
+3. git add templates/network/managegroups.html
+4. git add skillstest/Tests/views.py
 
-
+=========================================
+Mon, Jul 17, 2017, 21:21 HRS.
+-----------------------------------------
+1. git add templates/advsearch/challengeslist.html
+2. git add skillstest/AdvSearch/views.py
+3. git add templates/network/managegroups.html
+4. git add skillstest/Network/views.py
+5. git add templates/network/network.html
+6. git add templates/network/userprofile.html
+7. git add static/javascript/pageutils.js
+8. git add files_to_commit.txt
 
 
 

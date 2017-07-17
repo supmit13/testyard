@@ -786,7 +786,7 @@
 	    }
             else{
 		document.frmsettings.entryfee.disabled = false;
-		document.frmsettings.bankname.disabled = false;
+		document.frmsettings.bankname.disabled = true;
 		document.frmsettings.bankbranch.disabled = false;
 		document.frmsettings.acctname.disabled = false;
 		document.frmsettings.acctnum.disabled = false;
@@ -873,7 +873,7 @@
 			}
 		    {%  endfor %}
 		    html += "</select></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled='disabled'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
