@@ -174,7 +174,7 @@ def network(request):
     messageobj = None
     for messageobj in messagesqset:
         if messageobj.attachmentfile:
-            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
+            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
         else:
             attachtag = ""
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
@@ -197,7 +197,7 @@ def network(request):
             if subpost.newmsg is True:
                 poststr = "new##"
             if subpost.attachmentfile:
-                attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
+                attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
             else:
                 attachtag = ""
             poststr += str(subpost.id) + "##" + subpost.poster.displayname + "##" + str(subpost.createdon) + "##" + attachtag + "##" + subpost.postmsgtag + "##" + subpost.postcontent
@@ -213,7 +213,7 @@ def network(request):
         else:
             pass
         if messageobj.attachmentfile:
-            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.jpg' height='20px' width='20px' title='Attachment'></a>")
+            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
         else:
             attachtag = ""
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]

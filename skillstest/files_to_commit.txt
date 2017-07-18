@@ -2580,6 +2580,10 @@ Mon, Jul 17, 2017, 21:21 HRS.
 7. git add static/javascript/pageutils.js
 8. git add files_to_commit.txt
 
-
-
+=========================================
+Tue, Jul 18, 2017, 12:36 HRS.
+-----------------------------------------
+1. git add static/images/attachment.png
+2. git add skillstest/Network/views.py
+3. git add files_to_commit.txt
 
