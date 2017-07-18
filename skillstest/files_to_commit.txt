@@ -2587,3 +2587,13 @@ Tue, Jul 18, 2017, 12:36 HRS.
 2. git add skillstest/Network/views.py
 3. git add files_to_commit.txt
 
+=========================================
+Tue, Jul 18, 2017, 12:36 HRS.
+-----------------------------------------
+1. git add static/images/grp_background.png
+2. git add static/images/nopic.png
+3. git add static/css/*
+4. git add files_to_commit.txt
+
+
+
