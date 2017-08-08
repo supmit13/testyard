@@ -4,6 +4,19 @@
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
 <title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
 <link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<style>
+.glowing-border {
+    border: 2px solid #000088;
+    border-radius: 4px;
+}
+
+.glowing-border:focus { 
+    outline: none;
+    border-color: #9ecaed;
+    box-shadow: 0 0 10px #9ecaed;
+}
+</style>
+
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 <script language='JavaScript'>
 
@@ -132,7 +145,7 @@ function clear_all(){
 		<ul>
 			<li><a href="{{ profile_url }}"{{ select_profile }}>Profile</a></li>	
 			<!-- <li><a href="{{ dashboard_url }}"{{ select_dashboard }}>Dashboard</a></li>	 -->
-			<li><a href="{{ subscription_url }}"{{ select_subscription }}>Subscriptions</a></li>	
+			<!-- <li><a href="{{ subscription_url }}"{{ select_subscription }}>Subscriptions</a></li> -->	
 			<li><a href="{{ tests_url }}"{{ select_tests }}>Tests</a></li>	
 			<li><a href="{{ search_url }}"{{ select_search }}>Search</a></li>
 			<li><a href="{{ network_url }}"{{ select_socnet }}>Network</a></li>
@@ -178,17 +191,17 @@ function clear_all(){
 			<div class="entry">
 
 			<form name='registerform' method='POST' action="{{ register_url }}" enctype='multipart/form-data'>
-			<b>*Username or Display Name: </b><input type='text' name='username' id='username' value='{{ username }}' onblur='javascript:checkavailability();'><span id='checkuser'></span><br />
-			<b>*Password: </b><input type='password' name='password' value='{{ password }}'><br />
-			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}'><br />
-			<b>*Email: </b><input type='text' name='email' value='{{ email }}'><i>This will be verified before activating your account.</i><br />
-			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value='{{ firstname }}'><input type='text' name='middlename' value='{{ middlename }}' max_length=10><input type='text' name='lastname' value='{{ lastname }}'><br />
-			<b>*Sex: </b><select name='sex'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
-			<b>Mobile Number: </b><input type='text' name='mobilenum' value='{{ mobilenum }}'><br />
-			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value=''>(will be resized to {{ profpicheight }}x{{ profpicwidth }} pixels.)<br />
+			<b>*Username or Display Name: </b><input type='text' name='username' id='username' value='{{ username }}' onblur='javascript:checkavailability();'  class='glowing-border'><span id='checkuser'></span><br />
+			<b>*Password: </b><input type='password' name='password' value='{{ password }}'  class='glowing-border'><br />
+			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}' class='glowing-border'><br />
+			<b>*Email: </b><input type='text' name='email' value='{{ email }}' class='glowing-border'><i>This will be verified before activating your account.</i><br />
+			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value='{{ firstname }}' class='glowing-border'><input type='text' name='middlename' value='{{ middlename }}' max_length=10 class='glowing-border'><input type='text' name='lastname' value='{{ lastname }}' class='glowing-border'><br />
+			<b>*Sex: </b><select name='sex' class='glowing-border'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
+			<b>Mobile Number: </b><input type='text' name='mobilenum' value='{{ mobilenum }}' class='glowing-border'><br />
+			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value='' class='glowing-border'>(will be resized to {{ profpicheight }}x{{ profpicwidth }} pixels.)<br />
 			{% csrf_token %}
-			<input type='button' name='register' value='Register' onClick='javascript:process_register();'>
-			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();'>
+			<input type='button' name='register' value='Register' onClick='javascript:process_register();' class='glowing-border'>
+			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();' class='glowing-border'>
 			</form>
 			</div>
 			</span>

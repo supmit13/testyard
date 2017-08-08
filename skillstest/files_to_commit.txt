@@ -2588,12 +2588,18 @@ Tue, Jul 18, 2017, 12:36 HRS.
 3. git add files_to_commit.txt
 
 =========================================
-Tue, Jul 18, 2017, 12:36 HRS.
+Tue, Jul 18, 2017, 12:59 HRS.
 -----------------------------------------
 1. git add static/images/grp_background.png
 2. git add static/images/nopic.png
 3. git add static/css/*
 4. git add files_to_commit.txt
 
+=========================================
+Tue, Aug 08, 2017, 11:09 HRS.
+-----------------------------------------
+1. git add templates/authentication/login.html
+2. git add templates/authentication/newuser.html
+3. git add files_to_commit.txt
 
 
