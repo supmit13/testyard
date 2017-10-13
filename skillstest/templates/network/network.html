@@ -2229,7 +2229,7 @@
 	    chgimgdiv = document.getElementById('imgchange_' + grpid);
 	    chgimgdiv.style.display = "";
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
-	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><input type='file' name='grouppic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
+	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><input type='file' name='grouppic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage(\"" + grpid + "\");'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
 	}
 
 
@@ -2240,7 +2240,7 @@
 	}
 
 
-	function uploadgrpimage(){
+	function uploadgrpimage(grpid){
 	  var targeturl = document.grpimageuploadform.action;
 	  var postdata = new FormData(document.forms.namedItem("grpimageuploadform"));
 	  var xmlhttp;
@@ -2260,15 +2260,55 @@
 	    else{
 	      alert("Error uploading image: " + xmlhttp.responseText);
 	    }
-	    document.getElementById('imgchange').style.display = 'none';
-	    document.getElementById('imgchange').innerHTML = '';
+	    document.getElementById('imgchange_' + grpid).style.display = 'none';
+	    document.getElementById('imgchange_' + grpid).innerHTML = '';
 	  }
 	  };
 	  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
 	  xmlhttp.send(postdata);
 	  // Display the rotating activity small icon
-	  document.getElementById('imgchange').style.display = '';
-	  document.getElementById('imgchange').innerHTML += "<br /><img src='static/images/loading_small.gif'>";
+	  document.getElementById('imgchange_' + grpid).style.display = '';
+	  document.getElementById('imgchange_' + grpid).innerHTML += "<br /><img src='static/images/loading_small.gif'>";
+	}
+
+
+        function showmessagearea(useremail){
+	    waitspanelem = document.getElementById('waitspan');
+	    waitspanelem.style.display = "";
+	    waitspanelem.innerHTML = "<textarea id='msgcontent' rows='4' cols='40'>Enter message here</textarea>&nbsp;&nbsp;<input type='button' name='sendamsg' id='sendamsg' value='Send' onClick='javascript:sendamessage(\"" + useremail + "\");'>";
+            textmsg = document.getElementById('msgcontent');
+	    textmsg.focus();
+	}
+
+
+        function sendamessage(useremail){
+            var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&useremail=" + useremail;
+	    textmsg = document.getElementById('msgcontent');
+	    msgvalue = textmsg.value;
+	    postdata += "&message=" + msgvalue;
+ 	    waitspanelem = document.getElementById('waitspan');
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waitspanelem.innerHTML = xmlhttp.responseText;
+		    //alert(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open('POST', "{{sendamessageurl}}", true);
+            xmlhttp.send(postdata);
+	    waitspanelem.style.display = "";
+	    waitspanelem.innerHTML = "<img src='static/images/loading_small.gif'>";
+        }
+
+
+	function showreceivedmsgs(useremail){
 	}
 
 
