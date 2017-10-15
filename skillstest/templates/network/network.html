@@ -1056,6 +1056,7 @@
 
 	// We will be getting base64 encoded data for the 2nd param.
 	function popupjoinrequests(grpname, joinrequestsinfo_strb64, state){
+	    childisborn = 0;
 	    html = "<html><head><title>Join Requests to '" + grpname + "'</title>";
 	    html += "</head><body bgcolor='#669999'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
 	    html += "<div><font color='#550000' style='font-weight:bold'><i><center>Note: Reloading the parent window will automatically close this window. <br>You are strongly suggested to save your changes on this window before attempting to reload the parent window.<br>You may save  all your changes on this window by clicking on the 'Save Changes' button.</center></i></font></div><br><br>";
