@@ -377,6 +377,10 @@ def mobile_verifypassword(request):
         password = argdict['password']
     else:
         return HttpResponse("")
+    if argdict.has_key('csrfmiddlewaretoken'):
+        csrftoken = argdict['csrfmiddlewaretoken']
+    else:
+        return HttpResponse("")
     if mysettings.DEBUG:
         print "USERNAME = " + username
         print "PASSWORD = " + password
@@ -387,7 +391,7 @@ def mobile_verifypassword(request):
         sessobj = Session()
         clientip = request.META['REMOTE_ADDR']
         timestamp = int(time.time())
-        sesscode = generatesessionid(username, "", clientip, timestamp.__str__())
+        sesscode = generatesessionid(username, csrftoken, clientip, timestamp.__str__())
         sessobj.sessioncode = sesscode
         sessobj.user = userobj
         sessobj.endtime = None
