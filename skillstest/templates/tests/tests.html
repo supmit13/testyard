@@ -2523,6 +2523,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    xmlhttp.send(postdata);
 	}
 
+	// objectid is either the test Id, or the interview Id or the URL to the interview schedule.
+	function postonlinkedin(objectid, role){
+	    alert(objectid);
+	}
+
 	// This function checks if mutually exclusive rules have been selected. If so, it will deselect the 
 	// previously selected rule that is mutually exclusive of the currently selected rule.
 	function checkmutualexclusion(){
@@ -2608,9 +2613,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>
+                          <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
 			</tr>
 			<tr>
-			  <td colspan="22">&nbsp;</td>
+			  <td colspan="23">&nbsp;</td>
 			</tr>
 			{% autoescape on %}
 			{% for testnm in tests_creator_ordered_createdate reversed %}
@@ -2650,9 +2656,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  </font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
 			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');">Post on LinkedIn</a></font></td>
 			{% else %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');">Post on LinkedIn</a></font></td>
 			{% endif %}
 			</tr> 
 			{% endfor %}
@@ -2684,9 +2690,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
 			</tr>
 			<tr>
-			  <td colspan="17">&nbsp;</td>
+			  <td colspan="18">&nbsp;</td>
 			</tr>
 			{% for testnm in tests_evaluator_ordered_createdate reversed %}
 			<tr>
@@ -2715,6 +2722,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:26 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:27 }}</font></td>
+			  <td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font color='#00BB00' size=-1><a href='#/' onclick="javascript:postonlinkedin('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}', 'evaluator');">Post on LinkedIn</a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
@@ -2738,9 +2746,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
 			</tr>
 			<tr>
-			  <td colspan="13">&nbsp;</td>
+			  <td colspan="14">&nbsp;</td>
 			</tr>
 			{% for testnm in tests_candidate_ordered_createdate reversed %}  
 			<tr>
@@ -2770,6 +2779,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    {% endif %}
 			  {% endif %}
 			  </font></td>
+			  <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}', 'candidate')">Post on LinkedIn</a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
@@ -2791,9 +2801,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
 			</tr>
 			<tr>
-			  <td colspan="11">&nbsp;</td>
+			  <td colspan="12">&nbsp;</td>
 			</tr>
 			{% for interviewtitle in interviewlist_asinterviewer %}  
 			    <tr>
@@ -2808,6 +2819,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:9 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:10 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}</font></td>
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = "javascript:postonlinkedin('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}', 'interview_conductor')">Post on LinkedIn</a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
@@ -2831,9 +2843,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interviewer Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
 			</tr>
 			<tr>
-			  <td colspan="15">&nbsp;</td>
+			  <td colspan="16">&nbsp;</td>
 			</tr>
 			{% for interviewtitle in interviewlist_asinterviewee %}  
 			<tr>
@@ -2852,6 +2865,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:13 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:15 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}</font></td>
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}', 'interview_attended')">Post on LinkedIn</a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
