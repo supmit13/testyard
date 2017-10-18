@@ -6958,3 +6958,12 @@ def postonlinkedin():
     userobj = sessionobj.user
 
 
+@skillutils.is_session_valid
+@csrf_protect
+def linkedinredirect():
+    pass
+
+
+
+
+

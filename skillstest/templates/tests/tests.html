@@ -2525,7 +2525,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 	// objectid is either the test Id, or the interview Id or the URL to the interview schedule.
 	function postonlinkedin(objectid, role){
-	    //alert(objectid);
+	    alert("Posting on linkedin. Please be patient for a few seconds. I will display a success message once I am done.");
 	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
 	    postdata = "objectid=" + objectid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken + "&role=" + role;
 	    var xmlhttp;
@@ -2539,6 +2539,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		namewarn = document.getElementById('namewarning');
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    alert(xmlhttp.responseText);
+		}
+		else if(xmlhttp.readyState == 4 && xmlhttp.status!=200){
+		    alert("The test could not be posted on linkedin. Error code: " + xmlhttp.status);
 		}
 	    };
 	    xmlhttp.open("POST", '{{ postonlinkedin }}', true);
