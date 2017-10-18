@@ -2525,7 +2525,25 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 	// objectid is either the test Id, or the interview Id or the URL to the interview schedule.
 	function postonlinkedin(objectid, role){
-	    alert(objectid);
+	    //alert(objectid);
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "objectid=" + objectid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken + "&role=" + role;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		namewarn = document.getElementById('namewarning');
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ postonlinkedin }}', true);
+  	    xmlhttp.send(postdata);
+	    
 	}
 
 	// This function checks if mutually exclusive rules have been selected. If so, it will deselect the 
