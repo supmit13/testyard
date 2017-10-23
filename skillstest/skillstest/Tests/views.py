@@ -38,6 +38,8 @@ from itertools import chain
 import pyaudio, wave
 import binascii
 from BeautifulSoup import BeautifulSoup
+from linkedin import linkedin
+from oauthlib import *
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -167,11 +169,11 @@ def get_user_tests(request):
         usertestqset = WouldbeUsers.objects.filter(user=userobj)
     testlist_ascandidate = []
     tests_candidate_ordered_createdate = []
-    try:
-        for usertest in usertestqset:
-            testlist_ascandidate.append(usertest.test)
-    except:
-        pass
+    for usertestobj in usertestqset:
+        try:
+            testlist_ascandidate.append(usertestobj.test)
+        except:
+            pass
     user_candidate_other_creator_evaluator_dict = {}
     for test in testlist_ascandidate:
         testcreator = test.creator
@@ -6940,7 +6942,7 @@ def mobile_setschedule(request):
 
 @skillutils.is_session_valid
 @csrf_protect
-def postonlinkedin():
+def postonlinkedin(request):
     message = ""
     if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')
@@ -6956,6 +6958,83 @@ def postonlinkedin():
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
+    objectId = request.POST.get('objectid', '')
+    role = request.POST.get('role', '')
+    title = ""
+    content_title = ""
+    if role == "creator":
+        testobj = Test.objects.get(id=objectId)
+        testname = testobj.testname
+        testtopic = testobj.topic.topicname
+        if not testtopic:
+            testtopic = testobj.topicname
+        message = "I created the test named '%s' under the topic '%s'. To take this test, you may send me an email to '%s'. I will send you the test URL to your email Id so that you may take the test at the appropriate time."%(testname, testtopic, userobj.emailid)
+        title = "Post as Creator of Test named '%s'"%testname
+        content_title = title
+    elif role == "evaluator":
+        testobj = Test.objects.get(id=objectId)
+        testname = testobj.testname
+        testtopic = testobj.topic.topicname
+        if not testtopic:
+            testtopic = testobj.topicname
+        message = "I am one of the evaluators of the test named '%s' under the topic '%s'. To take this test, you may send an email to '%s', who is the owner of this test. The owner will send you the test URL to your email Id so that you may take the test at the appropriate time."%(testname, testtopic, testobj.creator.emailid)
+        title = "Post as Evaluator of Test named '%s'"%testname
+        content_title = title
+    elif role == "candidate":
+        testobj = Test.objects.get(id=objectId)
+        testname = testobj.testname
+        testtopic = testobj.topic.topicname
+        if not testtopic:
+            testtopic = testobj.topicname
+        usertestobj = UserTest.objects.get(user=userobj, test=testobj)
+        utstatus = usertestobj.status
+        status_msg = ""
+        if utstatus == 0:
+            status_msg = "I have not taken this test yet."
+        elif utstatus == 1:
+            status_msg = "I am taking this test right now."
+        elif utstatus == 2:
+            status_msg = "I have taken this test. My score is '%s'."%usertestobj.score
+        else:
+            pass
+        message = "I am a candidate of the test named '%s' under the topic '%s'. %s"%(testname, testtopic, status_msg)
+        title = "Post as Candidate of Test named '%s'"%testname
+        content_title = title
+    elif role == "interview_conductor":
+        interviewobj = Interview.objects.get(id=objectId)
+        interviewtitle = interviewobj.title
+        interviewtopic = interviewobj.topic.topicname
+        if not interviewtopic:
+            interviewtopic = interviewobj.topicname
+        message = "I am the conductor of the interview named '%s' under the topic '%s'. To attend this interview, you may send an email to '%s', and I will set up the interview at the appropriate time."%(interviewtitle, interviewtopic, interviewobj.interviewer.emailid)
+        title = "Post as Conductor of Interview titled '%s'"%interviewtitle
+        content_title = title
+    elif role == "interview_attended":
+        interviewobj = Interview.objects.get(id=objectId)
+        interviewtitle = interviewobj.title
+        interviewtopic = interviewobj.topic.topicname
+        if not interviewtopic:
+            interviewtopic = interviewobj.topicname
+        message = "I attended this interview with the title '%s' under the topic '%s' on %s. The details of this interview may be found on '%s'."%(interviewtitle, interviewtopic, interviewobj.actualstarttime, interviewobj.interviewurl)
+        title = "Post as Attendee of Interview titled '%s'"%interviewtitle
+        content_title = title
+    else:
+        message = "Unrecognized role value."
+        return HttpResponse(message)
+    #authentication = linkedin.LinkedInDeveloperAuthentication(mysettings.OAUTH_API_KEY, mysettings.OAUTH_SECRET_KEY, mysettings.OAUTH_USER_TOKEN, mysettings.OAUTH_USER_SECRET, mysettings.REDIRECT_URI, linkedin.PERMISSIONS.enums.values())
+    authentication = linkedin.LinkedInAuthentication(mysettings.OAUTH_API_KEY, mysettings.OAUTH_SECRET_KEY, mysettings.REDIRECT_URI, linkedin.PERMISSIONS.enums.values())
+    application = linkedin.LinkedInApplication(authentication)
+    opstatus = application.join_group(mysettings.TESTYARD_GROUP_ID)
+    if not opstatus:
+        response = "Could not join TestYard linkedin group."
+        return HttpResponse(response)
+    opstatus = application.submit_group_post(mysettings.TESTYARD_GROUP_ID, title, "", "", "", content_title, message)
+    #return HttpResponse(", ".join(dir(application)))
+    if opstatus:
+        response = "Successfully posted on TestYard linkedin group."
+    else:
+        response = "Failed to post on TestYard linkedin group."
+    return HttpResponse(response)
 
 
 @skillutils.is_session_valid
