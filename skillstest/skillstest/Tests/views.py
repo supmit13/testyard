@@ -22,13 +22,13 @@ from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
 # Standard libraries...
-import os, sys, re, time, datetime, stat
+import os, sys, re, time, datetime, stat, gzip
 import pytz
 import cPickle
 import decimal, math
 from Crypto.Cipher import AES, DES3
 from Crypto import Random
-import base64,urllib, urllib2
+import base64,urllib, urllib2, httplib
 import simplejson as json
 from openpyxl import load_workbook
 from xlrd import open_workbook
@@ -40,11 +40,12 @@ import binascii
 from BeautifulSoup import BeautifulSoup
 from linkedin import linkedin
 from oauthlib import *
+import requests
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates, PostLinkedin
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -59,7 +60,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedin = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -320,7 +321,8 @@ def get_user_tests(request):
     tests_user_dict['repl_token'] = skillutils.repl_token_generator()
     tests_user_dict['codepadexecuteurl'] = skillutils.gethosturl(request) + "/" + codepadexecuteurl
     tests_user_dict['chkintnameavailabilityurl'] = skillutils.gethosturl(request) + "/" + chkintnameavailabilityurl
-    tests_user_dict['postonlinkedin'] = skillutils.gethosturl(request) + "/" + postonlinkedin
+    tests_user_dict['postonlinkedinurl'] = skillutils.gethosturl(request) + "/" + postonlinkedinurl
+    tests_user_dict['linkedinpostsessionurl'] = skillutils.gethosturl(request) + "/" + linkedinpostsessionurl
     return  tests_user_dict
 
 
@@ -748,6 +750,7 @@ def getpercentilescore(attainedscore, combinedlist):
             belowcount += 1
         #print abovecount, "####", belowcount, "####", attainedscore, "####", utobj.score
     percentile = (float(belowcount)/float(takerscount)) * 100.00
+    percentile = "{0:.2f}".format(percentile)
     return percentile
 
 
@@ -3162,7 +3165,7 @@ def sendtestinvitations(request):
         emailsubject = "A test has been scheduled for you on testyard"
         emailmessage = """Dear %s,
 
-    A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+    A test with the name '%s' has been scheduled for you by %s. 
         """%(candidatename, testobj.testname, userobj.displayname)
         if validtill == 'onwards':
             emailmessage += """ This test will remain valid from %s %s, """%(validfrom, validtill)
@@ -3170,7 +3173,7 @@ def sendtestinvitations(request):
             emailmessage += """ This test will remain valid from %s and %s, """%(validfrom, validtill)
         emailmessage += """and hence you are kindly requested to take the test
         within that interval. You would be able to access the test by clicking
-        on the following link: <a href='%s' target=_blank>%s</a>.
+        on the following link: %s.
 
         If clicking on the above link doesn't work for you, please copy it and 
         paste it in your browser's address bar and hit enter. Do please feel
@@ -3181,7 +3184,7 @@ def sendtestinvitations(request):
 
         Regards,
         The TestYard Team.
-        """%(testlink, testlink)
+        """%(testlink)
         fromaddr = "testyardteam@testyard.com"
         retval = 0
         try:
@@ -5238,7 +5241,7 @@ def setschedule(request):
             emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
             emailmessage += """and hence you are kindly requested to take the test
             within that interval. You would be able to access the test by clicking
-            on the following link: <a href='%s' target=_blank>%s</a>.
+            on the following link: %s.
 
             If clicking on the above link doesn't work for you, please copy it and 
             paste it in your browser's address bar and hit enter. Do please feel
@@ -5249,7 +5252,7 @@ def setschedule(request):
 
             Regards,
             The TestYard Team.
-            """%(utobj.testurl, utobj.testurl)
+            """%(utobj.testurl)
             fromaddr = "testyardteam@testyard.com"
             retval = 0
             try:
@@ -6940,9 +6943,144 @@ def mobile_setschedule(request):
     return response
 
 
+
+def linkedinredirect(request):
+    code = request.GET.get('code', '')
+    state = request.GET.get('state', '')
+    sesscode = request.GET.get('sesscode', '')
+    sid = sesscode.replace('"', '')
+    rolename = request.GET.get('role', '')
+    postlinkedinobj = None
+    #return HttpResponse(sid)
+    #First check if the CSRF token received matches our csrftoken in the DB for this session (identified by the sesscode variable)
+    try:
+        postlinkedinobj = PostLinkedin.objects.filter(sessionid=sid).order_by("-current_ts")[0]
+    except:
+        message = error_msg('1183') + " - Error: %s\n"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    if postlinkedinobj.sessionid != sid:
+        message = error_msg('1184')
+        return HttpResponse(message)
+    # Check if the state value equals our stored access token
+    if postlinkedinobj.csrftoken != state:
+        message = "The response could not be authenticated due to the difference in CSRF token values. Please contact support@testyard.in for resolving this."
+        return HttpResponse(message, status=401)
+    if not rolename:
+        rolename = postlinkedinobj.role
+    # Now, we will try to retrieve our access token.
+    httpHeaders = {}
+    for k in skillutils.gHttpHeaders.keys():
+        httpHeaders[k] = skillutils.gHttpHeaders[k]
+    postdatadict = {"grant_type" : "authorization_code", "code" : code, "redirect_uri" : mysettings.REDIRECT_URI + "?sesscode=" + sesscode, "client_id" : mysettings.OAUTH_API_KEY, "client_secret" : mysettings.OAUTH_SECRET_KEY} 
+    postdata = urllib.urlencode(postdatadict)
+    httpHeaders['Host'] = "www.linkedin.com"
+    httpHeaders['Content-Type'] = "application/x-www-form-urlencoded"
+    tokenrequest = urllib2.Request("https://www.linkedin.com/oauth/v2/accessToken", postdata, httpHeaders)
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    tokenResponse = None
+    try:
+        tokenResponse = opener.open(tokenrequest)
+        respHeaders = tokenResponse.info()
+    except:
+        print "Could not make HTTP request to acquire authorization code: %s"%sys.exc_info()[1].__str__()
+        return HttpResponse("Could not make HTTP request to acquire authorization code: %s"%sys.exc_info()[1].__str__())
+    tokenResponseContent = skillutils._decodeGzippedContent(tokenResponse.read())
+    responsejson = json.loads(tokenResponseContent)
+    accesstoken = responsejson['access_token']
+    # Otherwise, now we are all poised to post the message on linkedin.
+    shareurl = "https://api.linkedin.com/v1/people/~/shares?format=json"
+    sharedata = { "content" : {"title" : "", "description" : "", 'submitted-url' : "https://testyard.in/", 'submitted-image-url' : "https://testyard.in/"}, "comment" : "", "visibility" : { "code" : "anyone" }}
+    if rolename == "creator":
+        objectname = ""
+        if postlinkedinobj.test:
+            objectname = postlinkedinobj.test.testname
+            topicname = ""
+            if postlinkedinobj.test.topic:
+                topicname = postlinkedinobj.test.topic.topicname
+            else:
+                topicname = postlinkedinobj.test.topicname
+            objecttopic = postlinkedinobj.test.topic
+        sharedata["comment"] = "Created a test named '%s' under '%s' topic"%(objectname, topicname)
+        sharedata["content"]["title"] = "Test Created"
+        sharedata["content"]["description"] = "Test Created"
+    elif rolename == "evaluator":
+        if postlinkedinobj.test:
+            objectname = postlinkedinobj.test.testname
+            topicname = ""
+            if postlinkedinobj.test.topic:
+                topicname = postlinkedinobj.test.topic.topicname
+            else:
+                topicname = postlinkedinobj.test.topicname
+        sharedata["comment"] = "Chosen as one of the evaluators for '%s' under '%s' topic."%(objectname, topicname)
+        sharedata["content"]["title"] = "Evaluator Selected"
+        sharedata["content"]["description"] = "Evaluator Selected"
+    elif rolename == "candidate":
+        if postlinkedinobj.test:
+            objectname = postlinkedinobj.test.testname
+            topicname = ""
+            if postlinkedinobj.test.topic:
+                topicname = postlinkedinobj.test.topic.topicname
+            else:
+                topicname = postlinkedinobj.test.topicname
+        sharedata["comment"] = "A request to take the test named '%s' under '%s' topic has been made to you."%(objectname, topicname)
+        sharedata["content"]["title"] = "Test Request"
+        sharedata["content"]["description"] = "Test Request"
+    elif rolename == "interviewconductor":
+        if postlinkedinobj.interview:
+            objectname = postlinkedinobj.interview.title
+            topicname = ""
+            try:
+                if postlinkedinobj.interview.topic:
+                    topicname = postlinkedinobj.interview.topic.topicname
+                else:
+                    topicname = postlinkedinobj.interview.topicname
+            except:
+                pass
+        sharedata["comment"] = "You have been requested to conduct the interview titled '%s' under '%s' topic."%(objectname, topicname)
+        sharedata["content"]["title"] = "Conduct Interview Request"
+        sharedata["content"]["description"] = "Conduct Interview Request"
+    elif rolename == "interviewattended":
+        if postlinkedinobj.interview:
+            objectname = postlinkedinobj.interview.title
+            topicname = ""
+            try:
+                if postlinkedinobj.interview.topic:
+                    topicname = postlinkedinobj.interview.topic.topicname
+                else:
+                    topicname = postlinkedinobj.interview.topicname
+            except:
+                pass
+        sharedata["comment"] = "You have been requested to attend the interview titled '%s' under '%s' topic."%(objectname, topicname)
+        sharedata["content"]["title"] = "Attend Interview"
+        sharedata["content"]["description"] = "Attend Interview"
+    else:
+        sharedata["comment"] = "Unrecognized rolename."
+        sharedata["content"]["title"] = "Unrecognized rolename"
+        sharedata["content"]["description"] = "Unrecognized rolename"
+    httpHeaders = {}
+    httpHeaders['Content-Type'] = "application/json"
+    httpHeaders['x-li-format'] = "json"
+    #httpHeaders['Authorization'] = "Bearer " + accesstoken
+    httpHeaders['X-Target-URI'] = "https://api.linkedin.com"
+    httpHeaders['Host'] = "api.linkedin.com"
+    httpHeaders['Connection'] = "Keep-Alive"
+    postdata = json.dumps(sharedata)
+    httpHeaders['Content-Length'] = str(postdata.__len__())
+    params = {} 
+    kw = dict(data=postdata, params=params, headers=httpHeaders, timeout=60)
+    params.update({'oauth2_access_token': accesstoken})
+    response = requests.request("POST", shareurl, **kw)
+    jsonresponse = response.json()
+    if response.status_code == 201:
+        message = "<table border='0' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'><tr><td><font color='#0000AA'>The post was successfully shared on linkedin. Please click on the following button to close this window.</font></td></tr><tr><td><input type='button' name='btnclose' value='Close Me' onClick='javascript:self.close();'></td></tr></table>"
+    else:
+        message = "<table border='0' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'><tr><td><font color='#0000AA'>The post could not be shared on linkedin. Reason: %s. Please click on the following button to close this window.</font></td></tr><tr><td><input type='button' name='btnclose' value='Close Me' onClick='javascript:self.close();'></td></tr></table>"%jsonresponse['message']
+    return HttpResponse(message)
+
+
 @skillutils.is_session_valid
 @csrf_protect
-def postonlinkedin(request):
+def linkedinpostinform(request):
     message = ""
     if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')
@@ -6958,91 +7096,35 @@ def postonlinkedin(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    objectId = request.POST.get('objectid', '')
+    postlinkedinrec = PostLinkedin()
+    #"objectid=" + objectid + "&type=" + type + "&role=" + role + "&csrftoken=" + state + "&currentts=" + new Date().getTime();
+    objectid = request.POST.get('objectid', '')
+    objecttype = request.POST.get('type', '')
     role = request.POST.get('role', '')
-    title = ""
-    content_title = ""
-    if role == "creator":
-        testobj = Test.objects.get(id=objectId)
-        testname = testobj.testname
-        testtopic = testobj.topic.topicname
-        if not testtopic:
-            testtopic = testobj.topicname
-        message = "I created the test named '%s' under the topic '%s'. To take this test, you may send me an email to '%s'. I will send you the test URL to your email Id so that you may take the test at the appropriate time."%(testname, testtopic, userobj.emailid)
-        title = "Post as Creator of Test named '%s'"%testname
-        content_title = title
-    elif role == "evaluator":
-        testobj = Test.objects.get(id=objectId)
-        testname = testobj.testname
-        testtopic = testobj.topic.topicname
-        if not testtopic:
-            testtopic = testobj.topicname
-        message = "I am one of the evaluators of the test named '%s' under the topic '%s'. To take this test, you may send an email to '%s', who is the owner of this test. The owner will send you the test URL to your email Id so that you may take the test at the appropriate time."%(testname, testtopic, testobj.creator.emailid)
-        title = "Post as Evaluator of Test named '%s'"%testname
-        content_title = title
-    elif role == "candidate":
-        testobj = Test.objects.get(id=objectId)
-        testname = testobj.testname
-        testtopic = testobj.topic.topicname
-        if not testtopic:
-            testtopic = testobj.topicname
-        usertestobj = UserTest.objects.get(user=userobj, test=testobj)
-        utstatus = usertestobj.status
-        status_msg = ""
-        if utstatus == 0:
-            status_msg = "I have not taken this test yet."
-        elif utstatus == 1:
-            status_msg = "I am taking this test right now."
-        elif utstatus == 2:
-            status_msg = "I have taken this test. My score is '%s'."%usertestobj.score
-        else:
-            pass
-        message = "I am a candidate of the test named '%s' under the topic '%s'. %s"%(testname, testtopic, status_msg)
-        title = "Post as Candidate of Test named '%s'"%testname
-        content_title = title
-    elif role == "interview_conductor":
-        interviewobj = Interview.objects.get(id=objectId)
-        interviewtitle = interviewobj.title
-        interviewtopic = interviewobj.topic.topicname
-        if not interviewtopic:
-            interviewtopic = interviewobj.topicname
-        message = "I am the conductor of the interview named '%s' under the topic '%s'. To attend this interview, you may send an email to '%s', and I will set up the interview at the appropriate time."%(interviewtitle, interviewtopic, interviewobj.interviewer.emailid)
-        title = "Post as Conductor of Interview titled '%s'"%interviewtitle
-        content_title = title
-    elif role == "interview_attended":
-        interviewobj = Interview.objects.get(id=objectId)
-        interviewtitle = interviewobj.title
-        interviewtopic = interviewobj.topic.topicname
-        if not interviewtopic:
-            interviewtopic = interviewobj.topicname
-        message = "I attended this interview with the title '%s' under the topic '%s' on %s. The details of this interview may be found on '%s'."%(interviewtitle, interviewtopic, interviewobj.actualstarttime, interviewobj.interviewurl)
-        title = "Post as Attendee of Interview titled '%s'"%interviewtitle
-        content_title = title
-    else:
-        message = "Unrecognized role value."
-        return HttpResponse(message)
-    #authentication = linkedin.LinkedInDeveloperAuthentication(mysettings.OAUTH_API_KEY, mysettings.OAUTH_SECRET_KEY, mysettings.OAUTH_USER_TOKEN, mysettings.OAUTH_USER_SECRET, mysettings.REDIRECT_URI, linkedin.PERMISSIONS.enums.values())
-    authentication = linkedin.LinkedInAuthentication(mysettings.OAUTH_API_KEY, mysettings.OAUTH_SECRET_KEY, mysettings.REDIRECT_URI, linkedin.PERMISSIONS.enums.values())
-    application = linkedin.LinkedInApplication(authentication)
-    opstatus = application.join_group(mysettings.TESTYARD_GROUP_ID)
-    if not opstatus:
-        response = "Could not join TestYard linkedin group."
-        return HttpResponse(response)
-    opstatus = application.submit_group_post(mysettings.TESTYARD_GROUP_ID, title, "", "", "", content_title, message)
-    #return HttpResponse(", ".join(dir(application)))
-    if opstatus:
-        response = "Successfully posted on TestYard linkedin group."
-    else:
-        response = "Failed to post on TestYard linkedin group."
-    return HttpResponse(response)
-
-
-@skillutils.is_session_valid
-@csrf_protect
-def linkedinredirect():
-    pass
-
-
-
+    csrftoken = request.POST.get('csrfmiddlewaretoken', '')
+    currentts = request.POST.get('currentts', '')
+    sesscode = request.POST.get('sessionid', '')
+    try:
+        if objecttype == "test":
+            testobj = Test.objects.get(id=objectid)
+            postlinkedinrec.test = testobj
+        elif objecttype == "interview":
+            objectidparts = objectid.split("/")
+            intlinkid = objectidparts[len(objectidparts) - 2]
+            interviewobj = Interview.objects.get(interviewlinkid=intlinkid)
+            postlinkedinrec.interview = interviewobj
+        postlinkedinrec.role = role
+        postlinkedinrec.csrftoken = csrftoken
+        postlinkedinrec.current_ts = currentts
+        postlinkedinrec.user = userobj
+        #sesscode = sesscode.replace('"', '')
+        postlinkedinrec.sessionid = sessid
+        postlinkedinrec.save()
+        msg = error_msg('1182')
+        response = HttpResponse(msg)
+    except:
+        response = HttpResponse(sys.exc_info()[1].__str__())
+    return response
+    
 
 

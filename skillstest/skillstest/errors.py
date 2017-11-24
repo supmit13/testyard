@@ -179,6 +179,9 @@ error_codes = { \
         '1179' : 'The username field is empty. Aborting the requested operation.',\
         '1180' : 'The user with the given username does not exist.',\
         '1181' : 'User mismatch - seems like you have a session that does not belong to you. Please logout and login again to continue.',\
+        '1182' : 'The details pertaining to you have been captured by the application. Your content is now being posted.', \
+        '1183' : 'The Linkedin post data doesn\'t exist in our records. Please try to post again.',\
+        '1184' : 'The records for posting on linkedin do not match at the two phases. This might occur if you take a long time in the process of posting your test/interview result, or if your connection is not stable. If you keep encountering this issue, please feel free to contact our support staff at support@testyard.in.',\
     }
 
 def error_msg(code):

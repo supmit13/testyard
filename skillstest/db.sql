@@ -827,5 +827,17 @@ alter table Subscription_transaction add column extOrderId varchar(40) default '
 
 alter table Subscription_transaction modify column plan_id int NULL;
 
+create table `Tests_postlinkedin` (
+    `id` INTEGER AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    `test_id` INTEGER DEFAULT -1,
+    `interview_id` INTEGER DEFAULT -1,
+    `role` VARCHAR(20) NOT NULL,
+    `user_id` INTEGER NOT NULL,
+    `sessionid` VARCHAR(50) NOT NULL,
+    `csrftoken` VARCHAR(100) NOT NULL,
+    `postmessage` TEXT DEFAULT "",
+    `current_ts` TIMESTAMP NOT NULL
+)ENGINE=Innodb;
+
 COMMIT;
 

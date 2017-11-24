@@ -474,3 +474,23 @@ class InterviewCandidates(models.Model):
     def __unicode__(self):
         return "InterviewCandidates: %s"%(self.emailaddr)
 
+
+
+class PostLinkedin(models.Model):
+    test = models.ForeignKey(Test, related_name="+", null=True, blank=True)
+    interview = models.ForeignKey(Interview, related_name="+", null=True, blank=True)
+    role = models.CharField(max_length=20, null=False, blank=False)
+    csrftoken = models.CharField(max_length=100, null=False, blank=False)
+    user = models.ForeignKey(User, related_name="+", null=True, blank=True)
+    sessionid = models.CharField(max_length=100)
+    current_ts = models.DateTimeField(auto_now_add=True)
+    postmessage = models.TextField(default='', null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Linkedin Posts Table"
+        db_table = 'Tests_postlinkedin'
+
+    def __unicode__(self):
+        return "PostLinkedin: %s"%(self.postmessage)
+
+

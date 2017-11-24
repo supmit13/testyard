@@ -24,7 +24,7 @@ from django.core.mail import send_mail
 from skillstest.Auth.models import User, Session
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
-from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse
+from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse, PostLinkedin
 from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon
 from skillstest.Network.models import ExchangeRates
 

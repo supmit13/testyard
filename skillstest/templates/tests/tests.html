@@ -13,6 +13,17 @@
 	  color:#FFFFFF;
 	  position:absolute; top:250px; left:0px; width:275%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
+
+        .semitrans2 {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:150px; left:100px; width:75%; height:50%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
 	</style>
 
 	<style>
@@ -1579,6 +1590,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    postdataencuri = encodeURI(postdata);
 		    encpostdata = Base64.encode(postdataencuri);
 		    encpostdata = encpostdata + "&csrfmiddlewaretoken=" + csrftoken;
+		    waitdivtag = evalwin.document.getElementById("waitdiv");
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
     		        xmlhttp=new XMLHttpRequest();
@@ -1591,11 +1603,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 			    // Display the response in the parent screen and close this window if everything went well.
 			    alert(xmlhttp.responseText + " Updated scores will be reflected once you close and reopen the 'Evaluation Screen'");
+			    waitdivtag.innerHTML = "";
+			    waitdivtag.style = "display:none";
 			    evalwin.close();
   		        }
   		    };
 		    xmlhttp.open("POST", '{{ evaluateresponseurl }}', true);
   		    xmlhttp.send(encpostdata);
+		    waitdivtag.innerHTML = "<img src='static/images/loading_small.gif'>";
 		}
 
 
@@ -1653,7 +1668,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />";
 		    }
 		    if(evalcommitstate == false){
-		        html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;";
+		        html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>";
 		    }
 		    html += "<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
 		    html += "</form></body>";
@@ -2523,11 +2538,40 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    xmlhttp.send(postdata);
 	}
 
-	// objectid is either the test Id, or the interview Id or the URL to the interview schedule.
+
 	function postonlinkedin(objectid, role){
-	    alert("Posting on linkedin. Please be patient for a few seconds. I will display a success message once I am done.");
-	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
-	    postdata = "objectid=" + objectid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken + "&role=" + role;
+            yn = confirm("Are you sure you want to post this message pertaining to this test on LinkedIn?");
+            if(yn == false){
+                return(yn);
+            }
+	    linkedinAuthUrl = "https://www.linkedin.com/oauth/v2/authorization";
+	    response_type = "code";
+            cookiestr = document.cookie;
+            cookiestrparts = cookiestr.split(";");
+            sesscode = "";
+            for(i=0; i < cookiestrparts.length; i++){
+		cookieparts = cookiestrparts[i].split("=");
+		//alert(cookieparts[0] + " " + cookieparts[1]);
+		cookieparts[0] = cookieparts[0].replace(" ", "");
+                if(cookieparts[0] == "sessioncode"){
+		    sesscode = cookieparts[1];
+		    break;
+		}
+	    }
+    	    client_id = "78wxi7pqmstzbg";
+    	    redirectUri = "{{ hosturl }}/skillstest/test/linkedin/?sesscode=" + sesscode + "&role=" + role;
+	    //redirectUri = "{{ hosturl }}/skillstest/test/linkedin/?sesscode=" + sesscode
+   	    //alert(redirectUri);
+    	    state = document.frmmaintests.csrfmiddlewaretoken.value;
+    	    scope = "r_basicprofile w_share";
+    	    linkedingetrequesturl = linkedinAuthUrl + "?response_type=" + response_type + "&client_id=" + client_id + "&redirect_uri=" + encodeURI(redirectUri) + "&state=" + state + "&scope=" + encodeURI(scope);
+	    // Now, send a request to the server with the test Id, the role of the user, the csrf token, session Id (will be sent implicitly), and user Id (will be sent implicitly) to the server, so that the server will enter a record in a table pertaining to this request for posting a message on linkedin.
+            type = "test";
+            if (role == "interviewattended" || role == "interviewconductor"){
+		type = "interview";
+	    }
+            postdata = "objectid=" + objectid + "&type=" + type + "&role=" + role + "&csrfmiddlewaretoken=" + state + "&currentts=" + new Date().getTime() + "&sessionid=" + sesscode;
+	    //alert(postdata);
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
@@ -2536,17 +2580,15 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   	    }
 	    xmlhttp.onreadystatechange = function(){
-		namewarn = document.getElementById('namewarning');
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    alert(xmlhttp.responseText);
-		}
-		else if(xmlhttp.readyState == 4 && xmlhttp.status!=200){
-		    alert("The test could not be posted on linkedin. Error code: " + xmlhttp.status);
+		    //alert(xmlhttp.responseText);
 		}
 	    };
-	    xmlhttp.open("POST", '{{ postonlinkedin }}', true);
+	    xmlhttp.open("POST", '{{ linkedinpostsessionurl }}', true);
   	    xmlhttp.send(postdata);
+	    postonlinkedinwin = window.open(linkedingetrequesturl, "linkedinwindow", "width=400, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, status=no");
 	}
+
 
 	// This function checks if mutually exclusive rules have been selected. If so, it will deselect the 
 	// previously selected rule that is mutually exclusive of the currently selected rule.
@@ -2676,9 +2718,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  </font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
 			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');">Post on LinkedIn</a></font></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
 			{% else %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');">Post on LinkedIn</a></font></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
 			{% endif %}
 			</tr> 
 			{% endfor %}
@@ -2742,7 +2784,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:26 }}</font></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:27 }}</font></td>
-			  <td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font color='#00BB00' size=-1><a href='#/' onclick="javascript:postonlinkedin('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}', 'evaluator');">Post on LinkedIn</a></font></td>
+			  <td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font color='#00BB00' size=-1><a href='#/' onclick="javascript:postonlinkedin('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}', 'evaluator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
@@ -2799,7 +2841,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    {% endif %}
 			  {% endif %}
 			  </font></td>
-			  <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}', 'candidate')">Post on LinkedIn</a></font></td>
+			  <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}', 'candidate');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
@@ -2839,7 +2881,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:9 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:10 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}</font></td>
-			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = "javascript:postonlinkedin('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}', 'interview_conductor')">Post on LinkedIn</a></font></td>
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = "javascript:postonlinkedin('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}', 'interviewconductor');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
@@ -2885,7 +2927,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:13 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:15 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}</font></td>
-			    <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}', 'interview_attended')">Post on LinkedIn</a></font></td>
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}', 'interviewattended');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}
 			</table>
