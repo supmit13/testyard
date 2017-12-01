@@ -74,6 +74,7 @@ def get_network_template_vars(userobj):
     templatevars['managemembersurl'] = mysettings.MANAGE_GROUP_MEMBERS_URL
     templatevars['manageownedgrpsurl'] = mysettings.MANAGE_OWNED_GROUPS_URL
     templatevars['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
+    templatevars['sendamessageurl'] = mysettings.SEND_A_MESSAGE_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -2161,10 +2162,23 @@ def sendtestemails(request, testid, forcefreshurl, emailidlist):
     validfrom = dd + "-" + mon + "-" + yyyy + " " + hh + ":" + mm + ":" + ss
     csrftoken = request.POST['csrfmiddlewaretoken']
     postdata['validfrom'] = validfrom
+    """
+    ddtill = dd
+    montill = str(int(mon) + 1)
+    if montill.__len__() < 2:
+        montill = "0" + montill
+    if montill > 12:
+        yyyytill = int(yyyy) + 1
+        yyyytill = str(yyyytill)
+        montill = '01'
+    else:
+        yyyytill = yyyy
+    postdata['validtill'] = ddtill + "-" + montill + "-" + yyyytill + " " + hh + ":" + mm + ":" + ss
+    """
     postdata['validtill'] = ""
     postdata['forcefreshurl'] = forcefreshurl
     postdata['csrfmiddlewaretoken'] = csrftoken
-    opener = urllib2.build_opener(urllib2.HTTPHandler, urllib2.HTTPSHandler)
+    opener = urllib2.build_opener(urllib2.HTTPHandler, urllib2.HTTPSHandler, skillutils.NoRedirectHandler)
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionqset = Session.objects.filter(sessioncode=sesscode)
@@ -2174,8 +2188,13 @@ def sendtestemails(request, testid, forcefreshurl, emailidlist):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    postdata = urllib.urlencode(postdata) 
-    headers = {'Cookie' : "sessioncode=" + sesscode + ";usertype=" + usertype + ";csrftoken=" + csrftoken}
+    postdata = urllib.urlencode(postdata)
+    headers = {}
+    for hdrkey in skillutils.gHttpHeaders.keys():
+        headers[hdrkey] = skillutils.gHttpHeaders[hdrkey]
+    headers['Host'] = request.get_host()
+    headers['Cookie'] = "sessioncode=" + sesscode + ";usertype=" + usertype + ";csrftoken=" + csrftoken
+    headers['Referer'] = baseurl + "/skillstest/network/"
     postrequest = urllib2.Request(baseurl + "/skillstest/test/sendtestinvitations/", postdata, headers)
     try:
         opener.open(postrequest)
@@ -2183,7 +2202,7 @@ def sendtestemails(request, testid, forcefreshurl, emailidlist):
     except:
         message = "Could not send emails for test identified by Id %s to all identified users: %s"%(testid, sys.exc_info()[1].__str__())
     # Send an email with 'message' to the user identified in 'userobj'
-    subject = "Sent test to members of the selected group(s)"
+    subject = "Status of email sent to members of the selected group(s)"
     fromaddr = userobj.emailid
     email = fromaddr
     try:
@@ -3225,7 +3244,50 @@ def savepostsinfo(request):
     return response
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def sendamessage(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    useremail = request.POST['useremail']
+    emailmessage = request.POST['message']
+    fromemail = userobj.emailid
+    subject = ""
+    targetuserobj = User.objects.get(emailid=useremail)
+    if emailmessage.__len__() > 20:
+        subject = emailmessage[:20] + "..." # First 20 characters will be the subject.
+    else:
+        subject = emailmessage
+    subject = subject.replace("\n", " ")
+    # Check if the targetuserobj has blocked the logged in user. If so, no email can be sent to the targetuserobj by this user.
+    retval = skillutils.sendemail(targetuserobj, subject, emailmessage, fromemail)
+    # Add appropriate info in the Network_post table.
+    post = Post()
+    post.posttargettype = 'user'
+    post.posttargetuser = targetuserobj
+    post.postmsgtag = subject
+    post.poster = userobj
+    post.postcontent = emailmessage
+    post.scope = 'private'
+    post.attachmentfile = None
+    post.newmsg = True
+    try:
+        post.save()
+    except:
+        pass
+    if retval > 0:
+        message = "Successfully sent email to user with email Id '%s'"%useremail
+    else:
+        message = "Could not send email to user with email Id '%s'"%useremail
+    response = HttpResponse(message)
+    return response
 
 
 
