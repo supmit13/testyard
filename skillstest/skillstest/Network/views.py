@@ -2196,9 +2196,13 @@ def sendtestemails(request, testid, forcefreshurl, emailidlist):
     headers['Cookie'] = "sessioncode=" + sesscode + ";usertype=" + usertype + ";csrftoken=" + csrftoken
     headers['Referer'] = baseurl + "/skillstest/network/"
     postrequest = urllib2.Request(baseurl + "/skillstest/test/sendtestinvitations/", postdata, headers)
+    testqset = Test.objects.filter(id=testid)
+    testname = ""
+    if testqset and list(testqset).__len__() > 0:
+        testname = testqset[0].testname
     try:
         opener.open(postrequest)
-        message = "Successfully sent the test email to %s members."%emailidlist.__len__()
+        message = "Successfully sent the test named '%s' email to %s members."%(testname, emailidlist.__len__())
     except:
         message = "Could not send emails for test identified by Id %s to all identified users: %s"%(testid, sys.exc_info()[1].__str__())
     # Send an email with 'message' to the user identified in 'userobj'
