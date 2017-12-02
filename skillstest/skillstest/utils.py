@@ -844,7 +844,7 @@ def des3Decrypt(encString, key, iv):
 def repl_token_generator():
     """
     This is the token generator function, but it is not complete as yet.
-    Also, it is erroneous and takes up ATM card after dispensing the aaaaaaaaaaaaaaa
+    Also, it is erroneous and takes up ATM card after dispensing the amount
     """
     h = hashlib.sha256()
     h.update(mysettings.REPL_SECRET)
@@ -877,5 +877,6 @@ def applycoupon(couponobj, xobj, objtype='plan'):
     if discountedamt < float(0):
         discountedamt = 0.00
     return discountedamt
+
 
 
