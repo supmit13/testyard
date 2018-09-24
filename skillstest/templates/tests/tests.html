@@ -2,6 +2,12 @@
 	<script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script> 
 	<script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script> 
 	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
+        <!-- Speech to text Code starts here -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shoelace-css/1.0.0-beta16/shoelace.css">
+        <link rel="stylesheet" href="static/css/speech2text/styles.css" />
+        <script type="text/javascript" src="static/speech2text/speech2text_script.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Speech to text Code ends here  -->
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -2718,9 +2724,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  </font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
 			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png" alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
 			{% else %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png" alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
 			{% endif %}
 			</tr> 
 			{% endfor %}

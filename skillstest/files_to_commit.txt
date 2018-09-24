@@ -2603,7 +2603,7 @@ Tue, Aug 08, 2017, 11:09 HRS.
 3. git add files_to_commit.txt
 
 =========================================
-Sat, Dec 02, 2017, 03:20 HRS>
+Sat, Dec 02, 2017, 03:20 HRS.
 -----------------------------------------
 1. git add templates/tests/tests.html
 2. git add skillstest/Tests/views.py
@@ -2618,11 +2618,12 @@ Sat, Dec 02, 2017, 03:20 HRS>
 11.git add files_to_commit.txt
 
 =========================================
-Sat, September 22, 2018, 04:20 HRS>
+Sat, September 25, 2018, 01:30 HRS.
 -----------------------------------------
 1. git add templates/tests/left_panel.html
 2. git add templates/tests/edit_challenge.html
 3. git add static/css/speech2text/styles.css
 4. git add static/speech2text/speech2text_script.js
+5. git add templates/tests/tests.html
 5. git add files_to_commit.txt
 
