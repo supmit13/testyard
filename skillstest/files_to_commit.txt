@@ -2618,7 +2618,7 @@ Sat, Dec 02, 2017, 03:20 HRS.
 11.git add files_to_commit.txt
 
 =========================================
-Sat, September 25, 2018, 01:30 HRS.
+Tue, September 25, 2018, 01:30 HRS.
 -----------------------------------------
 1. git add templates/tests/left_panel.html
 2. git add templates/tests/edit_challenge.html
@@ -2626,4 +2626,38 @@ Sat, September 25, 2018, 01:30 HRS.
 4. git add static/speech2text/speech2text_script.js
 5. git add templates/tests/tests.html
 5. git add files_to_commit.txt
+
+=========================================
+Fri, September 28, 2018, 02:19 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add static/speech2text/speech2text_script.js
+3. git add skillstest/skills_settings.py
+4. git add skillstest/urls.py
+
+=========================================
+Sunday, September 30, 2018, 01:00 HRS.
+-----------------------------------------
+1. git add static/speech2text/speech2text_script.js
+2. git add templates/tests/create_test_form.html
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, October 13, 2018, 06:00 HRS.
+-----------------------------------------
+1. git add node_modules/signal_server.js
+2. git add templates/tests/audiovisual.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, October 16, 2018, 02:55 HRS.
+-----------------------------------------
+1. git add templates/tests/create_interview_form.html
+2. git add templates/tests/tests.html
+3. git add static/speech2text/speech2text_script.js
+4. git add skillstest/Tests/views.py
+5. git add skillstest/Tests/models.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
 

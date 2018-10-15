@@ -2240,7 +2240,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.onreadystatechange = function(){
 		//alert(xmlhttp.responseText);
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    schedulepopup = window.open("", "schedulewindow", "width=1200, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    schedulepopup = window.open("", "schedulewindow", "width=1200, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no, titlebar=no, resizable=no, toolbar=no, status=no");
 		    schedulepopup.document.write(xmlhttp.responseText);
 		    schedulepopup.onfocus = schedulepopup.loaddatepicker;
 		    //schedulepopup.blur();
@@ -2298,6 +2298,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 	function createinterview(uid, createinterviewurl){
 	    var xmlhttp;
+            var scheduledinterview = false;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
   	    }
@@ -2414,6 +2415,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		if(document.createinterviewform.elements[i].name == 'introfilename' && document.createinterviewform.elements[i].value.trim() == ""){
 		    document.createinterviewform.elements[i].value = 'intro.wav';
 		}
+                scheduled_interview_datetime = "";
+                if(document.createinterviewform.elements[i].name == "interviewdatetime" && document.createinterviewform.elements[i].value.trim() != ""){
+    	    	    document.createinterviewform.elements[i].value = document.createinterviewform.elements[i].value.trim();
+                    scheduledinterview = true;
+	   	    
+	        }
 		postdata += document.createinterviewform.elements[i].name + "=" + document.createinterviewform.elements[i].value + "&";
 	    }
 	    if(document.createinterviewform.medium.value == 'audiovisual' && document.createinterviewform.realtime.checked == false){
@@ -2421,6 +2428,38 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     	    	document.createinterviewform.medium.value == "audio";
 	   	return (false);
 	    }
+            //alert(postdata);
+            if(scheduledinterview){
+                waitdiv.innerHTML = "<img src='static/images/loading_small.gif'><font style='font-weight:bold;' size=-1 color='#0000AA'>Please bear with us while we schedule your interview...</font>";
+		xmlhttp.onreadystatechange = function(){
+		
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Open a popup window here to add challenges for the interview
+		    errorpattern = new RegExp('Error:');
+		    if(errorpattern.test(xmlhttp.responseText)){
+			alert(xmlhttp.responseText);
+			return (0);
+		    }
+		    var windowName = 'addintro'; 
+		    var popUp = window.open('', windowName, 'width=1000, height=700, left=24, top=24, scrollbars=1, resizable');
+		    if (popUp == null || typeof(popUp)=='undefined') { 	
+			alert('Please disable your pop-up blocker and click the "Open Intro" button again.'); 
+		    } 
+		    else { 	
+			popUp.focus();
+		    }
+		    popUp.document.write(xmlhttp.responseText);
+		    popUp.document.close();
+		}
+	    };
+	    if(document.createinterviewform.btncreateinterview.value == 'Add Intro'){
+		document.createinterviewform.btncreateinterview.value = 'Open Intro';
+	    }
+	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
+  	    xmlhttp.send(postdata);
+            waitdiv.innerHTML = "<font color='#0000FF' style='font-weight:bold;' size=-1>Interview has been scheduled successfully.</font>";
+            }
+            else{
 	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'><font style='font-weight:bold;' size=-1 color='#0000AA'>Please bear with us while we prepare and launch the interview window...</font>";
 	    xmlhttp.onreadystatechange = function(){
 		//var p = window.open('', 'test', 'width=1000, height=700, left=24, top=24, scrollbars=1, resizable');
@@ -2452,6 +2491,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    }
 	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
   	    xmlhttp.send(postdata);
+            }
 	}
 
 	function focusfield(){
@@ -2481,12 +2521,20 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    }
 	}
 
+
+        function getSchedule(){
+            schedulewin = window.open("", "schedulewindow", "width=400, height=600, location=no, menubar=yes, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, status=yes");
+            html = "<html><head><title>Get Schedule</title>\<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'\>\</script\>\<script language='javascript'\>function commitSchedule(){datetime = window.frmschedule.dttmtxt.value; window.opener.document.getElementById('divschedule').innerHTML=datetime;  window.opener.document.getElementById('interviewdatetime').value=datetime; window.close();}\</script\></head><body bgcolor='#0000AA'><center><form name='frmschedule'><input type='text' name='dttmtxt' id='dttmtxt' value='YYYY-MM-DD hh:mm:ss'><br /><img src='static/datetimepicker/images/cal.gif' onclick='javascript:NewCssCal(\"dttmtxt\", \"yyyyMMdd\", \"dropdown\", true, 24, true, \"future\");' style='cursor:pointer'/><br /><input type='button' name='btncommit' value='Commit Schedule' onClick='javascript:commitSchedule();'></form></center></body></html>";
+            schedulewin.document.write(html);
+        }
+
+
 	function showinvitationfields(elem){
 	    invitationspan = document.getElementById('invitationemail');
 	    if(elem.checked == true){
 		invitationspan.style.display = "";
 		//invitationspan.innerHTML = "<font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'> <img src='static/datetimepicker/images/cal.gif' onclick=\"javascript:NewCssCal('scheduledatetime', 'yyyyMMdd', 'dropdown', true, 24, true, 'future');\" style='cursor:pointer'/> <br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br />";
-		invitationspan.innerHTML = "<font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'> <br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br />";
+		invitationspan.innerHTML = "<font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='button' name='btnscheduledatetime' id='btnscheduledatetime' value='Schedule Interview' maxlength='20'  onfocus='javascript:focusfield();' onblur='javascript:blurfield();' onClick='javascript:getSchedule();'><br /><div id='divschedule'></div><input type='hidden' name='interviewdatetime' id='interviewdatetime' value=''><br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br />";
 		//document.createinterviewform.randomsequencing.disabled=true;
 	    }
 	    else{

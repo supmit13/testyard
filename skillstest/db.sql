@@ -839,5 +839,7 @@ create table `Tests_postlinkedin` (
     `current_ts` TIMESTAMP NOT NULL
 )ENGINE=Innodb;
 
+alter table Tests_interview add column scheduledtime datetime default NULL;
+
 COMMIT;
 

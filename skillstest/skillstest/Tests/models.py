@@ -414,6 +414,7 @@ class Interview(models.Model):
     filetype = models.CharField(max_length=4, default='wav', null=False, blank=False) # This is basically the file extension. Default is (.)wav.
     realtime = models.BooleanField(default=True) # Whether the interview may be taken in realtime, i.e., the interviewer and the
     # interviewee will be present together for the interview.
+    scheduledtime = models.DateTimeField(null=False, blank=True)
     
     class Meta:
         verbose_name = "Interview Table"

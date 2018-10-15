@@ -23,6 +23,7 @@ from django.core.files.base import ContentFile
 
 # Standard libraries...
 import os, sys, re, time, datetime, stat, gzip
+from datetime import timedelta
 import pytz
 import cPickle
 import decimal, math
@@ -41,6 +42,8 @@ from BeautifulSoup import BeautifulSoup
 from linkedin import linkedin
 from oauthlib import *
 import requests
+import speech_recognition as sr
+from dateutil import tz
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -2040,6 +2043,7 @@ def showuserview(request):
     if challengemedia:
         username = userobj.displayname
         challenge_dict['challengemedia'] = "media" + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + challengemedia
+        #challenge_dict['challengemedia'] = "userdata" + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + challengemedia
     challenge_dict['oneormore'] = challengeobj.oneormore
     challengeoptions = []
     if challengetype == 'MULT': # multiple choice type test
@@ -5635,7 +5639,7 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
     # Check to see if an interview with the same title exists in the current user's list.
@@ -5686,6 +5690,18 @@ def createinterview(request):
         introfilename = "intro.wav"
     if request.POST.has_key('btncreateinterview'):
         introbtntext = request.POST['btncreateinterview']
+    if request.POST.has_key('interviewdatetime'):
+        interviewdatetime = request.POST['interviewdatetime']
+        """
+        if interviewdatetime != "":
+            interviewdatetime = pytz.utc.localize(interviewdatetime)
+            fp = open("/tmp/interviewdatetime.txt", "w")
+            fp.write(interviewdatetime)
+            fp.close()
+        """
+    if interviewdatetime == "":
+        interviewdatetime = None
+    
     # Check if we already have an interview with the same interviewlinkid. If so, we do not create the interview.
     intqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
     if intqset.__len__() > 0:
@@ -5724,6 +5740,7 @@ def createinterview(request):
     #interviewobj.quality = skilltarget
     interviewobj.challengesfilepath = ""
     interviewobj.introfilepath = introfilename
+    interviewobj.scheduledtime = interviewdatetime
     hashtoken = binascii.hexlify(os.urandom(16))
     if emailinvitationtarget: # Send an email invitation link to the email address.
         message = """Dear Candidate,
@@ -6021,6 +6038,8 @@ def attendinterview(request):
     interviewlinkid = request.GET['lid']
     hashtoken = request.GET['hash']
     intobjqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
+    #fp = open("/tmp/interviewstarttime.txt", "w")
+    #fp.write(interviewlinkid)
     if intobjqset.__len__() > 0:
         intobj = intobjqset[0]
     else:
@@ -6033,6 +6052,37 @@ def attendinterview(request):
     #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
     intcandobj.save()
     int_user_dict = {}
+    if intobj is not None:
+        interviewschedulestart = intobj.scheduledtime
+        #fp.write(str(time.strptime(interviewschedulestart, "%Y-%m-%d %H:%M:%S")))
+        #fp.close()
+        interviewscheduleend = interviewschedulestart
+        if interviewschedulestart: # if this is not None
+            interviewscheduleend  = interviewschedulestart + datetime.timedelta(0, intobj.maxduration)
+            if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
+                tmpl = get_template("tests/audiovisual.html")
+                int_user_dict['interviewtitle'] = intobj.title
+                interviewfilename = intobj.title
+                interviewfilename = interviewfilename.replace("-", "_")
+                interviewfilename = interviewfilename.replace(" ", "_")
+                interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
+                int_user_dict['interviewfilename'] = interviewfilename
+            else:
+                tmpl = get_template("tests/waitscreen.html")
+                int_user_dict['interviewtitle'] = intobj.title
+                interviewfilename = intobj.title
+                interviewfilename = interviewfilename.replace("-", "_")
+                interviewfilename = interviewfilename.replace(" ", "_")
+                interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
+                int_user_dict['interviewfilename'] = interviewfilename
+                int_user_dict['scheduledatetime'] = interviewschedulestart
+                int_user_dict['email'] = intcandobj.emailaddr
+                int_user_dict['hashtoken'] = hashtoken
+                int_user_dict['curdatetime'] = curdatetime
+                int_user_dict.update(csrf(request))
+                cxt = Context(int_user_dict)
+                intscreen = tmpl.render(cxt)
+                return HttpResponse(intscreen)
     if scheduledatetime <= curdatetime:
         tmpl = get_template("tests/audiovisual.html")
         if intobj:
@@ -7127,4 +7177,24 @@ def linkedinpostinform(request):
     return response
     
 
+@skillutils.is_session_valid
+@csrf_protect
+def convertspeechtotext(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    sessid, username = "", ""
+    sessid = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sessid)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    r = sr.Recognizer()
+    
 
