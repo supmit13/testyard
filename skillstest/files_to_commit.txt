@@ -2661,3 +2661,14 @@ Tuesday, October 16, 2018, 02:55 HRS.
 7. git add db_02_02_2015.sql
 8. git add files_to_commit.txt
 
+=========================================
+Wednesday, October 17, 2018, 23:30 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/settings.py
+3. git add skillstest/Tests/models.py
+4. git add static/speech2text/speech2text_script.js
+5. git add templates/tests/tests.html
+6. git add files_to_commit.txt
+
+

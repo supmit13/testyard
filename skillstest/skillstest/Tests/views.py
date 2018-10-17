@@ -25,6 +25,7 @@ from django.core.files.base import ContentFile
 import os, sys, re, time, datetime, stat, gzip
 from datetime import timedelta
 import pytz
+from pytz import timezone
 import cPickle
 import decimal, math
 from Crypto.Cipher import AES, DES3
@@ -5692,16 +5693,9 @@ def createinterview(request):
         introbtntext = request.POST['btncreateinterview']
     if request.POST.has_key('interviewdatetime'):
         interviewdatetime = request.POST['interviewdatetime']
-        """
-        if interviewdatetime != "":
-            interviewdatetime = pytz.utc.localize(interviewdatetime)
-            fp = open("/tmp/interviewdatetime.txt", "w")
-            fp.write(interviewdatetime)
-            fp.close()
-        """
+    
     if interviewdatetime == "":
         interviewdatetime = None
-    
     # Check if we already have an interview with the same interviewlinkid. If so, we do not create the interview.
     intqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
     if intqset.__len__() > 0:
