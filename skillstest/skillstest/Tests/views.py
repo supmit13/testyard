@@ -5673,6 +5673,8 @@ def createinterview(request):
     else:  
         realtime = 0
         scheduledatetime = ''
+    if not scheduledatetime:
+        scheduledatetime = request.POST['interviewdatetime']
     if realtime: # Email invitation to all interviewees should be sent.
       emailinvitationtarget = request.POST['invitationemailaddr']
       #scheduledatetime = request.POST['scheduledatetime']
@@ -6041,6 +6043,8 @@ def attendinterview(request):
     intcandobj = InterviewCandidates.objects.get(interview=intobj)
     intcandobj.actualstarttime = datetime.datetime.now()
     scheduledatetime = intcandobj.scheduledtime
+    year, month, day, hour, minute, second = scheduledatetime.year, scheduledatetime.month, scheduledatetime.day, scheduledatetime.hour, scheduledatetime.minute, scheduledatetime.second
+    scheduledatetime = datetime.datetime(year,month,day, hour, minute, second, 0, pytz.UTC)
     curdatetime = datetime.datetime.now()
     curdatetime = pytz.utc.localize(curdatetime)
     #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
@@ -6050,7 +6054,10 @@ def attendinterview(request):
         interviewschedulestart = intobj.scheduledtime
         #fp.write(str(time.strptime(interviewschedulestart, "%Y-%m-%d %H:%M:%S")))
         #fp.close()
-        interviewscheduleend = interviewschedulestart
+        if interviewschedulestart:
+            yeari, monthi, dayi, houri, minutei, secondi = interviewschedulestart.year, interviewschedulestart.month, interviewschedulestart.day, interviewschedulestart.hour, interviewschedulestart.minute, interviewschedulestart.second
+            interviewschedulestart = datetime.datetime(yeari,monthi,dayi, houri, minutei, secondi, 0, pytz.UTC)
+            interviewscheduleend = interviewschedulestart
         if interviewschedulestart: # if this is not None
             interviewscheduleend  = interviewschedulestart + datetime.timedelta(0, intobj.maxduration)
             if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
