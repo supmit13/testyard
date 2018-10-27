@@ -1411,6 +1411,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		    }
   		  };
 		  xmlhttp.open("POST", '{{ manageinvitationsurl }}', true);
+                  //alert(postdata);
   		  xmlhttp.send(postdata);
 		}
 
@@ -2230,6 +2231,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    var postdata = "";
 	    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
 	    postdata += "testid=" + testid + "&csrfmiddlewaretoken=" + csrftoken;
+            //alert(postdata);
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();

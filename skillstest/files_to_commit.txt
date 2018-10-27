@@ -2671,4 +2671,11 @@ Wednesday, October 17, 2018, 23:30 HRS.
 5. git add templates/tests/tests.html
 6. git add files_to_commit.txt
 
+=========================================
+Sunday, October 28, 2018, 02:04 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+
 

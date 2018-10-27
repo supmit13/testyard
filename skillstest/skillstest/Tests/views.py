@@ -17,7 +17,7 @@ from django.contrib.sessions.backends.db import SessionStore
 from django.core.mail import send_mail
 from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 from django.utils.encoding import smart_text
-from django.utils import timezone
+from django.utils import timezone as utilstimezone
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
@@ -3294,7 +3294,13 @@ def manageinvitations(request):
         clientsware = usertest.clientsware
         if not usertest.clientsware:
             clientsware = "NA"
-        usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled, usertest.id ]
+        try:
+            #usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled, usertest.id ]
+            usertest_dict[str(ctr)] = [ str(usertest.validfrom), str(usertest.validtill), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled, usertest.id ]
+        except:
+            fs = open("/home/supriyo/work/dddd7.txt", "w")
+            fs.write(sys.exc_info()[1].__str__());
+            fs.close()
         ctr += 1
     invitations_dict['usertest'] = usertest_dict
     ctr = 100
@@ -3324,7 +3330,8 @@ def manageinvitations(request):
         clientsware = wouldbeuser.clientsware
         if not wouldbeuser.clientsware:
             clientsware = "NA"
-        wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled, wouldbeuser.id ]
+        #wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled, wouldbeuser.id ]
+        wouldbeusers_dict[str(wouldbeuserid)] = [ str(wouldbeuser.validfrom), str(wouldbeuser.validtill), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled, wouldbeuser.id ]
         ctr += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict
     tmpl = get_template("tests/manageinvitations.html")
@@ -5059,6 +5066,7 @@ def gettestschedule(request):
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionqset = Session.objects.filter(sessioncode=sesscode)
+    
     if not sessionqset or sessionqset.__len__() == 0:
         message = "Error: %s"%error_msg('1008')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
@@ -5079,11 +5087,17 @@ def gettestschedule(request):
         message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
         response = HttpResponse(message)
         return response
+    
     # Note: Don't allow creator to schedule test if the test hasn't been published and activated. Also 'status' should be True
-    curdatetime = timezone.now()
-    publishdate = testobj.publishdate
-    activationdate = testobj.activationdate
-    status = testobj.status
+    try:
+        curdatetime = utilstimezone.now()
+        publishdate = testobj.publishdate
+        activationdate = testobj.activationdate
+        status = testobj.status
+    except:
+        fp = open("/home/supriyo/work/ddddd1.txt", "w")
+        fp.write(sys.exc_info()[1].__str__())
+        fp.close()
     if not status:
         message = "<font color='#AA0000'>" + error_msg('1162') + "</font>"
         message += "<br /><font color='#0000AA'> If you think you are done with editing and ready to start scheduling this test, then you may first activate it. You may do so by clicking on the \"<i>Activate Now</i>\" link for this test at the far right hand side of the main screen."
@@ -5093,10 +5107,16 @@ def gettestschedule(request):
         message = "<font color='#AA0000'>" + error_msg('1163') + "</font>"
         response = HttpResponse(message)
         return response
+    fp = open("/home/supriyo/work/ddddd12.txt", "w")
+    fp.write(str(publishdate))
+    fp.close()
     # Get all schedules for this test.
     allschedulesqset = Schedule.objects.filter(test=testobj).order_by('createdon')
     # Now look for all schedules for this test in 'Tests_usertest' and 'Tests_wouldbeusers' tables.
     schedule_dict = {}
+    fp = open("/home/supriyo/work/ddddd2.txt", "w")
+    fp.write(str(allschedulesqset))
+    fp.close()
     for schedobj in allschedulesqset:
         scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)
         scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)
@@ -5138,6 +5158,7 @@ def setschedule(request):
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionqset = Session.objects.filter(sessioncode=sesscode)
+    
     if not sessionqset or sessionqset.__len__() == 0:
         message = "Error: %s"%error_msg('1008')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
@@ -5202,6 +5223,9 @@ def setschedule(request):
         emails_new = request.POST['emails_new']
         validfrom, validtill = start_new, end_new
         new_emails_list = emails_new.split(",")
+        fp = open("/home/supriyo/work/ddddd1.txt", "w")
+        fp.write(str(new_emails_list))
+        fp.close()
         for new_email in new_emails_list:
             new_email = new_email.strip()
             # If this email belongs to the creator or one of the evaluators, skip it.
@@ -5268,6 +5292,9 @@ def setschedule(request):
                 if mysettings.DEBUG:
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
+                fp = open("/home/supriyo/work/ddddd3.txt", "w")
+                fp.write(message)
+                fp.close()
                 error_emails_list.append(new_email)
                 continue # Continue processing the rest of the emails in the list.
         message = "Success! All candidates have been emailed with the link."
@@ -5306,6 +5333,9 @@ def setschedule(request):
                 existing_schedules[str(scheduleid)][1] = request.POST[fieldname]
         else:
             pass
+    fp = open("/home/supriyo/work/ddddd5.txt", "w")
+    fp.write("HEREEEEEEEEE")
+    fp.close()
     for scheduleid in existing_schedules.keys():
         scheduleobj = Schedule.objects.get(id=scheduleid)
         starttime, endtime = existing_schedules[scheduleid]
@@ -5334,6 +5364,9 @@ def setschedule(request):
             except:
                 print sys.exc_info()[1].__str__()
             utobj.save()
+        fp = open("/home/supriyo/work/ddddd7.txt", "w")
+        fp.write(message)
+        fp.close()
         for wbuobj in wouldbeusersqset:
             try:
                 starttime_date, starttime_time = starttime.split(" ")
@@ -5458,6 +5491,7 @@ def deactivatetestbycreator(request):
 
 
 def captureaudiovisual(request):
+    #tmpl = get_template("tests/interview_candidate_screen.html")
     tmpl = get_template("tests/audiovisual.html")
     tests_user_dict = {}
     tests_user_dict['blob_upload_url'] = mysettings.BLOB_UPLOAD_URL
@@ -5512,6 +5546,7 @@ def askquestion(request):
     int_questions_dict['updateinterviewmetaurl'] = mysettings.UPDATE_INTERVIEW_META_URL
     int_questions_dict['answerfilename'] = ""
     if medium == "audiovisual":
+        #tmpl = get_template("tests/interview_candidate_screen.html")
         tmpl = get_template("tests/audiovisual.html")
     elif medium == "audio":
         tmpl = get_template("tests/audio.html")
@@ -5898,6 +5933,7 @@ def createinterview(request):
         if scheduledatetime_dt > currentdatetime:
             tmpl = get_template("tests/waitscreen.html")
         else:
+            #tmpl = get_template("tests/interview_candidate_screen.html")
             tmpl = get_template("tests/audiovisual.html")
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
@@ -6061,6 +6097,7 @@ def attendinterview(request):
         if interviewschedulestart: # if this is not None
             interviewscheduleend  = interviewschedulestart + datetime.timedelta(0, intobj.maxduration)
             if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
+                #tmpl = get_template("tests/interview_candidate_screen.html")
                 tmpl = get_template("tests/audiovisual.html")
                 int_user_dict['interviewtitle'] = intobj.title
                 interviewfilename = intobj.title
@@ -6085,6 +6122,7 @@ def attendinterview(request):
                 intscreen = tmpl.render(cxt)
                 return HttpResponse(intscreen)
     if scheduledatetime <= curdatetime:
+        #tmpl = get_template("tests/interview_candidate_screen.html")
         tmpl = get_template("tests/audiovisual.html")
         if intobj:
             int_user_dict['interviewtitle'] = intobj.title
