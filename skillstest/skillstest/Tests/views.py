@@ -5223,9 +5223,6 @@ def setschedule(request):
         emails_new = request.POST['emails_new']
         validfrom, validtill = start_new, end_new
         new_emails_list = emails_new.split(",")
-        fp = open("/home/supriyo/work/ddddd1.txt", "w")
-        fp.write(str(new_emails_list))
-        fp.close()
         for new_email in new_emails_list:
             new_email = new_email.strip()
             # If this email belongs to the creator or one of the evaluators, skip it.
@@ -5250,6 +5247,7 @@ def setschedule(request):
                 start_new_year, start_new_month, start_new_day = start_new_date.split("-")
                 start_new_hour, start_new_minute, start_new_second = start_new_time.split(":")
                 utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second), 0, pytz.UTC)
+                
                 end_new_date, end_new_time = end_new.split(" ")
                 end_new_year, end_new_month, end_new_day = end_new_date.split("-")
                 end_new_hour, end_new_minute, end_new_second = end_new_time.split(":")
@@ -5292,9 +5290,10 @@ def setschedule(request):
                 if mysettings.DEBUG:
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
-                fp = open("/home/supriyo/work/ddddd3.txt", "w")
-                fp.write(message)
-                fp.close()
+                message += "Making ammends to rectify the situation... all will be well.\n"
+                utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second))
+                utobj.validtill = datetime.datetime(int(end_new_year), int(end_new_month), int(end_new_day), int(end_new_hour), int(end_new_minute), int(end_new_second))
+                utobj.save()
                 error_emails_list.append(new_email)
                 continue # Continue processing the rest of the emails in the list.
         message = "Success! All candidates have been emailed with the link."
@@ -5333,9 +5332,6 @@ def setschedule(request):
                 existing_schedules[str(scheduleid)][1] = request.POST[fieldname]
         else:
             pass
-    fp = open("/home/supriyo/work/ddddd5.txt", "w")
-    fp.write("HEREEEEEEEEE")
-    fp.close()
     for scheduleid in existing_schedules.keys():
         scheduleobj = Schedule.objects.get(id=scheduleid)
         starttime, endtime = existing_schedules[scheduleid]
@@ -5364,9 +5360,6 @@ def setschedule(request):
             except:
                 print sys.exc_info()[1].__str__()
             utobj.save()
-        fp = open("/home/supriyo/work/ddddd7.txt", "w")
-        fp.write(message)
-        fp.close()
         for wbuobj in wouldbeusersqset:
             try:
                 starttime_date, starttime_time = starttime.split(" ")
@@ -5374,7 +5367,6 @@ def setschedule(request):
                 starttime_components = starttime_time.split(":")
                 if starttime_components.__len__() > 2:
                     starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], starttime_components[2]
-                
                 else:
                     starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], "00"
                 wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
@@ -5385,16 +5377,22 @@ def setschedule(request):
                     endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], endtime_components[2]
                 else:
                     endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], "00"
-                wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
+                wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)                  
             except:
                 print sys.exc_info()[1].__str__()
                 message += " Could not update record."
                 response = HttpResponse(message)
                 return response
-            wbuobj.save()
+            try:
+                wbuobj.save()
+            except:
+                message += " Making ammends to rectify the situation... All will be well.\n"
+                wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
+                wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
+                wbuobj.save() 
     message += " Updated existing schedules."
     response = HttpResponse(message)
-    return(response)
+    return response
 
 
 @csrf_protect
