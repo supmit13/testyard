@@ -5095,9 +5095,7 @@ def gettestschedule(request):
         activationdate = testobj.activationdate
         status = testobj.status
     except:
-        fp = open("/home/supriyo/work/ddddd1.txt", "w")
-        fp.write(sys.exc_info()[1].__str__())
-        fp.close()
+        pass
     if not status:
         message = "<font color='#AA0000'>" + error_msg('1162') + "</font>"
         message += "<br /><font color='#0000AA'> If you think you are done with editing and ready to start scheduling this test, then you may first activate it. You may do so by clicking on the \"<i>Activate Now</i>\" link for this test at the far right hand side of the main screen."
@@ -5107,16 +5105,10 @@ def gettestschedule(request):
         message = "<font color='#AA0000'>" + error_msg('1163') + "</font>"
         response = HttpResponse(message)
         return response
-    fp = open("/home/supriyo/work/ddddd12.txt", "w")
-    fp.write(str(publishdate))
-    fp.close()
     # Get all schedules for this test.
     allschedulesqset = Schedule.objects.filter(test=testobj).order_by('createdon')
     # Now look for all schedules for this test in 'Tests_usertest' and 'Tests_wouldbeusers' tables.
     schedule_dict = {}
-    fp = open("/home/supriyo/work/ddddd2.txt", "w")
-    fp.write(str(allschedulesqset))
-    fp.close()
     for schedobj in allschedulesqset:
         scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)
         scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)
@@ -5291,6 +5283,9 @@ def setschedule(request):
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message += "Making ammends to rectify the situation... all will be well.\n"
+                fp = open("/home/supriyo/work/dddd1.txt", "w")
+                fp.write(message)
+                fp.close()
                 utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second))
                 utobj.validtill = datetime.datetime(int(end_new_year), int(end_new_month), int(end_new_day), int(end_new_hour), int(end_new_minute), int(end_new_second))
                 utobj.save()
@@ -5359,7 +5354,12 @@ def setschedule(request):
                 utobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
             except:
                 print sys.exc_info()[1].__str__()
-            utobj.save()
+            try:
+                utobj.save()
+            except:
+                utobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
+                utobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
+                utobj.save()
         for wbuobj in wouldbeusersqset:
             try:
                 starttime_date, starttime_time = starttime.split(" ")
@@ -5386,9 +5386,12 @@ def setschedule(request):
             try:
                 wbuobj.save()
             except:
-                message += " Making ammends to rectify the situation... All will be well.\n"
+                message += "Error: %s Making ammends to rectify the situation... All will be well.\n"%sys.exc_info()[1].__str__()
                 wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
                 wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
+                fp = open("/home/supriyo/work/dddd2.txt", "w")
+                fp.write(message)
+                fp.close()
                 wbuobj.save() 
     message += " Updated existing schedules."
     response = HttpResponse(message)
