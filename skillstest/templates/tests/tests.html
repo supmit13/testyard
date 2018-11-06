@@ -8,6 +8,48 @@
         <script type="text/javascript" src="static/speech2text/speech2text_script.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!-- Speech to text Code ends here  -->
+        <!-- Math related keyboard js starts here -->
+        <script type="text/x-mathjax-config">
+	  MathJax.Hub.Config({
+	    extensions: ["tex2jax.js"],
+	    jax: ["input/TeX","output/HTML-CSS"],
+	    tex2jax: {inlineMath: [["\[","\]"],["\\(","\\)"]]}
+	  });
+	</script>
+        <script src="static/mathlib/math.min.js"></script>
+        <script type="text/javascript" async src="static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+        </script>
+
+        <script>
+
+	function saveContents(){
+	    mathexprdiv = document.getElementById('mathexpr');
+	    mathcontents = mathexprdiv.innerHTML;
+	    //testdivelem = document.getElementById('testdiv');
+	    //testdivelem.innerHTML = mathcontents;
+	    //alert(mathcontents);
+	}
+
+
+	function displayMathExpr(){
+	    txtContents = document.challengeform.statement.value;
+	    //alert(txtContents);
+	    mathexprdiv = document.getElementById('mathexpr');
+	    mathexprdiv.innerHTML = txtContents; 
+	    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
+	}
+
+
+        function displayMathExprChallengeUserView(){
+            //alert("HELLO");
+	    mathexprchusvwdiv = document.getElementById('mathexprchusvw');
+	    txtContents = mathexprchusvwdiv.innerHTML; 
+	    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprchusvwdiv]);
+	}
+
+	</script>
+        
+        <!-- Math related keyboard ends here -->
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";

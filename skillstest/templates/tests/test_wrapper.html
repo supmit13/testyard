@@ -106,6 +106,28 @@ div.sec {
 <script src="https://repl.it/lib/api.js" type="text/javascript" charset="utf-8"></script>
 <!-- Repl.it library ends -->
 
+<!-- Math related keyboard js starts here -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+    tex2jax: {inlineMath: [["\[","\]"],["\\(","\\)"]]}
+  });
+</script>
+<script src="static/mathlib/math.min.js"></script>
+<script type="text/javascript" async src="static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<script>
+function displayMathExprCandidateUserView(){
+    //alert("HELLO");
+    mathexprcdusvwdiv = document.getElementById('mathexprcdusvw');
+    txtContents = mathexprcdusvwdiv.innerHTML; 
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprcdusvwdiv]);
+}
+</script>
+        
+<!-- Math related keyboard ends here -->
+
 <!-- Prevent usage of 'Back' and 'Refresh' buttons -->
 <script language='JavaScript'>
   history.pushState(null, null, 'test_wrapper');
@@ -157,16 +179,14 @@ Object.size = function(obj) {
 };
 
 
-
-
 window.onload = function () {
     //decrypteddata = Base64.decode(encjson);
     //jsonobj = JSON.parse(decrypteddata);
     //duration = jsonobj.duration;
     duration = 600; // 10 minutes - hard coded value, should be made dynamic later on.
-    var timesecs = duration,
-        display = document.querySelector('#timestopwatch');
-    startTimer(timesecs, display);
+    var timesecs = duration;
+    display = document.querySelector('#timestopwatch');
+    //startTimer(timesecs, display);
 };
 
 
@@ -1576,9 +1596,9 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
     scriptsetflag = 0;
     for (challenge in jsonobj.challenges){
         pages[pagectr] = Array();
-        pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action=''>";
+        pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
 	//alert("getchallenges = " + challenge);
-        pages[pagectr][0] += "<b id='bchallenge'>" + challenge + "</b><br />";
+        pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw'>" + challenge + "</div></b><br />";
         if(jsonobj.challenges[challenge].mediafile != null && jsonobj.challenges[challenge].mediafile != ''){
             var imgpath = "media/" + jsonobj.creator + "/tests/" + jsonobj.testid + "/" + jsonobj.challenges[challenge].mediafile;
             pages[pagectr][0] += "<img src='" + imgpath + "' height='200' width='300'><br />";
