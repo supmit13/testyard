@@ -1407,7 +1407,7 @@ def testsummary(request):
         for hexkey in mysettings.INV_HEXCODE_CHAR_MAP.keys():
             if hexkey == ' ':
                 continue
-            challenge['statement'] = challenge['statement'].replace(hexkey, mysettings.INV_HEXCODE_CHAR_MAP[hexkey])
+            challenge['statement'] = challenge['statement'].replace(hexkey, mysettings.INV_HEXCODE_CHAR_MAP[hexkey]).replace("\r\n", "<br>")
         tests_summary_dict['challenge_links_list'].append((chlng.id, chlng.statement[:20] + " ...", testobj.id, testlinkid))
         tests_summary_dict['challenges'].append(challenge)
     tests_summary_dict['testname'] = testobj.testname

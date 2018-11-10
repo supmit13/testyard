@@ -662,7 +662,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		// Function to delete a challenge from the challenges 
 		// list screen
 		function deletechallenge(challengeid, challengestatement, test_id){
-		  challengestatement = challengestatement.replace(/%27/g, "'").replace(/%22/g, '"').replace(/%20/g, " ").replace(/%23/g, "#").replace(/%24/g, "$").replace(/%2A/g, "*").replace(/%2B/g, "+").replace(/%28/g, "(").replace(/%29/g,")");
+		  //alert("here");
+		  challengestatement = challengestatement.replace(/%27/g, "'").replace(/%22/g, '"').replace(/%20/g, " ").replace(/%23/g, "#").replace(/%24/g, "$").replace(/%2A/g, "*").replace(/%2B/g, "+").replace(/%28/g, "(").replace(/%29/g,")").replace("\n", " ");
 		  var resp = confirm("This action will permanently delete the challenge '" + challengestatement + "'. Do you want to continue?");
 		  if(!resp){
 		    return false;
