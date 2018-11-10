@@ -2706,7 +2706,7 @@ Saturday, November 10, 2018, 22:23 HRS.
 -----------------------------------------
 1. git add skillstest/Tests/views.py
 2. git add templates/tests/tests.html
-3. templates/tests/test_summary.html
+3. git add templates/tests/test_summary.html
 4. git add files_to_commit.txt
 
 
