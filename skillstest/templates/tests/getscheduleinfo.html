@@ -15,6 +15,8 @@ function validateinput(){
     startpattern = new RegExp("^start_\\d+$");
     endpattern = new RegExp("^end_\\d+$");
     emailpattern = new RegExp("^\\w+[\\.\\w]{0,}@\\w+[\\-\\w]{0,}\\.\\w{2,3}[\\.\\w]{0,}$")
+    startdateentered = "";
+    enddateentered = "";
     allelements = document.frmgetschedule.elements;
     for(var i=0; i< allelements.length; i++){
         if(startpattern.exec(allelements[i].name) || endpattern.exec(allelements[i].name)){
@@ -28,6 +30,7 @@ function validateinput(){
 		    return (false);
 		}
 	    }
+            
 	}
 	else if(allelements[i].name == 'start_new' || allelements[i].name == 'end_new'){
 	    if(allelements[i].value == "" || allelements[i].value == ""){
@@ -38,6 +41,13 @@ function validateinput(){
 		allelements[i].focus();
 		return (false);
 	    }
+            startdateentered = new Date(document.frmgetschedule.start_new.value);
+            enddateentered = new Date(document.frmgetschedule.end_new.value);
+            if(startdateentered >= enddateentered){
+                alert("Your test start date is later than or same as the end date for the test. Please rectify this to carry on.");
+                document.frmgetschedule.start_new.focus();
+                return (false);
+            }
 	}
 	else if(allelements[i].name == 'emails_new'){ // This will contain emails as comma separated values
 	    allemails = allelements[i].value.split(",");
