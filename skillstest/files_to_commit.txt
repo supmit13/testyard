@@ -2723,11 +2723,18 @@ Wednesday, November 14, 2018, 14:03 HRS.
 1. git add templates/tests/getscheduleinfo.html
 2. git add templates/tests/tests.html
 3. git add files_to_commit.txt
-
-
-
-
 5. git add templates/
 6. git add urls.py
 
+=========================================
+Thursday, November 29, 2018, 16:41 HRS.
+-----------------------------------------
+git add templates/tests/getscheduleinfo.html
+git add templates/tests/tests.html
+git add static/javascript/mathjaxjs.js
+git add skillstest/Tests/views.py
+git add skillstest/Tests/models.py
+git add files_to_commit.txt
+
+====================================
 
