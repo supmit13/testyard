@@ -7079,7 +7079,8 @@ def linkedinredirect(request):
     accesstoken = responsejson['access_token']
     # Otherwise, now we are all poised to post the message on linkedin.
     shareurl = "https://api.linkedin.com/v1/people/~/shares?format=json"
-    sharedata = { "content" : {"title" : "", "description" : "", 'submitted-url' : "https://testyard.in/", 'submitted-image-url' : "https://testyard.in/"}, "comment" : "", "visibility" : { "code" : "anyone" }}
+    #sharedata = { "content" : {"title" : "", "description" : "", 'submitted-url' : "https://testyard.in/", 'submitted-image-url' : "https://testyard.in/"}, "comment" : "", "visibility" : { "code" : "anyone" }}
+    sharedata = { "content" : {"title" : "", "description" : "", 'submitted-url' : "https://192.168.1.4/", 'submitted-image-url' : "https://192.168.1.4/"}, "comment" : "", "visibility" : { "code" : "anyone" }}
     if rolename == "creator":
         objectname = ""
         if postlinkedinobj.test:
