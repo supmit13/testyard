@@ -2738,3 +2738,13 @@ git add files_to_commit.txt
 
 ====================================
 
+=========================================
+Monday, December 10, 2018, 05:18 HRS.
+-----------------------------------------
+git add templates/tests/tests.html
+git add static/mathlib/math.min.js
+git add static/MathJax/MathJax.js
+git add files_to_commit.txt
+
+====================================
+

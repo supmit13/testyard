@@ -22,6 +22,7 @@
 
         <script>
 
+
 	function saveContents(){
 	    mathexprdiv = document.getElementById('mathexpr');
 	    mathcontents = mathexprdiv.innerHTML;
@@ -240,6 +241,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		// 3. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form. 
 		// 4. submit data when user clicks on 'Continue' button and pass value of 'testlinkid' to the next screen.
 		// 5. Both 'activedate' and 'publishdate' should be in 'dd-Mon-yyyy' format. Validate this.
+
+          
 
 		function validate(){
 		  // Need to validate input - 
@@ -1673,11 +1676,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    //alert(candidateresponse);
                     html = "<html><head><title>" + testid + "</title>";
                     html += "</head>";
-		    html += "<body bgcolor='#669999' onmouseover=\"var mathscript = document.createElement('script');mathscript.setAttribute('src','static/javascript/mathjaxjs.js');document.head.appendChild(mathscript);'><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action='' onmouseover='javascript:displayMathExprEvalRespView();\">";
+		    html += "<body bgcolor='#669999' onmouseover=\"var mathscript = document.createElement('script');mathscript.setAttribute('src','static/javascript/mathjaxjs.js');document.head.appendChild(mathscript);'\"><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action='' onmouseover='javascript:displayMathExprEvalRespView();'>";
 		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
 		    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
 		    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
 		    html += "<input type='hidden' name='tabid' id='tabid' value='" + responsedata.tabid + "'>";
+		    html += "{% csrf_token %}";
 		    var separatorPattern = new RegExp("#||#");
 		    cctr = 1;
 		    for (challenge in candidateresponse){
@@ -1710,7 +1714,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			html += "<br /><br /><hr>";
 			cctr++;
 		    }
-		    html += "{% csrf_token %}";
+		    
 		    html += "<input type='hidden' name='maxcctr' id='maxcctr' value='" + cctr + "'>";
 		    html += "<textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
 		    if(evalcommitstate == false){
@@ -1723,7 +1727,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		        html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>";
 		    }
 		    html += "<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
-		    html += "</form></body>";
+		    html += "</form>";
+		    html += "</body>";
 		    evalwin.document.write(html);
 		}
 
