@@ -1167,7 +1167,11 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
             //alert(txtareas.length);
 	    for(j=0; j < testpages.length - 1; j++){
 		challengestatement = testpages[j][2];
-		challengestatement = challengestatement.replace(multiwhitespaceregex, " ");
+                challengestatement = challengestatement.replace(/[\n]+/g, ""); // Do I need to put the '+' sign, since I am using the 'g' option already?
+                challengestatement = challengestatement.replace(/[\r\n]+/g, "");
+                curchallengestatement = curchallengestatement.replace(/[\n]+/g, "");
+                curchallengestatement = curchallengestatement.replace(/[\r\n]+/g, "");
+                challengestatement = challengestatement.replace(multiwhitespaceregex, " ");
 		curchallengestatement = curchallengestatement.replace(multiwhitespaceregex, " ");
 		//alert("CHA = " + challengestatement);
 		//alert("CUR = " + curchallengestatement);
