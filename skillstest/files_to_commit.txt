@@ -2753,6 +2753,13 @@ Saturday, December 15, 2018, 03:13 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Monday, December 17, 2018, 22:55 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/javascript/mathjaxjs.js
+3. git add files_to_commit.txt
+
+=========================================
 
 
 
