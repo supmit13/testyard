@@ -1668,9 +1668,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 
 
-		function evaluateresponses(testid, emailid, responsetext){
+		function evaluateresponses(testid, emailid, responsetext,utid){
 		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
-		    responsedata = jsonresp[emailid];
+		    responsedata = jsonresp[emailid + "####" + utid];
 		    candidateresponse = responsedata.candidateresponse;
 		    evalcommitstate = responsedata.evalcommitstate;
 		    evalwin = window.open("", "evaluationwindow", "width=400, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
@@ -1817,7 +1817,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    status = answerrecord['status'];
 			    comments = "<font color='#0000DD' size=-1>" + decodeURIComponent(answerrecord['evaltestcomment']) + "</font>";
 			    if(rowctr % 2 == 0){
-				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\");'>Evaluate Responses</a>";
+				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Evaluate Responses</a>";
 				if(status == 0 || status == 1){
 				    evaluatestr = "Not Applicable";
 				}
@@ -1846,7 +1846,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				}
 			    }
 			    else{
-				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\");'>Evaluate Responses</a>";
+				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Evaluate Responses</a>";
 				if(status == 0 || status == 1){
 				    evaluatestr = "Not Applicable";
 				}

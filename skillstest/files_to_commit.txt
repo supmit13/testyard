@@ -2773,5 +2773,13 @@ Tuesday, January 01, 2019, 00:21 HRS.
 3. git add files_to_commit.txt
 
 =========================================
+Tuesday, January 01, 2019, 00:21 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+
+
 
 
