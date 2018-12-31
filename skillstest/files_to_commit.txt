@@ -2760,6 +2760,12 @@ Monday, December 17, 2018, 22:55 HRS.
 3. git add files_to_commit.txt
 
 =========================================
+Monday, December 31, 2018, 21:31 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/tasks.py
+2. git add files_to_commit.txt
+
+=========================================
 
 
 
