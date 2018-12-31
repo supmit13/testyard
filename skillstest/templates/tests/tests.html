@@ -1677,7 +1677,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    //alert(candidateresponse);
                     html = "<html><head><title>" + testid + "</title>";
                     html += "</head>";
-		    html += "<body bgcolor='#669999' onmouseover=\"var mathscript = document.createElement('script');mathscript.setAttribute('src','static/javascript/mathjaxjs.js');document.head.appendChild(mathscript);'\"><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action='' onmouseover='javascript:displayMathExprEvalRespView();'>";
+		    html += "<body bgcolor='#669999' onmouseover=\"var mathscript = document.createElement('script');mathscript.setAttribute('src','static/javascript/mathjaxjs.js');document.head.appendChild(mathscript);'\"><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action='' onclick='javascript:displayMathExprEvalRespView();'>";
 		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
 		    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
 		    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
@@ -1769,9 +1769,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    testid = -1;
 		    testname = "";
 		    email = "";
-		    for (email in jsonresp){
-   			if (jsonresp.hasOwnProperty(email)){
-       			    answerrecord = jsonresp[email];
+		    for (email_testid in jsonresp){
+                        //alert(email_testid);
+                        keyparts = email_testid.split("####");
+                        email = keyparts[0];
+                        usertestid = keyparts[1];
+   			if (jsonresp.hasOwnProperty(email_testid)){
+       			    answerrecord = jsonresp[email_testid];
 			    testid = answerrecord['testid'];
 			    testname = answerrecord['testname'];
 			    break;
@@ -1785,9 +1789,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    html += "<table border=0 cellspacing='3' cellpadding='3'>";
 		    html += "<tr><td><b>Email</b></td><td><b>Test URL</b></td><td><b>Start Time</b></td><td><b>End Time</b></td><td><b>Responses</b></td><td><b>Outcome</b></td><td><b>Grand Total</b></td><td><b>Test Status</b></td><td><b>Disqualify</b></td><td><b>Comments</b></td></tr>";
 		    rowctr = 1;
-		    for (email in jsonresp){
-   			if (jsonresp.hasOwnProperty(email)){
-			    answerrecord = jsonresp[email];
+		    for (email_testid in jsonresp){
+                        keyparts = email_testid.split("####");
+                        email = keyparts[0];
+                        usertestid = keyparts[1];
+   			if (jsonresp.hasOwnProperty(email_testid)){
+			    answerrecord = jsonresp[email_testid];
 			    testurl = answerrecord['testurl'];
 			    starttime = answerrecord['starttime'];
 			    //alert(starttime);
