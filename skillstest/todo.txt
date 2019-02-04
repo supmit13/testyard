@@ -27,11 +27,11 @@ see the challenges and their responses (by the creator as well as other test tak
 
 5. Continue reading ElasticSearch documentation thoroughly.
 
-6. Add static content to the following pages: 1) About Us, 2) Help, 3) Careers.
+6. Add static content to the following pages: 1) About Us, 2) Help, 3) Careers. [Done]
 
 7. Upload the application to the docker on Amazon. Send a note to pratik about this, and ask him to help with decrypting the 3DES encrypted test content.
 
-8. Decide content on 'Dashboard' page. This should also be implemented during the holidays.
+8. Decide content on 'Dashboard' page. This should also be implemented during the holidays. [Scraped for now, may be it will come in later].
 
 9. Decide about the content on the 'Analytics' page. Start implementing them after all the above points have been taken care of. This might
  be started after the holidays.
@@ -78,5 +78,109 @@ see the challenges and their responses (by the creator as well as other test tak
 
 10.An interview may be edited as long as it has not been taken by any candidate. Thereafter, trying to edit an interview will create a new interview with the same name and a number annexed to it. This name may be changed by the interviewer (or creator) as long as it has not been taken by any candidate.
 
+======================================================================================================
+
+12-12-2018
+----------
+
+Note: Priority range: 1 - 5.
+Highest Priority: 1
+Lowest Priority: 5
+** Note ** - All references below are associated with user "supmit".
+
+Bug Fixes and Feature Implementations:
+--------------------------------------
+
+1. During a test session with the candidate, the mathematical answers (responses containing mathematical signs and symbols) are not "remembered" once the candidate tries to get back to the question from another question. Needs to be fixed. (Priority 1). [Done]
+
+2. Mathematical responses by candidates are not displayed appropriately in the evaluation screen. It displays the latex expression, not the equivalent math expression. Sometimes they are not displayed at all. Needs to be rectified. (Priority 1).
+
+3. Responses to multiple choice type questions are displayed in the evaluation screen with the separation characters between the selected options ('#||#' appears between 2 or more selected options. Refer to the test named "New Perl Test 01", candidate identified by 'sss@sss.sss', test Id 240, test URL "http://bit.ly/2oaQCKM", question "What data structures are supported by perl natively (i.e., without using any external modules)?", candidate's response ", array of scalars#||#hashes#||#scalars"). This should be corrected. (Prioriy 2).
+
+4. Integrate math symbols keyboard with The following pages: 
+	a) Test question addition screen (for test creator) (Priority 1), 
+	b) Test response screen for candidates (Priority 1),
+	c) Test evaluation screen for evaluators (on demand - there will be icons on the page for each question/answer, which when clicked, will open the keyboard as a separate widget, and pressing the keys will enter the characters in the "Comment/Feedback" section of the question/answer associated with the clicked icon) (Priority 2)
+
+5. The symbols/characters in the math keyboard need to be grouped and placed in such a way so that users find it convenient to find a symbol whenever they need it. It should be intuitive. This should be done with the help of a designer who can give valuable insights into how to club related keys together. (Priority 2)
+
+6. ElasticSearch integration with search feature. (Priority 4)
+
+7. Pagination needs to be implemented in the following display screens:
+	a) "Tests as Creator" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	b) "Tests as Evaluator" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	c) "Tests as Candidate" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	d) "Interviews Conducted" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	e) "Interviews Attended" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	f) "Manage owned groups" - page URL: https://127.0.0.1/skillstest/network/ (Priority 1)
+	g) Results of "Search Tests" and "Search Users" - page URL: https://127.0.0.1/skillstest/tests/search/ (Priority 3)
+These should have an user confgurable number of entries, in the form of a dropdown list with 10, 20, 50, 100 and 'all' as options of the dropdown. At the end of the configured quota of entries, there will be a link called "Show More", and clicking on it will display the next set of entries. For reference, look at the group posts of the group named "New_Group_Today", page URL - "https://127.0.0.1/skillstest/tests/search/", under the head "Groups Subscribed by You".
+	h) "Inbox" listings - page URL: https://127.0.0.1/skillstest/tests/search/ (Priority 3)
+
+8. Allow multiple participants (evaluators) simultaneously during interview sessions, with a maximum limit which should be globally configurble from skills_settings.py. A co-ordination framework should be developed so that a single user may take control of the speech functionality at one time. This should be decided by a single member of the group, who may be considered to be the co-ordinator, and this would be the individual who created/scheduled the interview in the first place. Other evaluators may "raise their hands", if they have any questions to ask. The candidate may speak at any time, even if an interviewer is speaking.
+
+9. Interview sessions may be conducted automatically at a preset time. The questions will be asked one by one (no evaluators/creators present during the session), and the candidate will be given a configurable amount to time to answer the question. If the candidate doesn't know the answer to a certain question, she/he may verbally say "Don't know" or "pass" as the first words after the question has been asked completely by the machine. (Priority 3)
+
+10. Resolve security certificate issue in order for WebRTC sessions to work (Interviews and all). (Priority 1).
+
+11. Iris direction detection to make sure that the candidate is not cheating during an interview. The candidate may move her/his iris +/- 15 degrees on either side of the screen (the angle will be configurable in skills_settings.py). If such an incident occurs, the candidate will be warned twice, and if it happens a third time, the interview will be terminated if it is an automated interview (refer to point #9), and in case of a manual interview, the decision to continue with the interview or not will rest upon the interviewer(s). In either case, a editable area will be given to the candidate to explain her/his behaviour, and if the explanation satisfies the interview creator/owner, then she/he may create a new interview session for the candidate. 
+** Remember to provide allowance to squints in this matter **. (Priority 2).
+
+12. The above point should be implemented for tests too. (Priority  2).
+
+13. Make Bugzilla work and add all points mentioned in this file in Bugzilla. URL: http://localhost:8001/html/bugzilla/. Create an account (needs an internet connection), add project (TestYard), and we are ready to go. (Priority 3).
+
+14. Port the below mentioned unnecessary columns from the following screens. Replace them with columns mentioned:
+	a) Screen: "Tests as Creator", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/".
+	Column Group to be Removed: "Test Topic", "Total Score", "Publish Date", "Pass Score", "Negative Score Allowed", "Standard", "Repeat Allowed", "Test Takers Count", "Count of Pass", "Count of Fail", "Count of Disqualifications", "Visibility", "Post on LinkedIn".
+	Replace Above Columns with: "Test Details" (hyperlink)
+	Click effect on "Test Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	b) Screen: "Tests as Evaluators", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",
+	Column Group to be Removed: "Test Topic", "Total Score", "Publish Date", "Pass Score", "Negative Score Allowed", "Standard", "Repeat Allowed", "Test Takers Count", "Count of Pass", "Count of Failed", "Count of Disqualifications", "Post on LinkedIn".
+	Replace Above Columns with: "Test Details" (hyperlink)
+	Click effect on "Test Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	c) Screen: "Tests as Candidate", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",
+	Column Group to be Removed: "Test Topic", "Negative Score Allowed", "Standard", "Test Rules", "Next Test Date", "Post on LinkedIn"
+	Replace Above Columns with: "Test Details" (hyperlink)
+	Click effect on "Test Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	d) Screen: "Interviews Created", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",
+	Column Group to be Removed: "Interview Topic", "Language", "Create Date", "Publish Date", "Post on LinkedIn"
+	Replace Above Columns with: "Interview Details" (hyperlink), "Interview Conduction Date" (may be null if it is scheduled in some future date)
+	Click effect on "Interview Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	e) Screen: "Interviews Attended", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",	
+(Priority 1)	
+
+15. In "Tests & Interviews" tab, under the "invite candidates" column, the date/times should be inserted with the use of a date time calendar widget. Currently, one has to enter it manually using the given format. This needs to be changed. (Priority 2).
+
+16. In the 'Network' tab, clicking on one of the users listed in the list of connections displays an overlay with the test details of that user. This is fine and works the way as desired. However, clicking on "Send a Message" at the top of the overlay doesn't work and throws a javascript error. Needs to be fixed. (Priority 2).
+
+======================================================================================================
+
+04-02-2019
+----------
+
+1. Integrate new math keyboard with TestYard in the test challenges entry interface and in the test taking interface. [Needs to be done on priority #1]
+
+2. In the evaluation screen, mathjax expressions are not being rendered at all. The LaTeX expressions are being displayed raw. [This is a show stopper. So this is priority #1 fix].
+
+3. Certificate errors - WebRTC and some other features are not working for this. [This is a show stopper. So this is priority #1 fix].
+
+4. While copying special characters in Math Keyboard, the integral and double integral limits loose their appropriate positions. This will possibly be fixed once the Math Keyboard is integrated with the screens mentioned in point #1.
+
+5. Code (programming code) tend to have their newline characters removed when they appear in evaluation screen. So the whole block of code appears in a single line thus making the response useless. [Needs to be fixed on priority #2].
+
+6. Contents of the "Tests" tab should be paginated in some manner - may be by placing a "More" link at the end of the chunk that is displayed at a time. [Needs to be fixed on priority #2].
+
+7. Pagination of "Managed owned groups" in the "Network" tab should be implemented (if not implemented already. Needs to be checked). [Priority #2]. [Done - Implemented already. Example: user codexaddict, Group name "New_Group_Today", click on "show" link beside "Group Posts"]
+
+8. Pagination of "Inbox" listings should be paginated. Placing a "More" link will be a good idea, as that is the standard way we are using in this application to implement pagination. [Needs to be fixed on priority #2]
+
+9. In MathJax library, expressing square root of a product of 2 or more variables needs to be implemented. For example, at present if we write O { \rho \sigma \delta \star \sqrt \Phi \Omega \Lambda } , then the square root symbol covers "\Phi" only. However, there should be a way to cover "\Omega \Lambda" under the same square root sign. There should be a way to distinguish the characters that need to be covered under the square root sign. [Needs to be fixed on priority #2, even though this is quite important. This is so because I already have quite a few priority #1 fixes to make.]
+
+10. While using the MathJax keyboard, the user needs to be made aware if the LaTeX expression has an error in it. This should be done prior to rendering the LaTeX expression. [Needs to be fixed on priority #2].
 
 

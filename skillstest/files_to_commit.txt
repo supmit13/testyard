@@ -2779,6 +2779,25 @@ Tuesday, January 01, 2019, 00:21 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Friday, January 04, 2019, 21:24 HRS.
+-----------------------------------------
+1. git add static/javascript/mathjaxjs.js
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+
+=========================================
+
+=========================================
+Monday, February 04, 2019, 23:35 HRS.
+-----------------------------------------
+1. git add static/MathJax/MathJax.js
+2. git add templates/tests/tests.html
+3. git add static/mathlib/math.min.js
+4. git add static/javascript/mathjaxjs.js
+5. git add todo.txt
+6. git add files_to_commit.txt
+
+=========================================
 
 
 
