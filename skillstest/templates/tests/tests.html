@@ -9,7 +9,7 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!-- Speech to text Code ends here  -->
         <!-- Math related keyboard js starts here -->
-        <script src="static/MathJax/math.min.js"></script>
+        <script src="static/mathlib/math.min.js"></script>
         <script type="text/javascript" async src="static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
         </script>
         <script type="text/x-mathjax-config">
@@ -22,7 +22,6 @@
         
 
         <script>
-
 
 	function saveContents(){
 	    mathexprdiv = document.getElementById('mathexpr');
@@ -1667,7 +1666,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    waitdivtag.innerHTML = "<img src='static/images/loading_small.gif'>";
 		}
 
-		
+
 
 		function evaluateresponses(testid, emailid, responsetext,utid){
 		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
@@ -1678,16 +1677,20 @@ ul.tab li a:focus, .active {background-color: #ccc;}
                     for (challenge in candidateresponse){
 			challengecounter++;
 		    }
-		    
                     html = "<html><head><title>Test Id: " + testid + "</title>";
-		    html += "<scr" + "ipt type=\"text/javascript\" src=\"static/mathlib/math.min.js\"></scr" + "ipt>";
-		    html += "<scr" + "ipt type=\"text/javascript\" async src=\"static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML\">"; 
+                    html += "<scr" + "ipt type=\"text/x-mathjax-config\">\n";
+                    html += "MathJax.Hub.Config({ \n \
+			extensions: [\"tex2jax.js\"], \n \
+			jax: [\"input/TeX\",\"output/HTML-CSS\"], \n \
+			tex2jax: {inlineMath: [[\"\[\",\"\]\"],[\"\\(\",\"\\)\"]]} \n \
+		    });";
+                    html += "</scr" + "ipt>";
+		    html += "<scr" + "ipt src=\"static/mathlib/math.min.js\"></scr" + "ipt>";
+		    html += "<scr" + "ipt type=\"text/javascript\" async src=\"static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML\">";
 		    html += "</scr" + "ipt>";
 		    html += "<scr" + "ipt type=\"text/javascript\" src=\"static/javascript/mathjaxjs.js\"></scr" + "ipt>";
                     html += "</head>";
-
-		    html += "<body bgcolor='#669999' onmouseover='javascript:displayMathExprEvalRespView(" + challengecounter + ");'><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action=''>";
-		    
+		    html += "<body bgcolor=\"#669999\"><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
 		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
 		    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
 		    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
@@ -1696,13 +1699,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var separatorPattern = new RegExp("#||#");
 		    cctr = 1;
 		    for (challenge in candidateresponse){
-		        html += "<div id='challengestatement'><div id='mathexprcdusvwcndtch_" + cctr + "'><b>" + challenge + "</b></div></div>";
+		        html += "<div id='challengestatement'><div id=\"mathexprcdusvwcndtch_" + cctr + "\"><b>" + challenge + "</b></div></div>";
 			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
 			candidateresp = candidateresponse[challenge].answer;
 			if(separatorPattern.test(candidateresp)){
 			    candidateresp = candidateresp.replace("#||#", ", ");
 			}
-			html += "<br /><br /><b>Candidate's Response: </b><div id='mathexprcdusvwcndtresp_" + cctr + "'>" + decodeURIComponent(candidateresp) + "</div>";
+			candidaterespdecoded = decodeURIComponent(candidateresp);
+			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
 			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;
 			html += "<input type='hidden' name='maxscore_" + cctr + "' id='maxscore_" + cctr + "' value='" + candidateresponse[challenge].maxscore + "'>";
@@ -1739,7 +1743,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    html += "<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
 		    html += "</form>";
-		    html += "</body>";
+                    
+		    html += "</body></html>";
 		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
 		    evalwin.document.write(html);
 		    //evalwin.onmouseover = displayMathExprEvalRespView(challengecounter);

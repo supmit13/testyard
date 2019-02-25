@@ -2798,6 +2798,14 @@ Monday, February 04, 2019, 23:35 HRS.
 6. git add files_to_commit.txt
 
 =========================================
+Monday, February 25, 2019, 19:49 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/javascript/mathjaxjs.js
+3. git add files_to_commit.txt
+
+=========================================
+
 
 
 
