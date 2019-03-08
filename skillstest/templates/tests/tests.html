@@ -1678,17 +1678,34 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			challengecounter++;
 		    }
                     html = "<html><head><title>Test Id: " + testid + "</title>";
-                    html += "<scr" + "ipt type=\"text/x-mathjax-config\">\n";
-                    html += "MathJax.Hub.Config({ \n \
-			extensions: [\"tex2jax.js\"], \n \
-			jax: [\"input/TeX\",\"output/HTML-CSS\"], \n \
-			tex2jax: {inlineMath: [[\"\[\",\"\]\"],[\"\\(\",\"\\)\"]]} \n \
-		    });";
-                    html += "</scr" + "ipt>";
-		    html += "<scr" + "ipt src=\"static/mathlib/math.min.js\"></scr" + "ipt>";
+		    html += "<scr" + "ipt src=\"static/mathlib/math.min.js\"></scr" + "ipt>\n";
 		    html += "<scr" + "ipt type=\"text/javascript\" async src=\"static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML\">";
-		    html += "</scr" + "ipt>";
-		    html += "<scr" + "ipt type=\"text/javascript\" src=\"static/javascript/mathjaxjs.js\"></scr" + "ipt>";
+		    html += "</scr" + "ipt>\n";
+		    
+		    html += "<scr" + "ipt type=\"text/x-mathjax-config\">\n";
+		    html += "MathJax.Hub.Config({ \n \
+    			extensions: [\"tex2jax.js\"], \n \
+    			jax: [\"input/TeX\",\"output/HTML-CSS\"], \n \
+    			tex2jax: {inlineMath: [[\"\\[\", \"\\]\"], [\"\[\", \"\]\"]]} \n \
+		    });";
+		    html += "</scr" + "ipt>\n";
+		    html += "\n<scr" + "ipt type=\"text/javascript\">";
+		    // Javascript for displaying mathjax symbols in questions and answers on evaluation page. ++ Supriyo.
+		    html += "function displayMathExprEvalRespView(countresp){ \n \
+			    for(i=1; i < countresp; i++){ \n \
+				mathexprcndtrespdiv = document.getElementById(\"mathexprcdusvwcndtresp_\" + i.toString()); \n \
+				mathexprcndtrespdiv.visibility = \"hidden\"; \n \
+				mathrespcontent = mathexprcndtrespdiv.innerHTML; \n \
+				mathexprcndtrespdiv.innerHTML = mathrespcontent; \n \
+				MathJax.Hub.Queue([\"Typeset\", MathJax.Hub, mathexprcndtrespdiv]); \n \
+				mathexprcndtchlngdiv = document.getElementById(\"mathexprcdusvwcndtch_\" + i.toString()); \n \
+				mathexprcndtchlngdiv.visibility = \"hidden\"; \n \
+				mathexprcontent = mathexprcndtchlngdiv.innerHTML; \n \
+				mathexprcndtchlngdiv.innerHTML = mathexprcontent; \n \
+				MathJax.Hub.Queue([\"Typeset\", MathJax.Hub, mathexprcndtchlngdiv]); \n \
+			    } \n \
+			}\n";
+		    html += "</scr" + "ipt>\n";
                     html += "</head>";
 		    html += "<body bgcolor=\"#669999\"><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
 		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
@@ -1699,7 +1716,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var separatorPattern = new RegExp("#||#");
 		    cctr = 1;
 		    for (challenge in candidateresponse){
-		        html += "<div id='challengestatement'><div id=\"mathexprcdusvwcndtch_" + cctr + "\"><b>" + challenge + "</b></div></div>";
+		        html += "<div id='challengestatement'><b><div id=\"mathexprcdusvwcndtch_" + cctr + "\">" + challenge + "</div></b></div>";
 			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
 			candidateresp = candidateresponse[challenge].answer;
 			if(separatorPattern.test(candidateresp)){
@@ -1745,9 +1762,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    html += "</form>";
                     
 		    html += "</body></html>";
-		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
+		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
 		    evalwin.document.write(html);
-		    //evalwin.onmouseover = displayMathExprEvalRespView(challengecounter);
 		}
 
 
