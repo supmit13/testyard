@@ -2805,15 +2805,20 @@ Monday, February 25, 2019, 19:49 HRS.
 3. git add files_to_commit.txt
 
 =========================================
-Sunday, March 10, 2019, 02:47 HRS.
+Saturday, March 10, 2019, 02:47 HRS.
 -----------------------------------------
 1. git rm static/javascript/mathjaxjs.js
 2. git add templates/tests/tests.html
 3. git add files_to_commit.txt
 
 =========================================
+Tuesday, March 12, 2019, 20:48 HRS:
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/evaluate_responses.html
+3. git add skillstest/Tests/templatetags/extratemptags.py
+4. git add files_to_commit.txt
 
-
-
+=========================================
 
 

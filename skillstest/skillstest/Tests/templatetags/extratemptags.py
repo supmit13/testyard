@@ -31,4 +31,13 @@ def getval(the_list, index):
         return ""
 
 
+"""
+Concatenate 2 strings in django templates. Strings
+may be in javascript variables.
+"""
+@register.filter(name='addstr')
+def addstr(arg1, arg2):
+    """concatenate arg1 & arg2"""
+    return str(arg1) + str(arg2)
+
 
