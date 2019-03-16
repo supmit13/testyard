@@ -3706,9 +3706,11 @@ def evaluateresponses(request):
         fromaddr = utobj.test.creator.emailid
         email = utobj.emailaddr
         passscore = utobj.test.passscore
-        outcome = "\<font color='#0000AA'\>Pass\</font\>"
+        #outcome = "<font color='#0000AA'>Pass</font>"
+        outcome = "Pass"
         if utobj.score < passscore:
-            outcome = "\<font color='#AA0000'\>Fail\</font\>"
+            #outcome = "<font color='#AA0000'>Fail</font>"
+            outcome = "Fail"
         message = """
             Dear Candidate,
 
