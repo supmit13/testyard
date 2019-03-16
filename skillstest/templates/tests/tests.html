@@ -1668,7 +1668,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 
-
+		//This method will be replaced by one that calls the server side scripts to populate it.
 		function evaluateresponses(testid, emailid, responsetext,utid){
 		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
 		    responsedata = jsonresp[emailid + "####" + utid];
@@ -1767,6 +1767,29 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    evalwin.document.write(html);
 		}
 
+
+		function sendanswerscript(){
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+   		    waitdivtag = document.getElementById('waitdiv');
+		    xmlhttp.open("POST", '{{ evaluateresponseurl }}', true);
+  		    xmlhttp.send(encpostdata);
+		    waitdivtag.innerHTML = "<img src='static/images/loading_small.gif'>";
+		}
+
+
+		function evaluateresponses_new(testid, emailid, responsetext,utid){
+		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
+		    html = "<html><head><title>Move mouse pointer to display Test responses</title></head>";
+		    html += "<body onmouseover='javascript:sendanswerscript(\"" + testid + "\", \"" + emailid + "\", \"" + utid + "\");'><center><font color='0000AA'>Please wait while the screen is populated</font><div id='waitdiv'></div></center><form name='dummy'></form>";
+		    html += "</body></html>";
+		    evalwin.document.write(html);
+		}
 
 		//function saveglobalinfo(testid){
 		//}

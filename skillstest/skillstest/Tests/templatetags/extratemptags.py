@@ -40,4 +40,14 @@ def addstr(arg1, arg2):
     """concatenate arg1 & arg2"""
     return str(arg1) + str(arg2)
 
+"""
+Search and replace a sequence of characters with another sequence.
+"""
+@register.filter
+def replace ( string, args ): 
+    search  = args.split(args[0])[1]
+    replace = args.split(args[0])[2]
+
+    return re.sub( search, replace, string )
+
 

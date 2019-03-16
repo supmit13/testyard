@@ -29,68 +29,67 @@ function displayMathExprEvalRespView(countresp){
 </script>
 </head>
 
-<body bgcolor="#669999"><h3>User's Responses</h3><br /><br /><form name="frmevalresp" method="POST" onmousemove="javascript:displayMathExprEvalRespView({{challengecounter}});">
-<input type='hidden' name='testid' id='testid' value='{{testid}}'>
-<input type='hidden' name='emailid' id='emailid' value='{{emailid}}'>
-<input type='hidden' name='tabref' id='tabref' value='{{responsedata.tabref}}'>
-<input type='hidden' name='tabid' id='tabid' value='{{responsedata.tabid}}'>
-{% csrf_token %}
-{% cctr=1 %}
-{% evalcommitstate={{responsedata.evalcommitstate}} %}
-{% challengecounter = 1 %}
-    
-    {% for (challenge in candidateresponses['candidateresponse']) %} 
-        {{challengecounter}} = {{challengecounter}} + 1;
-	<div id='challengestatement'><b><div id="mathexprcdusvwcndtch_"|addstr:cctr>{{challengecounter}}</div></b></div>
+html += "<body bgcolor=\"#669999\"><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
+    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
+    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
+    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
+    html += "<input type='hidden' name='tabid' id='tabid' value='" + responsedata.tabid + "'>";
+    html += "{% csrf_token %}";
+    {% cctr = 1 %}
+    {% var separatorPattern = new RegExp("#||#") %}
+    {% for challenge in candidateresponse %}
+        <div id='challengestatement'><b><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}</div></b></div>
 	// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
-	{% candidateresp = {{candidateresponses[challenge].answer}} %}
-	{% load replace %} {{candidateresp|replace:"#||#"}}
-	<script type="text/javascript">
+	{% candidateresp = candidateresponse[challenge].answer %}
+
+	{% load replace %} {{ candidateresp|replace:"/#||#/, \1gen" }}
+	<script language='JavaScript'>
 	{{candidaterespdecoded}} = decodeURIComponent({{candidateresp}});
-	<br /><br /><b>Candidate's Response: </b><div id="mathexprcdusvwcndtresp_"|addstr:cctr>{{candidaterespdecoded}}</div>
-	
-	<br /><br /><b>Max Score: </b>"{{candidateresponses['candidateresponse'][challenge].maxscore}}"
-	<br /><br /><b>Negative Score: </b>{{candidateresponses['candidateresponse'][challenge].negativescore}}
-	<input type='hidden' name="maxscore_"|addstr:cctr id="maxscore_"|addstr:cctr value='{{candidateresponses['candidateresponse'][challenge].maxscore}}'>
-	<input type='hidden' name='negativescore_"|addstr:cctr id='negativescore_"|addstr:cctr value='{{candidateresponses['candidateresponse'][challenge].negativescore}}'>
-	{% correctanswer = decodeURIComponent({{candidateresponses['candidateresponse'][challenge].correctanswer}}) %}
-	{%
-	if(!correctanswer){
-	    correctanswer = 'Not Available';
-	}
-	correctanswer = correctanswer.replace("#||#", ", ")
-	%}
-	<br /><br /><b>Correct Answer: </b>{{correctanswer}}
-	if(evalcommitstate == false){
-	    <br /><br /><b>Assessment: </b><input type='text' name="assessment_"|addstr:cctr + id="assessment_"|addstr:cctr value='{{candidateresponses['candidateresponse'][challenge].evaluation}}'>
-	    <br /><br /><b>Comment/Feedback: </b><textarea name="evalcomment_"|addstr:cctr  id="evalcomment_"|addstr:cctr rows=10 cols=40>  decodeURIComponent({{candidateresponses['candidateresponse'][challenge].evaluatorremarks}})</textarea>
-	}
-	else{
-	    <br /><br /><b>Assessment: </b><input type='text' name="assessment_"|addstr:cctr id="assessment_"|addstr:cctr + value='{{candidateresponses['candidateresponse'][challenge].evaluation}}' disabled>
-	    <br /><br /><b>Comment/Feedback: </b><textarea name="evalcomment_"|addstr:cctr id="evalcomment_"|addstr:cctr rows=10 cols=40 disabled>decodeURIComponent({{candidateresponses['candidateresponse'][challenge].evaluatorremarks}}) + </textarea>
-	}
-	<input type='hidden' name="challengeid_"|addstr:cctr id="challengeid_"|addstr:cctr value='{{candidateresponses['candidateresponse'][challenge].challengeid}}'>
-	<br /><br /><hr>
-	{% cctr = {{cctr}} + 1 %}
 	</script>
-    }
-		    
-    <input type='hidden' name='maxcctr' id='maxcctr' value='" + cctr + "'>");
-    <script type='text/javascript'>
-    <textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>decodeURIComponent({{responsedata.evaltestcomment}})</textarea><br /><br />
+	<br /><br /><b>Candidate's Response: </b><div id="mathexprcdusvwcndtresp_{{cctr}}">{{candidaterespdecoded}}</div>;
+	<br /><br /><b>Max Score: </b>{{candidateresponse[challenge].maxscore}}
+	<br /><br /><b>Negative Score: </b>{{candidateresponse[challenge].negativescore}}
+	<input type='hidden' name='maxscore_{{cctr}}' id='maxscore_{{cctr}}' value='{{candidateresponse[challenge].maxscore}}'>
+	<input type='hidden' name='negativescore_{{cctr}}' id='negativescore_{{cctr}}' value='{{candidateresponse[challenge].negativescore}}'>
+	<script language='JavaScript'>
+	{% correctanswer = decodeURIComponent(candidateresponse[challenge].correctanswer); %}
+        </script>
+	if(!{{correctanswer}}){
+	    {{correctanswer}} = 'Not Available';
+	}
+	{% correctanswer = correctanswer.replace("#||#", ", ") %}
+	<br /><br /><b>Correct Answer: </b>{{correctanswer}}
+	{% if evalcommitstate == false %}
+	    <br /><br /><b>Assessment: </b><input type='text' name='assessment_{{cctr}}' id='assessment_{{cctr}}' value='{{candidateresponse[challenge].evaluation}}'>
+	    <script language='JavaScript'>
+	    <br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_{{cctr}}' id='evalcomment_{{cctr}}' rows=10 cols=40>decodeURIComponent({{candidateresponse[challenge].evaluatorremarks}})</textarea>
+	    </script>
+	{% else %}
+	    <br /><br /><b>Assessment: </b><input type='text' name='assessment_{{cctr}}' id='assessment_{{cctr}}' value='{{candidateresponse[challenge].evaluation}}' disabled>";
+	    <script language='JavaScript'>
+	    <br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_{{cctr}}' id='evalcomment_{{cctr}}' rows=10 cols=40 disabled>decodeURIComponent({{candidateresponse[challenge].evaluatorremarks}})</textarea>
+	{% endif %}
+	<input type='hidden' name='challengeid_{{cctr}}' id='challengeid_{{cctr}}' value='{{candidateresponse[challenge].challengeid}}'>";
+	<br /><br /><hr>
+	{% cctr = cctr + 1 %}
+    {% endfor %}
+    
+    <input type='hidden' name='maxcctr' id='maxcctr' value='{{cctr}}'>
+    <script language='JavaScript'>
+    <textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>decodeURIComponent(responsedata.evaltestcomment)</textarea><br /><br />
     </script>
-    if(evalcommitstate == false){
+    {% if evalcommitstate == false %}
         <b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1'><br /><br />
-    }
-    else{
+    
+    {% else %}
 	<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />
-    }
-    if(evalcommitstate == false){
+    {% endif %}
+    {% if evalcommitstate == false %}
         <input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>
     }
     <input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>
     </form>
-{% endwith %} 
+    
     </body></html>
     
 

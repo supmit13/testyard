@@ -3551,6 +3551,20 @@ def evaluate(request):
     return HttpResponse(base64.b64encode(json.dumps(candidateresponses)))
 
 
+##################################################################
+## New function to display evaluation screen. Get the values 
+## needed for "evaluate_responses.html". Serve that template
+## with the required values. Also, rename "evaluateresponses_new"
+## to "evaluateresponses" in the tests.html file. Rename the
+## current "evaluateresponses" to "evaluateresponses_old".
+##################################################################
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def show_evaluation_screen(request):
+    pass
+
+
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
