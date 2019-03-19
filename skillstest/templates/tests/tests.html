@@ -1768,33 +1768,42 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 
-		function sendanswerscript(){
-		    var xmlhttp;
-		    if (window.XMLHttpRequest){
-    		        xmlhttp=new XMLHttpRequest();
-  		    }
-  		    else{
-    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  		    }
-   		    waitdivtag = document.getElementById('waitdiv');
-		    xmlhttp.open("POST", '{{ evaluateresponseurl }}', true);
-  		    xmlhttp.send(encpostdata);
-		    waitdivtag.innerHTML = "<img src='static/images/loading_small.gif'>";
-		}
-
-
 		function evaluateresponses_new(testid, emailid, responsetext,utid){
+		    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
 		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
-		    html = "<html><head><title>Move mouse pointer to display Test responses</title></head>";
-		    html += "<body onmouseover='javascript:sendanswerscript(\"" + testid + "\", \"" + emailid + "\", \"" + utid + "\");'><center><font color='0000AA'>Please wait while the screen is populated</font><div id='waitdiv'></div></center><form name='dummy'></form>";
+		    html = "<html><head><title>display Test Responses</title>";
+		    html += "<scr" + "ipt language='javascript'>";
+		    html += "function sendanswerscript(testid, emailid, utid, csrftoken){ \n \
+		    var xmlhttp; \n \
+		    //alert(csrftoken); \n \
+		    postdata = \"testid=\" + testid + \"&emailid=\" + emailid + \"&utid=\" + utid + \"&csrfmiddlewaretoken=\" + csrftoken; \n \
+		    encpostdata = encodeURI(postdata);\n \
+		    if (window.XMLHttpRequest){\n \
+    		        xmlhttp=new XMLHttpRequest(); \n \
+  		    } \n \
+  		    else{\n \
+    		        xmlhttp=new ActiveXObject(\"Microsoft.XMLHTTP\");\n \
+  		    }\n \
+		    xmlhttp.onreadystatechange = function(){\n \
+		    if(xmlhttp.readyState == 4 && xmlhttp.status==500){ \n \
+			scrdiv = document.getElementById('scrcontent');\n \
+			scrdiv.innerHTML = xmlhttp.responseText;\n \
+			waitdivtag.innerHTML = \"\";\n \
+		    }\n \
+		    }; \n \
+   		    waitdivtag = document.getElementById('waitdiv');\n \
+		    xmlhttp.open(\"POST\", '{{ showevaluationscreen }}', true);\n \
+  		    xmlhttp.send(encpostdata);\n \
+		    waitdivtag.innerHTML = \"<img src='static/images/loading_small.gif'>\";\n \
+		    }";
+		    html += "</scr" + "ipt>";
+		    html += "</head>";
+		    html += "<body><center><div id=\"scrcontent\"><font color='0000AA'>Please <a href='#/' onClick='javascript:sendanswerscript(\"" + testid + "\", \"" + emailid + "\", \"" + utid + "\", \"" + csrftoken + "\");'>click here</a> to populate the screen</font></div><div id='waitdiv'></div></center>";
 		    html += "</body></html>";
 		    evalwin.document.write(html);
 		}
 
-		//function saveglobalinfo(testid){
-		//}
-
-
+		
 		function disqualifycandidate(testid, emailid){
 		    var xmlhttp;
 		    var postdata = "testid=" + testid + "&emailid=" + emailid + "&csrfmiddlewaretoken=";
@@ -1872,6 +1881,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    }
 			    grandtotal = "<font color='#0000DD'>" + answerrecord['score'] + "</font>";
 			    status = answerrecord['status'];
+			    
 			    comments = "<font color='#0000DD' size=-1>" + decodeURIComponent(answerrecord['evaltestcomment']) + "</font>";
 			    if(rowctr % 2 == 0){
 				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Evaluate Responses</a>";

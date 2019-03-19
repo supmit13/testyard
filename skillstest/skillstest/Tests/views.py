@@ -64,7 +64,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -309,6 +309,7 @@ def get_user_tests(request):
     tests_user_dict['testbulkuploadurl'] = skillutils.gethosturl(request) + "/" + testbulkuploadurl
     tests_user_dict['testevaluationurl'] = skillutils.gethosturl(request) + "/" + testevaluationurl
     tests_user_dict['evaluateresponseurl'] = skillutils.gethosturl(request) + "/" + evaluateresponseurl
+    tests_user_dict['showevaluationscreen'] = skillutils.gethosturl(request) + "/" + showevaluationscreen
     tests_user_dict['getevaluationdetailsurl'] = skillutils.gethosturl(request) + "/" + getevaluationdetailsurl
     tests_user_dict['settestvisibilityurl'] = skillutils.gethosturl(request) + "/" + settestvisibilityurl
     tests_user_dict['getcanvasurl'] = skillutils.gethosturl(request) + "/" + getcanvasurl
@@ -3561,8 +3562,89 @@ def evaluate(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
-def show_evaluation_screen(request):
-    pass
+def showevaluationscr(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: " + error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: " + error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    testid = None
+    emailid = None
+    utid = None
+    candidateresponse  = {}
+    if not request.POST.has_key('testid') or not request.POST.has_key('emailid') or not request.POST.has_key('utid'):
+        evalscreenresponse['Error'] = error_msg('1059')
+        response = HttpResponse(json.dumps(evalscreenresponse))
+        return response
+    testid = request.POST['testid']
+    emailid = request.POST['emailid']
+    utid = request.POST['utid'] # This would be the id from the 'usertest' table. The individual who is evaluating the test has to be a member of TestYard(tm).
+    evalcommitstate = None
+    candidateresponse['cctr']  = 1
+    candidateresponse['candidateresp']  = ''
+    candidateresponse['testid']  = testid
+    candidateresponse['emailid'] = emailid
+    candidateresponse['utid'] = utid
+    candidateresponse['challengecounter'] = None # This is basically the number of challenges contained in the test.
+    candidateresponse['tabref'] = None
+    candidateresponse['tabid'] = None
+    candidateresponse['evalcommitstate'] = None
+    candidateresponse['evaltestcomment'] = None
+    testobj = Test.objects.get(id=testid)
+    usrrespqset = UserResponse.objects.filter(test=testobj, emailaddr=emailid)
+    tabref = usrrespqset[0].tabref
+    tabid = usrrespqset[0].tabid
+    candidateresponse['tabid'] = tabid
+    candidateresponse['tabref'] = tabref
+    candidateresponse['evaltestcomment'] = usrrespqset[0].evaluator_remarks
+    usrtestobj = None
+    if tabref == "usertest":
+        usrtestobj = UserTest.objects.get(emailaddr=emailid, test=testobj, id=utid)
+    elif tabref == "wouldbeusers":
+        usrtestobj = WouldbeUsers.objects.get(emailaddr=emailid, test=testobj, id=utid)
+    else: # Unsupported table, so something is fishy. Return a response with an appropriate message
+        return HttpResponse("Invalid table name selected.")
+    evalcommitstate = usrtestobj.evalcommitstate
+    candidateresponse['evalcommitstate'] = evalcommitstate # Should be 0 or 1
+    # The above variables would be the same for all challenges related to this test.
+    for usrrespobj in usrrespqset:
+        try:
+            # Populate the dictionary 'candidateresponse'
+            challenge = usrrespobj.challenge
+            challenge_statement = challenge.statement
+            candidateresponse[challenge_statement] = {}
+            candidateresponse[challenge_statement]['maxscore'] = challenge.challengescore
+            candidateresponse[challenge_statement]['challengeid'] = challenge.id
+            candidateresponse[challenge_statement]['evaluatorremarks'] = usrrespobj.evaluator_remarks
+            candidateresponse[challenge_statement]['evaluation'] = usrrespobj.evaluation
+            candidateresponse[challenge_statement]['negativescore'] = challenge.negativescore
+            correctanswer = challenge.responsekey
+            correctanswerlist = correctanswer.split("#||#") # This is the pattern separating the answers in multiple choice type questions.
+            if correctanswerlist.__len__() > 0:
+                pass # Need to implement this
+            candidateresponse[challenge_statement]['correctanswer'] = challenge.responsekey
+            candidateresponse[challenge_statement]['answer'] = usrrespobj.answer
+        except:
+            continue
+    #return HttpResponse("Ok till here")
+    tmpl = get_template("tests/evaluate_responses.html")
+    #return HttpResponse("Ok till here")
+    candidateresponse.update(csrf(request))
+    cxt = Context(candidateresponse)
+    candidateresponsehtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        candidateresponsehtml = candidateresponsehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(candidateresponsehtml)
+    
 
 
 @skillutils.is_session_valid
