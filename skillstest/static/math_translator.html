@@ -50,21 +50,41 @@ function displayMathExpr(){
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
 }
 
+// Extracting the value of cctr from the query string. 
+// Then loading the contents of the response div into
+// the textarea on this page.
+function loadMatExprAnswer(){
+    var cctr = window.location.search; // Get query string
+    cctrparts = cctr.split("=");
+    if(cctrparts.length > 1){ // We are interested in the second element only.
+        cctr = cctrparts[1];
+        var parentdivtag = window.opener.document.getElementById('mathexprcdusvwcndtresp_' + cctr.toString());
+        var responsecontent = parentdivtag.innerHTML;
+        //alert(responsecontent);
+        // Remove square brackets from the ends of the LaTeX expressions.
+        openingBrackets = new RegExp('^\\[');
+        closingBrackets = new RegExp('\\]$')
+        responsecontent = responsecontent.replace(openingBrackets, "");
+        responsecontent = responsecontent.replace(closingBrackets, "");
+        document.frm_translator.txtexpression.value = responsecontent;
+        displayMathExpr(); // Works like a charm. ++supriyo
+    }
+}
+
 </script>
 
 
 </head>
-<!-- <body onload="javascript:displayMathSymbolOnButtons();"> -->
-<body>
+
+<body onload='javascript:loadMatExprAnswer();'>
 <form name='frm_translator' action='' method='POST'>
 <p>
-<font color='#0000AA' style="font-weight:bold">You may type in LaTex expressions directly in the editable <br />area below and on clicking the button titled "Convert <br />to Math Expression" will magically convert it to the mathematical<br /> expression with all the required symbols. Go ahead, please try it!<br /> </font>
+<font color='#0000AA' style="font-weight:bold">Enter LaTex Expression Here:<br /> </font>
 <textarea name='txtexpression' rows='8' cols='20'></textarea>
 <br />
 
 <br />
 <input type='button' name='btnconvertstrtomath' value='Convert to Math Expression' onClick='javascript:displayMathExpr();'>
-<!-- <textarea id='mathexpr', name='mathexpr' rows='8' cols='20'></textarea> -->
 </p>
 
 <span id='mathexpr'>

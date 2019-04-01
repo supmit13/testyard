@@ -2852,3 +2852,13 @@ Monday, April 01, 2019, 06:20 HRS.
 8. git add files_to_commit.txt
 
 =========================================
+Monday, April 01, 2019, 21:16 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/math_translator.html
+3. git add static/mathkbd.html
+4. git add files_to_commit.txt
+
+=========================================
+
+
