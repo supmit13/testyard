@@ -2840,4 +2840,15 @@ Tuesday, March 19, 2019, 21:24 HRS.
 7. git add files_to_commit.txt
 
 =========================================
+Monday, April 01, 2019, 06:20 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/evaluate_responses.html
+3. git add skillstest/Tests/templatetags/extratemptags.py
+4. git add skillstest/Tests/views.py
+5. git add skillstest/urls.py
+6. git add skillstest/skills_settings.py
+7. git add static/math_translator.html
+8. git add files_to_commit.txt
 
+=========================================

@@ -19,7 +19,7 @@
 	    tex2jax: {inlineMath: [["\[","\]"],["\\(","\\)"]]}
 	  });
 	</script>
-        
+         
 
         <script>
 
@@ -1724,7 +1724,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    candidateresp = candidateresp.replace("#||#", ", ");
 			}
 			candidaterespdecoded = decodeURIComponent(candidateresp);
-			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div>";
+			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='static/math_translator.html' target='_blank');'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
 			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;
 			html += "<input type='hidden' name='maxscore_" + cctr + "' id='maxscore_" + cctr + "' value='" + candidateresponse[challenge].maxscore + "'>";
@@ -1768,42 +1768,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 
-		function evaluateresponses_new(testid, emailid, responsetext,utid){
-		    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
-		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
-		    html = "<html><head><title>display Test Responses</title>";
-		    html += "<scr" + "ipt language='javascript'>";
-		    html += "function sendanswerscript(testid, emailid, utid, csrftoken){ \n \
-		    var xmlhttp; \n \
-		    //alert(csrftoken); \n \
-		    postdata = \"testid=\" + testid + \"&emailid=\" + emailid + \"&utid=\" + utid + \"&csrfmiddlewaretoken=\" + csrftoken; \n \
-		    encpostdata = encodeURI(postdata);\n \
-		    if (window.XMLHttpRequest){\n \
-    		        xmlhttp=new XMLHttpRequest(); \n \
-  		    } \n \
-  		    else{\n \
-    		        xmlhttp=new ActiveXObject(\"Microsoft.XMLHTTP\");\n \
-  		    }\n \
-		    xmlhttp.onreadystatechange = function(){\n \
-		    if(xmlhttp.readyState == 4 && xmlhttp.status==500){ \n \
-			scrdiv = document.getElementById('scrcontent');\n \
-			scrdiv.innerHTML = xmlhttp.responseText;\n \
-			waitdivtag.innerHTML = \"\";\n \
-		    }\n \
-		    }; \n \
-   		    waitdivtag = document.getElementById('waitdiv');\n \
-		    xmlhttp.open(\"POST\", '{{ showevaluationscreen }}', true);\n \
-  		    xmlhttp.send(encpostdata);\n \
-		    waitdivtag.innerHTML = \"<img src='static/images/loading_small.gif'>\";\n \
-		    }";
-		    html += "</scr" + "ipt>";
-		    html += "</head>";
-		    html += "<body><center><div id=\"scrcontent\"><font color='0000AA'>Please <a href='#/' onClick='javascript:sendanswerscript(\"" + testid + "\", \"" + emailid + "\", \"" + utid + "\", \"" + csrftoken + "\");'>click here</a> to populate the screen</font></div><div id='waitdiv'></div></center>";
-		    html += "</body></html>";
-		    evalwin.document.write(html);
-		}
-
-		
+				
 		function disqualifycandidate(testid, emailid){
 		    var xmlhttp;
 		    var postdata = "testid=" + testid + "&emailid=" + emailid + "&csrfmiddlewaretoken=";

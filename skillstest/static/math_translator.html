@@ -1,0 +1,75 @@
+<!-- 
+A scientific and technical keyboard based on the MathJax library. 
+This is proprietary software. Using this without the consent of the
+author (undersigned) would be considered as a criminal offence. This
+will be a property of AnalogicNetworks, and the company is free to
+use it in any application that requires this type of tool.
+
+Please keep this text intact whereever you use it. It will do my ego
+some good! :-P
+Author: Supriyo Mitra.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+
+<script type="text/javascript" src="mathlib/math.min.js"></script>
+<script type="text/javascript" async src="MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+    tex2jax: {inlineMath: [["\\[", "\\]"], ["\[", "\]"]]}
+});
+</script>
+
+<script>
+
+function saveContents(){
+    mathexprdiv = document.getElementById('mathexpr');
+    mathcontents = mathexprdiv.innerHTML;
+    testdivelem = document.getElementById('testdiv');
+    testdivelem.innerHTML = mathcontents;
+    //alert(mathcontents);
+}
+
+
+function displayMathExpr(){
+    start_square_bracket_pattern = new RegExp("^\\[");
+    end_square_bracket_pattern = new RegExp("\\]$");
+    txtContents = document.frm_translator.txtexpression.value;
+    if(!start_square_bracket_pattern.test(txtContents)){
+        txtContents = "\\[" + txtContents;
+    }
+    if(!end_square_bracket_pattern.test(txtContents)){
+        txtContents = txtContents + "\\]";
+    }
+    //alert(txtContents);
+    mathexprdiv = document.getElementById('mathexpr');
+    mathexprdiv.innerHTML = txtContents; 
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
+}
+
+</script>
+
+
+</head>
+<!-- <body onload="javascript:displayMathSymbolOnButtons();"> -->
+<body>
+<form name='frm_translator' action='' method='POST'>
+<p>
+<font color='#0000AA' style="font-weight:bold">You may type in LaTex expressions directly in the editable <br />area below and on clicking the button titled "Convert <br />to Math Expression" will magically convert it to the mathematical<br /> expression with all the required symbols. Go ahead, please try it!<br /> </font>
+<textarea name='txtexpression' rows='8' cols='20'></textarea>
+<br />
+
+<br />
+<input type='button' name='btnconvertstrtomath' value='Convert to Math Expression' onClick='javascript:displayMathExpr();'>
+<!-- <textarea id='mathexpr', name='mathexpr' rows='8' cols='20'></textarea> -->
+</p>
+
+<span id='mathexpr'>
+</span> 
+
+</body>
+</html>
+

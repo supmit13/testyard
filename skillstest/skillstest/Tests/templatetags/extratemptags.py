@@ -1,6 +1,6 @@
 import sys, os, re, time
 from django import template
-
+from django.template.defaultfilters import stringfilter
 
 """
 Create and register a filter to extract values from a dict with keys
@@ -43,7 +43,8 @@ def addstr(arg1, arg2):
 """
 Search and replace a sequence of characters with another sequence.
 """
-@register.filter
+@register.filter(name='replace')
+@stringfilter
 def replace ( string, args ): 
     search  = args.split(args[0])[1]
     replace = args.split(args[0])[2]

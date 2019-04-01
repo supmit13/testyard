@@ -3594,18 +3594,25 @@ def showevaluationscr(request):
     candidateresponse['testid']  = testid
     candidateresponse['emailid'] = emailid
     candidateresponse['utid'] = utid
-    candidateresponse['challengecounter'] = None # This is basically the number of challenges contained in the test.
+    candidateresponse['challengecounter'] = 0 # This is basically the number of challenges contained in the test.
     candidateresponse['tabref'] = None
-    candidateresponse['tabid'] = None
+    candidateresponse['tabid'] = utid
     candidateresponse['evalcommitstate'] = None
     candidateresponse['evaltestcomment'] = None
     testobj = Test.objects.get(id=testid)
-    usrrespqset = UserResponse.objects.filter(test=testobj, emailaddr=emailid)
+    usrrespqset = UserResponse.objects.filter(test=testobj, emailaddr=emailid, tabid=utid)
+    #candidateresponse['usrrespqset'] = list(usrrespqset).__len__() # Just to test...
     tabref = usrrespqset[0].tabref
-    tabid = usrrespqset[0].tabid
+    tabid = utid
     candidateresponse['tabid'] = tabid
     candidateresponse['tabref'] = tabref
-    candidateresponse['evaltestcomment'] = usrrespqset[0].evaluator_remarks
+    utobj = None
+    if tabref == 'usertest':
+        utobj = UserTest.objects.get(id=utid)
+    elif tabref == 'wouldbeusers':
+        utobj = WouldbeUsers.objects.get(id=utid)
+    if utobj:
+        candidateresponse['evaltestcomment'] = utobj.evaluator_comment.replace("%20", " ")
     usrtestobj = None
     if tabref == "usertest":
         usrtestobj = UserTest.objects.get(emailaddr=emailid, test=testobj, id=utid)
@@ -3616,31 +3623,43 @@ def showevaluationscr(request):
     evalcommitstate = usrtestobj.evalcommitstate
     candidateresponse['evalcommitstate'] = evalcommitstate # Should be 0 or 1
     # The above variables would be the same for all challenges related to this test.
+    fp = open("/home/supriyo/work/testyard/extralogs/dumplog.log", "w")
+    candidateresponse['challenge_statement'] = {}
     for usrrespobj in usrrespqset:
+        candidateresponse['challengecounter'] += 1
         try:
             # Populate the dictionary 'candidateresponse'
             challenge = usrrespobj.challenge
             challenge_statement = challenge.statement
-            candidateresponse[challenge_statement] = {}
-            candidateresponse[challenge_statement]['maxscore'] = challenge.challengescore
-            candidateresponse[challenge_statement]['challengeid'] = challenge.id
-            candidateresponse[challenge_statement]['evaluatorremarks'] = usrrespobj.evaluator_remarks
-            candidateresponse[challenge_statement]['evaluation'] = usrrespobj.evaluation
-            candidateresponse[challenge_statement]['negativescore'] = challenge.negativescore
+            candidateresponse['challenge_statement'][challenge_statement] = {}
+            candidateresponse['challenge_statement'][challenge_statement]['maxscore'] = challenge.challengescore
+            candidateresponse['challenge_statement'][challenge_statement]['challengeid'] = challenge.id
+            candidateresponse['challenge_statement'][challenge_statement]['evaluatorremarks'] = usrrespobj.evaluator_remarks
+            candidateresponse['challenge_statement'][challenge_statement]['evaluation'] = usrrespobj.evaluation
+            candidateresponse['challenge_statement'][challenge_statement]['negativescore'] = challenge.negativescore
             correctanswer = challenge.responsekey
-            correctanswerlist = correctanswer.split("#||#") # This is the pattern separating the answers in multiple choice type questions.
+            fp.write(str(challenge_statement) + " #### " + str(challenge.challengescore) + " #### " + str(challenge.id) + " #### " + str(usrrespobj.evaluator_remarks) + " #### " + str(usrrespobj.evaluation) + " #### " + str(challenge.negativescore) + " #### " + candidateresponse['challengecounter'] + "\n\n")
+            correctanswerlist = []
+            try:
+                correctanswerlist = correctanswer.split("#||#") # This is the pattern separating the answers in multiple choice type questions.
+            except:
+                pass               
             if correctanswerlist.__len__() > 0:
                 pass # Need to implement this
-            candidateresponse[challenge_statement]['correctanswer'] = challenge.responsekey
-            candidateresponse[challenge_statement]['answer'] = usrrespobj.answer
+            candidateresponse['challenge_statement'][challenge_statement]['correctanswer'] = challenge.responsekey
+            candidateresponse['challenge_statement'][challenge_statement]['answer'] = usrrespobj.answer
         except:
             continue
-    #return HttpResponse("Ok till here")
+    results_dict = {}
+    results_dict['candidateresponse'] = candidateresponse
     tmpl = get_template("tests/evaluate_responses.html")
-    #return HttpResponse("Ok till here")
-    candidateresponse.update(csrf(request))
-    cxt = Context(candidateresponse)
-    candidateresponsehtml = tmpl.render(cxt)
+    results_dict.update(csrf(request))
+    try:
+        cxt = Context(results_dict)
+        candidateresponsehtml = tmpl.render(cxt)
+    except:
+        fp.write(sys.exc_info()[1].__str__())
+    fp.close()
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         candidateresponsehtml = candidateresponsehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(candidateresponsehtml)
