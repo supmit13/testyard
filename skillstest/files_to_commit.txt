@@ -2860,5 +2860,10 @@ Monday, April 01, 2019, 21:16 HRS.
 4. git add files_to_commit.txt
 
 =========================================
+Tuesday, April 02, 2019, 19:46 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add files_to_commit.txt
 
+=========================================
 
