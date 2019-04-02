@@ -782,6 +782,10 @@ function addmultiintegrallimit(n){
 	border-radius: 3px;
 	box-shadow: 0px 1px 4px -2px #333;
 	text-shadow: 0px -1px #333;
+
+	width: 100%;
+  	table-layout: fixed;
+  	border-collapse: collapse;
 }
 
 .glass:after{
@@ -804,10 +808,14 @@ function addmultiintegrallimit(n){
 <body>
 <form name='frmkeyboard' action='' method='POST'>
 <p>
-<font color='#0000AA' style="font-weight:bold">You may type in LaTex expressions directly in the editable <br />area below and on clicking the button titled "Convert <br />to Math Expression" will magically convert it to the mathematical<br /> expression with all the required symbols. Go ahead, please try it!<br /> </font>
+<center><font style='font-weight:bold' size='+2' color='#0000AA'>LaTeX Editor for Math Expressions</font></center>
+</p>
+<center>
+<p>
+<font color='#0000AA' style="font-weight:bold">You may type in LaTex expressions directly in the editable <br />area below and on clicking the button titled "Convert <br />to Math Expression" will magically convert it to the mathematical<br /> expression with all the required symbols. Go ahead, please try it!<br /> Alternatively, you may use the keyboard below.<br /> </font>
 <textarea name='txtexpression' rows='8' cols='75'></textarea>
 <br />
-<div id="btnGroup">
+<div id="btnGroup" style="width: 100%;">
     <table border=0 cellspacing=2 cellpadding=0>
 
     <!-- ASCII characters -->
@@ -817,11 +825,13 @@ function addmultiintegrallimit(n){
 <tr><td><input id="Button25" type="button" value="M"  class="glass"/></td><td><input id="Button26" type="button" value="N"  class="glass" /></td><td><input id="Button27" type="button" value="O"  class="glass"/></td><td><input id="Button28" type="button" value="P"  class="glass" /></td><td><input id="Button29" type="button" value="Q"  class="glass"/></td><td><input id="Button30" type="button" value="R"  class="glass"/></td></tr>
 <tr><td><input id="Button31" type="button" value="S"  class="glass"/></td><td><input id="Button32" type="button" value="T"  class="glass"/></td><td><input id="Button33" type="button" value="U"  class="glass"/></td><td><input id="Button34" type="button" value="V"  class="glass"/></td><td><input id="Button35" type="button" value="W"  class="glass"/></td><td><input id="Button36" type="button" value="X"  class="glass"/></td></tr>
 <tr><td><input id="Button37" type="button" value="Y"  class="glass"/></td><td><input id="Button38" type="button" value="Z"  class="glass"/></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td colspan='6'>&nbsp;</td></tr>
 <tr><td><input id="Button39" type="button" value="a"  class="glass"/></td><td><input id="Button40" type="button" value="b"  class="glass"/></td><td><input id="Button41" type="button" value="c"  class="glass"/></td><td><input id="Button42" type="button" value="d"  class="glass"/></td><td><input id="Button43" type="button" value="e"  class="glass"/></td><td><input id="Button44" type="button" value="f"  class="glass"/></td></tr>
 <tr><td><input id="Button45" type="button" value="g"  class="glass"/></td><td><input id="Button46" type="button" value="h"  class="glass"/></td><td><input id="Button47" type="button" value="i"  class="glass"/></td><td><input id="Button48" type="button" value="j"  class="glass"/></td><td><input id="Button49" type="button" value="k"  class="glass"/></td><td><input id="Button50" type="button" value="l"  class="glass"/></td></tr>
 <tr><td><input id="Button51" type="button" value="m"  class="glass"/></td><td><input id="Button52" type="button" value="n"  class="glass"/></td><td><input id="Button53" type="button" value="o"  class="glass"/></td><td><input id="Button54" type="button" value="p"  class="glass"/></td><td><input id="Button55" type="button" value="q"  class="glass"/></td><td><input id="Button56" type="button" value="r"  class="glass"/></td></tr>
 <tr><td><input id="Button57" type="button" value="s"  class="glass"/></td><td><input id="Button58" type="button" value="t"  class="glass"/></td><td><input id="Button59" type="button" value="u"  class="glass"/></td><td><input id="Button60" type="button" value="v"  class="glass"/></td><td><input id="Button61" type="button" value="w"  class="glass"/></td><td><input id="Button62" type="button" value="x"  class="glass"/></td></tr>
 <tr><td><input id="Button63" type="button" value="y"  class="glass"/></td><td><input id="Button64" type="button" value="z"  class="glass"/></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td colspan='6'>&nbsp;</td></tr>
 <tr><td><input id="Button65" type="button" value="0"  class="glass"/></td><td><input id="Button66" type="button" value="1"  class="glass"/></td><td><input id="Button67" type="button" value="2"  class="glass"/></td><td><input id="Button68" type="button" value="3"  class="glass"/></td><td><input id="Button69" type="button" value="4"  class="glass"/></td><td><input id="Button70" type="button" value="5"  class="glass"/></td></tr>
 <tr><td><input id="Button71" type="button" value="6"  class="glass"/></td><td><input id="Button72" type="button" value="7"  class="glass"/></td><td><input id="Button73" type="button" value="8"  class="glass"/></td><td><input id="Button74" type="button" value="9"  class="glass"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>
 
@@ -829,26 +839,15 @@ function addmultiintegrallimit(n){
 <tr><td colspan='6' align='left'><h3><font color='#0000AA'>Latin Characters</font></h3></td></tr>
 <tr><td colspan=6>&nbsp;</td></tr>
 <tr><td><input id="Button75" type="button" value="alpha"  class="glass"/></td><td><input id="Button76" type="button" value="beta"  class="glass"/></td><td><input id="Button77" type="button" value="gamma"  class="glass"/></td><td><input id="Button78" type="button" value="rho"  class="glass"/></td><td><input id="Button79" type="button" value="sigma"  class="glass"/></td><td><input id="Button80" type="button" value="delta"  class="glass"/></td></tr>
-
-<tr><td colspan=6>&nbsp;</td></tr>
 <tr><td><input id="Button113" type="button" value="mu"  class="glass"/></td><td><input id="Button114" type="button" value="lambda"  class="glass"/></td><td><input id="Button115" type="button" value="theta"  class="glass"/></td><td><input id="Button116" type="button" value="kappa"  class="glass"/></td><td><input id="Button117" type="button" value="iota"  class="glass"/></td><td><input id="Button118" type="button" value="zeta"  class="glass"/></td></tr>
-
-<tr><td colspan=6>&nbsp;</td></tr>
 <tr><td><input id="Button125" type="button" value="eta"  class="glass"/></td><td><input id="Button126" type="button" value="chi"  class="glass"/></td><td><input id="Button127" type="button" value="psi"  class="glass"/></td><td><input id="Button128" type="button" value="xi"  class="glass"/></td><td><input id="Button129" type="button" value="phi"  class="glass"/></td><td><input id="Button130" type="button" value="omega"  class="glass"/></td></tr>
-
-<tr><td colspan=6>&nbsp;</td></tr>
 <tr><td><input id="Button155" type="button" value="epsilon"  class="glass"/></td><td><input id="Button156" type="button" value="pi"  class="glass"/></td><td><input id="Button157" type="button" value="tau"  class="glass"/></td><td><input id="Button158" type="button" value="upsilon"  class="glass"/></td><td><input id="Button159" type="button" value="nu"  class="glass"/></td><td><input id="Button160" type="button" value="o"  class="glass"/></td></tr>
-<tr><td colspan=6>&nbsp;</td></tr>
 <tr><td><input id="Button141" type="button" value="Sigma"  class="glass"/></td><td><input id="Button142" type="button" value="Delta"  class="glass"/></td><td><input id="Button139" type="button" value="Gamma"  class="glass"/></td><td><input id="Button144" type="button" value="Lambda"  class="glass"/></td><td><input id="Button145" type="button" value="Theta"  class="glass"/></td><td><input id="Button148" type="button" value="Upsilon"  class="glass"/></td></tr>
-
-<tr><td colspan=6>&nbsp;</td></tr>
-<tr><td><input id="Button151" type="button" value="Psi"  class="glass"/></td><td><input id="Button152" type="button" value="Xi"  class="glass"/></td><td><input id="Button153" type="button" value="Phi"  class="glass"/></td><td><input id="Button154" type="button" value="Omega"  class="glass"/></td><td><input id="Button149" type="button" value="Pi"  class="glass"/></td><td>&nbsp;</td></tr>
-
-<tr><td colspan=6>&nbsp;</td></tr>
-<tr><td><input id="Button161" type="button" value="Epsilon"  class="glass"/></td><td><input id="Button162" type="button" value="squarecap"  class="glass"/></td><td><input id="Button163" type="button" value="Tau"  class="glass"/></td><td><input id="Button164" type="button" value="Upsilon"  class="glass" /></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td><input id="Button151" type="button" value="Psi"  class="glass"/></td><td><input id="Button152" type="button" value="Xi"  class="glass"/></td><td><input id="Button153" type="button" value="Phi"  class="glass"/></td><td><input id="Button154" type="button" value="Omega"  class="glass"/></td><td><input id="Button149" type="button" value="Pi"  class="glass"/></td><td><input id="Button161" type="button" value="Epsilon"  class="glass"/></td></tr>
+<tr><td><input id="Button162" type="button" value="squarecap"  class="glass"/></td><td><input id="Button163" type="button" value="Tau"  class="glass"/></td><td><input id="Button164" type="button" value="Upsilon"  class="glass" /></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
 
 <tr><td colspan='6' align='left'><h3><font color='#0000AA'>Logic Characters</font></h3></td></tr>
-<tr><td><input id="Button2" type="button" value="leq" class="glass"/></td><td><input id="Button99" type="button" value="le"  class="glass"/></td><td><input id="Button100" type="button" value="ge"  class="glass"/></td><td><input id="Button220" type="button" value="not in"  class="glass" /><input id="Button93" type="button" value="ne"  class="glass"/></td><td>&nbsp;</td></tr>
+<tr><td><input id="Button2" type="button" value="leq" class="glass"/></td><td><input id="Button99" type="button" value="le"  class="glass"/></td><td><input id="Button100" type="button" value="ge"  class="glass"/></td><td><input id="Button220" type="button" value="not in"  class="glass" /></td><td><input id="Button93" type="button" value="ne"  class="glass"/></td><td>&nbsp;</td></tr>
 
 <tr><td colspan='6' align='left'><h3><font color='#0000AA'>Trigonometric Characters</font></h3></td></tr>
 <tr><td><input id="Button186" type="button" value="cos inverse"  class="glass"/></td><td><input id="Button187" type="button" value="sin inverse"  class="glass"/></td><td><input id="Button188" type="button" value="tan inverse"  class="glass"/></td><td><input id="Button189" type="button" value="cos"  class="glass" /></td><td><input id="Button190" type="button" value="sin"  class="glass" /></td><td><input id="Button191" type="button" value="tan"  class="glass"/></td></tr>
@@ -882,9 +881,9 @@ function addmultiintegrallimit(n){
 <tr><td colspan=6><h3><font color='#0000AA'>Additional Math Symbols</font></h3></td></tr>
 <tr><td><input id="Button105" type="button" value="bar"  class="glass"/></td><td><input id="Button106" type="button" value="hat"  class="glass"/></td><td><input id="Button107" type="button" value="dot"  class="glass"/></td><td><input id="Button108" type="button" value="forall"  class="glass"/></td><td><input id="Button110" type="button" value="exists"  class="glass"/></td><td><input id="Button180" type="button" value="fraction"  class="glass"/></td></tr>
 
-<tr><td><input id="Button181" type="button" value="underline"  class="glass"/></td><td><input id="Button182" type="button" value="nth square root"  class="glass"/></td><td><input id="Button183" type="button" value="overline"  class="glass"/></td><td><input id="Button184" type="button" value="over left arrow"  class="glass"/></td><td><input id="Button185" type="button" value="over right arrow"  class="glass"/></td><td>&nbsp;</td></tr>
+<tr><td><input id="Button181" type="button" value="underline"  class="glass"/></td><td><input id="Button182" type="button" value="nth square root"  class="glass"/></td><td><input id="Button183" type="button" value="overline"  class="glass"/></td><td><input id="Button184" type="button" value="over left arrow"  class="glass"/></td><td><input id="Button185" type="button" value="over right arrow"  class="glass"/></td><td><input id="Button203" type="button" value="tends to"  class="glass"/></td></tr>
 
-<tr><td><input id="Button203" type="button" value="tends to"  class="glass"/></td><td><input id="Button199" type="button" value="log (base10)"  class="glass"/></td><td><input id="Button200" type="button" value="log (natural)"  class="glass"/></td><td><input id="Button201" type="button" value="degrees"  class="glass"/></td><td><input id="Button202" type="button" value="exponential"  class="glass"/></td><td>&nbsp;</td></tr>
+<tr><td><input id="Button199" type="button" value="log (base10)"  class="glass"/></td><td><input id="Button200" type="button" value="log (natural)"  class="glass"/></td><td><input id="Button201" type="button" value="degrees"  class="glass"/></td><td><input id="Button202" type="button" value="exponential"  class="glass"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>
 
 <tr><td colspan=6><h3><font color='#0000AA'>Utility Math Symbols</font></h3></td></tr>
 
@@ -908,6 +907,7 @@ function addmultiintegrallimit(n){
 </span> 
 <div id='testdiv'>
 </div>
+</center>
 </body>
 </html>
 
