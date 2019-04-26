@@ -41,8 +41,23 @@ function displayMathExpr(){
     }
     //alert(txtContents);
     mathexprdiv = document.getElementById('mathexpr');
-    mathexprdiv.innerHTML = txtContents; 
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
+    //txtContents = txtContents.replace(/(\r\n|\n|\r)/gm, "");
+    mathexprdiv.innerHTML = txtContents;
+    mathexprtopspan = document.getElementById('mathexprtop');
+    mathexprtopspan.innerHTML = txtContents;
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprtopspan]);
+    //MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
+
+    mathexprarea = window.opener.document.getElementById('mathexpr');
+    challengearea = window.opener.document.getElementById('statement');
+    challengecontent = challengearea.value;
+    mathexprarea.innerHTML = txtContents;
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprarea]);
+    mathexprareacontent = mathexprarea.innerHTML
+    challengecontent = challengecontent + " " + mathexprareacontent;
+    challengearea.innerHTML = challengecontent;
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, challengearea]);
+    //window.close();
 }
 
 function displayMathSymbolOnButtons(){
@@ -768,7 +783,7 @@ function addmultiintegrallimit(n){
 	/* background styles */
 	position: relative;
 	display: inline-block;
-	padding: 5px 5px;
+	padding: 2px 2px;
 	background-color: blue; /*for compatibility with older browsers*/
 	background-image: linear-gradient(blue,lightblue);
 
@@ -783,7 +798,7 @@ function addmultiintegrallimit(n){
 	box-shadow: 0px 1px 4px -2px #333;
 	text-shadow: 0px -1px #333;
 
-	width: 100%;
+	width: 70%;
   	table-layout: fixed;
   	border-collapse: collapse;
 }
@@ -793,7 +808,7 @@ function addmultiintegrallimit(n){
 	position: absolute;
 	top: 2px;
 	left: 2px;
-	width: calc(100% - 4px);
+	width: calc(100% - 10px);
 	height: 50%;
 	background: linear-gradient(rgba(255,255,255,0.8), rgba(255,255,255,0.2));
 }
@@ -815,6 +830,8 @@ function addmultiintegrallimit(n){
 <font color='#0000AA' style="font-weight:bold">You may type in LaTex expressions directly in the editable <br />area below and on clicking the button titled "Convert <br />to Math Expression" will magically convert it to the mathematical<br /> expression with all the required symbols. Go ahead, please try it!<br /> Alternatively, you may use the keyboard below.<br /> </font>
 <textarea name='txtexpression' rows='8' cols='75'></textarea>
 <br />
+<div align='center'><input type='button' name='btnconvertstrtomath' value='Convert to Math Expression' onClick='javascript:displayMathExpr();'></div>
+<span id='mathexprtop'></span>
 <div id="btnGroup" style="width: 100%;">
     <table border=0 cellspacing=2 cellpadding=0>
 

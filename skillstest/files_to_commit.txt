@@ -2872,4 +2872,23 @@ Tuesday, April 02, 2019, 22:07 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Monday, April 22, 2019, 18:34 HRS.
+-----------------------------------------
+
+1. git add templates/network/userprofile.html
+2. git add templates/network/network.html
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, April 27, 2019, 02:47 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/audiovisual.html
+4. git add static/mathkbd.html
+5. git add files_to_commit.txt
+
+=========================================
+
 

@@ -60,7 +60,7 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
     media_element.mozSrcObject = media_stream;
     media_element.play();
   };
-  stun_server = "74.125.31.127:19302";
+ //stun_server = "74.125.31.127:19302";
 } else if (navigator.webkitGetUserMedia) { // early webkit webrtc implementation
   rtc_peer_connection = webkitRTCPeerConnection;
   rtc_session_description = RTCSessionDescription;
@@ -76,7 +76,7 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
 <script>
 /*
 
-  basic_video_call.js by Rob Manson
+
 
   The MIT License
 
@@ -132,14 +132,17 @@ function start() {
   peer_connection.onaddstream = function (event) {
     connect_stream_to_src(event.stream, document.getElementById("remote_video"));
     // hide placeholder and show remote video
-    document.getElementById("loading_state").style.display = "none";
-    document.getElementById("open_call_state").style.display = "block";
+    //document.getElementById("loading_state").style.display = "none";
+    //document.getElementById("open_call_state").style.display = "block";
   };
 
   // setup stream from the local camera 
   setup_video();
 
-  signaling_server = new WebSocket("wss://54.201.126.160:8888");
+  //signaling_server = new WebSocket("wss://54.201.126.160:8888");
+  //signaling_server = new WebSocket("wss://122.161.84.190:8888"); // My system IP on the internet.
+  //signaling_server = new WebSocket("wss://192.168.1.4:8888");
+  signaling_server = new WebSocket("wss://testyard.in:8888");
   if (document.location.hash === "" || document.location.hash === undefined || document.location.hash === "#/") { // you are the Caller
     var token = "{{hashtoken}}";
     call_token = "#"+token;
@@ -218,11 +221,13 @@ function caller_signal_handler(event) {
       new_description_created, 
       log_error
     );
-  } else if (signal.type === "new_ice_candidate") {
+  } 
+  else if (signal.type === "new_ice_candidate") {
     peer_connection.addIceCandidate(
       new RTCIceCandidate(signal.candidate)
     );
-  } else if (signal.type === "new_description") {
+  } 
+  else if (signal.type === "new_description") {
     peer_connection.setRemoteDescription(
       new rtc_session_description(signal.sdp), 
       function () {
