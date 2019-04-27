@@ -52,12 +52,12 @@ function displayMathExpr(){
     challengearea = window.opener.document.getElementById('statement');
     challengecontent = challengearea.value;
     mathexprarea.innerHTML = txtContents;
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprarea]);
+    //MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprarea]);
     mathexprareacontent = mathexprarea.innerHTML
     challengecontent = challengecontent + " " + mathexprareacontent;
-    challengearea.innerHTML = challengecontent;
+    challengearea.value = challengecontent;
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, challengearea]);
-    //window.close();
+    window.close();
 }
 
 function displayMathSymbolOnButtons(){
@@ -852,8 +852,8 @@ function addmultiintegrallimit(n){
 <tr><td><input id="Button65" type="button" value="0"  class="glass"/></td><td><input id="Button66" type="button" value="1"  class="glass"/></td><td><input id="Button67" type="button" value="2"  class="glass"/></td><td><input id="Button68" type="button" value="3"  class="glass"/></td><td><input id="Button69" type="button" value="4"  class="glass"/></td><td><input id="Button70" type="button" value="5"  class="glass"/></td></tr>
 <tr><td><input id="Button71" type="button" value="6"  class="glass"/></td><td><input id="Button72" type="button" value="7"  class="glass"/></td><td><input id="Button73" type="button" value="8"  class="glass"/></td><td><input id="Button74" type="button" value="9"  class="glass"/></td><td>&nbsp;</td><td>&nbsp;</td></tr>
 
-<!-- Latin characters -->
-<tr><td colspan='6' align='left'><h3><font color='#0000AA'>Latin Characters</font></h3></td></tr>
+<!-- Greek characters -->
+<tr><td colspan='6' align='left'><h3><font color='#0000AA'>Greek Characters</font></h3></td></tr>
 <tr><td colspan=6>&nbsp;</td></tr>
 <tr><td><input id="Button75" type="button" value="alpha"  class="glass"/></td><td><input id="Button76" type="button" value="beta"  class="glass"/></td><td><input id="Button77" type="button" value="gamma"  class="glass"/></td><td><input id="Button78" type="button" value="rho"  class="glass"/></td><td><input id="Button79" type="button" value="sigma"  class="glass"/></td><td><input id="Button80" type="button" value="delta"  class="glass"/></td></tr>
 <tr><td><input id="Button113" type="button" value="mu"  class="glass"/></td><td><input id="Button114" type="button" value="lambda"  class="glass"/></td><td><input id="Button115" type="button" value="theta"  class="glass"/></td><td><input id="Button116" type="button" value="kappa"  class="glass"/></td><td><input id="Button117" type="button" value="iota"  class="glass"/></td><td><input id="Button118" type="button" value="zeta"  class="glass"/></td></tr>
