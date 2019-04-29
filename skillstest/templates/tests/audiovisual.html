@@ -293,10 +293,15 @@ function log_error(error) {
 }
 
 </script>
-
+<!--
 <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
 <script src="https://cdn.webrtc-experiment.com/getScreenId.js"></script>
 <script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
+-->
+
+<script src="static/webaudiovisual/webrtc/RecordRTC.js"></script>
+<script src="static/webaudiovisual/webrtc/getScreenId.js"></script>
+<script src="static/webaudiovisual/webrtc/gumadapter.js"></script>
 
 <script>
 	    var params = {},r = /([^&=]+)=?([^&]*)/g;
@@ -387,9 +392,54 @@ function startCapture(){
       alert("Media Capturing Failed: " + err);
     }
   };
-  /*
+
+function captureAudioPlusVideo(config) {
+  //alert("In captureAudio+Video");
+  captureUserMedia({video: true, audio: true}, function() {
+  remote_player = document.getElementById('remote_video');
+  audioVideoStream = remote_player.srcObject;
+  remote_player.play();
+  config.onMediaCaptured(audioVideoStream);
+  //alert("audioVideoStream = " + audioVideoStream);
+  addStreamStopListener(audioVideoStream, function() {
+    config.onMediaStopped();
+  });
+  }, function(error) {
+  config.onMediaCapturingFailed(error);
+  });
+}
+
+
+function captureAudio(config) {
+  captureUserMedia({audio: true}, function() {
+    remote_player = document.getElementById('remote_video');
+    audioStream = remote_player.srcObject;
+    remote_player.play();
+    config.onMediaCaptured(audioStream);
+    addStreamStopListener(audioStream, function() {
+        config.onMediaStopped();
+    });
+    }, function(error) {
+    config.onMediaCapturingFailed(error);
+  });
+  canvas = document.getElementById('snapshot');
+  takepicture(canvas);
+}
+
+
+function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+  var isBlackBerry = !!(/BB10|BlackBerry/i.test(navigator.userAgent || ''));
+  if(isBlackBerry && !!(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia)) {
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    navigator.getUserMedia(mediaConstraints, successCallback, errorCallback);
+    return;
+  }
+  navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+}
+
+  
   captureAudioPlusVideo(commonConfig);
-  button.mediaCapturedCallback = function(){
+  /*button.mediaCapturedCallback = function(){
     //alert("Type of MediaRecorder: " + typeof MediaRecorder);
     if(typeof MediaRecorder === 'undefined') { // opera or chrome etc.
       button.recordRTC = [];
@@ -544,49 +594,6 @@ function stopCapture(){
 }
 
 
-function captureAudioPlusVideo(config) {
-  //alert("In captureAudio+Video");
-  captureUserMedia({video: true, audio: true}, function() {
-  remote_player = document.getElementById('remote_video');
-  audioVideoStream = remote_player.srcObject;
-  remote_player.play();
-  config.onMediaCaptured(audioVideoStream);
-  //alert("audioVideoStream = " + audioVideoStream);
-  addStreamStopListener(audioVideoStream, function() {
-    config.onMediaStopped();
-  });
-  }, function(error) {
-  config.onMediaCapturingFailed(error);
-  });
-}
-
-
-function captureAudio(config) {
-  captureUserMedia({audio: true}, function() {
-    remote_player = document.getElementById('remote_video');
-    audioStream = remote_player.srcObject;
-    remote_player.play();
-    config.onMediaCaptured(audioStream);
-    addStreamStopListener(audioStream, function() {
-        config.onMediaStopped();
-    });
-    }, function(error) {
-    config.onMediaCapturingFailed(error);
-  });
-  canvas = document.getElementById('snapshot');
-  takepicture(canvas);
-}
-
-
-function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
-  var isBlackBerry = !!(/BB10|BlackBerry/i.test(navigator.userAgent || ''));
-  if(isBlackBerry && !!(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia)) {
-    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-    navigator.getUserMedia(mediaConstraints, successCallback, errorCallback);
-    return;
-  }
-  navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
-}
 
 
 function clearphoto(canvas) {

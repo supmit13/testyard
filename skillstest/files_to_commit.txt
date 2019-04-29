@@ -2903,8 +2903,19 @@ Saturday, April 27, 2019, 14:28 HRS.
 Note: Add the same certificate files (.crt), certificate signing request (.csr) and the key files (.key)
 in the following places: /etc/ssl/certs/, /etc/pki/nginx/ . Otherwise the WebRTC part will not work as
 expected.
-=========================================
 
+=========================================
+Monday, April 29, 2019, 14:32 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/audiovisual.html
+4. git add static/mathkbd.html
+5. git add node_modules/signal_server.js
+6. git add files_to_commit.txt
+
+=========================================
 
 
 
