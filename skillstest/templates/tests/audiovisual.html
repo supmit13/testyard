@@ -52,7 +52,8 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
     media_element.srcObject = media_stream;
     media_element.play();
   };
-} else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
+} 
+else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
   rtc_peer_connection = mozRTCPeerConnection;
   rtc_session_description = mozRTCSessionDescription;
   get_user_media = navigator.mozGetUserMedia.bind(navigator);
@@ -108,6 +109,37 @@ var call_token; // unique token for this call
 var signaling_server; // signaling server for this call
 var peer_connection; // peer connection object
 
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
+// setup stream from the local camera 
+function setup_video() {
+  get_user_media(
+    { 
+      "audio": true, // request access to local microphone
+      "video": true  // request access to local camera
+    }, 
+    function (local_stream) { // success callback
+      // display preview from the local camera & microphone using local <video> MediaElement
+      connect_stream_to_src(local_stream, document.getElementById("local_video"));
+      // add local camera stream to peer_connection ready to be sent to the remote peer
+      peer_connection.addStream(local_stream);
+    },
+    log_error
+  );
+}
+
+// generic error handler
+function log_error(error) {
+  console.log(error);
+}
+
 function start() {
   peer_connection = new rtc_peer_connection({ // RTCPeerConnection configuration 
     "iceServers": [ 
@@ -149,7 +181,7 @@ function start() {
     var token = "{{hashtoken}}";
     call_token = "#"+token;
     document.location.hash = token;
-
+    //alert(document.location.hash);
     signaling_server.onopen = function() {
       signaling_server.onmessage = caller_signal_handler;
       signaling_server.send(
@@ -158,12 +190,21 @@ function start() {
           type:"join",
         })
       );
+      /* Code below is not required */
+      /*signaling_server.send(
+        JSON.stringify({ 
+          token:call_token,
+          type:"callee_arrived",
+        })
+      );*/
     }
 
     document.title = "Calling target... Please wait";
-  } 
+  }
+  
   attendpattern = new RegExp("attend=");
   matchres = attendpattern.exec(document.location);
+  //alert(matchres);
   if(matchres){
     
     call_token = document.location.hash;
@@ -218,6 +259,8 @@ function new_description_created(description) {
 // handle signals as a caller
 function caller_signal_handler(event) {
   var signal = JSON.parse(event.data);
+  alert(signal.type); // Need to remove this. But without this the whole thing doesn't work at present.
+  //sleep(10000); // Sleep for 10 seconds
   if (signal.type === "callee_arrived") {
     peer_connection.createOffer(
       new_description_created, 
@@ -234,7 +277,8 @@ function caller_signal_handler(event) {
       new rtc_session_description(signal.sdp), 
       function () {
         if (peer_connection.remoteDescription.type == "answer") {
-          // extend with your own custom answer handling here
+          // extend with your own custom answer handling here - Testing.
+	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
         }
       },
       log_error
@@ -268,28 +312,6 @@ function callee_signal_handler(event) {
   else {
     // extend with your own signal types here
   }
-}
-
-// setup stream from the local camera 
-function setup_video() {
-  get_user_media(
-    { 
-      "audio": true, // request access to local microphone
-      "video": true  // request access to local camera
-    }, 
-    function (local_stream) { // success callback
-      // display preview from the local camera & microphone using local <video> MediaElement
-      connect_stream_to_src(local_stream, document.getElementById("local_video"));
-      // add local camera stream to peer_connection ready to be sent to the remote peer
-      peer_connection.addStream(local_stream);
-    },
-    log_error
-  );
-}
-
-// generic error handler
-function log_error(error) {
-  console.log(error);
 }
 
 </script>
