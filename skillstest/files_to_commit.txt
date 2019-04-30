@@ -2924,7 +2924,15 @@ Tuesday, April 30, 2019, 09:49 HRS.
 3. git add files_to_commit.txt
 
 =========================================
+Tuesday, April 30, 2019, 16:48 HRS.
+-----------------------------------------
 
+1. git add templates/tests/audiovisual.html
+2. git add node_modules/signal_server.js
+3. git add static/mathkbd.html
+4. git add files_to_commit.txt
+
+=========================================
 
 
 
