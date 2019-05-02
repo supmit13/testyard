@@ -2933,6 +2933,13 @@ Tuesday, April 30, 2019, 16:48 HRS.
 4. git add files_to_commit.txt
 
 =========================================
+Thursday, May 02, 2019, 16:01 HRS.
+-----------------------------------------
+
+1. git add static/mathkbd.html
+2. git add files_to_commit.txt
+
+=========================================
 
 
 
