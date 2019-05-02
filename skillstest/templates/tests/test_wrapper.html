@@ -631,10 +631,10 @@ function getruleset(encjson){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
     ruleslist = jsonobj.rules;
-    showonebyoneflag = 0;
+    //showonebyoneflag = 0;
     showatonceflag = 1;
     allowchallengenavflag = 2;
-    ruleflag = showonebyoneflag; // Default is show one by one
+    ruleflag = showatonceflag; // Default is show showatonceflag
     for(var i=0; i < ruleslist.length; i++){
         flagvalue = ruleslist[i];
         if(flagvalue == 'showatonce'){
@@ -645,10 +645,10 @@ function getruleset(encjson){
             ruleflag = allowchallengenavflag;
 	    break;
         }
-	if(flagvalue == 'showonebyone'){
-	    ruleflag = showonebyoneflag;
-	    break;
-	}
+	//if(flagvalue == 'showonebyone'){
+	//    ruleflag = showonebyoneflag;
+	//    break;
+	//}
     }
     ruleselected = ruleflag;
     return (ruleflag); // Possible values are 0, 1, 2, 3.
@@ -1639,6 +1639,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
             pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;'><br />";
         }
+        pages[pagectr][0] += "<br /><font size=-1>You may use the <a href='/static/mathkbd_response.html' target='_blank'>LaTeX keyboard</a> to answer the questions if you need to use special characters</font><br />";
         pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + " seconds</font><br />";
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
 	//alert(ruleflag);

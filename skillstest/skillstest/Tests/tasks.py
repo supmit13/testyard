@@ -203,6 +203,8 @@ def process_answer_scripts():
         # Need to store ipaddress and client software too.
         utobj.ipaddress = clientIP
         utobj.clientsware = useragent
+        utobj.starttime = starttime
+        utobj.endtime = endtime
         # Save the modified UserTest/WouldbeUsers object.
         utobj.save()
         # Now, move the json dump files to another location...
