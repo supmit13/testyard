@@ -1,15 +1,3 @@
-<!-- 
-A scientific and technical keyboard based on the MathJax library. 
-This is proprietary software. Using this without the consent of the
-author (undersigned) would be considered as a criminal offence. This
-will be a property of AnalogicNetworks, and the company is free to
-use it in any application that requires this type of tool.
-
-Please keep this text intact whereever you use it. It will do my ego
-some good! :-P
-Author: Supriyo Mitra.
--->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -38,16 +26,17 @@ function displayMathExpr(){
     start_square_bracket_pattern = new RegExp("^\\[");
     end_square_bracket_pattern = new RegExp("\\]$");
     txtContents = document.frm_translator.txtexpression.value;
-    if(!start_square_bracket_pattern.test(txtContents)){
-        txtContents = "\\[" + txtContents;
-    }
-    if(!end_square_bracket_pattern.test(txtContents)){
-        txtContents = txtContents + "\\]";
-    }
+    //if(!start_square_bracket_pattern.test(txtContents)){
+    //    txtContents = "\\[" + txtContents;
+    //}
+    //if(!end_square_bracket_pattern.test(txtContents)){
+    //    txtContents = txtContents + "\\]";
+    //}
     //alert(txtContents);
     mathexprdiv = document.getElementById('mathexpr');
     mathexprdiv.innerHTML = txtContents; 
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
+    //alert(mathexprdiv.innerHTML);
 }
 
 // Extracting the value of cctr from the query string. 
@@ -63,7 +52,7 @@ function loadMatExprAnswer(){
         //alert(responsecontent);
         // Remove square brackets from the ends of the LaTeX expressions.
         openingBrackets = new RegExp('^\\[');
-        closingBrackets = new RegExp('\\]$')
+        closingBrackets = new RegExp('\\]\s*$')
         responsecontent = responsecontent.replace(openingBrackets, "");
         responsecontent = responsecontent.replace(closingBrackets, "");
         document.frm_translator.txtexpression.value = responsecontent;

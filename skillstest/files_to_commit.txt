@@ -2957,7 +2957,11 @@ Friday, May 03, 2019, 02:57 HRS.
 11. git add files_to_commit.txt
 
 =========================================
+Friday, May 03, 2019, 13:27 HRS.
+-----------------------------------------
+1. git add static/math_translator.html
+2. git add templates/tests/evaluate_responses.html
+3. git add files_to_commit.txt
 
-
-
+=========================================
 
