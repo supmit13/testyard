@@ -140,6 +140,7 @@ def process_answer_scripts():
             testpagesstr = testpagesstr.replace(hexkey, skillutils.hextoascii[hexkey])
         testpages = json.loads(testpagesstr, strict=False)
         testendmessage = testpages.pop() # The last entity contains the test end message
+        #print testpages,"\n ===========================================\n"
         for challengeresp in testpages:
             testobj = Test.objects.get(id=testid)
             # First, create an UserResponse object
