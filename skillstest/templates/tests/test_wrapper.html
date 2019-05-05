@@ -245,6 +245,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
     if(resp){
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
+        //alert(testpages);
 	q = "&testpages=" + Base64.encode(encodeURI(JSON.stringify(testpages)));
         endtime = new Date();
         endtime = jsdatetomysqldatetime(String(endtime));
@@ -1160,8 +1161,10 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    //alert(textval);
 	    gth = new RegExp(">", 'g');
 	    lst = new RegExp("<", 'g');
+            qt = new RegExp("'", 'g');
 	    textval = textval.replace(lst, "&amp;lt;");
 	    textval = textval.replace(gth, "&amp;gt;");
+            textval = textval.replace(qt, "&amp;quot;");
 	    //alert(textval);
 	    txtareas = document.getElementsByTagName('textarea');
             //alert(txtareas.length);
@@ -1390,7 +1393,7 @@ function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, t
     html = "<br /><table border=0 cellspacing='2' cellpadding='2'>";
     html += "<tr><td width='5%'>&nbsp;</td><td width='80%'><font color='0000AA' style='font-weight:bold;'><i>Questions</i></font></td><td width='15%'><font color='0000AA' style='font-weight:bold;'><i>Time Available (secs)</i></font></td></tr>";
     slno = 1;
-    for(var j=0; j < randomlist.length - 1;j++){
+    for(var j=0; j <= randomlist.length - 1;j++){
 	elem = randomlist[j];
 	challengeentity = testpages[elem][2];
         maxtime = testpages[elem][1];

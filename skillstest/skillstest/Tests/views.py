@@ -3535,29 +3535,41 @@ def evaluate(request):
     if userisvalidevaluator: # Get a list of all candidates who have taken this test.
         utqset = UserTest.objects.filter(test=testobj)
         wbuqset = WouldbeUsers.objects.filter(test=testobj)
+        fp = open("/home/supriyo/work/testyard/tmpfiles/answes.txt","w+")
         for ut in utqset:
             if ut.active and not ut.cancelled and ut.status == 2:
                 candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment, 'evalcommitstate' : ut.evalcommitstate, 'disqualified' : ut.disqualified}
                 userresputqueryset = UserResponse.objects.filter(test=testobj, tabref='usertest', tabid=ut.id, emailaddr=ut.emailaddr)
+                
                 for userrespobj in userresputqueryset:
                     # Change for display of english statements in mathjax code starts here.
                     slashbracketpattern = re.compile("^.*\\]?([^\]\[]+)\\[.*$", re.DOTALL)
                     bracketpattern = re.compile("^.*\]([^\[\]]+)\[.*$", re.DOTALL)
+                    
                     slashbracketpatternmatchobj = re.search(slashbracketpattern, userrespobj.answer)
                     bracketpatternmatchobj = re.search(bracketpattern, userrespobj.answer)
+                    userrespobj.answer = userrespobj.answer.replace("'", "\'")
                     if slashbracketpatternmatchobj:
                         slashbracketgroups = slashbracketpatternmatchobj.groups()
+                        ans = userrespobj.answer
                         for grp in slashbracketgroups:
-                            userrespobj.answer = re.sub(slashbracketpattern, "\\]\textrm{%s}\\["%str(grp), userrespobj.answer)
+                            userrespobj.answer = re.sub(slashbracketpattern, "\\]textrm{%s}\\["%str(grp), userrespobj.answer)
+                            fp.write(str(grp) + " ##################### " + userrespobj.answer)
+                            textrmpattern = re.compile("^.*[t]?[extrm]{1}.*$", re.DOTALL)
+                            textrmpatternobj = re.search(textrmpattern,userrespobj.answer)
+                            if textrmpatternobj:
+                                userrespobj.answer = ans # Nothing changes.
                     elif bracketpatternmatchobj:
                         bracketgroups = bracketpatternmatchobj.groups()
                         for grp in bracketgroups:
                             userrespobj.answer = re.sub(bracketpattern, "\]\textrm{%s}\["%str(grp), userrespobj.answer)
                     else:
-                        pass # We have not implemented with '$' delimiter.
-            # Change for display of english statements in mathjax code ends here.
+                        userrespobj.answer = userrespobj.answer # Nothing changes. # We have not implemented with '$' delimiter.
+                    
+                    # Change for display of english statements in mathjax code ends here.
                     candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
                 candidateresponses[ut.emailaddr + "####" + str(ut.id)] = candidaterec
+        fp.close()
         for wbu in wbuqset:
             if wbu.active and not wbu.cancelled and wbu.status == 2:
                 candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment, 'evalcommitstate' : wbu.evalcommitstate, 'disqualified' : wbu.disqualified}
@@ -3672,11 +3684,11 @@ def showevaluationscr(request):
             if slashbracketpatternmatchobj:
                 slashbracketgroups = slashbracketpatternmatchobj.groups()
                 for grp in slashbracketgroups:
-                    usrrespobj.answer = re.sub(slashbracketpattern, "\textrm{%s}"%grp)
+                    usrrespobj.answer = re.sub(slashbracketpattern, "\textrm{%s}"%str(grp))
             elif bracketpatternmatchobj:
                 bracketgroups = bracketpatternmatchobj.groups()
                 for grp in bracketgroups:
-                    usrrespobj.answer = re.sub(bracketpattern, "\textrm{%s}"%grp)
+                    usrrespobj.answer = re.sub(bracketpattern, "\textrm{%s}"%str(grp))
             # Change for display of english statements in mathjax code ends here.
             """
             candidateresponse['challenge_statement'][challenge_statement]['answer'] = usrrespobj.answer

@@ -140,7 +140,6 @@ def process_answer_scripts():
             testpagesstr = testpagesstr.replace(hexkey, skillutils.hextoascii[hexkey])
         testpages = json.loads(testpagesstr, strict=False)
         testendmessage = testpages.pop() # The last entity contains the test end message
-        #print testpages,"\n ===========================================\n"
         for challengeresp in testpages:
             testobj = Test.objects.get(id=testid)
             # First, create an UserResponse object
@@ -151,7 +150,7 @@ def process_answer_scripts():
             userrespobj.responsedatetime = starttime
             userrespobj.emailaddr = useremail
             resp = challengeresp[0]
-            #print "CHALLENGE RESPONSE: " + resp + "\n"
+            #print "CHALLENGE RESPONSE: " + resp + "\n=================================\n"
             timereqd = challengeresp[1]
             challengestatement = challengeresp[2]
             try:
