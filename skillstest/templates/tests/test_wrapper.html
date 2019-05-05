@@ -1240,6 +1240,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		for(k=0; k < checkboxes.length; k++){
 		    if(checkboxes[k].checked == true){
 			checkboxname = checkboxes[k].name;
+                        //alert("checkbox name: " + checkboxname);
 			checkboxnamepattern = new RegExp(checkboxname);
 			checkboxvalue = checkboxes[k].value;
 			for(j=0; j < testpages.length; j++){
@@ -1625,7 +1626,11 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             if(jsonobj.challenges[challenge].oneormore){
                 for (key in jsonobj.challenges[challenge]){
                     if(optionpattern.test(key)){
-                        pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + jsonobj.challenges[challenge][key] + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        checkboxvalue = jsonobj.challenges[challenge][key];
+                        checkboxvalue = checkboxvalue.replace("'", "")
+                        checkboxvalue = checkboxvalue.replace('"', '')
+                        //alert(jsonobj.challenges[challenge][key]);
+                        pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
@@ -1633,7 +1638,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             else{
                 for (key in jsonobj.challenges[challenge]){
                     if(optionpattern.test(key)){
-                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + jsonobj.challenges[challenge][key] + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        radiobuttonvalue = jsonobj.challenges[challenge][key];
+                        radiobuttonvalue = radiobuttonvalue.replace("'", "")
+                        radiobuttonvalue = radiobuttonvalue.replace('"', '')
+                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
