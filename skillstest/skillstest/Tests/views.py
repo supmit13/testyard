@@ -6002,7 +6002,7 @@ def createinterview(request):
         if scheduledatetime_dt > currentdatetime:
             message = """Dear Candidate,
                      
-                     This is an invitation to attend an interview with %s on %s. Please click on the 
+                     This is an invitation to attend an interview with %s on %s.  Please click on the 
                      link below to load the interview interface. If it doesn't work, then copy
                      the link and paste it in your browser's address bar and hit <enter>.
 
@@ -6092,6 +6092,11 @@ def createinterview(request):
             scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
         else:
             scheduledatetime_dt = scheduledatetime
+        fp = open("/home/supriyo/work/testyard/tmpfiles/tempdatetimes.txt", "w")
+        fp.write(str(scheduledatetime_dt) + "   1\n\n")
+        fp.write(str(currentdatetime) + "\n\n")
+        fp.write(str(scheduledatetime_dt > currentdatetime))
+        fp.close()
         if scheduledatetime_dt > currentdatetime:
             tmpl = get_template("tests/waitscreen.html")
         else:
@@ -6258,7 +6263,8 @@ def attendinterview(request):
             interviewscheduleend = interviewschedulestart
         if interviewschedulestart: # if this is not None
             interviewscheduleend  = interviewschedulestart + datetime.timedelta(0, intobj.maxduration)
-            if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
+            #if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
+            if curdatetime > interviewschedulestart:
                 #tmpl = get_template("tests/interview_candidate_screen.html")
                 tmpl = get_template("tests/audiovisual.html")
                 int_user_dict['interviewtitle'] = intobj.title
@@ -6268,6 +6274,11 @@ def attendinterview(request):
                 interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
                 int_user_dict['interviewfilename'] = interviewfilename
             else:
+                fp = open("/home/supriyo/work/testyard/tmpfiles/tempdatetimes.txt", "w")
+                fp.write(str(interviewschedulestart) + "   2\n\n")
+                fp.write(str(curdatetime) + "\n\n")
+                fp.write(str(curdatetime > interviewschedulestart))
+                fp.close()
                 tmpl = get_template("tests/waitscreen.html")
                 int_user_dict['interviewtitle'] = intobj.title
                 interviewfilename = intobj.title
@@ -6294,6 +6305,11 @@ def attendinterview(request):
             interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
             int_user_dict['interviewfilename'] = interviewfilename
     else:
+        fp = open("/home/supriyo/work/testyard/tmpfiles/tempdatetimes.txt", "w")
+        fp.write(str(scheduledatetime) + "  3\n\n")
+        fp.write(str(curdatetime) + "\n\n")
+        fp.write(str(scheduledatetime <= curdatetime))
+        fp.close()
         tmpl = get_template("tests/waitscreen.html")
         int_user_dict['interviewtitle'] = intobj.title
         interviewfilename = intobj.title
