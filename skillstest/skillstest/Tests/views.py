@@ -6092,11 +6092,6 @@ def createinterview(request):
             scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
         else:
             scheduledatetime_dt = scheduledatetime
-        fp = open("/home/supriyo/work/testyard/tmpfiles/tempdatetimes.txt", "w")
-        fp.write(str(scheduledatetime_dt) + "   1\n\n")
-        fp.write(str(currentdatetime) + "\n\n")
-        fp.write(str(scheduledatetime_dt > currentdatetime))
-        fp.close()
         if scheduledatetime_dt > currentdatetime:
             tmpl = get_template("tests/waitscreen.html")
         else:
@@ -6274,11 +6269,6 @@ def attendinterview(request):
                 interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
                 int_user_dict['interviewfilename'] = interviewfilename
             else:
-                fp = open("/home/supriyo/work/testyard/tmpfiles/tempdatetimes.txt", "w")
-                fp.write(str(interviewschedulestart) + "   2\n\n")
-                fp.write(str(curdatetime) + "\n\n")
-                fp.write(str(curdatetime > interviewschedulestart))
-                fp.close()
                 tmpl = get_template("tests/waitscreen.html")
                 int_user_dict['interviewtitle'] = intobj.title
                 interviewfilename = intobj.title
@@ -6305,11 +6295,6 @@ def attendinterview(request):
             interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
             int_user_dict['interviewfilename'] = interviewfilename
     else:
-        fp = open("/home/supriyo/work/testyard/tmpfiles/tempdatetimes.txt", "w")
-        fp.write(str(scheduledatetime) + "  3\n\n")
-        fp.write(str(curdatetime) + "\n\n")
-        fp.write(str(scheduledatetime <= curdatetime))
-        fp.close()
         tmpl = get_template("tests/waitscreen.html")
         int_user_dict['interviewtitle'] = intobj.title
         interviewfilename = intobj.title
