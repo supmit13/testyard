@@ -635,6 +635,7 @@ function getruleset(encjson){
     //showonebyoneflag = 0;
     showatonceflag = 1;
     allowchallengenavflag = 2;
+    //allowcameraflag = 3;
     ruleflag = showatonceflag; // Default is show showatonceflag
     for(var i=0; i < ruleslist.length; i++){
         flagvalue = ruleslist[i];
@@ -650,6 +651,10 @@ function getruleset(encjson){
 	//    ruleflag = showonebyoneflag;
 	//    break;
 	//}
+        //if(flagvalue == 'allowchallengenavigation'){
+        //    ruleflag = allowchallengenavflag;
+	//    break;
+        //}
     }
     ruleselected = ruleflag;
     return (ruleflag); // Possible values are 0, 1, 2, 3.
@@ -1400,7 +1405,12 @@ function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, t
         maxtime = testpages[elem][1];
  	challengeresponsescreen = testpages[elem][0];
 	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
-	html += "<tr><td width='5%'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
+        if(j < randomlist.length - 1){
+	    html += "<tr><td width='5%'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
+        }
+        else{
+            html += "<tr><td width='5%'><font color='AA0000'>" + slno + "</font></td><td width='80%'><font color='AA0000'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><font color='AA0000'>Please click on this link once you have answered all your questions. If you do not click on this link in the end, some or all of your answers may not be saved on our system.</font></a></i></font></td><td width='15%'><font color='AA0000'><i>0</i></font></td></tr>";
+        }
 	slno++;
     }
     html += "</table>";
@@ -1585,8 +1595,6 @@ function code_exec(){
     outputdiv.innerHTML = "<img src='static/images/loading_small.gif'> Please wait while we execute your code. Might take a few minutes.";
   //} // End of commented 'if' statement.
 }
-
-
 
 
 function getchallenges(encjson, starttime, mytime, ruleflag){
