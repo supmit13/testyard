@@ -205,8 +205,6 @@ def get_user_tests(request):
         intstatus = interview.status
         intmaxscore = interview.maxscore
         interviewerslist = []
-        for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
-            interviewerslist.append(i)
         intmaxduration_min = interview.maxduration/60
         if intmaxduration_min >= 60:
             intmaxduration_hr = intmaxduration_min/60
@@ -331,6 +329,9 @@ def get_user_tests(request):
     tests_user_dict['chkintnameavailabilityurl'] = skillutils.gethosturl(request) + "/" + chkintnameavailabilityurl
     tests_user_dict['postonlinkedinurl'] = skillutils.gethosturl(request) + "/" + postonlinkedinurl
     tests_user_dict['linkedinpostsessionurl'] = skillutils.gethosturl(request) + "/" + linkedinpostsessionurl
+    for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
+        interviewerslist.append(i)
+    tests_user_dict['interviewerslist'] = interviewerslist
     return  tests_user_dict
 
 
