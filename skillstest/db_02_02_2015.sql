@@ -983,6 +983,9 @@ create table `Tests_postlinkedin` (
 
 alter table Tests_interview add column scheduledtime datetime default NULL;
 
+alter table Tests_interview add column interviewers_count int(8) default 1;
+alter table Tests_interview add column interviewer_ids varchar(200) default NULL;
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;

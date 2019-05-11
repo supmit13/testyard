@@ -89,6 +89,8 @@ SECURE_SSL_REDIRECT = True
 SECURE_HSTS_SECONDS = 31536000 
 ###### HTTPS SETTINGS END HERE ######
 
+MAX_INTERVIEWERS_COUNT = 10
+
 ##### EMAIL SETTINGS #######
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
@@ -327,6 +329,7 @@ RULES_DICT = { \
         'noconsultextmat' : 'User may not consult online material on the subject of the test', \
         #'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
+	'activatecameraduringtext' : 'This will stream video of the test taker while she/he is taking the test. (Only for subscribed members)',\
         }
 
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \

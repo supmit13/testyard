@@ -415,6 +415,8 @@ class Interview(models.Model):
     realtime = models.BooleanField(default=True) # Whether the interview may be taken in realtime, i.e., the interviewer and the
     # interviewee will be present together for the interview.
     scheduledtime = models.DateTimeField(null=False, blank=True)
+    interviewers_count = models.IntegerField(default=1)
+    interviewer_ids = models.CharField(max_length=200, default='null')
     
     class Meta:
         verbose_name = "Interview Table"

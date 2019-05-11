@@ -64,7 +64,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
@@ -204,6 +204,9 @@ def get_user_tests(request):
         intpublishdate = interview.publishdate
         intstatus = interview.status
         intmaxscore = interview.maxscore
+        interviewerslist = []
+        for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
+            interviewerslist.append(i)
         intmaxduration_min = interview.maxduration/60
         if intmaxduration_min >= 60:
             intmaxduration_hr = intmaxduration_min/60
@@ -219,7 +222,7 @@ def get_user_tests(request):
             intmaxduration = str(intmaxduration_min) + " minutes"
         intrealtime = interview.realtime
         intlinkid = interview.interviewlinkid
-        intdata = (inttitle, inttopic, inttopicname, intmedium, intlanguage, intcreatedate, intpublishdate, intstatus, intmaxscore, intmaxduration, intrealtime, intlinkid)
+        intdata = (inttitle, inttopic, inttopicname, intmedium, intlanguage, intcreatedate, intpublishdate, intstatus, intmaxscore, intmaxduration, intrealtime, intlinkid, interviewerslist)
         interviews_list['asinterviewer'][inttitle] = intdata
     interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)
     interviews_list['asinterviewee'] = {}
@@ -5837,7 +5840,7 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime, maxinterviewerscount, intervieweremails = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None, 1, ""
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
     # Check to see if an interview with the same title exists in the current user's list.
@@ -5864,6 +5867,12 @@ def createinterview(request):
     #    scheduledatetime = request.POST['scheduledatetime']
     if request.POST.has_key('language') and request.POST['language'] != "":
         language = request.POST['language']
+    if request.POST.has_key('max_interviewers_count') and request.POST['max_interviewers_count'] != "":
+        maxinterviewerscount = request.POST['max_interviewers_count']
+    if request.POST.has_key('interviewer_emails') and request.POST['interviewer_emails'] != "":
+        intervieweremails = request.POST['interviewer_emails']
+    if int(maxinterviewerscount) == 1:
+        intervieweremails = userobj.emailid
     if request.POST.has_key('realtime') and request.POST.has_key('scheduledatetime'):
         realtime = request.POST['realtime']
         scheduledatetime = request.POST['scheduledatetime']
@@ -5931,6 +5940,8 @@ def createinterview(request):
     interviewobj.interviewlinkid = interviewlinkid
     interviewobj.scope = interviewscope
     #interviewobj.quality = skilltarget
+    interviewobj.interviewers_count = maxinterviewerscount
+    interviewobj.interviewer_ids = intervieweremails
     interviewobj.challengesfilepath = ""
     interviewobj.introfilepath = introfilename
     interviewobj.scheduledtime = interviewdatetime
