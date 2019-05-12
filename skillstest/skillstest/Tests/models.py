@@ -416,7 +416,7 @@ class Interview(models.Model):
     # interviewee will be present together for the interview.
     scheduledtime = models.DateTimeField(null=False, blank=True)
     interviewers_count = models.IntegerField(default=1)
-    interviewer_ids = models.CharField(max_length=200, default='null')
+    interviewer_ids = models.models.TextField(null=True, blank=True, default="")
     
     class Meta:
         verbose_name = "Interview Table"
