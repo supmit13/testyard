@@ -3036,7 +3036,7 @@ Sunday, May 12, 2019, 04:34 HRS.
 4. git add files_to_commit.txt
 
 =========================================
-Sunday, May 12, 2009, 09:04 HRS.
+Sunday, May 12, 2019, 09:04 HRS.
 -----------------------------------------
 1. git add skillstest/Tests/views.py
 2. git add templates/tests/tests.html
@@ -3047,7 +3047,18 @@ Sunday, May 12, 2009, 09:04 HRS.
 7. git add files_to_commit.txt
 
 =========================================
+Sunday, May 12, 2019, 09:43 HRS.
+-----------------------------------------
+1. git add skillstest/skills_settings.py
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add templates/tests/create_interview_form.html
+5. git add skillstest/Tests/models.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
 
+=========================================
 
 
 
