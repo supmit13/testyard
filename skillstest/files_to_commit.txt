@@ -3061,19 +3061,25 @@ Sunday, May 12, 2019, 09:43 HRS.
 =========================================
 Monday, May 13, 2019, 16:25 HRS.
 -----------------------------------------
-git add static/mathkbd.html
-git add static/mathkbd_response.html
-git add files_to_commit.txt
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
 
 =========================================
 Monday, May 13, 2019, 20:51 HRS.
 -----------------------------------------
-git add static/mathkbd.html
-git add static/mathkbd_response.html
-git add files_to_commit.txt
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
 
 =========================================
+Tuesday, May 14, 2019, 00:46 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
 
+=========================================
 
 
 
