@@ -3059,7 +3059,13 @@ Sunday, May 12, 2019, 09:43 HRS.
 8. git add files_to_commit.txt
 
 =========================================
+Mondat, May 13, 2019, 16:25 HRS.
+-----------------------------------------
+git add static/mathkbd.html
+git add static/mathkbd_response.html
+git add files_to_commit.txt
 
+=========================================
 
 
 
