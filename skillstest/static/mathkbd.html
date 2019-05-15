@@ -435,6 +435,7 @@ function addmultiintegrallimit(n){
 	    }
             else if(index == 86){
                 document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\sqrt ";
+		alert("If you want to put the square root over an expression with more than one term, please put the expression within curly braces. So, it should look like \sqrt{... some expression here ...}");
 	    }
             else if(index == 87){
                 document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\bigcup ";
@@ -803,6 +804,31 @@ function addmultiintegrallimit(n){
 	    else if(index == 395){
                 document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\sech ";
 	    }
+	    else if(index == 240){
+		var fracelements = prompt("Please enter numerator and denominator separated by ','");
+		nums = fracelements.split(",")
+		var numerator = nums[0].trim();
+		var denominator = nums[1].trim();
+		document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\frac{" + numerator + "}{" + denominator + "} ";
+	    }
+	    else if(index == 241){
+		var bounds = prompt("Please enter lower and upper bounds of summation separated by ','");
+		nums = bounds.split(",")
+		var lbound = nums[0].trim();
+		var ubound = nums[1].trim();
+		document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\sum^" + ubound.toString() + "_{i=" + lbound + "} ";
+	    }
+	    else if(index == 242){
+		var subscript_participants = prompt("Please enter the element and its subscript separated by a ','");
+		participants = subscript_participants.split(",");
+		mainvar = participants[0].trim();
+		subscriptvar = participants[1].trim();
+		document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + " " + mainvar + "_" + subscriptvar;
+	    }
+	    else if(index == 243){
+		var var_bar = prompt("Please enter the element on which the bar should be placed");
+		document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + " \\bar{" + var_bar + "}";
+	    }
 	    MathJax.Hub.Queue(['Typeset', MathJax.Hub, document.frmkeyboard]);
         }
  
@@ -899,7 +925,6 @@ function addmultiintegrallimit(n){
 <tr><td><input id="Button39" type="button" value="a"  class="glass"/></td><td><input id="Button40" type="button" value="b"  class="glass"/></td><td><input id="Button41" type="button" value="c"  class="glass"/></td><td><input id="Button42" type="button" value="d"  class="glass"/></td><td><input id="Button43" type="button" value="e"  class="glass"/></td><td><input id="Button44" type="button" value="f"  class="glass"/></td></tr>
 <tr><td><input id="Button45" type="button" value="g"  class="glass"/></td><td><input id="Button46" type="button" value="h"  class="glass"/></td><td><input id="Button47" type="button" value="i"  class="glass"/></td><td><input id="Button48" type="button" value="j"  class="glass"/></td><td><input id="Button49" type="button" value="k"  class="glass"/></td><td><input id="Button50" type="button" value="l"  class="glass"/></td></tr>
 <tr><td><input id="Button51" type="button" value="m"  class="glass"/></td><td><input id="Button52" type="button" value="n"  class="glass"/></td><td><input id="Button53" type="button" value="o"  class="glass"/></td><td><input id="Button54" type="button" value="p"  class="glass"/></td><td><input id="Button55" type="button" value="q"  class="glass"/></td><td><input id="Button56" type="button" value="r"  class="glass"/></td></tr>
-<tr><td><input id="Button57" type="button" value="s"  class="glass"/></td><td><input id="Button58" type="button" value="t"  class="glass"/></td><td><input id="Button59" type="button" value="u"  class="glass"/></td><td><input id="Button60" type="button" value="v"  class="glass"/></td><td><input id="Button61" type="button" value="w"  class="glass"/></td><td><input id="Button62" type="button" value="x"  class="glass"/></td></tr>
 <tr><td><input id="Button63" type="button" value="y"  class="glass"/></td><td><input id="Button64" type="button" value="z"  class="glass"/></td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
 <tr><td colspan='6'>&nbsp;</td></tr>
 <tr><td><input id="Button65" type="button" value="0"  class="glass"/></td><td><input id="Button66" type="button" value="1"  class="glass"/></td><td><input id="Button67" type="button" value="2"  class="glass"/></td><td><input id="Button68" type="button" value="3"  class="glass"/></td><td><input id="Button69" type="button" value="4"  class="glass"/></td><td><input id="Button70" type="button" value="5"  class="glass"/></td></tr>
@@ -964,7 +989,7 @@ function addmultiintegrallimit(n){
 <tr><td><button type='button' id='Button210' value="to the power" class='glass'><img src='/static/images/specialchars/tothepower.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button211' value="tilde" class='glass'><img src='/static/images/specialchars/tilde.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button212' value="cdots" class='glass'><img src='/static/images/specialchars/cdots.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button213' value="ldots" class='glass'><img src='/static/images/specialchars/ldots.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button214' value="vdots" class='glass'><img src='/static/images/specialchars/vdots.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button215' value="ddots" class='glass'><img src='/static/images/specialchars/ddots.png' style='width:40px;height:20px'></button></td></tr>
 
 <tr><td><button type='button' id='Button216' value="asymptotic" class='glass'><img src='/static/images/specialchars/asymptotic.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button217' value="models" class='glass'><img src='/static/images/specialchars/models.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button218' value="bullet" class='glass'><img src='/static/images/specialchars/bullet.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button219' value="join" class='glass'><img src='/static/images/specialchars/join.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button221' value="mid" class='glass'><img src='/static/images/specialchars/mid.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button165' value="square cup" class='glass'><img src='/static/images/specialchars/squarecup.png' style='width:40px;height:20px'></button></td></tr>
-<tr><td><button type='button' id='Button166' value="dagger" class='glass'><img src='/static/images/specialchars/dagger.png' style='width:40px;height:20px'></button><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td><button type='button' id='Button166' value="dagger" class='glass'><img src='/static/images/specialchars/dagger.png' style='width:40px;height:20px'></button><td><button type='button' id='Button240' value="fraction" class='glass'><img src='/static/images/specialchars/fraction_1byn.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button241' value="bounded_summation" class='glass'><img src='/static/images/specialchars/bounded_summation.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button242' value="subscript_expression" class='glass'><img src='/static/images/specialchars/subscript_expression.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button243' value="var_bar" class='glass'><img src='/static/images/specialchars/var_bar.png' style='width:40px;height:20px'></button></td><td>&nbsp;</td></tr>
 
  </table>       
  </div>
