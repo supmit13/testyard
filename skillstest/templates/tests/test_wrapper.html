@@ -567,7 +567,7 @@ function rememberresponse(testpagesstr){
 		else if(challengetype == 'FILB'){
 		    textval = document.getElementsByName('filb_' + curchallengeid)[0].value;
 		    textval = textval.replace("'", '__SINGLEQUOTE__');
-		    alert(textval);
+		    //alert(textval);
 		    textval = textval.replace('"', '__DOUBLEQUOTE__');
 		    for(j=0; j < testpages.length - 1; j++){
 			challengestatement = testpages[j][2];
@@ -1157,6 +1157,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     }
     if(document.frmchallenge){
 	curchallengetype = document.frmchallenge.challengetype.value;
+	//alert(curchallengetype);
 	curchallengestatement = document.frmchallenge.challengestatement.value;
  	curchallengeid = document.frmchallenge.challengeid.value;
 	if(curchallengetype == 'SUBJ' || curchallengetype == 'ALGO' || curchallengetype == 'CODN'){
@@ -1189,6 +1190,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    if(testpagesparts.length >= 2){
 			//valuepattern = new RegExp("value='(.*)'\\s+name=");
 			valuepattern = new RegExp("value='([^\\']+)'");
+			textval = textval.replace(">", "__GT__");
+			textval = textval.replace("<", "__LT__");
 			//alert(textval);
 			if(testpagesparts.length > 2){
 			    testpagesparts[1] = testpagesparts[1] + "<textarea" + testpagesparts[2];
@@ -1199,6 +1202,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 			    testpagesparts[1] = testpagesparts1parts.join("<input");
 			}
 			testpagesparts[0] = testpagesparts[0] + "<textarea value='" + textval + "' ";
+			//alert(testpagesparts[0]);
 			testpages[j][0] = testpagesparts[0] + testpagesparts[1];
 			timeavailable = testpages[j][1];
 			timeleft = timeavailable - timespentsecs;
@@ -1213,6 +1217,9 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    if(testpagesparts.length == 2){
 			testpagesparts[0] = testpagesparts[0] + textval;
 			testpages[j][0] = testpagesparts[0] + "</textarea>" + testpagesparts[1];
+			testpages[j][0] = testpages[j][0].replace("__GT__", ">");
+			testpages[j][0] = testpages[j][0].replace("__LT__", "<");
+			//alert(testpages[j][0]);
 		    }
 		    else{ // There is some problem. It should not be less than 2.
 			alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
