@@ -567,6 +567,7 @@ function rememberresponse(testpagesstr){
 		else if(challengetype == 'FILB'){
 		    textval = document.getElementsByName('filb_' + curchallengeid)[0].value;
 		    textval = textval.replace("'", '__SINGLEQUOTE__');
+		    alert(textval);
 		    textval = textval.replace('"', '__DOUBLEQUOTE__');
 		    for(j=0; j < testpages.length - 1; j++){
 			challengestatement = testpages[j][2];
@@ -1316,9 +1317,24 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    textval = textval.replace(grt, "&amp;gt;");
 	    //alert(textval);
 	    for(j=0; j < testpages.length - 1; j++){
+		// Had a tough time figuring out this one.
 		challengestatement = testpages[j][2];
-		if(challengestatement == curchallengestatement){
+		filb_challengestatement = challengestatement;
+		filb_challengestatement = filb_challengestatement.replace(/\n+/g, " ");
+		filb_challengestatement = filb_challengestatement.replace(/\r+/g, " ");
+		filb_challengestatement = filb_challengestatement.replace(/\s+/g, " ");
+		
+		filb_curchallengestatement = curchallengestatement;
+ 	 	filb_curchallengestatement = filb_curchallengestatement.replace(/\n+/g, " ");
+		filb_curchallengestatement = filb_curchallengestatement.replace(/\r+/g, " ");
+		filb_curchallengestatement = filb_curchallengestatement.replace(/\s+/g, " ");
+		
+		//alert("challenge statement = " + filb_challengestatement);
+		//alert("current challenge statement = " + filb_curchallengestatement);
+		if(filb_challengestatement == filb_curchallengestatement){
+		    //alert(filb_curchallengestatement);
 		    testpagesparts = testpages[j][0].split("<input type='text'");
+		    //alert("Test pages parts length = " + testpagesparts.length.toString());
 		    if(testpagesparts.length == 2){
 		    	valuepattern = new RegExp("value='([^\\']*)'");
 			if(valuepattern.test(testpagesparts[1])){
@@ -1328,6 +1344,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 			}
 			testpagesparts[1] = " value='" + textval + "' " + testpagesparts[1];
 		    	testpages[j][0] = testpagesparts[0] + "<input type='text' " + testpagesparts[1];
+			//alert(testpages[j][0]);
 			timeavailable = testpages[j][1];
 			timeleft = timeavailable - timespentsecs;
 			testpages[j][1] = timeleft;
@@ -1656,7 +1673,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
-            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;'><br />";
+            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;' value='Enter your answer here' onClick='javascript:this.value=\"\";'><br />";
         }
         pages[pagectr][0] += "<br /><font size=-1>You may use the <a href='/static/mathkbd_response.html' target='_blank'>LaTeX keyboard</a> to answer the questions if you need to use special characters</font><br />";
         pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + " seconds</font><br />";

@@ -3096,4 +3096,14 @@ Friday, May 17, 2019, 21:01 HRS.
 5. git add files_to_commit.txt
 
 =========================================
+Friday, May 17, 2019, 23:35 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+=========================================
+
+
 
