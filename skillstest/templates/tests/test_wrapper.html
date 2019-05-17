@@ -632,7 +632,7 @@ function getruleset(encjson){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
     ruleslist = jsonobj.rules;
-    //showonebyoneflag = 0;
+    showonebyoneflag = 0;
     showatonceflag = 1;
     allowchallengenavflag = 2;
     //allowcameraflag = 3;
@@ -647,10 +647,10 @@ function getruleset(encjson){
             ruleflag = allowchallengenavflag;
 	    break;
         }
-	//if(flagvalue == 'showonebyone'){
-	//    ruleflag = showonebyoneflag;
-	//    break;
-	//}
+	if(flagvalue == 'showonebyone'){
+	    ruleflag = showonebyoneflag;
+	    break;
+	}
         //if(flagvalue == 'allowchallengenavigation'){
         //    ruleflag = allowchallengenavflag;
 	//    break;
