@@ -491,6 +491,7 @@ function rememberresponse(testpagesstr){
 		    }
 		    //alert(textval);
 		    testpagesparts = testpages[i][0].split("<textarea ");
+		    //alert(testpagesparts[0]);
 		    if(testpagesparts.length == 2){
 			//valuepattern = new RegExp("value='([^\\']*)'");
 		        valuepattern = new RegExp("value='(.*?)'\\s+name\\s*=");
@@ -1190,8 +1191,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    if(testpagesparts.length >= 2){
 			//valuepattern = new RegExp("value='(.*)'\\s+name=");
 			valuepattern = new RegExp("value='([^\\']+)'");
-			textval = textval.replace(">", "__GT__");
-			textval = textval.replace("<", "__LT__");
+			textval = textval.replace(">", "__GREATERTHAN__");
+			textval = textval.replace("<", "__LESSERTHAN__");
 			//alert(textval);
 			if(testpagesparts.length > 2){
 			    testpagesparts[1] = testpagesparts[1] + "<textarea" + testpagesparts[2];
