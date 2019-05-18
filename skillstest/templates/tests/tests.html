@@ -1727,6 +1727,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    candidateresp = candidateresp.replace("#||#", ", ");
 			}
 			candidaterespdecoded = decodeURIComponent(candidateresp);
+			candidaterespdecoded = candidaterespdecoded.replace("\n", "<br />");
+			candidaterespdecoded = candidaterespdecoded.replace("\r", "<br />");
+			//alert(candidaterespdecoded);
 			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
 			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;
