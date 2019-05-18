@@ -1727,8 +1727,21 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    candidateresp = candidateresp.replace("#||#", ", ");
 			}
 			candidaterespdecoded = decodeURIComponent(candidateresp);
+			n = candidaterespdecoded.search(/\d{3}px;/); // check if some css exists in the content. If so, we need to clean it up.
+			//alert(candidaterespdecoded);
+			if(n > 0){ // Remove the HTML part before the actual expression.
+			    candidaterespdecodedparts = candidaterespdecoded.split("&gt"); 
+			    //alert(candidaterespdecodedparts.length);
+			    if(candidaterespdecodedparts.length > 1){
+			        candidaterespdecoded = candidaterespdecodedparts[1];
+				//alert(candidaterespdecoded);
+			    }
+			}
+			candidaterespdecoded = candidaterespdecoded.replace(/^\s*;/, "");
 			candidaterespdecoded = candidaterespdecoded.replace("\n", "<br />");
 			candidaterespdecoded = candidaterespdecoded.replace("\r", "<br />");
+			candidaterespdecoded = candidaterespdecoded.replace("__GT__", ">");
+			candidaterespdecoded = candidaterespdecoded.replace("__LT__", "<");
 			//alert(candidaterespdecoded);
 			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
