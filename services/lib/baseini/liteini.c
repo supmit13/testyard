@@ -7,6 +7,17 @@ Compile Command: gcc libini.c -o libini
 #include "liteini.h"
 
 
+int _is_empty_string(char *str){
+    int slen = strlen(str);
+    int isempty = 0; /* 0 means it is not empty */
+    int i;
+    for(i=0; i < slen; i++){
+        if(str[i] != ' ' && str[i] != '\0' && str[i] != '\n'){
+	    return(isempty);
+        }
+    }
+    return(1); /* This is an empty string */
+}
 
 
 section *get_sections(char *filepath){
@@ -95,6 +106,9 @@ section *get_sections(char *filepath){
 			printf("SECTION NAME: %s\n", sections_list[sect_ctr].sect_name);
 		    done = 1;
 		}
+		if(_is_empty_string((sections_list[sect_ctr].sect)->keys[kcntr]) && _is_empty_string((sections_list[sect_ctr].sect)->values[vcntr])){
+		    continue;
+		}
 		printf("SECTION LIST NAME: %s\n", (sections_list[sect_ctr].sect)->section_name);
 		printf("KEY= %s\n", (sections_list[sect_ctr].sect)->keys[kcntr]);
 		printf("VALUE= %s\n", (sections_list[sect_ctr].sect)->values[vcntr]);
@@ -108,6 +122,7 @@ section *get_sections(char *filepath){
 	return(sections_list);
 }
 
+/* This code should actually be written by the user. I wrote it here to just test the library */
 int main(){
 	char *file;
 	section * s;
