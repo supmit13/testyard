@@ -3138,5 +3138,20 @@ Saturday, May 18, 2019, 15:23 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Friday, May 31, 2019. 13:01 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add ../services/lib/baseini/liteini.c
+3. git add ../services/lib/baseini/liteini.h
+4. git add ../services/lib/baseini/README.md
+5. git add ../services/lib/baseini/examples/test.ini
+6. git add ../services/docs/commands.txt
+7. git add ../services/docs/links.txt
+8. git add ../services/docs/run_code_logic.txt
+9. git add ../services/docs/xml_req_structure.txt
+10. git add ../services/pocs/libxml4.c
+11. git add ../services/pocs/testxml.c
+12. git add files_to_commit.txt
 
+=========================================
 

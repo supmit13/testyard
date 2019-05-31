@@ -1,0 +1,36 @@
+1. A HTTPS request is sent to the webserver (nginx) with all the code, userId, testId, challengeId, tabref, tabId,etc, and this will be passed to the python django handler via the UWSGI app server. The javascript will convert the code to Base64 encoded so that it doesn't hamper the request process.
+
+2. The python code handling this request will create a XML data request out of it, and it will be sent to an application that listens on a specific port at a given IP (Let's call it 'listener'). The IP and the port will be configurable parameters.
+
+3. The listener will accept the XML request, get the Base64 encoded code, and put it in a Queue (*). The length of this queue will be configurable. This configuration will be on the listener end.
+
+4. There will be a number of subprocesses (again, configurable on the listener's end) that will start picking up code from the list in FIFO mode. These subprocesses will decode the code before they could be used. Once decoded, they will be ready for execution.
+
+5. A number of docker containers with identical configurations will exist in the system (the number will be configurable), ready to take applications to be run (**). Every subprocess will randomly select a docker container to execute its process. In order to identify the process it has submitted to the docker container, it will generate a random string, keep one copy of it in a table in a DB on the listener side, and it will append the random string to the end of the application name. Once that is done, the subprocess will be free to process the next code in the FIFO list.
+
+6. The container will have an app inside it that will help in running  the code, and once the code is run, it will update the DB table with the corresponding random string, with either the returned value of the code or the exception/error statement of the code. Once that is done, it will set the 'status' field of the table to 1. The structure for this table is described below.
+
+7. A background process will run as a daemon process and it will check the table at regular intervals (configurable in the settings file on the listener end), and it will check to find out which records have changed status from 0 to 1. In order to do so, it will keep a variable, may be a dictionary, to keep all the records in the table that has a status value = 0.
+
+8. Once it finds out the 0 to 1 changes, it will send a SOAP response object (using the random identifier string to find out which IP/port requested this data), to another process that looks out for such responses. Once that process gets the response, it sends out an HTTP response to the blocking call from the client that made the `HTTPS request.
+
+9. Once a queue is carrying a max number of requests (configurable on listener side), a program will start and clean out code from the queue whose status is set to 1. Thereafter, the queue will be eligible to take code insertion from the front of it. ;-)
+
+10. Database Table Structure:
+    userId int(8) NOT NULL,
+    testId int(8) NOT NULL,
+    challengeId int (8) NOT NULL,
+    tabref varchar(20) NOT NULL,
+    tabId int(8) NOT NULL,
+    code text NOT NULL, (this will be base64 encoded)
+    containerId varchar(200) default 'testyard',
+    status int(8) default -1, (this means this code is yet to be consumed by any container)
+    containerResponse text DEFAULT ''
+
+11. Status field codes and their explanations:
+    -1 => The code hasn't been accepted by any container. (This should not happen frequently as that would mean there is a lack of containers OR the containers are not fast enough OR there is a rogue program that doesn't allow the container to be freed for processing other code in the list).
+    0 => The code has been taken by a container (marked by the value in 'containerId') and it is being processed.
+    1 => The code has been processed successfully and the contents of the outcome has been entered in the 'containerResponse' field of the relevant record (identified by the userId, testId, challengeId, tabref, tabId, containerId values of the record).
+
+
+
