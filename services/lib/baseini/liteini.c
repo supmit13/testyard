@@ -36,13 +36,13 @@ section *get_sections(char *filepath){
 	sect_ctr = 0;
 	int kcntr = 0;
 	int vcntr = 0;
-	int done;
+	char *section_name;
 	while(fgets(line, LINE_LEN, fp) != NULL){
 		char *key, *value;
 		key = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
 		value = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
+		sections_list[sect_ctr].sect = (section_content *)malloc(5000*sizeof(section_content));
         	if(line[0] == '[' && line[strlen(line) - 2] == ']'){ /* This is a fucking section. */
-		    char *section_name;
 			int line_len = strlen(line);
 			section_name = (char *)malloc((line_len-1)*sizeof(char));
 			int i;
@@ -56,7 +56,6 @@ section *get_sections(char *filepath){
 			kcntr = 0;
 			vcntr = 0;
 			line = (char *)malloc(LINE_LEN*sizeof(char));
-			done = 0;
 		}
 		else{
 			/*sc =_get_content(sections_list[sect_ctr]);*/
@@ -91,38 +90,36 @@ section *get_sections(char *filepath){
 			}
 		}
 
-		 sections_list[sect_ctr].sect = (section_content *)malloc(5000*sizeof(section_content));
        		/*
 	    	*(sections_list[sect_ctr].sect->keys + kcntr) = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
 		*(sections_list[sect_ctr].sect->values + vcntr) = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
 		*/
-		(sections_list[sect_ctr].sect)->keys[kcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
-		(sections_list[sect_ctr].sect)->values[vcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
+		
+		sections_list[sect_ctr].sect->keys[kcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
+		sections_list[sect_ctr].sect->values[vcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
+
 		strcpy((sections_list[sect_ctr].sect)->keys[kcntr], key);
 		strcpy((sections_list[sect_ctr].sect)->values[vcntr], value);
-		if(!done){
-			(sections_list[sect_ctr].sect)->section_name = (char *)malloc(MAX_SECTION_NAME_LEN*sizeof(char));
-		    strcpy((sections_list[sect_ctr].sect)->section_name, sections_list[sect_ctr].sect_name);
-			printf("SECTION NAME: %s\n", sections_list[sect_ctr].sect_name);
-		    done = 1;
-		}
+		(sections_list[sect_ctr].sect)->section_name = (char *)malloc(MAX_SECTION_NAME_LEN*sizeof(char));
+		strcpy(sections_list[sect_ctr].sect->section_name, section_name);
+		
 		if(_is_empty_string((sections_list[sect_ctr].sect)->keys[kcntr]) && _is_empty_string((sections_list[sect_ctr].sect)->values[vcntr])){
 		    continue;
 		}
-		printf("SECTION LIST NAME: %s\n", (sections_list[sect_ctr].sect)->section_name);
+		printf("SECTION LIST NAME: %s\n", sections_list[sect_ctr].sect->section_name);
 		printf("KEY= %s\n", (sections_list[sect_ctr].sect)->keys[kcntr]);
 		printf("VALUE= %s\n", (sections_list[sect_ctr].sect)->values[vcntr]);
 		printf("\n\n----------------------------------------------------------------------\n");
 				
 		sect_ctr++;
-        kcntr++;
+        	kcntr++;
 		vcntr++;
 		line = (char *)malloc(LINE_LEN*sizeof(char));
 	}
 	return(sections_list);
 }
 
-/* This code should actually be written by the user. I wrote it here to just test the library */
+/* This code should actually be written by the user. I wrote it here just to test the library */
 int main(){
 	char *file;
 	section * s;

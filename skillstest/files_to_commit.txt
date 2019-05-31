@@ -3160,4 +3160,12 @@ Friday, May 31, 2019, 13:51 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Friday, May 31, 2019, 23:45 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add files_to_commit.txt
+
+=========================================
+
+
 
