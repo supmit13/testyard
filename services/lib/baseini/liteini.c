@@ -24,7 +24,7 @@ section *get_sections(char *filepath){
     FILE *fp;
 	char *line;
 	int sect_ctr;
-    section *sections_list;
+    	section *sections_list;
 	section_content *sc;
 	sections_list = (section *)malloc(MAX_SECTIONS*sizeof(section));
 	fp = fopen(filepath, "r");
@@ -106,17 +106,35 @@ section *get_sections(char *filepath){
 		if(_is_empty_string((sections_list[sect_ctr].sect)->keys[kcntr]) && _is_empty_string((sections_list[sect_ctr].sect)->values[vcntr])){
 		    continue;
 		}
+		/*
 		printf("SECTION LIST NAME: %s\n", sections_list[sect_ctr].sect->section_name);
 		printf("KEY= %s\n", (sections_list[sect_ctr].sect)->keys[kcntr]);
 		printf("VALUE= %s\n", (sections_list[sect_ctr].sect)->values[vcntr]);
 		printf("\n\n----------------------------------------------------------------------\n");
-				
+		*/		
 		sect_ctr++;
         	kcntr++;
 		vcntr++;
 		line = (char *)malloc(LINE_LEN*sizeof(char));
 	}
 	return(sections_list);
+}
+
+/*
+Given a section name, get all elements (keys and values) as a 2D array.
+The given section name may not be case-sensitive. The first param is the
+sections_list returned by a call to "get_sections" function.
+*/
+char *[2] getElementsBySectionName(section *sections_list, char *section_name){
+}
+
+/*
+This function returns the specific value of a given key in a given section.
+The first argument is, as usual, "sections_list", which is a list of instances
+of the section structure. The second and the third arguments are section
+name and key name, both case-insensitive.
+*/
+char *getValueByKeyFromSection(section *sections_list, char *section_name, char *keyname){
 }
 
 /* This code should actually be written by the user. I wrote it here just to test the library */

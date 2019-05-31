@@ -29,6 +29,8 @@ typedef struct section{
 }section;
 
 section *get_sections(char *filepath);
+char *[2] getElementsBySectionName(section *sections_list, char *section_name);
+char *getValueByKeyFromSection(section *sections_list, char *section_name, char *keyname);
 
 section_content *_get_content(section *sect); /* NOT TO BE USED PUBLICLY */
 
