@@ -28,8 +28,8 @@ typedef struct section{
 	char *sect_name;
 }section;
 
-section *get_sections(char *filepath);
-char *[2] getElementsBySectionName(section *sections_list, char *section_name);
+void get_sections(char *filepath, int *sect_count, section **sections_list);
+char ***getElementsBySectionName(section **sections_list, char *section_name, int *sect_count, int *params_count);
 char *getValueByKeyFromSection(section *sections_list, char *section_name, char *keyname);
 
 section_content *_get_content(section *sect); /* NOT TO BE USED PUBLICLY */
