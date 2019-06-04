@@ -1,5 +1,5 @@
 /*
-Compile Command: gcc libini.c -o libini
+Compile Command: gcc -Wall liteini.c -o liteini
 */
 #include <stdio.h>
 #include <stdlib.h>
@@ -59,7 +59,7 @@ void get_sections(char *filepath, int **sect_count, section **sections_list){
 			kcntr = 0;
 			vcntr = 0;
 			line = (char *)malloc(LINE_LEN*sizeof(char));
-			printf("\n============\nSECT_COUNT HERE = %d\n\n", **sect_count);
+
 			**sect_count = sect_ctr;
 			sections_list[sect_ctr]->sect = (section_content *)malloc(MAX_ELEMENTS_PER_SECTION * sizeof(section_content));
 			sect_ctr++;
@@ -97,11 +97,6 @@ void get_sections(char *filepath, int **sect_count, section **sections_list){
 			value[valctr] = '\0';
 		}
 
-       		/*
-	    	*(sections_list[sect_ctr].sect->keys + kcntr) = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
-		*(sections_list[sect_ctr].sect->values + vcntr) = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
-		*/
-		
 		sections_list[sect_ctr-1]->sect->keys[kcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
 		sections_list[sect_ctr-1]->sect->values[vcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
 
@@ -109,27 +104,13 @@ void get_sections(char *filepath, int **sect_count, section **sections_list){
 		strcpy((sections_list[sect_ctr-1]->sect)->values[vcntr], value);
 		(sections_list[sect_ctr-1]->sect)->section_name = (char *)malloc(MAX_SECTION_NAME_LEN*sizeof(char));
 		strcpy(sections_list[sect_ctr-1]->sect->section_name, section_name);
-		
 		if(_is_empty_string((sections_list[sect_ctr-1]->sect)->keys[kcntr]) && _is_empty_string((sections_list[sect_ctr-1]->sect)->values[vcntr])){
 		    continue;
 		}
-		
-		//printf("SECTION LIST NAME: %s\n", sections_list[sect_ctr-1]->sect->section_name);
-		//printf("KEY= %s\n", (sections_list[sect_ctr-1]->sect)->keys[kcntr]);
-		//printf("VALUE= %s\n", (sections_list[sect_ctr-1]->sect)->values[vcntr]);
-		//printf("\n\n----------------------------------------------------------------------\n");
-						
         	kcntr++;
 		vcntr++;
 		line = (char *)malloc(LINE_LEN*sizeof(char));
 	}
-	if(*sections_list){
-	    printf("sections_list is NOT NULL.\n");
-	}
-	else{
-	    printf("sections_list is NULL hmmmmm.\n\n");
-	}
-	
 }
 
 /*
@@ -148,29 +129,14 @@ void getElementsBySectionName(section **sections_list, char *section_name, int *
     int kcntr = 0;
     int vcntr = 0;
     for (sect_ctr=0; sect_ctr <= *sect_count; sect_ctr++){
-	printf("HERE %d\n",*sect_count);
-	if(sections_list){
-	    printf("Section Name: %s\n\n", sections_list[sect_ctr]->sect->section_name);
-	}
-	else{
-	    printf("SECtion name could not be found.\n");
-	}
 	sect_name = (char *)malloc((strlen(sections_list[sect_ctr]->sect->section_name) + 1)*sizeof(char));
-	printf("SECT CTR VALUE IS %d\n", sect_ctr);
         strcpy(sect_name, sections_list[sect_ctr]->sect->section_name);
-	//printf("THERE sect_name = %s\n",sect_name);
-	//printf("THERE section_name = %s\n",section_name);
         if(!strcmp(sect_name, section_name)){
-	    printf("COMPARED TRUE\n");
-	    //key_value_dict[param_ctr] = (char **)malloc(2 * sizeof(char *));
 	    while(sections_list[sect_ctr]->sect->keys[kcntr]){
-		printf("Key Name: %s\n", sections_list[sect_ctr]->sect->keys[kcntr]);
-		//printf("Param Ctr: %d\n", param_ctr);
-		//printf("Value 1 Name: %s\n\n", sections_list[sect_ctr]->sect->values[vcntr]);
+		//printf("Key Name: %s\n", sections_list[sect_ctr]->sect->keys[kcntr]);
 	    	key_value_dict[param_ctr][0] = (char *)malloc(25 * sizeof(char)); /* Assuming the max length of a key is 25 characters */
-		//printf("Value 2 Name: %s\n\n", sections_list[sect_ctr]->sect->values[vcntr]);
 	    	key_value_dict[param_ctr][1] = (char *)malloc(40 * sizeof(char)); /* Assuming the max length of a value is 40 characters */
-		printf("Value 3 Name: %s\n\n", sections_list[sect_ctr]->sect->values[vcntr]);
+		//printf("Value 3 Name: %s\n\n", sections_list[sect_ctr]->sect->values[vcntr]);
 	    	strcpy(key_value_dict[param_ctr][0], sections_list[sect_ctr]->sect->keys[kcntr]);
 		strcpy(key_value_dict[param_ctr][1], sections_list[sect_ctr]->sect->values[vcntr]);
 		kcntr++;
@@ -178,14 +144,8 @@ void getElementsBySectionName(section **sections_list, char *section_name, int *
 		param_ctr++;
 		*params_count = param_ctr;
             }
-	    printf("RETURNING KEY VALUE DICT\n\n");
-	    //return(key_value_dict);
-	}
-	else{
-	    printf("COMPARED FALSE.\n\n");
 	}
     }
-    //return(NULL);
 }
 
 /*
@@ -201,34 +161,21 @@ char *getValueByKeyFromSection(section *sections_list, char *section_name, char 
 /* This code should actually be written by the user. I wrote it here just to test the library */
 int main(){
 	char *file;
-	//section *s;
 	int *sect_count;
-	//char ***key_value_dict;
 	section *sections_list;
 	int pcount = 0;
-	
 	sect_count = (int *)malloc(sizeof(int));
 	*sect_count = 0;
-	//printf("Address of sect_count: %d", sect_count);
-	fflush(stdout);
 	file = (char *)malloc(80*sizeof(char));
 	strcpy(file,"./examples/test.ini");
 	sections_list = (section *)malloc(MAX_SECTIONS * sizeof(section));
 	get_sections(file, &sect_count, &sections_list);
-	printf("\n=================\nValue of sect_count: %d\n===================\n", *sect_count);
-	printf("FOUND sections_list\n\n");
-	fflush(stdout);
-	
-	//key_value_dict = getElementsBySectionName(&sections_list, "elem-3", sect_count, &pcount);
 	getElementsBySectionName(&sections_list, "elem-3", sect_count, &pcount);
-	printf("Number of elements in the section is %d\n\n",pcount);
 	int pctr = 0;
-	
 	for(pctr=0; pctr < pcount; pctr++){
 	    char *key, *value;
 	    key = (char *)malloc(25 * sizeof(char));
 	    value = (char *)malloc(40 * sizeof(char));
-	    printf("PCTR = %d\n", pctr);
 	    strcpy(key, key_value_dict[pctr][0]);
 	    strcpy(value, key_value_dict[pctr][1]);
 	    printf("Key Value in element no. %d: %s, %s\n\n", pctr, key_value_dict[pctr][0], key_value_dict[pctr][1]);
