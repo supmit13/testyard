@@ -28,8 +28,10 @@ typedef struct section{
 	char *sect_name;
 }section;
 
-void get_sections(char *filepath, int *sect_count, section **sections_list);
-char ***getElementsBySectionName(section **sections_list, char *section_name, int *sect_count, int *params_count);
+char *key_value_dict[MAX_ELEMENTS_PER_SECTION][2];
+
+void get_sections(char *filepath, int **sect_count, section **sections_list);
+void getElementsBySectionName(section **sections_list, char *section_name, int *sect_count, int *params_count);
 char *getValueByKeyFromSection(section *sections_list, char *section_name, char *keyname);
 
 section_content *_get_content(section *sect); /* NOT TO BE USED PUBLICLY */
