@@ -22,10 +22,10 @@ int _is_empty_string(char *str){
 
 void get_sections(char *filepath, int **sect_count, section **sections_list){
     FILE *fp;
-	char *line;
-	int sect_ctr;
+    char *line;
+    int sect_ctr;
 	
-	fp = fopen(filepath, "r");
+    fp = fopen(filepath, "r");
     if (fp == NULL){
       perror("Error while opening the file.\n");
       exit(EXIT_FAILURE);
@@ -68,7 +68,7 @@ void get_sections(char *filepath, int **sect_count, section **sections_list){
 			int j = 0;
 			int keyctr, valctr;
 			key = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
-		    value = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
+		    	value = (char *)malloc((LINE_LEN/2 -1) * sizeof(char));
 			int equal_flag = 0;
 			keyctr = 0;
 		    	valctr = 0;
@@ -99,7 +99,7 @@ void get_sections(char *filepath, int **sect_count, section **sections_list){
 
 		sections_list[sect_ctr-1]->sect->keys[kcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
 		sections_list[sect_ctr-1]->sect->values[vcntr] = (char *)malloc((LINE_LEN/2) * sizeof(char));
-
+		
 		strcpy((sections_list[sect_ctr-1]->sect)->keys[kcntr], key);
 		strcpy((sections_list[sect_ctr-1]->sect)->values[vcntr], value);
 		(sections_list[sect_ctr-1]->sect)->section_name = (char *)malloc(MAX_SECTION_NAME_LEN*sizeof(char));
@@ -149,37 +149,29 @@ void getElementsBySectionName(section **sections_list, char *section_name, int *
 }
 
 /*
-This function returns the specific value of a given key in a given section.
-The first argument is, as usual, "sections_list", which is a list of instances
-of the section structure. The second and the third arguments are section
-name and key name, both case-insensitive.
-
-char *getValueByKeyFromSection(section *sections_list, char *section_name, char *keyname){
-}
+This function returns the specific value of a given key in a given section. The 
+first argument is the key name in the section. It is case-sensitive. The second 
+argument is the number of keys in the section refered to in the call to the 
+'getElementsBySectionName' function. This value is the same as contents of the
+(fourth) argument 'params_count' (int *) in the call to 'getElementsBySectionName'
+function.
+Note: Prior to calling this function, you would need to call both 'get_sections'
+and 'getElementsBySectionName' (in that order) with all the necessary arguments.
+Please refer to the example code given in the file 'main.c' in the directory in
+the 'samples' directory. The example ini file resides in the 'examples' 
+directory.
 */
-
-/* This code should actually be written by the user. I wrote it here just to test the library */
-int main(){
-	char *file;
-	int *sect_count;
-	section *sections_list;
-	int pcount = 0;
-	sect_count = (int *)malloc(sizeof(int));
-	*sect_count = 0;
-	file = (char *)malloc(80*sizeof(char));
-	strcpy(file,"./examples/test.ini");
-	sections_list = (section *)malloc(MAX_SECTIONS * sizeof(section));
-	get_sections(file, &sect_count, &sections_list);
-	getElementsBySectionName(&sections_list, "elem-3", sect_count, &pcount);
-	int pctr = 0;
-	for(pctr=0; pctr < pcount; pctr++){
-	    char *key, *value;
-	    key = (char *)malloc(25 * sizeof(char));
-	    value = (char *)malloc(40 * sizeof(char));
-	    strcpy(key, key_value_dict[pctr][0]);
-	    strcpy(value, key_value_dict[pctr][1]);
-	    printf("Key Value in element no. %d: %s, %s\n\n", pctr, key_value_dict[pctr][0], key_value_dict[pctr][1]);
+char *getValueByKeyFromSection(char *keyname, int pcount){
+    int pctr = 0;
+    for(pctr=0; pctr < pcount; pctr++){
+	if(!strcmp(key_value_dict[pctr][0], keyname)){
+	    return(key_value_dict[pctr][1]);
 	}
-	
+    }
+    printf("Your key was not found in the given section (provided by you in the call to 'getElementsBySectionName'\n\n");
+    return(NULL);
 }
+
+
+
 
