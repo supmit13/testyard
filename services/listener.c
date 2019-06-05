@@ -2,6 +2,10 @@
 Compile Command: gcc -o listener listener.c
 *** gcc -Wall -o listener $(xml2-config --cflags) $(xml2-config --libs) listener.c  -I/usr/include/libxml2  -lxml2 
 
+In order to run the above code, you need to install the following libraries using apt-get (on Ubuntu/Debian systems):
+apt-get install libxml2
+apt-get install libxml2-dev
+
 'listener' will be the executable that would act as the daemon process to read the program requests, decode them from
 Base64 encoding, push them to a specific docker container image that is "UP" and have it compiled (if necessary), and
 execute it in the container image. Once that is done, it will be take the return value (if any) of the code being run
@@ -19,6 +23,7 @@ Code writer: Supriyo Mitra. In case of any discrepancies/issues/failures, please
 */
 
 #include <stdio.h>
+#include <stdint.h>
 #include <string.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -72,18 +77,22 @@ int main(int argc, char *argv[]){
 	int user_id, test_id, challenge_id;
 	char **retlist;
 
-    /* I will be using 'malloc' very heavily here though I understand its vulnerabilities. Later on, I would put a 
-	   wrapper around it so that the vulnerabilities are taken care of. Till then, this code needs  to be very careful
-	   about accepting inputs from users and processing data anywhere in the code. ++ Supriyo Mitra.
+    /* 
+       I will be using 'malloc' very heavily here though I understand its vulnerabilities. Later on, I would put a 
+       wrapper around it so that the vulnerabilities are taken care of. Till then, this code needs  to be very careful
+       about accepting inputs from users and processing data anywhere in the code. ++ Supriyo Mitra. 
+    */
     port = 8888; /* default port to listen to */
     data = (char *)malloc(MAX_SIZE * sizeof(char));
 	proglang = (char *)malloc(20 * sizeof(char));
 	ipaddr = (char *)malloc(16*sizeof(int)); 
 	strcpy(ipaddr, "192.168.154.238"); /* SHOULD COME FROM CONFIG FILE */
 	retval = (char *)malloc(100*sizeof(char));
-	conn_backlogs = 5; /* default backlog connections */
+	conn_backlogs = 5; /* default backlog connections. THIS SHOULD COME FROM CONFIG. */
 	reuseaddr = 1; 
-	/* By default we would allow the network service to be restarted when there are connections in the ESTABLISHED and TIME_WAIT state. */
+	/* 
+	By default we would allow the network service to be restarted when there are connections in the ESTABLISHED and TIME_WAIT state.
+	 */
 	readconfig(ipaddr, &port, &conn_backlogs, &reuseaddr, &max_code_size);
 	code = (char *)malloc(max_code_size * sizeof(char));
 	code_enc = (char *)malloc(max_code_size * 4 * sizeof(char)); /* 4 times the max code size. This is pure speculation */
@@ -93,7 +102,7 @@ int main(int argc, char *argv[]){
 		printf("Could not create socket errno=%d\n", errno); /* Please provide the reason for the error */
 	}
 	else{
-		printf("Socket created successfully\n\n");
+		printf("Socket created successfully\n\n"); /* We are fine. */
 	}
 	r = setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &reuseaddr, sizeof(reuseaddr));
 	if(r == -1){
@@ -101,13 +110,13 @@ int main(int argc, char *argv[]){
 	}
 	printf("Socket could be reused successfully...\n");
 	server.sin_family = AF_INET;
-    server.sin_addr.s_addr = INADDR_ANY;
+    	server.sin_addr.s_addr = INADDR_ANY;
 	
 	server.sin_port = htons(port); 
 	printf("Trying to bind the socket....\n\n");
 	fflush(stdout);
-    r = bind(sockfd, (struct sockaddr *)&server, sizeof(server));
-	printf("r = %d",r);
+    	r = bind(sockfd, (struct sockaddr *)&server, sizeof(server));
+	printf("r = %d\n",r);
 	if(r < 0){
 		printf("Bind to socket failed. errno=%d\n", errno);
 		_exit(0);
@@ -119,11 +128,11 @@ int main(int argc, char *argv[]){
 	    sessfd = accept(sockfd, 0, 0); /* call blocks if there are no connections to accept. */
 		if (sessfd == -1){
             if (errno==EINTR){
-				continue;
-			}
+		continue;
+	    }
             printf("failed to accept connection (errno=%d)",errno);
-			continue; /* Let us take a try with our next incoming connection. */
-        }
+		continue; /* Let us take a try with our next incoming connection. */
+            }
 		/* Now, if we could take the connection, we will fork of and let a child process to 
 		handle the connection and let the parent process go back to accept more connections. */
 		pid = fork();
@@ -134,7 +143,7 @@ int main(int argc, char *argv[]){
 		}
 		else if(pid == 0){ /* This is the child process. Close the socket descriptor */
 		    close(sockfd);
-			buffer = (char *)malloc(MAX_SIZE * sizeof(char));
+		    buffer = (char *)malloc(MAX_SIZE * sizeof(char));
 			read_size = recv(sessfd, buffer, MAX_SIZE, 0);
 			while (read_size > 0){
 				strcat(data, buffer);
@@ -154,39 +163,64 @@ int main(int argc, char *argv[]){
 	return(0);
 }
 
-/*
-static const int B64index[256] = { 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 62, 63, 62, 62, 63, 52, 53, 54, 55,
-56, 57, 58, 59, 60, 61,  0,  0,  0,  0,  0,  0,  0,  0,  1,  2,  3,  4,  5,  6,
-7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,  0,
-0,  0,  0, 63,  0, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51 };
+/* Base64 decoding code starts here. */
+static char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
+                                'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
+                                'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+                                'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
+                                'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                                'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+                                'w', 'x', 'y', 'z', '0', '1', '2', '3',
+                                '4', '5', '6', '7', '8', '9', '+', '/'};
+static char *decoding_table = NULL;
 
-char * b64decode(const void* data, const size_t len){
-    unsigned char* p = (unsigned char*)data;
-    int pad = len > 0 && (len % 4 || p[len - 1] == '=');
-    const size_t L = ((len + 3) / 4 - pad) * 4;
-    char * str(L / 4 * 3 + pad, '\0');
-
-    for (size_t i = 0, j = 0; i < L; i += 4){
-        int n = B64index[p[i]] << 18 | B64index[p[i + 1]] << 12 | B64index[p[i + 2]] << 6 | B64index[p[i + 3]];
-        str[j++] = n >> 16;
-        str[j++] = n >> 8 & 0xFF;
-        str[j++] = n & 0xFF;
+unsigned char *base64_decode(const char *data, size_t input_length, size_t *output_length) {
+ 
+    if (decoding_table == NULL) build_decoding_table();
+ 
+    if (input_length % 4 != 0) return NULL;
+ 
+    *output_length = input_length / 4 * 3;
+    if (data[input_length - 1] == '=') (*output_length)--;
+    if (data[input_length - 2] == '=') (*output_length)--;
+ 
+    unsigned char *decoded_data = malloc(*output_length);
+    if (decoded_data == NULL) return NULL;
+ 
+    for (int i = 0, j = 0; i < input_length;) {
+ 
+        uint32_t sextet_a = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+        uint32_t sextet_b = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+        uint32_t sextet_c = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+        uint32_t sextet_d = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
+ 
+        uint32_t triple = (sextet_a << 3 * 6)
+        + (sextet_b << 2 * 6)
+        + (sextet_c << 1 * 6)
+        + (sextet_d << 0 * 6);
+ 
+        if (j < *output_length) decoded_data[j++] = (triple >> 2 * 8) & 0xFF;
+        if (j < *output_length) decoded_data[j++] = (triple >> 1 * 8) & 0xFF;
+        if (j < *output_length) decoded_data[j++] = (triple >> 0 * 8) & 0xFF;
     }
-    if (pad){
-        int n = B64index[p[L]] << 18 | B64index[p[L + 1]] << 12;
-        str[str.size() - 1] = n >> 16;
-
-        if (len > L + 2 && p[L + 2] != '='){
-            n |= B64index[p[L + 2]] << 6;
-            str.push_back(n >> 8 & 0xFF);
-        }
-    }
-    return str;
+ 
+    return decoded_data;
 }
-*/
+ 
+
+void build_decoding_table() {
+ 
+    decoding_table = malloc(256);
+ 
+    for (int i = 0; i < 64; i++)
+        decoding_table[(unsigned char) encoding_table[i]] = i;
+}
+ 
+ 
+void base64_cleanup() {
+    free(decoding_table);
+}
+/* Base64 decoding code ends here */
 
 void readconfig(char *ipaddr, int *port, int *backlogs, int *reuseaddr, int *max_code_size){
 }
