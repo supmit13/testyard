@@ -564,7 +564,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    ansoptsdiv.innerHTML = "<input type='hidden' name='oneormore' value='no'>";
 		    if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN' || document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'ALGO'){
 		      if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN'){
-			ansoptsdiv.innerHTML += "<div id='codnlang' style=''><b>Select Programming Language: <select name='multiprogenv' class='glowing-border'>{{ progenv  }}</select><br /></div>";
+			ansoptsdiv.innerHTML += "<div id='codnlang' style=''><b>Select Programming Language: <select name='progenv' class='glowing-border'><option value='multi'>Yes - Multiple</option>{{ progenv  }}</select><br /></div>";
 		      }
 		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p></div>";
 		      responsekeydiv.style.display = "none";

@@ -1101,7 +1101,7 @@ def create(request):
 
 
 # Note: The 'challengedurationseconds' value being passed into this function is in seconds.
-def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, challengedurationseconds, negativescoring=False):
+def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, challengedurationseconds, negativescoring=False, multiprogenv = ""):
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
@@ -1255,6 +1255,10 @@ def edit(request):
         multiprogenv = request.POST['multiprogenv']
         multiprogenv = multiprogenv.replace('"', '')
         challengeobj.proglang = multiprogenv;
+    if request.POST.has_key('progenv'):
+        progenv = request.POST['progenv']
+        progenv = progenv.replace('"', '')
+        challengeobj.proglang = progenv;
     if request.POST.has_key('csrfmiddlewaretoken'):
         csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
     if request.POST.has_key('negativescore'):
@@ -1336,7 +1340,7 @@ def edit(request):
     statusmessage = "<font color='#0000AA'>Number of Challenges framed:<b>%s</b><br>Total Number of Challenges in the test: <b>%s</b><br>Score accounted for: <b>%s</b><br>Total Score: <b>%s</b></font><br>"%(savedchallengescount.__str__(), totalchallengescount.__str__(), savedchallengesscore.__str__(), testobj.maxscore.__str__())
     if editoperationflag == True:
         statusmessage = "<font color='#0000BB'><b><i>The changes were saved successfully</i></b></font>"
-    editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(testobj.negativescoreallowed))
+    editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(testobj.negativescoreallowed), multiprogenv)
     return HttpResponse(statusmessage + editchallengehtml)
     
 
@@ -2074,6 +2078,10 @@ def showuserview(request):
     else:
         challengeoptions = None # Except for 'MULT' type tests,
                                 # challengeoptions do not have any significance.
+    challenge_dict['proglanguage'] = ""
+    if challengetype == 'CODN':
+        proglanguage = Challenge.objects.filter(id=challengeid)[0].proglang
+        challenge_dict['proglanguage'] = proglanguage
     challenge_dict['challengeoptions'] = challengeoptions
     challengescore = challengeobj.challengescore
     challengenegativescore = None

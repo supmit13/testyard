@@ -3240,4 +3240,18 @@ Saturday, June 08, 2019, 15:35 HRS.
 8. git add files_to_commit.txt
 
 =========================================
+Saturday, June 08, 2019, 23:37 HRS.
+-----------------------------------------
+1. git add templates/tests/create_test_form.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/models.py
+5. git add skillstest/Tests/views.py
+6. git add templates/tests/challenge_user_view.html
+7. git add templates/tests/test_wrapper.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add files_to_commit.txt
+
+=========================================
 
