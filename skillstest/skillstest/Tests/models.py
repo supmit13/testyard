@@ -225,6 +225,7 @@ class Challenge(models.Model):
     challengequality = models.CharField(max_length=3, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()))
     testlinkid = models.CharField(max_length=200, null=False, blank=False)
     oneormore = models.NullBooleanField(default=True)
+    proglang = models.CharField(max_length=200, default='', null=True,blank=True)
 
     class Meta:
         verbose_name = "Challenge Table"

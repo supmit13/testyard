@@ -988,6 +988,8 @@ alter table Tests_interview add column interviewer_ids varchar(200) default NULL
 
 alter table Tests_interview modify column interviewer_ids  text default '';
 
+alter table Tests_challenge add column proglang varchar(200) default '';
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;

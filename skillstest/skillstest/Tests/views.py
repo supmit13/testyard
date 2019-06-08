@@ -1198,7 +1198,7 @@ def edit(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore) = ("", False, False, 0, "", "", 0, "", False)
+    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore, multiprogenv) = ("", False, False, 0, "", "", 0, "", False, '')
     # Retrieve challenge data and create challenge object...
     editoperationflag = False
     challengeobj = Challenge()
@@ -1251,6 +1251,10 @@ def edit(request):
         totalscore = request.POST['totalscore']
     if request.POST.has_key('challengenumbersstr'):
         challengenumbersstr = request.POST['challengenumbersstr']
+    if request.POST.has_key('multiprogenv'):
+        multiprogenv = request.POST['multiprogenv']
+        multiprogenv = multiprogenv.replace('"', '')
+        challengeobj.proglang = multiprogenv;
     if request.POST.has_key('csrfmiddlewaretoken'):
         csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
     if request.POST.has_key('negativescore'):
