@@ -95,9 +95,9 @@ MAX_INTERVIEWERS_COUNT = 10
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = '########'
+EMAIL_HOST_PASSWORD = 'xtmt365i'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = '########'
+#EMAIL_HOST_PASSWORD = 'spmprx13'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -170,6 +170,7 @@ UPDATE_INTERVIEW_META_URL = "skillstest/test/interview/updatemeta/"
 UPLOAD_RECORDING_URL = "/skillstest/interview/uploadrecording/"
 INTERVIEW_DATA_UPLOAD_URL = "/skillstest/interview/uploaddata/"
 CODEPAD_EXECUTE_URL = "skillstest/test/execute/codepad/"
+CODE_EXEC_URL = "skillstest/test/execute/code/"
 POST_ON_LINKEDIN_URL = "skillstest/test/postonlinkedin/"
 LINKEDIN_REDIRECT_URL = "skillstest/test/linkedin/"
 LINKEDINPOSTSESS_URL = "skillstest/test/linkedin/informserver/"
@@ -329,7 +330,7 @@ RULES_DICT = { \
         'noconsultextmat' : 'User may not consult online material on the subject of the test', \
         #'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
-	'activatecameraduringtext' : 'This will stream video of the test taker while she/he is taking the test. (Only for subscribed members)',\
+	'activatecameraduringtest' : 'This will stream video of the test taker while she/he is taking the test. (Only for subscribed members)',\
         }
 
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \
@@ -343,10 +344,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '##########'
-OAUTH_SECRET_KEY = '#############'
-OAUTH_USER_TOKEN = '#######################################'
-OAUTH_USER_SECRET = '##################################'
+OAUTH_API_KEY = '78wxi7pqmstzbg'
+OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
+OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
+OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 #REDIRECT_URI = "https://192.168.0.103/skillstest/test/linkedin/"
 REDIRECT_URI = "https://192.168.1.4/skillstest/test/linkedin/"
 TESTYARD_GROUP_ID = "testyard" # This is the Id of the TestYard group on LinkedIn.
@@ -363,7 +364,7 @@ SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
 DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "###########################"
+BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
@@ -424,10 +425,10 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 # PayU settings
 #PAYU_POS_ID = 145227
 PAYU_POS_ID = "301085"
-PAYU_CLIENT_SECRET = "#############################"
-#PAYU_SECOND_ID = '#################################'
-PAYU_SECOND_ID = '############################'
-PAYU_POS_AUTH_KEY = "##################"
+PAYU_CLIENT_SECRET = "3ecfa97bab0c016f9f88070126fe7824"
+#PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
+PAYU_SECOND_ID = '5e902285756f583856e8bf082a48163a'
+PAYU_POS_AUTH_KEY = "xqBWhKZ"
 PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -441,7 +442,7 @@ PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
 
 PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
-PAYPAL_SANDBOX_ACCESS_TOKEN = "#########################################"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "access_token$sandbox$kn3fkcyv5r62c87w$fc0ccfd0fa73a2509f2914e6a6b11162"
 PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
 PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
 PAYPAL_RETURN_URL = "http://www.paypal.com/return"
@@ -454,12 +455,12 @@ CUSTOMER_IP_ADDRESS = '192.168.0.103'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '##########'
-EASYAPI_KEY = '#######################'
+EASYAPI_PASSWORD = 'spmprx13'
+EASYAPI_KEY = 'ea9a577b2e17cd7186183e0ae922c30e'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
-GO_DADDY_CUST_NUM = ##########
-GO_DADDY_PASSWD = "###########"
+GO_DADDY_CUST_NUM = 73165291
+GO_DADDY_PASSWD = "Xtmt365i@"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -470,35 +471,42 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "##############"
-SECRET_ACCESS_KEY = "##########################"
+ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
+SECRET_ACCESS_KEY = "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"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "#########"
+AMAZON_ACCT_PASSWD = "spmprx13"
 
-AMAZON_ACCT_ID = "###########"
+AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "########"
+IAM_PASSWD = "spmprx13"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "#############"
+REPL_SECRET = "kwrwmse5en8a3l66"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "###########"
+REPL_PASSWORD = "spmprx13"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
+########## CODE EXECUTION SERVICE HOST #############
+CODE_EXEC_HOST_IP = "192.168.1.4" # If this changes, you need to change the same on listener.ini too
+CODE_EXEC_HOST_PORT = "8787"
+CODE_MAX_SIZE = 20000
+MAX_CONN_BACKLOGS_LEN = 10
+
+########## CODE EXECUTION SERVICE PARAMS END HERE #############
 
 ########### MAX VMWare Player Instances ###########
 #MAX_VM_INSTANCES_LIN = 10 #Number of VM instances that may be run conurrently.
 
 # NOTE:\n **** THIS SHOULD NOT BE DONE LOCAL/EXPERIMENTAL INSTALLATIONS WHERE RUNNING 10 VMs CONCURRENTLY MAY FREEZE THE OS.THIS SHOULD BE
 # DONE ON ANOTHER SYSTEM THAT HAS ENOUGH CPU's AND MEMORY TO HANDLE THE OPERATION. IDEALLY I WOULD LIKE THE MACHINE (PHYSICAL OR 
-# OTHERWISE) TO HAVE 16 GIGS MEMORY AND 8 DUAL CORE PROCESSORS (freferably AMD). ****\n
+# OTHERWISE) TO HAVE 16 GIGS MEMORY AND 8 DUAL CORE PROCESSORS (preferably AMD). ****\n
 # 
 # Disclaimer: Please also note that such a system should have a very powerful auxilliary cooling system especially for the AMD CPUs, as 
 # AMD CPUs have the notorious habit of heating up exorbitantly while performing little complex executions of code. AMD has  a lot of cool 

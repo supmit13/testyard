@@ -1219,7 +1219,9 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 			testpagesparts[0] = testpagesparts[0] + textval;
 			testpages[j][0] = testpagesparts[0] + "</textarea>" + testpagesparts[1];
 			testpages[j][0] = testpages[j][0].replace("__GT__", ">");
+			testpages[j][0] = testpages[j][0].replace("__GREATERTHAN__", ">");
 			testpages[j][0] = testpages[j][0].replace("__LT__", "<");
+			testpages[j][0] = testpages[j][0].replace("__LESSERTHAN__", "<");
 			//alert(testpages[j][0]);
 		    }
 		    else{ // There is some problem. It should not be less than 2.
@@ -1559,8 +1561,8 @@ function facethemusic(encjson, starttime){
 }
 
 
-
-function code_exec(){
+// This function is deprecated. Please refer to the function named "code_exec".
+function code_exec_old(){
   var progenv = "{{progenv}}";
   var repl_token = {'msg_mac' : "nfQ9mqPIArQO8lmgmdAogPsgHNh4koL0hR3Qtbq/2Vk=", 'time_created' : 1478372849000};
   var repl = new ReplitClient('trial.repl.it', 80, "{{progenv}}", repl_token);
@@ -1622,6 +1624,49 @@ function code_exec(){
 }
 
 
+function code_exec(testid, challengeid, targetemail){
+    var progenv = "{{progenv}}";
+    var elementid = "id_" + challengeid;
+    var code = "";
+    pretags = document.getElementsByTagName('pre');
+    for(i=0; i < pretags.length; i++){
+	var str = pretags[i].innerHTML;
+	code += str.replace(/<\/?([^>]+)>/g, "");
+	code += "\n";
+    }
+    
+    var codecontent_enc = Base64.encode(code);
+    //alert(code);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    outputdiv = document.getElementById('output');
+    xmlhttp.onreadystatechange = function(){
+    //alert(xmlhttp.responseText);
+    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+        if(xmlhttp.responseText != ''){
+          outputdiv.innerHTML = xmlhttp.responseText;
+	}
+	else{
+	  alert("The program did not generate any output. This may happen in case of an error condition. Please check your program and try again.");
+	  outputdiv.innerHTML= "";
+	}
+    }
+    };
+    outputdiv = document.getElementsByTagName('output');
+    outputdiv.innerHTML = "";
+    //alert("{{ codeexecurl }}");
+    xmlhttp.open("POST", '{{ codeexecurl }}', true);
+    postdata = "code=" + codecontent_enc + "&progenv={{progenv}}&csrfmiddlewaretoken=" + document.frmchallenge.csrfmiddlewaretoken.value + "&testid=" + testid + "&challengeid=" + challengeid + "&emailid=" + targetemail;
+    //alert(postdata);
+    outputdiv.innerHTML = "<img src='static/images/loading_small.gif'> Please wait while we execute your code. Might take a few minutes.";
+    xmlhttp.send(postdata);
+}
+
 function getchallenges(encjson, starttime, mytime, ruleflag){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
@@ -1651,7 +1696,8 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
-            pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec();'><div id='output' style='color:blue;'></div><br /><br />";
+	    //alert("HERE");
+            pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'><div id='output'></div><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
             pages[pagectr][0] += "<b>Select from below:</b><br />";
