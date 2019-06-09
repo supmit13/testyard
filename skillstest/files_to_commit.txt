@@ -3260,5 +3260,14 @@ Sunday, June 09, 2019, 00:30 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Monday, June 11, 2019, 01:23 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add ../services/conf/listener.ini
+3. git add ../services/lib/baseini/liteini.c
+4. git add ../services/lib/baseini/liteini.h
+5. git add files_to_commit.txt
+
+=========================================
 
 

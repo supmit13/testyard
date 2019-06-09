@@ -1,6 +1,6 @@
 /*
 Compile Command: gcc -o listener listener.c
-*** gcc -Wall -o listener $(xml2-config --cflags) $(xml2-config --libs) listener.c  -I/usr/include/libxml2  -lxml2 
+*** gcc -Wall -o listener $(xml2-config --cflags) $(xml2-config --libs) listener.c  -I/usr/include/libxml2  -lxml2 -lliteini 
 
 In order to run the above code, you need to install the following libraries using apt-get (on Ubuntu/Debian systems):
 apt-get install libxml2
@@ -18,8 +18,11 @@ other variable values using a settings file (listener.ini), which will be placed
 that resides in the same directory where 'listener' resides. For now, you need to manipulate 'listen_settings.ini' by
 using a text editor manually. May be, later on at some point in time, we will provide you with a GUI to do these changes.
 
-Code writer: Supriyo Mitra. In case of any discrepancies/issues/failures, please shout out to me at testyard.in@gmail.com 
+Also Note: The listener.ini file should always be at the relative location on ./conf/listener.ini. Otherwise, it won't 
+work. The libliteini.a is expected to be in /usr/local/lib or any other appropriately standard location. For more info,
+please refer to the ./docs/commands.txt file for the process of statically linking liteini.c as libliteini.a.
 
+Code writer: Supriyo Mitra. In case of any discrepancies/issues/failures, please shout out to me at testyard.in@gmail.com.
 */
 
 #include <stdio.h>
@@ -32,9 +35,13 @@ Code writer: Supriyo Mitra. In case of any discrepancies/issues/failures, please
 #include <netinet/in.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include <libxml/parser.h>
+#include "liteini.h"
+
 
 #define MAX_SIZE 100000
+#define NULL 0
 
 
 typedef struct codemap{
@@ -65,8 +72,8 @@ int main(int argc, char *argv[]){
 	int sockfd, r, conn_backlogs, reuseaddr;
 	struct sockaddr_in server;
 	char *ipaddr, *retval;
-	int port, max_code_size;
-    int sessfd, read_size;
+	int max_code_size;
+    	int sessfd, read_size;
 	pid_t pid;
 	unsigned char **code;
 	char *buffer;
@@ -74,24 +81,58 @@ int main(int argc, char *argv[]){
 	char *proglang;
 	char **retlist;
 
-    /* 
+	/* Get all values from the ./conf/listener.ini file */
+	char *file;
+	int *sect_count;
+	section *sections_list;
+	int pcount = 0;
+	sect_count = (int *)malloc(sizeof(int));
+	*sect_count = 0;
+	file = (char *)malloc(80*sizeof(char));
+	strcpy(file,"./conf/listener.ini"); 
+	sections_list = (section *)malloc(MAX_SECTIONS * sizeof(section));
+	get_sections(file, &sect_count, &sections_list);
+        getElementsBySectionName(&sections_list, "Connections", sect_count, &pcount);
+        /* printf("\n\nPCOUNT  is %d\n\n", pcount); */
+	char *ipaddress;
+	int *port;
+        char *s_port;
+	size_t *connbacklogs;
+	ipaddress = (char *)malloc(25 * sizeof(char));
+        port = (int *)malloc(sizeof(int));
+        connbacklogs = (size_t *)malloc(sizeof(size_t));
+        
+	strcpy(ipaddress, getValueByKeyFromSection("ipaddress", pcount));
+        s_port = (char *)malloc(6 * sizeof(char));
+        strcpy(s_port, getValueByKeyFromSection("port", pcount));
+	printf("PORT VALUE RETURNED IS %s\n\n", s_port);
+        *port = (int)strtol(s_port, NULL, 10);
+        connbacklogs = getValueByKeyFromSection("connection_backlogs", pcount);
+        printf("\n\n\n----------------'\nValue for port and ip address is: %d is '%s'\n------------\n\n\n", *port, ipaddress);
+	int pctr = 0;
+	for(pctr=0; pctr < pcount; pctr++){
+	    char *key, *value;
+	    key = (char *)malloc(25 * sizeof(char));
+	    value = (char *)malloc(40 * sizeof(char));
+	    strcpy(key, key_value_dict[pctr][0]);
+	    strcpy(value, key_value_dict[pctr][1]);
+	    printf("Key Value in element no. %d: %s, %s\n\n", pctr, key_value_dict[pctr][0], key_value_dict[pctr][1]);
+	}
+	/* Ini file data extraction ends here */
+
+       /* 
        I will be using 'malloc' very heavily here though I understand its vulnerabilities. Later on, I would put a 
        wrapper around it so that the vulnerabilities are taken care of. Till then, this code needs  to be very careful
        about accepting inputs from users and processing data anywhere in the code. ++ Supriyo Mitra. 
-    */
-    port = 8787; /* default port to listen to */
-    data = (char *)malloc(MAX_SIZE * sizeof(char));
+       */
+    	data = (char *)malloc(MAX_SIZE * sizeof(char));
 	proglang = (char *)malloc(20 * sizeof(char));
-	ipaddr = (char *)malloc(16 * sizeof(int)); 
-	strcpy(ipaddr, "192.168.1.4");/* SHOULD COME FROM CONFIG FILE */
 	retval = (char *)malloc(100 * sizeof(char));
 	conn_backlogs = 5; /* default backlog connections. THIS SHOULD COME FROM CONFIG. */
 	reuseaddr = 1; 
 	/* 
 	By default we would allow the network service to be restarted when there are connections in the ESTABLISHED and TIME_WAIT state.
 	*/
-	readconfig(ipaddr, &port, &conn_backlogs, &reuseaddr, &max_code_size);
-	/* code = (char *)malloc(max_code_size * sizeof(char)); */
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if(sockfd == -1){
 		printf("Could not create socket errno=%d\n", errno); /* Please provide the reason for the error */
@@ -107,7 +148,7 @@ int main(int argc, char *argv[]){
 	server.sin_family = AF_INET;
     	server.sin_addr.s_addr = INADDR_ANY;
 	
-	server.sin_port = htons(port);
+	server.sin_port = htons(*port);
 	printf("Trying to bind the socket....\n\n");
 	fflush(stdout);
     	r = bind(sockfd, (struct sockaddr *)&server, sizeof(server));
@@ -116,7 +157,7 @@ int main(int argc, char *argv[]){
 		printf("Bind to socket failed. errno=%d\n", errno);
 		_exit(0);
 	}
-	printf("Successfully bound to the given address and port %s and %d respectively.\n", ipaddr, port);
+	printf("Successfully bound to the given address and port %s and %d respectively.\n", ipaddress, *port);
 	fflush(stdout);
 	listen(sockfd, conn_backlogs);
         printf("Listening for incoming connections...\n");
@@ -237,8 +278,6 @@ void base64_cleanup() {
 }
 /* Base64 decoding code ends here */
 
-void readconfig(char *ipaddr, int *port, int *backlogs, int *reuseaddr, int *max_code_size){
-}
 
 void send_err_msg(int errnum){
 }
@@ -311,7 +350,10 @@ void replace_nbsp_with_space(char ***code){
 		    i = 0;
 		    j = 0;
 		    nbspflag = 1;
-		    for(j = ctr + 1, i = ctr + 6; j <= ctr + 5, i < strlen(**code); j++, i++){
+		    for(j = ctr + 1, i = ctr + 6; i < strlen(**code); j++, i++){
+			if(j > ctr + 5){
+			    break;
+			}
 			if(nbspflag == 1){
 			    **code[ctr + j] = **code[i];
 		        }

@@ -182,7 +182,7 @@ void __attribute__ ((constructor)) initLibrary(void) {
 
 void __attribute__ ((destructor)) cleanUpLibrary(void) {
  //
- // Function that is called when the library is »closed«.
+ // Function that is called when the library is closed.
  //
 }
 
