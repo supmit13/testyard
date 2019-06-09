@@ -3269,5 +3269,10 @@ Monday, June 11, 2019, 01:23 HRS.
 5. git add files_to_commit.txt
 
 =========================================
+Monday, June 11, 2019, 02:53 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add files_to_commit.txt
 
+=========================================
 

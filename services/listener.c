@@ -241,8 +241,8 @@ unsigned char *b64decode(const char *data, size_t input_length, size_t *output_l
     if (decoded_data == NULL){
 	return NULL;
     }
-
-    for (int i = 0, j = 0; i < input_length;) {
+    int i, j;
+    for (i = 0, j = 0; i < input_length;) {
         uint32_t sextet_a = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
         uint32_t sextet_b = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
         uint32_t sextet_c = data[i] == '=' ? 0 & i++ : decoding_table[data[i++]];
@@ -266,8 +266,8 @@ unsigned char *b64decode(const char *data, size_t input_length, size_t *output_l
 
 void build_decoding_table() {
     decoding_table = malloc(256);
- 
-    for (int i = 0; i < 64; i++){
+    int i;
+    for (i = 0; i < 64; i++){
         decoding_table[(unsigned char) encoding_table[i]] = i;
     }
 }
