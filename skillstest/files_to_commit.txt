@@ -3282,4 +3282,10 @@ Tuesday, June 25, 2019, 02:31 HRS.
 3. git add files_to_commit.txt
 
 =========================================
+Tuesday, June 25, 2019, 03:35 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
 
