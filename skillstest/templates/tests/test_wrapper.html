@@ -1397,7 +1397,11 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     codingtypepattern = new RegExp("CODN");
     progdiv = document.getElementById('progeditor');
     var progenv = "{{progenv}}".toLowerCase();
+    if(progenv == "multi" && "{{proglanguage}}" != ""){
+	progenv = "{{proglanguage}}";
+    }
     cmscript = document.createElement('script');
+    //alert(progenv);
     cmscript.src = "static/codemirror/mode/" + progenv + "/" + progenv + ".js";
     progdiv.appendChild(cmscript);
     if(codingtypepattern.exec(testpages[elem][0])){
@@ -1416,7 +1420,11 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 }
 
 
-function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, tabid, qalist){
+//function showchallengesindex(randomlist, testpages, starttime, mytime, tabref, tabid, qalist){
+// Above declaration was debugged and the following one seems to be the correct version.
+// supriyo.
+function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist){
+    //alert(testpagesstr);
     testpages = JSON.parse(Base64.decode(testpagesstr));
     qareadiv = document.getElementById('qarea');
     timeandnamediv = document.getElementById('timeandname');
@@ -1483,6 +1491,9 @@ function showchallengesonebyone (index, randomlist, testpagesstr, starttime, tab
     codingtypepattern = new RegExp("CODN");
     progdiv = document.getElementById('progeditor');
     var progenv = "{{progenv}}".toLowerCase();
+    if(progenv == "multi" && "{{proglanguage}}" != ""){
+	progenv = "{{proglanguage}}";
+    }
     cmscript = document.createElement('script');
     cmscript.src = "static/codemirror/mode/" + progenv + "/" + progenv + ".js";
     progdiv.appendChild(cmscript);

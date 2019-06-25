@@ -2646,6 +2646,8 @@ def showtestcandidatemode(request):
         challengesdict[statement]['oneormore'] = challenge.oneormore
         challengesdict[statement]['chid'] = challenge.id
         challengesdict[statement]['progenv'] = challenge.test.progenv
+        if(challenge.test.progenv == "multi"):
+            challengesdict[statement]['progenv'] = challenge.proglang
     testdict['challenges'] = challengesdict
     jsonstr = json.dumps(testdict)
     # Now, encrypt jsonstr...
@@ -5159,14 +5161,14 @@ def executecode(request):
         return response 
     max_conn_backlogs = mysettings.MAX_CONN_BACKLOGS_LEN
     retdata = ""
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((code_exec_host, int(code_exec_port)))
     try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((code_exec_host, int(code_exec_port)))
         s.sendall(xml)
         retdata = s.recv(1024)
     except:
         print "Error: %s\n\n"%sys.exc_info()[1].__str__()
-        retdata = "Couldn't retrieve any response from the code execution service."
+        retdata = "Had some problem with the code execution service."
     return HttpResponse(retdata)
     
 
