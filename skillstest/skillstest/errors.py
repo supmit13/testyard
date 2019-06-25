@@ -56,7 +56,7 @@ error_codes = { \
         '1057' : 'No key named challengeid from the POST request', \
         '1058' : 'Could not create test object. Please contact the administrator with the details of the operation you were performing.', \
         '1059' : 'No Test Id found in request', \
-        '1060' : 'The challenges could not be edited as the test has either been published already or is in active state.', \
+        '1060' : 'The challenges could not be saved as the test has either been published already or is in active state.', \
         '1061' : 'Couldn\'t find the test object associated with the given challenge.',\
         '1062' : 'Couldn\'t find the challenge associated with the given testlinkid',\
         '1063' : 'User is NOT permitted to view this test or any of its challenges in edit mode.',\
