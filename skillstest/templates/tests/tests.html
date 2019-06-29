@@ -1673,7 +1673,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    waitdivtag.innerHTML = "<img src='static/images/loading_small.gif'>";
 		}
 
-
+		
 		//This method will be replaced by one that calls the server side scripts to populate it.
 		function evaluateresponses(testid, emailid, responsetext,utid){
 		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
@@ -1740,12 +1740,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				//alert(candidaterespdecoded);
 			    }
 			}
-			candidaterespdecoded = candidaterespdecoded.replace(/^\s*;/, "");
-			candidaterespdecoded = candidaterespdecoded.replace("\n", "<br />");
-			candidaterespdecoded = candidaterespdecoded.replace("\r", "<br />");
+			//alert(candidaterespdecoded);
+    			candidaterespdecoded = candidaterespdecoded.replace(/(\r\n|\r|\n|\f|\r\f)/g, "<br>");
+			candidaterespdecoded = candidaterespdecoded.replace(/ /g, '\u00a0');//Replace space with nbsp ('\u00a0' is &nbsp;)
 			candidaterespdecoded = candidaterespdecoded.replace("__GT__", ">");
 			candidaterespdecoded = candidaterespdecoded.replace("__LT__", "<");
-			//alert(candidaterespdecoded);
+			
 			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
 			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;

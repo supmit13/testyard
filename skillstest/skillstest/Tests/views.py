@@ -3556,7 +3556,7 @@ def evaluate(request):
     if userisvalidevaluator: # Get a list of all candidates who have taken this test.
         utqset = UserTest.objects.filter(test=testobj)
         wbuqset = WouldbeUsers.objects.filter(test=testobj)
-        fp = open("/home/supriyo/work/testyard/tmpfiles/answes.txt","w+")
+        #fp = open("/home/supriyo/work/testyard/tmpfiles/answes.txt","w+")
         for ut in utqset:
             if ut.active and not ut.cancelled and ut.status == 2:
                 candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment, 'evalcommitstate' : ut.evalcommitstate, 'disqualified' : ut.disqualified}
@@ -3575,7 +3575,7 @@ def evaluate(request):
                         ans = userrespobj.answer
                         for grp in slashbracketgroups:
                             userrespobj.answer = re.sub(slashbracketpattern, "\\]textrm{%s}\\["%str(grp), userrespobj.answer)
-                            fp.write(str(grp) + " ##################### " + userrespobj.answer)
+                            #fp.write(str(grp) + " ##################### " + userrespobj.answer)
                             textrmpattern = re.compile("^.*[t]?[extrm]{1}.*$", re.DOTALL)
                             textrmpatternobj = re.search(textrmpattern,userrespobj.answer)
                             if textrmpatternobj:
@@ -3590,7 +3590,7 @@ def evaluate(request):
                     # Change for display of english statements in mathjax code ends here.
                     candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
                 candidateresponses[ut.emailaddr + "####" + str(ut.id)] = candidaterec
-        fp.close()
+        #fp.close()
         for wbu in wbuqset:
             if wbu.active and not wbu.cancelled and wbu.status == 2:
                 candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment, 'evalcommitstate' : wbu.evalcommitstate, 'disqualified' : wbu.disqualified}
@@ -3672,7 +3672,7 @@ def showevaluationscr(request):
     evalcommitstate = usrtestobj.evalcommitstate
     candidateresponse['evalcommitstate'] = evalcommitstate # Should be 0 or 1
     # The above variables would be the same for all challenges related to this test.
-    fp = open("/home/supriyo/work/testyard/extralogs/dumplog.log", "w")
+    #fp = open("/home/supriyo/work/testyard/extralogs/dumplog.log", "w")
     candidateresponse['challenge_statement'] = {}
     for usrrespobj in usrrespqset:
         candidateresponse['challengecounter'] += 1
@@ -3687,7 +3687,7 @@ def showevaluationscr(request):
             candidateresponse['challenge_statement'][challenge_statement]['evaluation'] = usrrespobj.evaluation
             candidateresponse['challenge_statement'][challenge_statement]['negativescore'] = challenge.negativescore
             correctanswer = challenge.responsekey
-            fp.write(str(challenge_statement) + " #### " + str(challenge.challengescore) + " #### " + str(challenge.id) + " #### " + str(usrrespobj.evaluator_remarks) + " #### " + str(usrrespobj.evaluation) + " #### " + str(challenge.negativescore) + " #### " + candidateresponse['challengecounter'] + "\n\n")
+            #fp.write(str(challenge_statement) + " #### " + str(challenge.challengescore) + " #### " + str(challenge.id) + " #### " + str(usrrespobj.evaluator_remarks) + " #### " + str(usrrespobj.evaluation) + " #### " + str(challenge.negativescore) + " #### " + candidateresponse['challengecounter'] + "\n\n")
             correctanswerlist = []
             try:
                 correctanswerlist = correctanswer.split("#||#") # This is the pattern separating the answers in multiple choice type questions.
@@ -3723,8 +3723,9 @@ def showevaluationscr(request):
         cxt = Context(results_dict)
         candidateresponsehtml = tmpl.render(cxt)
     except:
-        fp.write(sys.exc_info()[1].__str__())
-    fp.close()
+        return HttpResponse(sys.exc_info()[1].__str__())
+        #fp.write(sys.exc_info()[1].__str__())
+    #fp.close()
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         candidateresponsehtml = candidateresponsehtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(candidateresponsehtml)
@@ -5526,9 +5527,9 @@ def setschedule(request):
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message += "Making ammends to rectify the situation... all will be well.\n"
-                fp = open("/home/supriyo/work/dddd1.txt", "w")
-                fp.write(message)
-                fp.close()
+                #fp = open("/home/supriyo/work/dddd1.txt", "w")
+                #fp.write(message)
+                #fp.close()
                 utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second))
                 utobj.validtill = datetime.datetime(int(end_new_year), int(end_new_month), int(end_new_day), int(end_new_hour), int(end_new_minute), int(end_new_second))
                 utobj.save()
@@ -5632,9 +5633,9 @@ def setschedule(request):
                 message += "Error: %s Making ammends to rectify the situation... All will be well.\n"%sys.exc_info()[1].__str__()
                 wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
                 wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
-                fp = open("/home/supriyo/work/dddd2.txt", "w")
-                fp.write(message)
-                fp.close()
+                #fp = open("/home/supriyo/work/dddd2.txt", "w")
+                #fp.write(message)
+                #fp.close()
                 wbuobj.save() 
     message += " Updated existing schedules."
     response = HttpResponse(message)
