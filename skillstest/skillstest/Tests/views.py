@@ -2773,6 +2773,15 @@ def gettestdata(request):
     if request.POST.has_key('testpages'):
         testpagesenc = request.POST['testpages']
     ts = int(time.time())
+    if tabref == "usertest":
+        utobj = UserTest.objects.get(id=tabid)
+        utobj.starttime = starttime
+        utobj.status = starttest
+    elif tabref == "wouldbeusers":
+        utobj = WouldbeUsers.objects.get(id=tabid)
+        utobj.starttime = starttime
+        utobj.status = starttest
+    utobj.save()
     ts_str = str(ts)
     answerscriptpath = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + testid + "_" + ts_str
     if not os.path.exists(answerscriptpath) and testpagesenc != "":
