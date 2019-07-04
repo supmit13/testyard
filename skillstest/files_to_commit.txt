@@ -3309,6 +3309,21 @@ Monday, July 01, 2019, 03:06 HRS.
 2. git add files_to_commit.txt
 
 =========================================
+Thursday, July 04, 2019, 02:30 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/Tests/models.py
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
+
+=========================================
+
+
+
 
 
 

@@ -2530,6 +2530,7 @@ def showtestcandidatemode(request):
     testdict['tabid'] = tabid
     testdict['codepadexecuteurl'] = skillutils.gethosturl(request) + "/" + mysettings.CODEPAD_EXECUTE_URL
     testdict['codeexecurl'] = skillutils.gethosturl(request) + "/" + mysettings.CODE_EXEC_URL
+    testdict['reportwindowchangeurl'] = skillutils.gethosturl(request) + "/" + mysettings.REPORT_WINDOW_CHANGE_URL
     #testdict['testlink'] = request.META['HTTP_REFERER']
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
@@ -5123,9 +5124,11 @@ def executecodepad(request):
     return response
 
 
+"""
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
+"""
 def executecode(request):
     """
     Method to execute code written by a test taker.
@@ -6471,7 +6474,7 @@ def mobile_listtestsandinterviews(request):
         print "Username is not the same as displayname. username: %s, displayname: %s"%(username, userobj.displayname)
         return HttpResponse(message) # Empty message sent.
     jsonResponse = {}
-    utestcandidateqset = UserTest.objects.filter(user=userobj)
+    utestcandidateqset = UserTest.objects.filter(user=userobj).order_by('starttime')
     testcreatorqset = Test.objects.filter(creator=userobj)
     evaluatorqset1 = Evaluator.objects.filter(groupmember1=userobj)
     evaluatorqset2 = Evaluator.objects.filter(groupmember2=userobj)
@@ -6495,12 +6498,16 @@ def mobile_listtestsandinterviews(request):
     jsonResponse['asCandidate'] = {}
     candidatesdata = {}
     ctr = 0
-    for ctr in range(0, utestcandidateqset.__len__() - 1):
+    currentdatetime = datetime.datetime.now()
+    for ctr in range(0, utestcandidateqset.__len__()):
         usertestobj = utestcandidateqset[ctr]
         testname = usertestobj.test.testname
         testscore = usertestobj.score
         outcome = usertestobj.outcome
         testdate = usertestobj.starttime
+        testurl = ""
+        if not usertestobj.status and usertestobj.active and not usertestobj.cancelled and not usertestobj.disqualified: # and (usertestobj.starttime is None or skillutils.mysqltopythondatetime(usertestobj.starttime) < currentdatetime) and (usertestobj.endtime is None or skillutils.mysqltopythondatetime(usertestobj.endtime) > currentdatetime):
+            testurl = usertestobj.testurl
         testdate_str = str(testdate)
         testdate_str_parts = testdate_str.split("+")
         testdate_str = testdate_str_parts[0]
@@ -6508,7 +6515,7 @@ def mobile_listtestsandinterviews(request):
         testtopic = usertestobj.test.topic.topicname
         if not testtopic:
             testtopic = usertestobj.test.topicname
-        candidatesdata[testname] = (testscore, outcome, testdate_serializable, testtopic)
+        candidatesdata[testname] = (testscore, outcome, testdate_serializable, testtopic, testurl)
     jsonResponse['asCandidate'] = candidatesdata
     jsonResponse['asCreator'] = {}
     creatordata = {}
@@ -7500,4 +7507,38 @@ def convertspeechtotext(request):
     userobj = sessionobj.user
     r = sr.Recognizer()
     
+
+def reportwindowchange(request):
+    """
+    This method sets the window change attempts field in usertest or wouldbeusers tables to the
+    number of times the test taker has tried to go to another window from the test window. Attempts
+    to go to another tab/window might mean that the test taker was trying to employ unfair means
+    of passing the test.
+    """
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    tabref, tabid, reportincident, csrftoken = "", 0, 0, ""
+    tabref = request.POST.get("tabref")
+    tabid = request.POST.get("tabid")
+    reportincident = request.POST.get("reportincident", 0)
+    csrftoken = request.POST.get("csrfmiddlewaretoken", "");
+    if not tabref or not tabid or not reportincident or not csrftoken:
+        return HttpResponse("")
+    utobjqset = UserTest.objects.filter(id=int(tabid))
+    if tabref == "wouldbeusers":
+        utobjqset = WouldbeUsers.objects.filter(id=int(tabid))
+    if list(utobjqset).__len__() < 1:
+        return HttpResponse("")
+    utobj = utobjqset[0]
+    changeattempts = utobj.windowchangeattempts
+    changeattempts = int(changeattempts) + 1
+    utobj.windowchangeattempts = changeattempts
+    utobj.save()
+    return HttpResponse(str(changeattempts))
+
+
+
 

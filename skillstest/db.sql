@@ -848,5 +848,8 @@ alter table Tests_interview modify column interviewer_ids  text default '';
 
 alter table Tests_challenge add column proglang varchar(200) default '';
 
+alter table Tests_usertest add column windowchangeattempts int(8) default 0;
+alter table Tests_wouldbeusers add column windowchangeattempts int(8) default 0;
+
 COMMIT;
 

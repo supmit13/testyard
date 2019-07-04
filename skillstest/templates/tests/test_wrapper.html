@@ -374,7 +374,7 @@ function sendtoserver(postdata){
     starttime = new Date();
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "<font color='#0000AA'>This test falls in the '" + topicname + "' category.</font><br /><br />";
-    qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you.</u></font><br /><br />";
+    qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you. Please also note that trying to move away from this tab/window during the course of the test will be reported.</u></font><br /><br />";
     qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
     // Make a check here to see if starttest
     clock();
@@ -1794,6 +1794,42 @@ function scrollclockhtml(){
 }
 
 
+function warnuseronlosingfocus(encjson){
+    csrftoken = "";
+    try{
+        csrftoken = document.frmchallenge.csrfmiddlewaretoken.value;
+    }
+    catch(err){
+        csrftoken = "";
+    }
+    if(csrftoken != ""){
+        alert("You are trying to leave this window. If you have finished taking this test, please close this tab/window before going to a different tab/window. This incident will be reported.");
+    }
+    else{
+        return(0);
+    }
+    decrypteddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decrypteddata);
+    tabref = jsonobj.tabtype;
+    tabid = jsonobj.tabid;
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        //alert(xmlhttp.responseText);
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+            //Do nothing here
+        }
+    };
+    
+    postdata = "tabref=" + tabref + "&tabid=" + tabid + "&reportincident=1&csrfmiddlewaretoken=" + csrftoken;
+    xmlhttp.open("POST", '{{ reportwindowchangeurl }}', true);
+    xmlhttp.send(postdata);
+}
 
 // Decrypt a string encrypted with triple DES
 function tripledesdecrypt(encstr){
@@ -1814,7 +1850,7 @@ html { min-height: 400%; margin-bottom: 1px; }
     }
 </style>
 </head>
-<body onload="javascript:decryptwrapper('####ENCJSON####');">
+<body onload="javascript:decryptwrapper('####ENCJSON####');" onblur="javascript:warnuseronlosingfocus('####ENCJSON####');">
 <script language="JavaScript">
 checkbrowser();
 </script>

@@ -156,8 +156,6 @@ class UserTest(models.Model):
     testurl = models.URLField(null=False, blank=False, help_text='URL to access the test by the user')
     test = models.ForeignKey(Test, blank=False, null=False)
     validfrom = models.DateTimeField(null=False, blank=False, default=datetime.datetime.now())
-    #validtill = models.DateTimeField(default=validfrom + datetime.timedelta(hours=Test.objects.get('id'=Test().id).duration))
-    #validtill = models.DateTimeField(default=datetime.datetime.time(validfrom) + datetime.timedelta(hours=3))
     # Need to find a method to set validtill depending on 'validfrom' value... For now I am leaving them the same.
     validtill = models.DateTimeField(null=False, blank=False, default=datetime.datetime.now())
     status = models.IntegerField(default=0, choices=((0, 'Not taken'), (1, 'Taking'), (2, 'Taken'))) # Determines whether the test has been taken, is being taken or will be taken.
@@ -179,6 +177,7 @@ class UserTest(models.Model):
     evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
     disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
     schedule = models.ForeignKey(Schedule, related_name="+", null=True, blank=True, default=None)
+    windowchangeattempts = models.IntegerField(default=0)
 
 
     class Meta:
@@ -347,6 +346,7 @@ class WouldbeUsers(models.Model):
     evalcommitstate = models.BooleanField(default=False) # Whether the evaluation has been committed by the evaluator or not.
     disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
     schedule = models.ForeignKey(Schedule, related_name="+", null=True, blank=True, default=None)
+    windowchangeattempts = models.IntegerField(default=0)
 
     class Meta:
         verbose_name = "wouldbeusers Table"
