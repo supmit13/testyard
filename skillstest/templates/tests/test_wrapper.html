@@ -1678,6 +1678,7 @@ function code_exec(testid, challengeid, targetemail){
     xmlhttp.send(postdata);
 }
 
+
 function getchallenges(encjson, starttime, mytime, ruleflag){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);

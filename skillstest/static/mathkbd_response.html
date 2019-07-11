@@ -815,6 +815,32 @@ function addmultiintegrallimit(n){
 		var var_bar = prompt("Please enter the element on which the bar should be placed");
 		document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + " \\bar{" + var_bar + "}";
 	    }
+	    else if(index == 244){
+		document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\mp ";
+	    }
+ 	    else if(index == 245){
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\cup ";
+	    }
+	    else if(index == 246){
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\cap ";
+	    }
+	    else if(index == 247){
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\subsetneq ";
+	    }
+	    else if(index == 248){
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\notin ";
+	    }
+	    else if(index == 249){
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\emptyset ";
+	    }
+	    else if(index == 250){
+		var var_overline = prompt("Please enter the variables on which the overline should be placed");
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\overline{" + var_overline + "} ";
+	    }
+	    else if(index == 251){
+		var var_overright = prompt("Please enter the variables on which the overrightarrow should be placed");
+                document.frmkeyboard.txtexpression.value = document.frmkeyboard.txtexpression.value + "\\overrightarrow{" + var_overright + "} ";
+	    }
 	    //MathJax.Hub.Queue(['Typeset', MathJax.Hub, document.frmkeyboard]);
         }
  
@@ -961,13 +987,14 @@ function addmultiintegrallimit(n){
 <tr><td colspan=6><h3><font color='#0000AA'>Set Operations</font></h3></td></tr>
 
 <tr><td><button type='button' id='Button101' value='supset' class='glass'><img src='/static/images/specialchars/supset.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button102' value='subsetq' class='glass'><img src='/static/images/specialchars/subsetq.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button103' value='subset' class='glass'><img src='/static/images/specialchars/subset.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button104' value='supsetq' class='glass'><img src='/static/images/specialchars/supsetq.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button7' value='in set' class='glass'><img src='/static/images/specialchars/in_set.png' style='width:40px;height:20px'></button></td></tr>
+<tr><td><button type='button' id='Button245' value='setcup' class='glass'><img src='/static/images/specialchars/setcup.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button246' value='setcap' class='glass'><img src='/static/images/specialchars/setcap.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button247' value='subsetneq' class='glass'><img src='/static/images/specialchars/subsetneq.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button248' value='setnotin' class='glass'><img src='/static/images/specialchars/setnotin.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button249' value='emptyset' class='glass'><img src='/static/images/specialchars/emptyset.png' style='width:40px;height:20px'></button></td></tr>
 
 <tr><td colspan=6><h3><font color='#0000AA'>Additional Math Symbols</font></h3></td></tr>
 <tr><td><button type='button' id='Button105' value='bar' class='glass'><img src='/static/images/specialchars/bar.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button106' value='hat' class='glass'><img src='/static/images/specialchars/hat.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button107' value='dot' class='glass'><img src='/static/images/specialchars/dot.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button108' value='forall' class='glass'><img src='/static/images/specialchars/forall.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button110' value='exists' class='glass'><img src='/static/images/specialchars/exists.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button180' value='fraction' class='glass'><img src='/static/images/specialchars/fraction.png' style='width:40px;height:20px'></button></td></tr>
 
 <tr><td><button type='button' id='Button181' value='underline' class='glass'><img src='/static/images/specialchars/underline.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button182' value="nth square root" class='glass'><img src='/static/images/specialchars/nthsqrtroot.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button183' value='overline' class='glass'><img src='/static/images/specialchars/overline.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button184' value="over left arrow" class='glass'><img src='/static/images/specialchars/overleftarrow.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button185' value="over right arrow" class='glass'><img src='/static/images/specialchars/overrightarrow.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button203' value="tends to" class='glass'><img src='/static/images/specialchars/tendsto.png' style='width:40px;height:20px'></button></td></tr>
 
-<tr><td><button type='button' id='Button199' value="log (base10)" class='glass'><img src='/static/images/specialchars/logbase10.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button200' value="log (natural)" class='glass'><img src='/static/images/specialchars/lognatural.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button201' value='degrees' class='glass'><img src='/static/images/specialchars/degrees.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button202' value='exponential' class='glass'><img src='/static/images/specialchars/exponential.png' style='width:40px;height:20px'></button></td><td>&nbsp;</td><td>&nbsp;</td></tr>
+<tr><td><button type='button' id='Button199' value="log (base10)" class='glass'><img src='/static/images/specialchars/logbase10.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button200' value="log (natural)" class='glass'><img src='/static/images/specialchars/lognatural.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button201' value='degrees' class='glass'><img src='/static/images/specialchars/degrees.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button202' value='exponential' class='glass'><img src='/static/images/specialchars/exponential.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button250' value='overline' class='glass'><img src='/static/images/specialchars/overline.png' style='width:40px;height:20px'></button></td><td><button type='button' id='Button251' value="ddots" class='glass'><img src='/static/images/specialchars/ddots.png' style='width:40px;height:20px'></button></td></tr>
 
 <tr><td colspan=6><h3><font color='#0000AA'>Utility Math Symbols</font></h3></td></tr>
 

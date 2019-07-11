@@ -154,6 +154,7 @@
 	    csrfform = document.getElementById(formid);
 	    csrftoken = csrfform.csrfmiddlewaretoken.value;
 	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    //alert(encodedpostdata);
 	    progdiv = document.getElementById('showprogress_' + ctr.toString());
 	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
 	    progdiv.style = "";
@@ -745,7 +746,7 @@
 		    postdata += settingselements[i].name + "=" + encodeURI(settingselements[i].value) + "&";
 		}
 		else{
-		    if(settingselements[i].name == "allowentry" || settingselements[i].name == "ispaid"){
+		    if(settingselements[i].name == "allowentry" || settingselements[i].name == "ispaid" || settingselements[i].name == "require_owner_perms"){
 			if(settingselements[i].checked == true){
 		    	    postdata += settingselements[i].name + "=" + settingselements[i].value + "&";
 			}
@@ -807,14 +808,14 @@
 	}
 
 
-	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency){
+	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency, require_owner_perms){
 	    openclosediv = document.getElementById('openclose');
 	    paramspaneldiv = document.getElementById('paramspanel');
 	    openpattern = new RegExp("Open");
 	    openclosecontent = openclosediv.innerHTML;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
  	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
-		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
 		if(!grpimgfile){
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
 		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='static/images/nopic.png' height='{{image_height}}' width='{{image_width}}' alt='Group Image' id='groupimage'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
@@ -856,11 +857,12 @@
 		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'  onChange='javascript:changefinancialcontrolstate(this);'>";
 		}
 		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Review user before admitting into the group:&nbsp;</font></td>";
-		{% if require_owner_perms %}
+		if(require_owner_perms == "True"){
 		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' checked onchange='javascript:changepaidstatus();'>";
-		{% else %}
+		}
+		else{
 		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' onchange='javascript:changepaidstatus();'>";
-		{% endif %}
+		}
 		if(ispaid == 'True'){
 		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
@@ -893,13 +895,13 @@
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
-		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick=javascript:managegroupmembers('" + grpname + "');><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
+		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick='javascript:managegroupmembers(\"" + grpname + "\");'><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
 		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
 		paramspaneldiv.style.display = "";
 	 	paramspaneldiv.innerHTML = html;
 	    }
 	    else{
-		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + require_owner_perms + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
 		paramspaneldiv.innerHTML = "";
 		paramspaneldiv.style.display = "none";
 	    }
@@ -1131,10 +1133,16 @@
 
 
 	function discardreply(postid){
- 	    replydivid = "replydiv" + postid.toString();
-	    replydivcontrol = document.getElementById(replydivid);
-	    replydivcontrol.innerHTML = "";
-	    //replydivcontrol.style = "display:none;";
+	    r = confirm("This action will discard your message. Do you want to continue?");
+	    if(r){
+		replydivid = "replydiv" + postid.toString();
+	    	replydivcontrol = document.getElementById(replydivid);
+	    	replydivcontrol.innerHTML = "";
+	    	//replydivcontrol.style = "display:none;";
+	    }
+	    else{
+		return (false);
+ 	    }
 	}
 
 	function postreply(postid){
@@ -1215,7 +1223,7 @@
 		xmlhttp.open('GET', attachedfile, false);
 	    	xmlhttp.send();
 		if(xmlhttp.status==404){
-		    posts += "<br><center>Image has been removed</center>";
+		    posts += "<br><center>No Images</center>";
 		}
 		else if(imgpattern.test(attachedfile)){
 		    posts += "<br><center><img src='" + attachedfile + "' width='200px' height='150px'></center>";
@@ -2286,6 +2294,7 @@
             var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
 	    postdata += "&useremail=" + useremail;
 	    textmsg = document.getElementById('msgcontent');
+	    alert(textmsg + "   1  ");
 	    msgvalue = textmsg.value;
 	    postdata += "&message=" + msgvalue;
  	    waitspanelem = document.getElementById('waitspan');
@@ -2296,6 +2305,7 @@
             else{
                 xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
             }
+	    alert(textmsg + "   2  ");
             xmlhttp.onreadystatechange = function(){
                 if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    waitspanelem.innerHTML = xmlhttp.responseText;

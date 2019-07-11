@@ -626,11 +626,11 @@ def handlejoinrequest(request):
         # Handle payment through payment gateway 
     else: # Vanilla flavoured group - no payment to make, but require owner perms.
         if require_owner_perms:
-            joinrequest.outcome = 'hold'
+            joinrequest.outcome = 'open'
             joinrequest.active = True
             joinrequest.reason += "require owner perms" 
             # The group owner will be presented with a page listing all join requests whose  
-            # 'outcome' is 'hold' and 'reason' is 'require owner perms'.
+            # 'outcome' is 'open' and 'reason' is 'require owner perms'.
             allowinvitationflag = True
             try:
                 joinrequest.save()
@@ -657,7 +657,7 @@ def handlejoinrequest(request):
                 return response
             try:
                 grpmember.save()
-                message = "Join request handled successfully."
+                message = "Join request sent successfully."
             except:
                 message = error_msg('1097')%(sys.exc_info()[1].__str__())
     response = HttpResponse(message)
@@ -1118,6 +1118,7 @@ def savegroupdata(request):
     userobj = sessionobj[0].user
     message = ""
     topics, maxmemberslimit, grouptypes, allowentry, ispaid, entryfee, bankname, bankbranch, acctname, acctnum, ifsccode, alltestsowned, adminremarks, groupname, currency = ("" for i in range(0,15))
+    req_owner_perms = False
     if request.POST.has_key('topics'):
         topics = request.POST['topics']
         topics = topics.replace("_", " ")
@@ -1151,6 +1152,8 @@ def savegroupdata(request):
         adminremarks = request.POST['adminremarks']
     if request.POST.has_key('groupname'):
         grpname = request.POST['groupname']
+    if request.POST.has_key('require_owner_perms'):
+        req_owner_perms = True
     groupqset = Group.objects.filter(groupname=grpname).filter(owner=userobj)
     if groupqset.__len__() == 0:
         message = error_msg('1088')
@@ -1163,6 +1166,7 @@ def savegroupdata(request):
     groupobj.adminremarks = adminremarks
     groupobj.allowentry = allowentry
     groupobj.ispaid = ispaid
+    groupobj.require_owner_permission = req_owner_perms
     if entryfee == "":
         groupobj.entryfee = 0
     else:

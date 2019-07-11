@@ -3321,9 +3321,17 @@ Thursday, July 04, 2019, 02:30 HRS.
 8. git add files_to_commit.txt
 
 =========================================
+Thursday, July 12, 2019, 03:40 HRS.
+-----------------------------------------
+1. git add static/mathkbd_response.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Network/views.py
+4. git add skillstest/Network/models.py
+5. git add templates/network/network.html
+6. git add templates/network/managegroups.html
+7. git add files_to_commit.txt
 
-
-
+=========================================
 
 
 
