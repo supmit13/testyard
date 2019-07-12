@@ -1351,6 +1351,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		// the newly created test (copied) and it is populated in a
 		// div.
 		function copytest(testid){
+		    var resp = confirm("Do you want to copy this test? Press 'Ok' to continue, and 'Cancel' to stop this operation.");
+		    if(!resp){
+			return(false);
+		    }
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
     		        xmlhttp=new XMLHttpRequest();

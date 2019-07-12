@@ -3340,6 +3340,10 @@ Thursday, July 12, 2019, 20:29 HRS.
 4. git add files_to_commit.txt
 
 =========================================
+Thursday, July 12, 2019, 20:47 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
 
-
+=========================================
 
