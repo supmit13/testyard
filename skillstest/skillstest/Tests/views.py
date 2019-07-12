@@ -2392,16 +2392,13 @@ def showtestcandidatemode(request):
         return response
     query_string = ""
     try:
-        query_string = base64.b64decode(request.POST)
-        #query_string = base64.b64decode(request.META['QUERY_STRING'])
+        query_string = base64.b64decode(request.META['QUERY_STRING'])
+        #query_string = base64.b64decode(request.POST)
     except:
         message = error_msg('1078')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
     query_string_parts = query_string.split("&")
-    #fp1 = open("/home/supriyo/work/testyard/tmpfiles/file1.txt", "w")
-    #fp1.write(request.POST)
-    #fp1.close()
     testid, targetemail, mode, rand = -1, "", "", ""
     for qpart in query_string_parts:
         qkey, qval = qpart.split("=")
@@ -2425,9 +2422,6 @@ def showtestcandidatemode(request):
         message = error_msg('1056')
         response = HttpResponse(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
-    #fp2 = open("/home/supriyo/work/testyard/tmpfiles/file2.txt", "w")
-    #fp2.write(testobj.testname + "\n is the name of the test")
-    #fp2.close()
     testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
     tabtype = 'usertest'
     testtakeruserobj = None
@@ -2446,9 +2440,6 @@ def showtestcandidatemode(request):
         return response
     tabid = testtakeruserobj.id
     userobj = None
-    #fp3 = open("/home/supriyo/work/testyard/tmpfiles/file3.txt", "w")
-    #fp3.write(tabid + "\n is the table Id\n")
-    #fp3.close()
     try:
         userobj = User.objects.filter(emailid=testtakeruserobj.emailaddr)[0]
     except:
@@ -2517,9 +2508,6 @@ def showtestcandidatemode(request):
         testdict['usercreatorevaluatorflag'] = 1
     else:
         pass
-    #fp4 = open("/home/supriyo/work/testyard/tmpfiles/file4.txt", "w")
-    #fp4.write(testobj.testname + "\n is the test name.\ntest Id:" + str(testobj.id))
-    #fp4.close()
     testdict['testname'] = testobj.testname
     testdict['testid'] = testobj.id
     testdict['topicname'] = testobj.topicname # for built-in topic
@@ -2664,9 +2652,6 @@ def showtestcandidatemode(request):
             challengesdict[statement]['progenv'] = challenge.proglang
     testdict['challenges'] = challengesdict
     jsonstr = json.dumps(testdict)
-    #fp5 = open("/home/supriyo/work/testyard/tmpfiles/file5.txt", "w")
-    #fp5.write(jsonstr)
-    #fp5.close()
     # Now, encrypt jsonstr...
     #(encjsonstr, iv) = encryptstring(jsonstr)
     testdict['secret_key'] = base64.b64encode(mysettings.DES3_SECRET_KEY)
