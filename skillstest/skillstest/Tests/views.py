@@ -1707,10 +1707,10 @@ def editexistingtest(request):
         ttopicsval = ttopics.replace(" ", "__")
         ttopicsval = ttopics.replace('""', '"')
         if testtopicname == ttopics and not unique_topics.has_key(ttopicsval):
-            create_test_dict['testtopics'] += "<option value=%s selected>%s</option>"%(ttopicsval, ttopics)
+            create_test_dict['testtopics'] += "<option value='%s' selected>%s</option>"%(ttopicsval, ttopics)
             unique_topics[ttopicsval] = 1
         elif not unique_topics.has_key(ttopicsval):
-            create_test_dict['testtopics'] += "<option value=%s>%s</option>"%(ttopicsval, ttopics)
+            create_test_dict['testtopics'] += "<option value='%s'>%s</option>"%(ttopicsval, ttopics)
             unique_topics[ttopicsval] = 1
         # Get topics created in the past by this user
     usertopics = Topic.objects.filter(user=userobj, isactive=True)
@@ -1718,10 +1718,10 @@ def editexistingtest(request):
         topicname = topic.topicname.replace(" ", "__")
         topicname = topic.topicname.replace('""', '"')
         if testtopicname == topic.topicname and not unique_topics.has_key(topicname):
-            create_test_dict['testtopics'] += "<option value=%s selected>%s</option>"%(topicname, topic.topicname)
+            create_test_dict['testtopics'] += "<option value='%s' selected>%s</option>"%(topicname, topic.topicname)
             unique_topics[topicname] = 1
         elif not unique_topics.has_key(topicname):
-            create_test_dict['testtopics'] += "<option value=%s>%s</option>"%(topicname, topic.topicname)
+            create_test_dict['testtopics'] += "<option value='%s'>%s</option>"%(topicname, topic.topicname)
             unique_topics[topicname] = 1
     create_test_dict['totalscore'] = testobj.maxscore
     create_test_dict['evendistribution'] = 1 # Need to find from the existing challenges as to what its value should be.
