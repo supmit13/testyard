@@ -3369,4 +3369,12 @@ Saturday, July 13, 2019, 13:51 HRS.
 3. git add files_to_commit.txt
 
 =========================================
+Saturday, July 13, 2019, 15:27 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/create_test_form.html
+4. git add files_to_commit.txt
+
+=========================================
 
