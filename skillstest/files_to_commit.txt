@@ -3321,7 +3321,7 @@ Thursday, July 04, 2019, 02:30 HRS.
 8. git add files_to_commit.txt
 
 =========================================
-Thursday, July 12, 2019, 03:40 HRS.
+Thursday, July 11, 2019, 03:40 HRS.
 -----------------------------------------
 1. git add static/mathkbd_response.html
 2. git add templates/tests/test_wrapper.html
@@ -3332,7 +3332,7 @@ Thursday, July 12, 2019, 03:40 HRS.
 7. git add files_to_commit.txt
 
 =========================================
-Thursday, July 12, 2019, 20:29 HRS.
+Thursday, July 11, 2019, 20:29 HRS.
 -----------------------------------------
 1. git add skillstest/Tests/views.py
 2. git add templates/tests/tests.html
@@ -3340,13 +3340,13 @@ Thursday, July 12, 2019, 20:29 HRS.
 4. git add files_to_commit.txt
 
 =========================================
-Thursday, July 12, 2019, 20:47 HRS.
+Thursday, July 11, 2019, 20:47 HRS.
 -----------------------------------------
 1. git add templates/tests/tests.html
 2. git add files_to_commit.txt
 
 =========================================
-Friday, July 13, 2019, 14:09 HRS.
+Friday, July 12, 2019, 14:09 HRS.
 -----------------------------------------
 1. git add skillstest/Tests/views.py
 2. git add templates/tests/tests.html
@@ -3354,5 +3354,12 @@ Friday, July 13, 2019, 14:09 HRS.
 4. git add files_to_commit.txt
 
 =========================================
+Saturday, July 13, 2019, 01:12 HRS
+-----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add templates/tests/manageinvitations.html
+4. git add files_to_commit.txt
 
+=========================================
 
