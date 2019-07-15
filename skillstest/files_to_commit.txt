@@ -3377,4 +3377,12 @@ Saturday, July 13, 2019, 15:27 HRS.
 4. git add files_to_commit.txt
 
 =========================================
+Monday, July 15, 2019, 03:08 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+
+
 

@@ -7345,12 +7345,41 @@ def linkedinredirect(request):
         print "Could not make HTTP request to acquire authorization code: %s"%sys.exc_info()[1].__str__()
         return HttpResponse("Could not make HTTP request to acquire authorization code: %s"%sys.exc_info()[1].__str__())
     tokenResponseContent = skillutils._decodeGzippedContent(tokenResponse.read())
+    urn = ""
     responsejson = json.loads(tokenResponseContent)
     accesstoken = responsejson['access_token']
+    """
+    ff = open("/home/supriyo/work/testyard/tmpfiles/linkedinresponse.txt", "w")
+    ff.write(tokenResponseContent)
+    ff.write("\n\n#################################\n\n")
+    ff.write(accesstoken)
+    ff.close()
+    """
+    # Make a GET request to /v2/me to get the URN value.
+    httpHeaders = {}
+    httpHeaders['Content-Type'] = "application/json"
+    httpHeaders['x-li-format'] = "json"
+    httpHeaders['X-Restli-Protocol-Version'] = "2.0.0"
+    httpHeaders['Authorization'] = "Bearer " + accesstoken
+    httpHeaders['X-Target-URI'] = "https://api.linkedin.com"
+    httpHeaders['Host'] = "api.linkedin.com"
+    httpHeaders['Connection'] = "Keep-Alive"
+    urnurl = "https://api.linkedin.com/v2/me"
+    urnrequest = urllib2.Request(urnurl, None, httpHeaders)
+    try:
+        urnresponse = opener.open(urnrequest)
+    except:
+        print "Could not successfully make the request to /v2/me -Error: %s"%sys.exc_info()[1].__str__()
+        return HttpResponse("Could not successfully make the request to /v2/me -Error: %s"%sys.exc_info()[1].__str__())
+    urncontent = skillutils._decodeGzippedContent(urnresponse.read())
+    urnjson = json.loads(urncontent)
+    
     # Otherwise, now we are all poised to post the message on linkedin.
-    shareurl = "https://api.linkedin.com/v1/people/~/shares?format=json"
+    #shareurl = "https://api.linkedin.com/v1/people/~/shares?format=json"
+    shareurl = "https://api.linkedin.com/v2/ugcPosts"
     #sharedata = { "content" : {"title" : "", "description" : "", 'submitted-url' : "https://testyard.in/", 'submitted-image-url' : "https://testyard.in/"}, "comment" : "", "visibility" : { "code" : "anyone" }}
-    sharedata = { "content" : {"title" : "", "description" : "", 'submitted-url' : "https://testyard.in/", 'submitted-image-url' : "https://testyard.in/"}, "comment" : "", "visibility" : { "code" : "anyone" }}
+    sharedata = { "author": "", "lifecycleState": "PUBLISHED", "specificContent": { "com.linkedin.ugc.ShareContent": { "shareCommentary": { "text": "" }, "shareMediaCategory": "NONE" } }, "visibility": { "com.linkedin.ugc.MemberNetworkVisibility": "CONNECTIONS" } }
+    sharedata["author"] = "urn:li:person:" + urn
     if rolename == "creator":
         objectname = ""
         if postlinkedinobj.test:
@@ -7361,9 +7390,12 @@ def linkedinredirect(request):
             else:
                 topicname = postlinkedinobj.test.topicname
             objecttopic = postlinkedinobj.test.topic
+        """
         sharedata["comment"] = "Created a test named '%s' under '%s' topic"%(objectname, topicname)
         sharedata["content"]["title"] = "Test Created"
         sharedata["content"]["description"] = "Test Created"
+        """
+        sharedata["specificContent"]["com.linkedin.ugc.ShareContent"]["shareCommentary"]["text"] = "Created a test named '%s' under '%s' topic"%(objectname, topicname)
     elif rolename == "evaluator":
         if postlinkedinobj.test:
             objectname = postlinkedinobj.test.testname
@@ -7372,9 +7404,12 @@ def linkedinredirect(request):
                 topicname = postlinkedinobj.test.topic.topicname
             else:
                 topicname = postlinkedinobj.test.topicname
+        """
         sharedata["comment"] = "Chosen as one of the evaluators for '%s' under '%s' topic."%(objectname, topicname)
         sharedata["content"]["title"] = "Evaluator Selected"
         sharedata["content"]["description"] = "Evaluator Selected"
+        """
+        sharedata["specificContent"]["com.linkedin.ugc.ShareContent"]["shareCommentary"]["text"] = "Chosen as one of the evaluators for '%s' under '%s' topic."%(objectname, topicname)
     elif rolename == "candidate":
         if postlinkedinobj.test:
             objectname = postlinkedinobj.test.testname
@@ -7383,9 +7418,12 @@ def linkedinredirect(request):
                 topicname = postlinkedinobj.test.topic.topicname
             else:
                 topicname = postlinkedinobj.test.topicname
+        """
         sharedata["comment"] = "A request to take the test named '%s' under '%s' topic has been made to you."%(objectname, topicname)
         sharedata["content"]["title"] = "Test Request"
         sharedata["content"]["description"] = "Test Request"
+        """
+        sharedata["specificContent"]["com.linkedin.ugc.ShareContent"]["shareCommentary"]["text"] = "A request to take the test named '%s' under '%s' topic has been made to you."%(objectname, topicname)
     elif rolename == "interviewconductor":
         if postlinkedinobj.interview:
             objectname = postlinkedinobj.interview.title
@@ -7397,9 +7435,12 @@ def linkedinredirect(request):
                     topicname = postlinkedinobj.interview.topicname
             except:
                 pass
+        """
         sharedata["comment"] = "You have been requested to conduct the interview titled '%s' under '%s' topic."%(objectname, topicname)
         sharedata["content"]["title"] = "Conduct Interview Request"
         sharedata["content"]["description"] = "Conduct Interview Request"
+        """
+        sharedata["specificContent"]["com.linkedin.ugc.ShareContent"]["shareCommentary"]["text"] = "You have been requested to conduct the interview titled '%s' under '%s' topic."%(objectname, topicname)
     elif rolename == "interviewattended":
         if postlinkedinobj.interview:
             objectname = postlinkedinobj.interview.title
@@ -7411,25 +7452,31 @@ def linkedinredirect(request):
                     topicname = postlinkedinobj.interview.topicname
             except:
                 pass
+        """
         sharedata["comment"] = "You have been requested to attend the interview titled '%s' under '%s' topic."%(objectname, topicname)
         sharedata["content"]["title"] = "Attend Interview"
         sharedata["content"]["description"] = "Attend Interview"
+        """
+        sharedata["specificContent"]["com.linkedin.ugc.ShareContent"]["shareCommentary"]["text"] = "You have been requested to attend the interview titled '%s' under '%s' topic."%(objectname, topicname)
     else:
+        sharedata["specificContent"]["com.linkedin.ugc.ShareContent"]["shareCommentary"]["text"] = "Unrecognized rolename"
+        """
         sharedata["comment"] = "Unrecognized rolename."
         sharedata["content"]["title"] = "Unrecognized rolename"
         sharedata["content"]["description"] = "Unrecognized rolename"
+        """
     httpHeaders = {}
     httpHeaders['Content-Type'] = "application/json"
     httpHeaders['x-li-format'] = "json"
-    #httpHeaders['Authorization'] = "Bearer " + accesstoken
+    httpHeaders['X-Restli-Protocol-Version'] = "2.0.0"
+    httpHeaders['Authorization'] = "Bearer " + accesstoken
     httpHeaders['X-Target-URI'] = "https://api.linkedin.com"
     httpHeaders['Host'] = "api.linkedin.com"
     httpHeaders['Connection'] = "Keep-Alive"
     postdata = json.dumps(sharedata)
     httpHeaders['Content-Length'] = str(postdata.__len__())
-    params = {} 
+    params = {}
     kw = dict(data=postdata, params=params, headers=httpHeaders, timeout=60)
-    params.update({'oauth2_access_token': accesstoken})
     response = requests.request("POST", shareurl, **kw)
     jsonresponse = response.json()
     if response.status_code == 201:
