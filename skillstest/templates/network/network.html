@@ -1672,6 +1672,11 @@
 	    hidespantag.innerHTML = "";
 	}
 
+        function cleartextarea(postid){
+	    txtarea = document.getElementById('txtresponse' + postid);
+	    txtarea.innerHTML = "";
+	}
+
 
 	// Function to display the response form for the message displayed by the above 2 functions 
 	// (named 'displaymessage' and 'showmessages').
@@ -1680,7 +1685,7 @@
 	    responsediv.style.display = "";
 	    html = "<form name='frmresponse" + postid + "' id='frmresponse" + postid + "' method='POST' action='{{ sendmessageresponseurl }}'>";
 	    html += "<input type='file' name='responsemsgfile" + postid + "' id='responsemsgfile" + postid + "' value=''>";
-	    html += "<br><textarea name='txtresponse" + postid + "' id='txtresponse" + postid + "' rows='10' cols='40'>Add your reply here.</textarea>";
+	    html += "<br><textarea name='txtresponse" + postid + "' id='txtresponse" + postid + "' rows='10' cols='40' onClick='javascript:cleartextarea(" + postid + ");'>Add your reply here.</textarea>";
 	    html += "<br><input type='button' name='btnresponse' value='Post Response' onClick='javascript:sendmessageresponse(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancel' value='Discard Response' onClick='javascript:discardresponse(" + postid + ");'>";
 	    html += "</form>";
 	    responsediv.innerHTML = html;
@@ -1705,7 +1710,9 @@
 		//alert(xmlhttp.responseText);
 		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    alert("Your message has been posted successfully");
-		    discardresponse(postid);
+		    responsediv = document.getElementById('respdiv' + postid);
+	    	    responsediv.style.display = "none";
+	    	    responsediv.innerHTML = "";
 		}
 	    };
 	    xmlhttp.open(httpmethod, actionurl, true);
@@ -1714,6 +1721,10 @@
 
 
 	function discardresponse(postid){
+	    ynresp = confirm("Discarding this message will close this edit area and remove the message you have written. Do you want to continue?")
+	    if(!ynresp){
+		return(0);
+	    }
 	    responsediv = document.getElementById('respdiv' + postid);
 	    responsediv.style.display = "none";
 	    responsediv.innerHTML = "";

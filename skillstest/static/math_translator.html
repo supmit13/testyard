@@ -44,6 +44,7 @@ function displayMathExpr(){
 // the textarea on this page.
 function loadMatExprAnswer(){
     var cctr = window.location.search; // Get query string
+    
     cctrparts = cctr.split("=");
     if(cctrparts.length > 1){ // We are interested in the second element only.
         cctr = cctrparts[1];
@@ -51,12 +52,12 @@ function loadMatExprAnswer(){
         var responsecontent = parentdivtag.innerHTML;
         //alert(responsecontent);
         // Remove square brackets from the ends of the LaTeX expressions.
-        openingBrackets = new RegExp('^\\[');
-        closingBrackets = new RegExp('\\]\s*$')
-        responsecontent = responsecontent.replace(openingBrackets, "");
-        responsecontent = responsecontent.replace(closingBrackets, "");
+        //openingBrackets = new RegExp('^\s*\\[');
+        //closingBrackets = new RegExp('\\]\s*$')
+        //responsecontent = responsecontent.replace(openingBrackets, "");
+        //responsecontent = responsecontent.replace(closingBrackets, "");
         document.frm_translator.txtexpression.value = responsecontent;
-        displayMathExpr(); // Works like a charm. ++supriyo
+        displayMathExpr(); // Works fine. ++supriyo
     }
 }
 
