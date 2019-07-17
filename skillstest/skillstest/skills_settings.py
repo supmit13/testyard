@@ -94,10 +94,10 @@ MAX_INTERVIEWERS_COUNT = 10
 ##### EMAIL SETTINGS #######
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = '#######'
-#EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = '########'
+EMAIL_HOST_USER = '*******@gmail.com'
+EMAIL_HOST_PASSWORD = '*********'
+#EMAIL_HOST_USER = '**********@gmail.com'
+#EMAIL_HOST_PASSWORD = '********'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.com"
@@ -216,6 +216,7 @@ GROUPINFO_SAVE_URL = "skillstest/network/group/grpinfosave/"
 MANAGE_POSTS_URL = "skillstest/network/group/manageposts/"
 SAVE_POST_INFO_URL = "skillstest/network/group/savepostsinfo/"
 SEND_A_MESSAGE_URL = "skillstest/network/sendmsg/"
+GROUP_PROFILE_URL = "skillstest/network/showgroupprofile/"
 
 TESTS_CHALLENGE_SEARCH_URL = "skillstest/search/testschallengesearch/"
 USER_SEARCH_URL = "skillstest/search/user/"
@@ -345,10 +346,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '######'
-OAUTH_SECRET_KEY = '############'
-OAUTH_USER_TOKEN = '############################'
-OAUTH_USER_SECRET = '##############################'
+OAUTH_API_KEY = '********'
+OAUTH_SECRET_KEY = '**************'
+OAUTH_USER_TOKEN = '******************'
+OAUTH_USER_SECRET = '*****************'
 #REDIRECT_URI = "https://192.168.0.103/skillstest/test/linkedin/"
 REDIRECT_URI = "https://testyard.in/skillstest/test/linkedin/"
 TESTYARD_GROUP_ID = "testyard" # This is the Id of the TestYard group on LinkedIn.
@@ -362,10 +363,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = '##############' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = '************' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "#######################"
+BITLY_OAUTH_ACCESS_TOKEN = "*************************"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
@@ -426,10 +427,10 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 # PayU settings
 #PAYU_POS_ID = 145227
 PAYU_POS_ID = "301085"
-PAYU_CLIENT_SECRET = "################"
-#PAYU_SECOND_ID = '####################'
-PAYU_SECOND_ID = '###########'
-PAYU_POS_AUTH_KEY = "################"
+PAYU_CLIENT_SECRET = "**********************"
+#PAYU_SECOND_ID = '**********************'
+PAYU_SECOND_ID = '**********************'
+PAYU_POS_AUTH_KEY = "************"
 PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -443,7 +444,7 @@ PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
 
 PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
-PAYPAL_SANDBOX_ACCESS_TOKEN = "##############################"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "****************"
 PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
 PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
 PAYPAL_RETURN_URL = "http://www.paypal.com/return"
@@ -456,12 +457,12 @@ CUSTOMER_IP_ADDRESS = '192.168.0.103'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '###################'
-EASYAPI_KEY = '######################'
+EASYAPI_PASSWORD = '*******'
+EASYAPI_KEY = '****************'
 EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
 
-GO_DADDY_CUST_NUM = ##########
-GO_DADDY_PASSWD = "###########"
+GO_DADDY_CUST_NUM = *******
+GO_DADDY_PASSWD = "***********"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -472,25 +473,25 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "###########"
-SECRET_ACCESS_KEY = "########################"
+ACCESS_KEY_ID = "***************"
+SECRET_ACCESS_KEY = "************+"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "############"
+AMAZON_ACCT_PASSWD = "********"
 
-AMAZON_ACCT_ID = "###########"
+AMAZON_ACCT_ID = "***********"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "#################"
+IAM_PASSWD = "***********"
 
-IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
+IAM_SIGNIN_URL = "https://***********.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "#############"
+REPL_SECRET = "***********"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "############"
+REPL_PASSWORD = "***************"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
@@ -520,6 +521,6 @@ MAX_VM_INSTANCES_LIN = 7 # figure for tests implementation.
 MAX_VM_INSTANCES_WIN = 5
 ################################################### 
 
-# PEM passphrase for local nginx: ##########
+# PEM passphrase for local nginx: spmprx
 # Certificate generation command: openssl req -x509 -newkey rsa:2048 -keyout testyard.key -out testyard.crt -days 365
 

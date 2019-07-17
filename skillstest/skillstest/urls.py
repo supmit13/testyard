@@ -125,6 +125,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.LISTEN_AUDIO_URL, 'skillstest.Tests.views.convertspeechtotext', name='convertspeechtotext'),
     url(r'%s$'%mysettings.GROUPIMG_CHANGE_URL, 'skillstest.Network.views.groupimagechange', name='groupimagechange'),
     url(r'%s$'%mysettings.GROUPINFO_SAVE_URL, 'skillstest.Network.views.groupinfosave', name='groupinfosave'),
+    url(r'%s$'%mysettings.GROUP_PROFILE_URL, 'skillstest.Network.views.showgroupprofile', name='showgroupprofile'),
 
     url(r'%s$'%mysettings.POST_MESSAGE_CONTENT_URL, 'skillstest.Network.views.postmessagecontent', name='postmessagecontent'),
     url(r'%s$'%mysettings.POST_REPLY_CONTENT_URL, 'skillstest.Network.views.postreplycontent', name='postreplycontent'),

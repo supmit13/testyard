@@ -75,6 +75,7 @@ def get_network_template_vars(userobj):
     templatevars['manageownedgrpsurl'] = mysettings.MANAGE_OWNED_GROUPS_URL
     templatevars['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
     templatevars['sendamessageurl'] = mysettings.SEND_A_MESSAGE_URL
+    templatevars['groupprofileurl'] = mysettings.GROUP_PROFILE_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -700,7 +701,7 @@ def sendgentlereminder(request):
         gm.grpjoinrequest = grpjoinobj
         try:
             gm.save()
-            message = "Success: Added gentle reminder in GentleReminder"
+            message = "Success: Sent a Gentle Reminder to %s"%groupobj.owner
             emailsubject = "Gentle Reminder - Please add %s in group '%s'"%(userobj.displayname, groupobj.groupname)
             emailmessage = """
 		Hi,
@@ -717,7 +718,7 @@ def sendgentlereminder(request):
             response = HttpResponse(message)
             return response
         except:
-            message = "Could not save record in GentleReminder. Error: %s"%sys.exc_info()[1].__str__()
+            message = "Could not send a gentle reminder. Error: %s"%sys.exc_info()[1].__str__()
             response = HttpResponse(message)
             return response
     else:
@@ -3296,6 +3297,68 @@ def sendamessage(request):
         message = "Could not send email to user with email Id '%s'"%useremail
     response = HttpResponse(message)
     return response
+
+
+"""
+Need to do session checks inside the function.
+"""
+def showgroupprofile(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    if not request.COOKIES.has_key('sessioncode') or not request.COOKIES.has_key('usertype'):
+        message = "Invalid session. Can't access the information requested."
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobjqset = Session.objects.filter(sessioncode=sesscode)
+    if list(sessionobjqset).__len__() < 1 :
+        message = "Invalid session object. Can't access the information requested."
+        return HttpResponseBadRequest(message)
+    userobj = sessionobjqset[0].user
+    grpid = ""
+    if request.GET.has_key('grp'):
+        grpid = request.GET['grp']
+    else:
+        message = "Could not find a group id parameter with the request!"
+        return HttpResponse(message)
+    groupobj = None
+    try:
+        groupobj = Group.objects.get(id=grpid)
+    except:
+        message = "Could not find a group with the specified Id (%s)"%grpid
+        return HttpResponse(message)
+    datadict = {}
+    # Get group data to display
+    datadict['grpowner'] = groupobj.owner
+    userdisplayname = groupobj.owner.displayname
+    datadict['grpname'] = groupobj.groupname
+    datadict['grptagline'] = groupobj.tagline
+    datadict['grpdescription'] = groupobj.description
+    datadict['grpmemberscount'] = groupobj.memberscount
+    datadict['grptype'] = groupobj.grouptype
+    datadict['grpcreationdate'] = groupobj.creationdate
+    datadict['grpimagefile'] = "/media/" + userdisplayname + "/groups/" + groupobj.groupname + "/" + groupobj.groupimagefile
+    datadict['grptopic'] = groupobj.basedontopic
+    datadict['grpstars'] = groupobj.stars
+    datadict['grppaid'] = groupobj.ispaid
+    datadict['grpcurrency'] = groupobj.currency
+    datadict['grpentryfee'] = groupobj.entryfee
+    datadict['grpownerperm'] = groupobj.require_owner_permission
+    datadict['posts'] = []
+    # **** The code below doesn't work as of now. Need to fix it ASAP.
+    if groupobj.grouptype != 'PRIV':
+        posts = Post.objects.filter(posttargetgroup = groupobj).order_by('createdon').reverse()[:5] 
+        # Got a list of the latest 5 posts on the group above.
+        for post in posts:
+            postcontent = post.postcontent
+            postcreator = post.poster.displayname
+            datadict['posts'].append({'content' : postcontent, 'poster' : postcreator })
+    tmpl = get_template("network/groupprofilepage.html")
+    datadict.update(csrf(request))
+    cxt = Context(datadict)
+    grpprofilehtml = tmpl.render(cxt)
+    return HttpResponse(grpprofilehtml)
 
 
 

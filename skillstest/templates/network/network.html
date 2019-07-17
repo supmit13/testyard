@@ -247,6 +247,11 @@
     	// users and other elements private to the group are not displayed to the user. (unless the user
 	// is an active member of the group).
         function opengrouppage(grpid){
+	    grpprofileurl = "{{groupprofileurl}}";
+	    grpprofileurl = grpprofileurl + "?grp=" + grpid;
+	    //alert(grpprofileurl);
+	    grpprofilewin = window.open(grpprofileurl, "grpprofilewindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=yes, status=no"); 
+	    // That's it... We have opened up the group profile page. Let the user do whatever she wants.
         }
 
 
