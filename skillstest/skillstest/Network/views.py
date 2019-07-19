@@ -741,11 +741,13 @@ def getgroupdata(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    groupmembername, groupname = None, None
+    groupmembername, groupname, owned = None, None, None
     if request.POST.has_key('membername'):
         groupmembername = request.POST['membername']
     if request.POST.has_key('groupname'):
         groupname = request.POST['groupname']
+    if request.POST.has_key('owned'):
+        owned = request.POST['owned']
     if not groupmembername or not groupname: # if either of the variables is None, we will set a message and return
         message = error_msg('1087')
         response = HttpResponse(message)
@@ -930,15 +932,17 @@ def getgroupdata(request):
             userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
             grpmemberqset = GroupMember.objects.filter(group=grpobj, member=joinreq.user)
             if grpmemberqset.__len__() == 0:
-                message = error_msg('1115')
-                response = HttpResponse(message)
-                return response
-            grpmemberobj = grpmemberqset[0]
-            if grpmemberobj.group.owner.displayname != grpmemberobj.member.displayname:
-                ll = [ displayname, fullname, requestdate, userimageurl, grpmemberobj.removed, grpmemberobj.blocked ]
-            else:
-                ll = [ displayname, fullname, requestdate, userimageurl, -1, -1 ]
-            joinrequestsinfo['accept'].append(ll)
+                if grpobj.owner != joinreq.user:
+                    message = error_msg('1115')
+                    response = HttpResponse(message)
+                    return response
+            if grpmemberqset.__len__() > 0:
+                grpmemberobj = grpmemberqset[0]
+                if grpmemberobj.group.owner.displayname != grpmemberobj.member.displayname:
+                    ll = [ displayname, fullname, requestdate, userimageurl, grpmemberobj.removed, grpmemberobj.blocked ]
+                else:
+                    ll = [ displayname, fullname, requestdate, userimageurl, -1, -1 ]
+                joinrequestsinfo['accept'].append(ll)
         joinrequestsinfo_str = json.dumps(joinrequestsinfo)
         contextdict['joinrequestsinfo'] = base64.b64encode(joinrequestsinfo_str) # Had to encode this as otherwise the data gets garbled.
     if grpobj.ispaid:
@@ -950,6 +954,8 @@ def getgroupdata(request):
     contextdict['postsperpage'] = mysettings.MAX_POSTS_IN_PAGE
     # Render content using 'contextdict'
     tmpl = get_template("network/managegroups.html")
+    if owned:
+        tmpl = get_template("network/manageownedgroups.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     try:
@@ -2118,6 +2124,8 @@ def msgsearch(request):
         postcontent = postobj.postcontent
         postmsgtag = postobj.postmsgtag
         attachfilename = postobj.attachmentfile
+        if not attachfilename:
+            attachfilename = ""
         postername = postobj.poster.displayname
         # Currently, we are handling only 4 fields to search: postcontent, postmsgtag, attachmentfile and poster's displayname
         msgtagmatch = searchpattern.search(postmsgtag)
@@ -3025,7 +3033,7 @@ def manageownedgroups(request):
             elif transobj.currency == 'EUR':
                 earnings += transobj.amount * eurexchgrate
         if not groupsdict.has_key(gid):
-            groupsdict[gid] = [ gid, groupname, tagline, description, maxmemberslimit, status, grouptype, allowentry, groupimagefile, topic, ispaid, currency, entryfee, ownerpermreqd, bankname, bankbranch, accountnumber, earnings, ifscode, accountownername ]
+            groupsdict[gid] = [ gid, groupname, tagline, description, maxmemberslimit, status, grouptype, allowentry, groupimagefile, topic, ispaid, currency, entryfee, ownerpermreqd, bankname, bankbranch, accountnumber, earnings, ifscode, accountownername, userobj.displayname ]
     contextdict['groups'] = groupsdict
     alltopics = mysettings.TEST_TOPICS
     contextdict['alltopics'] = alltopics
@@ -3034,6 +3042,7 @@ def manageownedgroups(request):
     contextdict['searchquery'] = searchquery
     contextdict['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
     contextdict['managepostsurl'] = mysettings.MANAGE_POSTS_URL
+    contextdict['joinrequestsinfo'] = "{}"
     tmpl = get_template("network/ownedgrps.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)

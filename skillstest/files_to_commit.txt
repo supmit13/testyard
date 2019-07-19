@@ -3417,5 +3417,14 @@ Friday, July 19, 2019, 19:40 HRS.
 3. git add files_to_commit.txt
 
 =========================================
+Saturday, July 20, 2019, 01:35 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/Network/views.py
+3. git add templates/network/ownedgrps.html
+4. git add templates/network/manageownedgroups.html
+5. git add files_to_commit.txt
+
+=========================================
 
 
