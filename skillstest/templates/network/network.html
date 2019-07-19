@@ -210,7 +210,39 @@
 	}
 
 	// Function to allow the user to exit from a given group.
-	function grpexitrequest(grpid, ctr, testid){
+	function grpexitrequest(grpid, ctr){
+	    yesno = confirm("Are you sure you want to exit from this group?");
+	    if(yesno == false){
+		return(0);
+	    }
+	    //alert(grpid);
+	    //Send a post request to {{exitgroupurl}} with appropriate params - groupId and csrfmiddlewaretoken should be enough.
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    //alert(encodedpostdata);
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    progdiv.style = "display:none";
+	    	    progdiv.innerHTML = "";
+		    closegroupdivscreen(ctr);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{exitgroupurl}}', true);
+	    xmlhttp.send(encodedpostdata);
+	    // Show progress circle to user...
+	    progdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    progdiv.style = "";
 	}
 
 
@@ -304,7 +336,7 @@
 			else if(jsobj.alreadyrefused == '1'){
 			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
-			else if(jsobj.alreadyallowed == '1'){
+			else if(jsobj.alreadyallowed == '1' && jsobj.removedblocked != '1'){
 			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			}
 			else if(jsobj.alreadyignored == '1'){

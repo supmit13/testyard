@@ -76,6 +76,7 @@ def get_network_template_vars(userobj):
     templatevars['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
     templatevars['sendamessageurl'] = mysettings.SEND_A_MESSAGE_URL
     templatevars['groupprofileurl'] = mysettings.GROUP_PROFILE_URL
+    templatevars['exitgroupurl'] = mysettings.EXIT_GROUP_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -3338,7 +3339,9 @@ def showgroupprofile(request):
     datadict['grpmemberscount'] = groupobj.memberscount
     datadict['grptype'] = groupobj.grouptype
     datadict['grpcreationdate'] = groupobj.creationdate
-    datadict['grpimagefile'] = "/media/" + userdisplayname + "/groups/" + groupobj.groupname + "/" + groupobj.groupimagefile
+    datadict['grpimagefile'] = "/media/" + userdisplayname + "/groups/" + groupobj.groupname + "/" + str(groupobj.groupimagefile)
+    if not groupobj.groupimagefile:
+        datadict['grpimagefile'] = ""
     datadict['grptopic'] = groupobj.basedontopic
     datadict['grpstars'] = groupobj.stars
     datadict['grppaid'] = groupobj.ispaid
@@ -3348,7 +3351,7 @@ def showgroupprofile(request):
     datadict['posts'] = []
     # **** The code below doesn't work as of now. Need to fix it ASAP.
     if groupobj.grouptype != 'PRIV':
-        posts = Post.objects.filter(posttargetgroup = groupobj).order_by('createdon').reverse()[:5] 
+        posts = Post.objects.filter(posttargetgroup = groupobj).order_by('createdon').reverse()[:5]
         # Got a list of the latest 5 posts on the group above.
         for post in posts:
             postcontent = post.postcontent
@@ -3359,6 +3362,46 @@ def showgroupprofile(request):
     cxt = Context(datadict)
     grpprofilehtml = tmpl.render(cxt)
     return HttpResponse(grpprofilehtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def exitgroup(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    groupid = None
+    if request.POST.has_key('groupid'):
+        groupid = request.POST['groupid']
+    else:
+        message = "Couldn't find the required parameter 'groupid'. Can't process this request."
+        return HttpResponse(message)
+    groupobjqset = Group.objects.filter(id=groupid)
+    groupobj = None
+    if list(groupobjqset).__len__() > 0:
+        groupobj = groupobjqset[0] # We will consider the first item only. However, we expect this to be 1.
+    if not groupobj:
+        message = "Couldn't find the group object indicated by the given groupId (%s)\nQuiting now.\n"%(groupid)
+        return HttpResponse(message)
+    # We have a valid group object. So we go to GroupMember class (table in mysql) to mark this record as 'removed'.
+    grpmemberqset = GroupMember.objects.filter(group=groupobj, member=userobj)
+    if list(grpmemberqset).__len__() < 1:
+        message = "User is not a member of this group. So she cannot be removed.\n"
+        return HttpResponse(message)
+    grpmemberobj = grpmemberqset[0]
+    grpmemberobj.removed = True
+    grpmemberobj.lastremovaldate = datetime.datetime.now()
+    grpmemberobj.save()
+    message = "You have successfully exited from the group. You may join in later if you feel like."
+    return HttpResponse(message)
+
+
+
 
 
 
