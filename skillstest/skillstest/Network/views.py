@@ -3185,12 +3185,13 @@ def manageposts(request):
         response = HttpResponse(message)
         return response
     grpname = grpobj.groupname
-    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False)
+    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False).order_by('-createdon')
     contextdict = {}
     contextdict['groupname'] = grpname
     contextdict['groupid'] = grpid
     contextdict['savepostinfourl'] = mysettings.SAVE_POST_INFO_URL
     postsdict = {}
+    postssequence = []
     for postobj in postsqset:
         postid = postobj.id
         postmsgtag = postobj.postmsgtag
@@ -3203,7 +3204,9 @@ def manageposts(request):
         stars = postobj.stars
         createdon = postobj.createdon
         postsdict[postid] = (postmsgtag, postcontent, postername, attachmentfile, scope, deleted, hidden, stars, createdon)
+        postssequence.append(postid)
     contextdict['posts'] = postsdict
+    contextdict['sequence'] = postssequence
     tmpl = get_template("network/postslist.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
