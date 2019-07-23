@@ -317,7 +317,7 @@
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Stars: " + jsobj.stars + "</font></span><br>";
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br>";
 		    if(jsobj.ispaid){
-		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.entryfee + "</font></span><br>";
+		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.currency + " " + jsobj.entryfee + "</font></span><br>";
 		    }
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br>";
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Need Owner's Consent: " + jsobj.require_owner_perms + "</font></span><br>";
@@ -849,7 +849,7 @@
 	    }
             else{
 		document.frmsettings.entryfee.disabled = false;
-		document.frmsettings.bankname.disabled = true;
+		document.frmsettings.bankname.disabled = false;
 		document.frmsettings.bankbranch.disabled = false;
 		document.frmsettings.acctname.disabled = false;
 		document.frmsettings.acctnum.disabled = false;
@@ -937,7 +937,7 @@
 			}
 		    {%  endfor %}
 		    html += "</select></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled='disabled'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
@@ -1220,7 +1220,9 @@
                 //alert(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    alert(xmlhttp.responseText);
-		    discardreply(postid);
+		    replydivid = "replydiv" + postid.toString();
+	    	    replydivcontrol = document.getElementById(replydivid);
+	    	    replydivcontrol.innerHTML = "";
 		    window.location.href = window.location.href;
 	        }
 		else if(xmlhttp.readyState == 4 && xmlhttp.status==413){ // Image or file size was too big for upload
@@ -2297,7 +2299,26 @@
 	}
 
 
-	function withdrawfunds(){
+	function withdrawfunds(){ // Open up a window (popup) showing the amount of funds the user has and the withdrawal options.
+	    var xmlhttp;
+	    wdiv = document.getElementById('withdrawdiv');
+	    postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    withdrawwin = window.open("withdrawwin", "", "width=800, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    withdrawwin.document.write(xmlhttp.responseText);
+		    wdiv.innerHTML = "";
+                }
+            };
+            xmlhttp.open('POST', "skillstest/subscription/withdrawscreen/", true);
+            xmlhttp.send(postdata);
+	    wdiv.innerHTML = "<img src='static/images/loading_small.gif'>Please wait while we prepare the interface for this activity.";
 	}
 
 	
@@ -2412,7 +2433,7 @@
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();'>Add a contact</a></h3>
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();'>Post a message</a></h3><br />
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage owned groups</a></h3><div id='managewait'></div>
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><br />
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><div id='withdrawdiv'></div><br />
 
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();'>Give a test to one or more groups</a></h3><br />
 			</div>

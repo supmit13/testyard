@@ -29,7 +29,7 @@ from threading import Thread
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
-from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions
+from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions, WithdrawalActivity
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -931,11 +931,13 @@ def getgroupdata(request):
             requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
             userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
             grpmemberqset = GroupMember.objects.filter(group=grpobj, member=joinreq.user)
+            """
             if grpmemberqset.__len__() == 0:
                 if grpobj.owner != joinreq.user:
                     message = error_msg('1115')
                     response = HttpResponse(message)
                     return response
+            """
             if grpmemberqset.__len__() > 0:
                 grpmemberobj = grpmemberqset[0]
                 if grpmemberobj.group.owner.displayname != grpmemberobj.member.displayname:
@@ -1359,7 +1361,31 @@ def confirmpayment_payu(request):
     httpHeaders['Authorization'] = "Bearer %s"%bearertoken
     httpHeaders['Content-Type'] = "application/json"
     urlnotify = mysettings.URL_PROTOCOL + request.META['SERVER_NAME'] + "/" + mysettings.MY_PAYU_NOTIFY_URL_PATH
+    groupobj = Group.objects.get(id=groupid)
+    if not groupobj:
+        message = error_msg('1086')
+        response = HttpResponse(message)
+        return response
+    
+    xchnginr = skillutils.fetch_currency_rate('INR', 'USD')
+    xchngeur = skillutils.fetch_currency_rate('EUR', 'USD')
+    xchngpln = skillutils.fetch_currency_rate('PLN', 'USD')
+    """
+    productunitprice = groupobj.entryfee
+    if groupobj.currency == 'INR':
+        productunitprice = groupobj.entryfee * xchnginr
+    elif groupobj.currency == 'EUR':
+        productunitprice = groupobj.entryfee * xchngeur
+    elif groupobj.currency == 'PLN':
+        productunitprice = groupobj.entryfee * xchngpln
+    else:
+        pass
+    totalamount = productunitprice
+    """
     data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(int(float(totalamount))*100), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(int(float(productunitprice))*100),  "quantity": "1"  }]}
+    #data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(totalamount), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(productunitprice),  "quantity": "1"  }]}
+    # We are sending PLN above, but it should be USD. Need to see how to do that. 
+    # PayU has this irritating behaviour of hard setting the currency value to fucking PLN.
     jsondata = json.dumps(data)
     content_length = jsondata.__len__()
     httpHeaders['Content-Length'] = content_length
@@ -1379,12 +1405,8 @@ def confirmpayment_payu(request):
     status = contentDict['status']
     response = HttpResponse(redirectUri)
     # Add a record in the Network_groupjoinrequest table.
+    # The following code should be executed in the function that gets called by the redirect URL.
     joinreq = GroupJoinRequest()
-    groupobj = Group.objects.get(id=groupid)
-    if not groupobj:
-        message = error_msg('1086')
-        response = HttpResponse(message)
-        return response
     joinreq.group = groupobj
     joinreq.user = userobj
     joinreq.orderId = orderId
@@ -1392,7 +1414,7 @@ def confirmpayment_payu(request):
     joinreq.outcome = 'open'
     joinreq.active = False # IMPORTANT NOTE: Remember to set this to 'True' when the transaction completes successfully.
     joinreq.reason = 'payment in progress'
-    # Create a transaction object and post the data to payU ordering API
+    # Create a transaction object and post the data to payU ordering API.
     txnobj = Transaction()
     txnobj.orderId = orderId
     txnobj.username = userobj.displayname
@@ -1401,17 +1423,16 @@ def confirmpayment_payu(request):
     txnobj.plan = None
     txnobj.usersession = sesscode
     joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
-    xchngusd = skillutils.fetch_currency_rate('USD', 'INR')
-    xchngeur = skillutils.fetch_currency_rate('EUR', 'INR')
-    xchngepln = skillutils.fetch_currency_rate('PLN', 'INR')
-    txnobj.payamount = groupobj.entryfee
-    if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
-        pass
-    if groupobj.currency == 'USD':
-        txnobj.payamount = groupobj.entryfee * xchngusd
+    txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
+    if groupobj.currency == 'INR':
+        txnobj.payamount = groupobj.entryfee * xchnginr * (1 - mysettings.CUT_FRACTION)
     elif groupobj.currency == 'EUR':
-        txnobj.payamount = groupobj.entryfee * xchngeur
+        txnobj.payamount = groupobj.entryfee * xchngeur * (1 - mysettings.CUT_FRACTION)
+    elif groupobj.currency == 'PLN':
+        txnobj.payamount = groupobj.entryfee * xchngpln * (1 - mysettings.CUT_FRACTION)
     else:
+        pass
+    if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
         pass
     txnobj.transactiondate = datetime.datetime.now()
     txnobj.paymode = 'PAYU'
@@ -1425,6 +1446,39 @@ def confirmpayment_payu(request):
         joinreq.save()
     except:
         response = HttpResponse(sys.exc_info()[1].__str__())
+    # Remember to add/update record in subscriptionearnings and GroupPaidTransactions tables too.
+    # GroupMember should be updated too, once the transaction gets completed.
+    # Here we go for updating SubscriptionEarnings table... 
+    seqset = SubscriptionEarnings.objects.filter(user=userobj)
+    seobj = None
+    if seqset.__len__() < 1:
+        seobj = SubscriptionEarnings() # First transaction for the user.
+        seobj.user = userobj
+    else:
+        seobj = seqset[0]
+    seobj.earnings += txnobj.payamount
+    seobj.balance += txnobj.payamount
+    seobj.lasttransactdate = datetime.datetime.now()
+    seobj.save()
+    # ... and now we go for GroupPaidTransactions.
+    grppaidtxnobj = GroupPaidTransactions()
+    grppaidtxnobj.group = groupobj
+    grppaidtxnobj.payer = userobj
+    grppaidtxnobj.amount = txnobj.payamount
+    grppaidtxnobj.currency = 'USD' # Since we converted the transaction amount into USD, we put USD in every record here.
+    grppaidtxnobj.transdatetime = datetime.datetime.now()
+    grppaidtxnobj.payeripaddress = customerIP
+    grppaidtxnobj.save()
+    orderId = contentDict['orderId']
+    try:
+        grpjoinreqobj = GroupJoinRequest.objects.get(orderId=orderId)
+        grpjoinreqobj.outcome = "accept"
+        grpjoinreqobj.active = True
+        grpjoinreqobj.reason = "payment completed"
+        grpjoinreqobj.save()
+    except:
+        message = "Could not update the GroupJoinRequest table for order Id %s. Error: %s\n"%(orderId, sys.exc_info()[1].__str__())
+        return HttpResponse(message)
     return response
 
 
@@ -3412,6 +3466,125 @@ def exitgroup(request):
     message = "You have successfully exited from the group. You may join in later if you feel like."
     return HttpResponse(message)
 
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showwithdrawscreen(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    subsearnings = SubscriptionEarnings.objects.filter(user=userobj)
+    # First, generate a unique code...
+    securecode = skillutils.randomstringgen(6)
+    # ... create a record for the activity in WithdrawalActivity...
+    withdrawalobj = WithdrawalActivity()
+    withdrawalobj.user = userobj
+    withdrawalobj.sessioncode = sesscode
+    withdrawalobj.securecode = securecode
+    withdrawalobj.save()
+    # ... and send it to the registered email address for this account.
+    targetemailaddr = userobj.emailid
+    emailsubject = "SecureCode for fund withdrawal"
+    emailmessage = """
+        Dear %s,
+
+        It seems you are initiating a fund withdrawal activity. To continue, please copy the code '%s' and paste it in the appropriate location in your withdrawal form. Wish you a nice experience of fund withdrawal.
+
+        Thanks,
+        TestYard Team.
+    """%(userobj.displayname, securecode)
+    try:
+        skillutils.sendemail(userobj, emailsubject, emailmessage, mysettings.MAILSENDER)
+    except:
+        message = "Couldn't send email containing the secure code. Error: %s\n"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    """
+    Note: Since we can do multiple withdrawal activity in the same session, we will need to look for
+    the securecode as well as the session Id and user Id when we go for authenticating the activity.
+    [Implemented as above in 'dowithdrawal' function below.]
+    """
+    contextdict = {}
+    if subsearnings.__len__() == 0:
+        contextdict['balance'] = 0
+        contextdict['earnings'] = 0
+        contextdict['lasttransactiondate'] = ""
+    else:
+        subsearningobj = subsearnings[0]
+        balance = subsearningobj.balance
+        earnings = subsearningobj.earnings
+        lasttransactdate = subsearningobj.lasttransactdate
+        contextdict['balance'] = balance
+        contextdict['earnings'] = earnings
+        contextdict['lasttransactiondate'] = lasttransactdate
+    tmpl = get_template("subscription/withdrawalscreen.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    withdrawhtml = tmpl.render(cxt)
+    return HttpResponse(withdrawhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def dowithdrawal(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    balance, withdrawamount, earnings, securecode = "", "", "", ""
+    message = "At least one of the required argument is missing. Please try again."
+    if request.POST.has_key('balance'):
+        balance = request.POST['balance']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('withdrawamount'):
+        withdrawamount = request.POST['withdrawamount']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('earnings'):
+        earnings = request.POST['earnings']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('securecode'):
+        securecode = request.POST['securecode']
+    else:
+        response = HttpResponse(message)
+        return response
+    if withdrawamount > balance:
+        message = "Withdrawal amount cannot be greater than the balance amount in your account. Please rectify this and try again"
+        return HttpResponse(message)
+    # Check if the secure code is correct or not.
+    withdrawalactivityqset = WithdrawalActivity.objects.filter(user=userobj, sessioncode=sesscode, securecode=securecode)
+    if withdrawalactivityqset.__len__() < 1:
+        message = "The securecode was incorrect or your session got corrupted. Please try again"
+        response = HttpResponse(message)
+        return response
+    # So everything is in order and we can do the transaction now. Get the account info for this user from the OwnerBankAccount table and start the transaction.
+    bankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj)
+    if bankacctqset.__len__() < 1:
+        message = "Seems like you do not have a bank account registered on our website. Please register an account by going to the 'setting' section of 'Manage Owned Groups' screen and then try to perform this activity again."
+        return HttpResponse(message)
+    bankacctobj = bankacctqset[0]
+    bankname = bankacctobj.bankname
+    bankbranch = bankacctobj.bankbranch
+    accountnumber = bankacctobj.accountnumber
+    ifsccode = bankacctobj.ifsccode
+    ownername = bankacctobj.accountownername
+    # Remember to put a new record in the Subscription_transaction table, and 
+    # update the relevant record in the Network_subscriptionearnings table.
+    # Both should happen **after** the withdrawal is successfully done.
+    
 
 
 

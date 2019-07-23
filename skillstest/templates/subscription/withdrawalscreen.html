@@ -1,0 +1,107 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type='text/javascript'>
+
+</script>
+<link href="static/css/font_awesome_min.css" rel="stylesheet">
+<script type='text/javascript'>
+function checkamount(){
+    balance = document.frmwithdraw.balance.value;
+    withdrawamt = document.frmwithdraw.withdrawamt.value;
+    if(balance < withdrawamt){
+	alert("Withdrawal amount cannot be greater than balance amount. Please rectify this mistake and try again");
+        return(0);
+    }
+    if(document.frmwithdraw.securecode.value == ""){
+	alert("Value of securecode cannot be empty. Please check your email and enter the value of the code here");
+	document.frmwithdraw.securecode.focus();
+	return(0);
+    }
+    yesno = confirm("Confirm withdrawal?");
+    if(!yesno){
+        return(false);
+    }
+    var xmlhttp;
+    postdata = "csrfmiddlewaretoken=" + document.frmwithdraw.csrfmiddlewaretoken.value + "&balance=" + document.frmwithdraw.balance.value + "&withdrawamount=" + document.frmwithdraw.withdrawamt.value + "&earnings=" + document.frmwithdraw.earnings.value + "&securecode=" + document.frmwithdraw.securecode.value;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    statusdiv = document.getElementById('statusmsg');
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    statusdiv.innerHTML = xmlhttp.responseText;
+        }
+    };
+    withdrawurl = document.frmwithdraw.action;
+    xmlhttp.open('POST', withdrawurl, true);
+    xmlhttp.send(postdata);
+    statusdiv.innerHTML = "";
+}
+</script>
+</head>
+<body>
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p> 
+
+	</div>
+	
+	<!-- Here we go with the group profile template -->
+
+	<div class="row">
+		<div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+    	 
+            <div class="col-sm-12">         
+                <div class="col-xs-12 col-sm-4">
+                    <figure>
+                        <img src="{{grpimagefile}}" alt="" class="img-circle img-responsive" width='400' height='400'>
+                        <figcaption class="ratings">
+                            <p style="color:#0000AA"><strong>Total Earnings (in USD):</strong>
+                               <span style="color:#0000AA">{{earnings}}</span>
+			    </p>
+                            <p style="color:#0000AA"><strong>Balance Amount in Account (in USD):</strong>
+                                <span style="color:#0000AA">{{balance}}</span>
+                            </p>
+                            <p style="color:#0000AA"><strong>Last Transaction Date: </strong>
+                                <span style="color:#0000AA">{{lasttransactiondate}}</span>
+                            </p>
+                            
+                        </figcaption>
+                    </figure>
+                </div>
+	    <div id='statusmsg'></div>
+            <div class="col-xs-12 divider">
+                <div class="col-xs-12 col-sm-4 emphasis">
+		<form name='frmwithdraw' id='frmwithdraw' method='POST' action='skillstest/subscriptions/dowithdrawal/'>
+                    <p style="color:#0000AA">Please Enter the Amount to Withdraw (in USD):&nbsp;&nbsp;<input type='text' name='withdrawamt' value=''></p>
+		    <p style="color:#0000AA">A code has been sent to the email address registered for this account. Please enter that code here:&nbsp;&nbsp;<input type='text' name='securecode' value=''></p>
+		    <p style="color:#0000AA">From here, you will now be routed to the payment gateway. Please follow the instructions therein.</p>
+		    <p><input type='button' name='startwithdraw' value='Continue' onClick='javascript:checkamount();'>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Window' onClick='javascript:window.close();'></p>
+		    <input type='hidden' name='balance' value='{{balance}}'><input type='hidden' name='earnings' value='{{earnings}}'>{% csrf_token %}
+                </div>
+		</form>
+	        
+		
+	    
+        </div>
+    	</div>                 
+    </div>
+    </div>
+	<!-- group profile template ends here -->
+</div>
+</body>
+</html>

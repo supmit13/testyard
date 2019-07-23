@@ -97,7 +97,7 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
 EMAIL_HOST_PASSWORD = '##########'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = '##########'
+#EMAIL_HOST_PASSWORD = '########'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.in"
@@ -175,6 +175,8 @@ REPORT_WINDOW_CHANGE_URL = "skillstest/test/reportwindowchange/"
 POST_ON_LINKEDIN_URL = "skillstest/test/postonlinkedin/"
 LINKEDIN_REDIRECT_URL = "skillstest/test/linkedin/"
 LINKEDINPOSTSESS_URL = "skillstest/test/linkedin/informserver/"
+WITHDRAWSCREEN_URL = "skillstest/subscription/withdrawscreen/"
+DOWITHDRAWAL_URL = "skillstest/subscriptions/dowithdrawal/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"
@@ -347,10 +349,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '#######'
-OAUTH_SECRET_KEY = '##################'
-OAUTH_USER_TOKEN = '############################'
-OAUTH_USER_SECRET = '###########################'
+OAUTH_API_KEY = '###########'
+OAUTH_SECRET_KEY = '###########'
+OAUTH_USER_TOKEN = '#########################'
+OAUTH_USER_SECRET = '#####################'
 #REDIRECT_URI = "https://192.168.0.103/skillstest/test/linkedin/"
 REDIRECT_URI = "https://testyard.in/skillstest/test/linkedin/"
 TESTYARD_GROUP_ID = "testyard" # This is the Id of the TestYard group on LinkedIn.
@@ -364,10 +366,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = '#################' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = '################' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "####################"
+BITLY_OAUTH_ACCESS_TOKEN = "@#####################"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
@@ -428,11 +430,11 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 # PayU settings
 #PAYU_POS_ID = 145227
 PAYU_POS_ID = "301085"
-PAYU_CLIENT_SECRET = "#############################"
-#PAYU_SECOND_ID = '###########################'
-PAYU_SECOND_ID = '##########################'
-PAYU_POS_AUTH_KEY = "##############"
-PAYU_ORDER_CREATION_URL = "https://secure.payu.com/api/v2_1/orders"
+PAYU_CLIENT_SECRET = "##################"
+#PAYU_SECOND_ID = '################'
+PAYU_SECOND_ID = '####################'
+PAYU_POS_AUTH_KEY = "########"
+PAYU_ORDER_CREATION_URL = "https://secure.snd.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
 MY_PAYU_NOTIFY_URL_PATH = "skillstest/subscription/notify/"
@@ -445,7 +447,7 @@ PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
 
 PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
-PAYPAL_SANDBOX_ACCESS_TOKEN = "###########################"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "###################"
 PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
 PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
 PAYPAL_RETURN_URL = "http://www.paypal.com/return"
@@ -453,17 +455,24 @@ PAYPAL_CANCEL_URL = "http://www.paypal.com/cancel"
 
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
+CUT_FRACTION = 0.1 # 10% is for testyard. The rest goes to the user.
 
 CUSTOMER_IP_ADDRESS = '192.168.0.103'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '########'
-EASYAPI_KEY = '##################'
-EASYAPI_URL = 'http://xmlfeed.theeasyapi.com'
+EASYAPI_PASSWORD = '##################'
+EASYAPI_KEY = '#################'
+EASYAPI_URL = 'https://xmlfeed.theeasyapi.com'
 
-GO_DADDY_CUST_NUM = 73165291
-GO_DADDY_PASSWD = "#########"
+# Fixer API Params:
+FIXERAPI_EMAILID = 'testyard.in@gmail.com'
+FIXERAPI_PASSWD = '###############'
+FIXERAPI_KEY = '################'
+FIXERAPI_URL = 'http://data.fixer.io/api/latest'
+
+GO_DADDY_CUST_NUM = ##########
+GO_DADDY_PASSWD = "################@"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -474,13 +483,13 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "#############"
-SECRET_ACCESS_KEY = "########################+"
+ACCESS_KEY_ID = "############"
+SECRET_ACCESS_KEY = "######################+"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "#############"
+AMAZON_ACCT_PASSWD = "##############"
 
-AMAZON_ACCT_ID = "704972534197"
+AMAZON_ACCT_ID = "#########"
 
 IAM_USER = "supmit"
 IAM_PASSWD = "############"

@@ -37,7 +37,7 @@ function makepayment_payu(){
 	    waiterspan.innerHTML = "";
 	    payu_url = xmlhttp.responseText;
 	    payuwin = window.open(payu_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
-            self.close();
+            //self.close();
         }
     };
     xmlhttp.open('POST', targeturl, true);

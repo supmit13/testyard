@@ -3426,5 +3426,21 @@ Saturday, July 20, 2019, 01:35 HRS.
 5. git add files_to_commit.txt
 
 =========================================
+Monday, July 22, 2019, 22:35 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/urls.py
+3. git add skillstest/skills_settings.py
+4. git add skillstest/Network/views.py
+5. git add skillstest/Network/models.py
+6. git add templates/subscription/withdrawalscreen.html
+7. git add templates/network/payu_payment.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add skillstest/Network/tasks.py
+11.git add skillstest/Network/management/commands/get_exchange_rates.py
+12.git add files_to_commit.txt
+
+=========================================
 
 

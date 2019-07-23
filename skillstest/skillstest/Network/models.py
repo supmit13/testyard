@@ -139,7 +139,7 @@ class OwnerBankAccount(models.Model):
     bankname = models.CharField(max_length=255, null=False, blank=False)
     bankbranch = models.CharField(max_length=255, null=False, blank=False)
     accountnumber = models.CharField(max_length=50, null=False, blank=False)
-    ifsccode = models.CharField(max_length=10, null=False, blank=False)
+    ifsccode = models.CharField(max_length=25, null=False, blank=False)
     accountownername = models.CharField(max_length=255, null=False, blank=False)
     creationdate = models.DateTimeField(auto_now=True, default=None)
 
@@ -206,6 +206,17 @@ class GroupPaidTransactions(models.Model):
     class Meta:
         verbose_name = "GroupPaidTransactions Table"
         db_table = 'Network_grouppaidtransactions'
+
+
+class WithdrawalActivity(models.Model):
+    user = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    sessioncode = models.CharField(max_length=150, null=False, blank=False)
+    securecode = models.CharField(max_length=8, null=False, blank=False)
+    activitytime = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "WithdrawalActivity Table"
+        db_table = 'Network_withdrawal'
 
 
 
