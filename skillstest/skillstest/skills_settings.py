@@ -81,6 +81,7 @@ SESSION_EXPIRY_LIMIT = { 'CORP' : 86400, \
 
 ###### HTTPS SETTINGS ######
 URL_PROTOCOL = "https://"
+APP_URL_PREFIX = "https://testyard.in/"
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -95,9 +96,9 @@ MAX_INTERVIEWERS_COUNT = 10
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'codexaddict@gmail.com'
-EMAIL_HOST_PASSWORD = '##########'
+EMAIL_HOST_PASSWORD = '#########'
 #EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = '########'
+#EMAIL_HOST_PASSWORD = '#########'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.in"
@@ -220,6 +221,8 @@ SAVE_POST_INFO_URL = "skillstest/network/group/savepostsinfo/"
 SEND_A_MESSAGE_URL = "skillstest/network/sendmsg/"
 GROUP_PROFILE_URL = "skillstest/network/showgroupprofile/"
 EXIT_GROUP_URL = "skillstest/network/exitgroup/"
+PAYUMONEY_SUCCESS_URL = "skillstest/network/payumoney/success/"
+PAYUMONEY_FAILURE_URL = "skillstest/network/payumoney/failure/"
 
 TESTS_CHALLENGE_SEARCH_URL = "skillstest/search/testschallengesearch/"
 USER_SEARCH_URL = "skillstest/search/user/"
@@ -259,6 +262,9 @@ PLAN_SUBSCRIBE_URL = "skillstest/subscriptions/subscribe/"
 PAYMENT_GW_OPTIONS_URL = "skillstest/subscriptions/paymentgwoptions/"
 PAYU_NOTIFY_URL = "skillstest/subscription/notify/"
 SUBSCRIBE_PAYPAL_URL = "skillstest/subscriptions/paypal/subscribe/"
+
+WEPAY_REGISTER_REDIRECT_URL = "skillstest/network/wepay/registerstatus/"
+WEPAY_DUMMY_AUTHORIZE_URL = "v2/oauth2/authorize"
 
 MOBILE_VERIFY_CREDS_URL = "skillstest/mobile/verifycreds/"
 MOBILE_LIST_TESTS_INTERVIEWS_URL = "skillstest/mobile/listtestsinterviews/"
@@ -349,10 +355,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '###########'
-OAUTH_SECRET_KEY = '###########'
-OAUTH_USER_TOKEN = '#########################'
-OAUTH_USER_SECRET = '#####################'
+OAUTH_API_KEY = '############'
+OAUTH_SECRET_KEY = '################
+OAUTH_USER_TOKEN = '#############################'
+OAUTH_USER_SECRET = '#############################'
 #REDIRECT_URI = "https://192.168.0.103/skillstest/test/linkedin/"
 REDIRECT_URI = "https://testyard.in/skillstest/test/linkedin/"
 TESTYARD_GROUP_ID = "testyard" # This is the Id of the TestYard group on LinkedIn.
@@ -366,10 +372,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = '################' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = '###################' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "@#####################"
+BITLY_OAUTH_ACCESS_TOKEN = "############################"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
@@ -421,6 +427,8 @@ BANKS_DICT = {  'SBI_INDIA' : 'State Bank of India', \
         'IDBI_INDIA' : 'IDBI Bank',\
 }
 
+PLN_TO_USD = 0.26
+
 REQUEST_ACTIVE_INTERVAL = 90 # Amount of time (in days) for which a request to join a group or to connect with another user remains valid.
 GROUP_JOIN_REQUEST_SUBJECT = "Testyard user has requested your permission to join the group '%s'"
 
@@ -429,11 +437,11 @@ CONNECT_INVITATION_CONTENT = "I would like to connect with you on TestYard"
 # Payment gateway settings
 # PayU settings
 #PAYU_POS_ID = 145227
-PAYU_POS_ID = "301085"
-PAYU_CLIENT_SECRET = "##################"
-#PAYU_SECOND_ID = '################'
-PAYU_SECOND_ID = '####################'
-PAYU_POS_AUTH_KEY = "########"
+PAYU_POS_ID = "########"
+PAYU_CLIENT_SECRET = "###########################"
+#PAYU_SECOND_ID = '#######################'
+PAYU_SECOND_ID = '#####################'
+PAYU_POS_AUTH_KEY = "##########"
 PAYU_ORDER_CREATION_URL = "https://secure.snd.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -443,11 +451,24 @@ PAYU_AUTH_BEARER_CODE_URL = "https://secure.snd.payu.com/pl/standard/user/oauth/
 PAYU_ORDERS_URL = "https://secure.snd.payu.com/api/v2_1/orders"
 PAYU_DOMAIN = "secure.snd.payu.com"
 
+#WEPAY_BASEURL = "https://stage.wepayapi.com/v2/"
+WEPAY_BASEURL = "https://wepayapi.com/v2/" # Production URL
+
+WEPAY_CLIENT_ID = "6963"
+WEPAY_CLIENT_SECRET = "#############"
+WEPAY_ACCESS_TOKEN = "####################################"
+WEPAY_ACCOUNT_ID = "############"
+WEPAY_OAUTH2_URL = "https://www.wepay.com/v2/oauth2/authorize?client_id=6963&redirect_uri=https%3A%2F%2Ftestyard.in%2F&scope=manage_accounts%2Ccollect_payments%2Cview_user%2Csend_money%2Cpreapprove_payments%2Cmanage_subscriptions"
+WEPAY_USER_REGISTER_URL = WEPAY_BASEURL + "oauth2/authorize/"
+
+WEPAY_ACCOUNT_USERNAME = "testyard.in@gmail.com"
+WEPAY_ACCOUNT_PASSWORD = "############"
+
 PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
 
 PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
-PAYPAL_SANDBOX_ACCESS_TOKEN = "###################"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "############################################"
 PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
 PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
 PAYPAL_RETURN_URL = "http://www.paypal.com/return"
@@ -455,23 +476,23 @@ PAYPAL_CANCEL_URL = "http://www.paypal.com/cancel"
 
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
-CUT_FRACTION = 0.1 # 10% is for testyard. The rest goes to the user.
+CUT_FRACTION = 0.02 # 2% is for testyard. The rest goes to the user.
 
 CUSTOMER_IP_ADDRESS = '192.168.0.103'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '##################'
-EASYAPI_KEY = '#################'
+EASYAPI_PASSWORD = '###############'
+EASYAPI_KEY = '############################'
 EASYAPI_URL = 'https://xmlfeed.theeasyapi.com'
 
 # Fixer API Params:
 FIXERAPI_EMAILID = 'testyard.in@gmail.com'
-FIXERAPI_PASSWD = '###############'
-FIXERAPI_KEY = '################'
+FIXERAPI_PASSWD = '############'
+FIXERAPI_KEY = '#############################'
 FIXERAPI_URL = 'http://data.fixer.io/api/latest'
 
-GO_DADDY_CUST_NUM = ##########
+GO_DADDY_CUST_NUM = 73165291
 GO_DADDY_PASSWD = "################@"
 
 MAX_POSTS_IN_PAGE = 10
@@ -483,25 +504,25 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "############"
-SECRET_ACCESS_KEY = "######################+"
+ACCESS_KEY_ID = "#####################"
+SECRET_ACCESS_KEY = "###############################+"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "##############"
+AMAZON_ACCT_PASSWD = "################"
 
-AMAZON_ACCT_ID = "#########"
+AMAZON_ACCT_ID = "##############"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "############"
+IAM_PASSWD = "#################"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "############"
+REPL_SECRET = "####################"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "###############"
+REPL_PASSWORD = "################"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
@@ -531,6 +552,6 @@ MAX_VM_INSTANCES_LIN = 7 # figure for tests implementation.
 MAX_VM_INSTANCES_WIN = 5
 ################################################### 
 
-# PEM passphrase for local nginx: spmprx
+# PEM passphrase for local nginx: ##########
 # Certificate generation command: openssl req -x509 -newkey rsa:2048 -keyout testyard.key -out testyard.crt -days 365
 

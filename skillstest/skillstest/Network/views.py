@@ -21,7 +21,7 @@ import decimal, math
 import urllib, urllib2
 import simplejson as json
 import socket
-import base64
+import base64, md5
 from itertools import chain
 from threading import Thread
 
@@ -29,7 +29,7 @@ from threading import Thread
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
-from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions, WithdrawalActivity
+from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions, WithdrawalActivity, WePay
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -77,6 +77,7 @@ def get_network_template_vars(userobj):
     templatevars['sendamessageurl'] = mysettings.SEND_A_MESSAGE_URL
     templatevars['groupprofileurl'] = mysettings.GROUP_PROFILE_URL
     templatevars['exitgroupurl'] = mysettings.EXIT_GROUP_URL
+    templatevars['cutpercent'] = mysettings.CUT_FRACTION * 100
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -1173,6 +1174,7 @@ def savegroupdata(request):
     groupobj.maxmemberslimit = maxmemberslimit
     groupobj.grouptype = grouptypes
     groupobj.basedontopic = topics
+    adminremarks = re.sub("['\"]", "&amp;quot;", adminremarks)
     groupobj.adminremarks = adminremarks
     groupobj.allowentry = allowentry
     groupobj.ispaid = ispaid
@@ -1323,6 +1325,12 @@ def confirmpayment_payu(request):
         productunitprice = request.POST['productunitprice']
     if request.POST.has_key('totalamount'):
         totalamount = request.POST['totalamount']
+    #convert the amount (in USD) to PLN
+    exchangerateqset = ExchangeRates.objects.filter(curr_from='USD', curr_to='PLN').order_by('-dateofrate')
+    exchangerate = mysettings.PLN_TO_USD
+    if exchangerateqset.__len__() > 0:
+        exchangerate = exchangerateqset[0].conv_rate
+    totalamount = float(totalamount)/float(exchangerate) # This is in USD
     if request.POST.has_key('extOrderId'):
         orderId = request.POST['extOrderId']
     if request.POST.has_key('groupid'):
@@ -1360,7 +1368,7 @@ def confirmpayment_payu(request):
     ordersUrl = mysettings.PAYU_ORDERS_URL
     httpHeaders['Authorization'] = "Bearer %s"%bearertoken
     httpHeaders['Content-Type'] = "application/json"
-    urlnotify = mysettings.URL_PROTOCOL + request.META['SERVER_NAME'] + "/" + mysettings.MY_PAYU_NOTIFY_URL_PATH
+    urlnotify = mysettings.URL_PROTOCOL + request.META['SERVER_NAME'] + "/" + mysettings.MY_PAYU_NOTIFY_URL_PATH + orderId + "/"
     groupobj = Group.objects.get(id=groupid)
     if not groupobj:
         message = error_msg('1086')
@@ -1404,8 +1412,7 @@ def confirmpayment_payu(request):
     redirectUri = contentDict['redirectUri']
     status = contentDict['status']
     response = HttpResponse(redirectUri)
-    # Add a record in the Network_groupjoinrequest table.
-    # The following code should be executed in the function that gets called by the redirect URL.
+    # Add or update a record in the Network_groupjoinrequest table.
     joinreq = GroupJoinRequest()
     joinreq.group = groupobj
     joinreq.user = userobj
@@ -1425,11 +1432,11 @@ def confirmpayment_payu(request):
     joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
     txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
     if groupobj.currency == 'INR':
-        txnobj.payamount = groupobj.entryfee * xchnginr * (1 - mysettings.CUT_FRACTION)
+        txnobj.payamount = groupobj.entryfee * xchnginr
     elif groupobj.currency == 'EUR':
-        txnobj.payamount = groupobj.entryfee * xchngeur * (1 - mysettings.CUT_FRACTION)
+        txnobj.payamount = groupobj.entryfee * xchngeur
     elif groupobj.currency == 'PLN':
-        txnobj.payamount = groupobj.entryfee * xchngpln * (1 - mysettings.CUT_FRACTION)
+        txnobj.payamount = groupobj.entryfee * xchngpln
     else:
         pass
     if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
@@ -1446,40 +1453,12 @@ def confirmpayment_payu(request):
         joinreq.save()
     except:
         response = HttpResponse(sys.exc_info()[1].__str__())
-    # Remember to add/update record in subscriptionearnings and GroupPaidTransactions tables too.
-    # GroupMember should be updated too, once the transaction gets completed.
-    # Here we go for updating SubscriptionEarnings table... 
-    seqset = SubscriptionEarnings.objects.filter(user=userobj)
-    seobj = None
-    if seqset.__len__() < 1:
-        seobj = SubscriptionEarnings() # First transaction for the user.
-        seobj.user = userobj
-    else:
-        seobj = seqset[0]
-    seobj.earnings += txnobj.payamount
-    seobj.balance += txnobj.payamount
-    seobj.lasttransactdate = datetime.datetime.now()
-    seobj.save()
-    # ... and now we go for GroupPaidTransactions.
-    grppaidtxnobj = GroupPaidTransactions()
-    grppaidtxnobj.group = groupobj
-    grppaidtxnobj.payer = userobj
-    grppaidtxnobj.amount = txnobj.payamount
-    grppaidtxnobj.currency = 'USD' # Since we converted the transaction amount into USD, we put USD in every record here.
-    grppaidtxnobj.transdatetime = datetime.datetime.now()
-    grppaidtxnobj.payeripaddress = customerIP
-    grppaidtxnobj.save()
     orderId = contentDict['orderId']
-    try:
-        grpjoinreqobj = GroupJoinRequest.objects.get(orderId=orderId)
-        grpjoinreqobj.outcome = "accept"
-        grpjoinreqobj.active = True
-        grpjoinreqobj.reason = "payment completed"
-        grpjoinreqobj.save()
-    except:
-        message = "Could not update the GroupJoinRequest table for order Id %s. Error: %s\n"%(orderId, sys.exc_info()[1].__str__())
-        return HttpResponse(message)
     return response
+
+
+def notifypayupayment(request):
+    pass
 
 
 def _sendrequest(target, method, data, headers={}):
@@ -3513,6 +3492,7 @@ def showwithdrawscreen(request):
         contextdict['balance'] = 0
         contextdict['earnings'] = 0
         contextdict['lasttransactiondate'] = ""
+        contextdict['cutpercent'] = mysettings.CUT_FRACTION * 100
     else:
         subsearningobj = subsearnings[0]
         balance = subsearningobj.balance
@@ -3521,6 +3501,16 @@ def showwithdrawscreen(request):
         contextdict['balance'] = balance
         contextdict['earnings'] = earnings
         contextdict['lasttransactiondate'] = lasttransactdate
+        contextdict['cutpercent'] = mysettings.CUT_FRACTION * 100
+    # Select all available bank accounts of this user and create a select dropdown with it.
+    bankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj)
+    if bankacctqset.__len__() < 1:
+        message = "It looks like you do not have a bank account registered with TestYard. Please register an account by going to the 'setting' section of 'Manage Owned Groups' screen and then try to perform this activity again."
+        return HttpResponse(message)
+    bankinfo = {}
+    for bankacct in bankacctqset:
+        bankinfo[bankacct.bankname] = bankacct.id
+    contextdict['bankaccts'] = bankinfo
     tmpl = get_template("subscription/withdrawalscreen.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
@@ -3561,32 +3551,126 @@ def dowithdrawal(request):
     else:
         response = HttpResponse(message)
         return response
+    if request.POST.has_key('bankaccts'):
+        bankacct = request.POST['bankaccts']
+    else:
+        response = HttpResponse(message)
+        return response
+    csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
+    customer_ip = ""
+    if request.META.has_key('REMOTE_ADDR'): 
+        customer_ip = request.META['REMOTE_ADDR']
+    customer_ua = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36"
+    if request.META.has_key('HTTP_USER_AGENT'):
+        customer_ua = request.META['HTTP_USER_AGENT']
     if withdrawamount > balance:
         message = "Withdrawal amount cannot be greater than the balance amount in your account. Please rectify this and try again"
         return HttpResponse(message)
     # Check if the secure code is correct or not.
-    withdrawalactivityqset = WithdrawalActivity.objects.filter(user=userobj, sessioncode=sesscode, securecode=securecode)
+    withdrawalactivityqset = WithdrawalActivity.objects.filter(user=userobj, sessioncode=sesscode, securecode=securecode, securecodestatus=True)
     if withdrawalactivityqset.__len__() < 1:
         message = "The securecode was incorrect or your session got corrupted. Please try again"
         response = HttpResponse(message)
         return response
+    # Set the used securecode status to False
+    withdrawalactivityqset[0].securecodestatus = False
+    withdrawalactivityqset[0].save()
     # So everything is in order and we can do the transaction now. Get the account info for this user from the OwnerBankAccount table and start the transaction.
-    bankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj)
+    bankacctqset = OwnerBankAccount.objects.filter(id=bankacct)
     if bankacctqset.__len__() < 1:
-        message = "Seems like you do not have a bank account registered on our website. Please register an account by going to the 'setting' section of 'Manage Owned Groups' screen and then try to perform this activity again."
+        message = "It looks like you do not have a bank account registered with TestYard. Please register an account by going to the 'setting' section of 'Manage Owned Groups' screen and then try to perform this activity again."
         return HttpResponse(message)
-    bankacctobj = bankacctqset[0]
-    bankname = bankacctobj.bankname
-    bankbranch = bankacctobj.bankbranch
-    accountnumber = bankacctobj.accountnumber
-    ifsccode = bankacctobj.ifsccode
-    ownername = bankacctobj.accountownername
-    # Remember to put a new record in the Subscription_transaction table, and 
-    # update the relevant record in the Network_subscriptionearnings table.
-    # Both should happen **after** the withdrawal is successfully done.
+    contextdict = {}
+    contextdict['client_id'] = mysettings.WEPAY_CLIENT_ID
+    contextdict['redirect_uri'] = mysettings.APP_URL_PREFIX + mysettings.WEPAY_REGISTER_REDIRECT_URL
+    contextdict['user_name'] = userobj.firstname + " " + userobj.lastname
+    contextdict['email'] = userobj.emailid
+    tmpl = get_template("network/wepayauthorize.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    wepayauthhtml = tmpl.render(cxt)
+    return HttpResponse(wepayauthhtml)
+
+
+
+
+"""
+This is the dummy authorize function which retrieves all params that
+are to be sent to the wepay endpoint and it does this by using the 
+data collected from the wepay form embedded in withdrawal.html and
+then making a urllib2 request with that collected data.
+"""
+"""
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_exempt
+def wepayauthorize(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    request_url = request.get_full_path()
+    no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'application/json', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive'}
+    ff = open("/home/supriyo/work/testyard/tmpfiles/authorizedump.txt", "w")
+    ff.write(request_url)
+    ff.close()
+
+    return HttpResponse("")
+"""
+
+
+"""
+This is the second stage of the withdrawal process. We need to 
+get the code parameter from the request URL, and use it to get
+the access_token.
+"""
+@csrf_protect
+def wepayoauthredirect(request):
+    request_url = request.get_full_path()
+    ff = open("/home/supriyo/work/testyard/tmpfiles/urldump.txt","w")
+    ff.write(request_url)
+    ff.close()
+    # Get the 'code' param here.
+    request_url_parts = request_url.split("?")
+    request_url_qs_parts = request_url_parts.split("&")
+    codeval = ""
+    for ruqs in request_url_qs_parts:
+        rukey, ruvalue = ruqs.split("=")
+        if rukey == "code":
+            codeval = ruvalue
+            break
+    # Create a request here to get access_token
+    request_uri = "https://wepayapi.com/v2/oauth2/token"
+    paramsdict = {'client_id' : mysettings.WEPAY_CLIENT_ID, 'redirect_uri' : mysettings.APP_URL_PREFIX + mysettings.WEPAY_REGISTER_REDIRECT_URL, 'client_secret' : mysettings.WEPAY_CLIENT_SECRET, 'code' : codeval}
+    postparams = urllib.urlencode(paramsdict)
+    no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'application/json', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive'}
+    pageRequest = urllib2.Request(request_uri, postparams, httpHeaders)
+    message = ""
+    try:
+        pageResponse = no_redirect_opener.open(pageRequest)
+    except:
+        pageResponse = None
+        message = sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
+    responsedict = json.loads(responsecontent)
+    user_id, access_token, token_type, expires_in = "", "", "", ""
+    user_id = responsedict['user_id']
+    access_token = responsedict['access_token']
+    token_type = responsedict['token_type']
+    expires_in = responsedict['expires_in']
+    # Now that we have got our access_token, we need to create a wepay account for this user.
     
+    return HttpResponse("")
 
 
+def payumoneyfailure(request):
+    pass
 
 
 

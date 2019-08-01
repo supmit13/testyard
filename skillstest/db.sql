@@ -863,5 +863,9 @@ alter table Tests_wouldbeusers add column windowchangeattempts int(8) default 0;
 
 alter table Network_ownerbankaccount modify column ifsccode varchar(25);
 
+CREATE TABLE Network_wepay (id int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY, user_id int NOT NULL, access_token varchar(200) default "", token_type varchar(20) default "bearer", access_token_expires int(8), wepay_state varchar(200) default "", wepay_user_id int(8) default -1, wepay_authorized BOOLEAN default False, ownerbankaccount_id int(8) NOT NULL, create_datetime Datetime NOT NULL, FOREIGN KEY(user_id) REFERENCES Auth_user(id), FOREIGN KEY (ownerbankaccount_id) REFERENCES Network_ownerbankaccount(id));
+
+alter table Network_withdrawal add column securecodestatus boolean not null default true
+
 COMMIT;
 

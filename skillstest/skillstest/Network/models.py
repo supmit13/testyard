@@ -213,13 +213,27 @@ class WithdrawalActivity(models.Model):
     sessioncode = models.CharField(max_length=150, null=False, blank=False)
     securecode = models.CharField(max_length=8, null=False, blank=False)
     activitytime = models.DateTimeField(auto_now=True)
+    securecodestatus = models.BooleanField(default=True)
 
     class Meta:
         verbose_name = "WithdrawalActivity Table"
         db_table = 'Network_withdrawal'
 
 
+class WePay(models.Model):
+    user = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    access_token = models.CharField(max_length=200, null=True)
+    token_type = models.CharField(max_length=20, null=False, default="bearer")
+    access_token_expires = models.IntegerField(null=True, default=0)
+    wepay_state = models.CharField(max_length=200, null=False, default="not initiated")
+    wepay_user_id = models.IntegerField(null=True, default=-1)
+    wepay_authorized = models.BooleanField(default=False)
+    ownerbankaccount = models.ForeignKey(OwnerBankAccount, related_name="+", null=False, blank=True)
+    create_datetime = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        verbose_name = "WePay Table"
+        db_table = 'Network_wepay'
 
 
 

@@ -313,9 +313,11 @@ def showpaymentgwoptions(request):
     return response
 
 
+"""
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
+"""
 def payunotify(request):
     """
     This method receives the notification request from PayU.
@@ -326,6 +328,8 @@ def payunotify(request):
         message = "Could not find the 'OpenPayu-Signature' header."
         response = HttpResponseBadRequest(message)
         return response
+    ff = open("/home/supriyo/work/testyard/tmpfiles/notifypayu.txt", "w")
+    ff.write("Received notify call\n")
     # If we got the OpenPayu-Signature header, then we will verify it.
     openPayUSig = request.META['OpenPayu-Signature']
     openPayUSigParts = openPayUSig.split(";")
@@ -340,6 +344,8 @@ def payunotify(request):
         else:
             pass
     jsonContent = request.body
+    ff.write(jsonContent)
+    ff.close()
     # Verify the signature
     concatvalue = jsonContent + mysettings.PAYU_SECOND_ID
     m = md5.new()
@@ -364,6 +370,7 @@ def payunotify(request):
         else:
             paymentId = None
     orderId = orderData['orderId']
+    notifyUrl = orderData['notifyUrl']
     extOrderId = orderData['extOrderId']
     orderCreateDate = orderData['orderCreateDate']
     customerIp = orderData['customerIp']
@@ -372,13 +379,66 @@ def payunotify(request):
     currencyCode = orderData['currencyCode']
     totalAmount = orderData['totalAmount']
     status = orderData['status']
+    if status != "COMPLETED":
+        message = "PayU payment process is in progress."
+        response = HttpResponseBadRequest(message)
+        return response
     # Add records in the following tables: Subscription_transaction, Subscription_usercoupon and Subscription_userplan.
     transobj = Transaction.objects.get(orderId=orderId)
     transobj.comments = description
     transobj.clientIp = customerIp
-    transobj.trans_status = 1 # True value
+    transobj.trans_status = True # True value
     transobj.extOrderId = extOrderId
     transobj.save()
+    grpobj = transobj.group
+    userobj = transobj.user
+    # ... and now we go for GroupPaidTransactions.
+    grppaidtxnobj = GroupPaidTransactions()
+    grppaidtxnobj.group = grpobj
+    grppaidtxnobj.payer = userobj
+    grppaidtxnobj.amount = totalAmount
+    grppaidtxnobj.currency = 'USD' # Since we converted the transaction amount into USD, we put USD in every record here.
+    grppaidtxnobj.transdatetime = datetime.datetime.now()
+    grppaidtxnobj.payeripaddress = customerIP
+    grppaidtxnobj.save()
+    try:
+        grpjoinreqobj = GroupJoinRequest.objects.get(orderId=orderId)
+        grpjoinreqobj.outcome = "accept"
+        grpjoinreqobj.active = True
+        grpjoinreqobj.reason = "payment completed"
+        grpjoinreqobj.save()
+    except:
+        message = "Could not update the GroupJoinRequest table for order Id %s. Error: %s\n"%(orderId, sys.exc_info()[1].__str__())
+        return HttpResponse(message)
+    # GroupMember should be updated too.
+    # Here we go for updating SubscriptionEarnings table...
+    seqset = SubscriptionEarnings.objects.filter(user=grpobj.owner)
+    seobj = None
+    if seqset.__len__() < 1:
+        seobj = SubscriptionEarnings() # First transaction for the user.
+        seobj.user = grpobj.owner
+    else:
+        seobj = seqset[0]
+    seobj.earnings += transobj.payamount
+    seobj.balance += transobj.payamount
+    seobj.lasttransactdate = datetime.datetime.now()
+    seobj.save()
+    # Associate the member with the group.
+    grpmemobj = None
+    # First, check if the user was already a member. If so, use that membership record.
+    try:
+        grpmemobj = GroupMember.objects.get(group=grpobj, member=userobj)
+    except:
+        grpmemobj = GroupMember()
+    grpmemobj.group = grpobj
+    grpmemobj.member = userobj
+    grpmemobj.membersince = datetime.datetime.now()
+    grpmemobj.status = True
+    grpmemobj.removed = False
+    grpmemobj.blocked = False
+    grpmemobj.removeagent = ""
+    grpmemobj.lastremovaldate = ""
+    grpmemobj.save()
     message = "Order has been successfully placed"
     response = HttpResponse(message)
     return response

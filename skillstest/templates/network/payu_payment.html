@@ -16,6 +16,8 @@ function makepayment_payu(){
 	document.frmpaymentconfirm.buyerphone.focus();
 	return (false);
     }
+    document.frmpaymentconfirm.btnnojoin.disabled = true;
+    document.frmpaymentconfirm.btnconfirmpayment_payu.disabled = true;    
     targeturl = document.frmpaymentconfirm.action;
     postdata = "";
     allelements = document.frmpaymentconfirm.elements;
@@ -54,7 +56,7 @@ function makepayment_paypal(){
     }
     numericpattern = new RegExp("^\\d+$");
     if(document.frmpaymentconfirm.buyerphone.value.trim() == "" || !numericpattern.test(document.frmpaymentconfirm.buyerphone.value)){
-	alert("Buyer Phone may not be empty and has to have a numeric value");
+	alert("Buyer Phone may not be empty and has to have a non-numeric value");
 	document.frmpaymentconfirm.buyerphone.focus();
 	return (false);
     }
@@ -73,7 +75,7 @@ function makepayment_paypal(){
     <input type="hidden" name="customerIp" value="{{ customer_ip }}" >
     <input type="hidden" name="description" value="{{order_desc}}" >
     <input type="hidden" name="merchantPosId" value="{{posId}}" >    
-    <input type="hidden" name="notifyUrl" value="{{hosturl}}/notify" >
+    <input type="hidden" name="notifyUrl" value="{{hosturl}}/skillstest/subscription/notify/" >
     <input type="hidden" name="productname" value="{{groupname}}" >
     <input type="hidden" name="productquantity" value="1" >
     <input type="hidden" name="productunitprice" value="{{subscription_amt}}">
@@ -87,7 +89,9 @@ function makepayment_paypal(){
     <tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Contact Number (Required for transactions through PayU):</font><input type='text' name='buyerphone' id='buyerphone' value='{{buyerphone}}' required> </td></tr>
     </table>
     {% csrf_token %}
+    <br /><span id='popupmsg' style="color:#AA0000;font-style:italic;">Please ensure that your popup blocker is turned off. Clicking the above buttons will open a popup window.</span><br />
     <center><input type="button" name='btnconfirmpayment_payu' id='btnconfirmpayment_payu' value="Yes, pay using Bank Transfer/Debit/Credit Cards"  onClick="javascript:makepayment_payu();"><span id='waiter'></span>&nbsp;&nbsp;<!-- <input type="button" name='btnconfirmpayment_paypal' id='btnconfirmpayment_paypal' value="Yes, pay using paypal"  onClick="javascript:makepayment_paypal();"> <a href="/#" data-paypal-button="true" onClick='javascript:makepayment_paypal();'>  <img src="//www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Check out with PayPal" /></a> --><span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
+
 </form >
 </body>
 </html>

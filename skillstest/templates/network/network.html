@@ -267,6 +267,7 @@
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    //alert(xmlhttp.responseText);
 		    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
 		    payinfowin.document.write(xmlhttp.responseText);
 	        }
 	    };
@@ -344,7 +345,7 @@
 			    	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			    }
 			    else{
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
 			    }
 			}
 			else if(jsobj.removedblocked == '1'){
@@ -2311,7 +2312,7 @@
             }
             xmlhttp.onreadystatechange = function(){
                 if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    withdrawwin = window.open("withdrawwin", "", "width=800, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    withdrawwin = window.open("withdrawwin", "", "width=800, height=400, location=yes, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
 		    withdrawwin.document.write(xmlhttp.responseText);
 		    wdiv.innerHTML = "";
                 }
@@ -2321,7 +2322,7 @@
 	    wdiv.innerHTML = "<img src='static/images/loading_small.gif'>Please wait while we prepare the interface for this activity.";
 	}
 
-	
+
 	function searchgroups(){
 	    var searchquery = document.frmsearchownedgrps.searchgrpname.value;
 	    manageownedgrpsscreen(searchquery);
@@ -2433,7 +2434,7 @@
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();'>Add a contact</a></h3>
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();'>Post a message</a></h3><br />
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage owned groups</a></h3><div id='managewait'></div>
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><div id='withdrawdiv'></div><br />
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br />
 
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();'>Give a test to one or more groups</a></h3><br />
 			</div>
