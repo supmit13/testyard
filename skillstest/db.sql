@@ -867,5 +867,8 @@ CREATE TABLE Network_wepay (id int(8) NOT NULL AUTO_INCREMENT PRIMARY KEY, user_
 
 alter table Network_withdrawal add column securecodestatus boolean not null default true
 
+alter table Network_wepay add column code varchar(200);
+alter table Network_withdrawal add column wepaycode varchar(255);
+
 COMMIT;
 

@@ -448,7 +448,7 @@ def searchgroups(request):
             selectedtopics.append(v)
     # Note: the keyword may be a part of group's name, description or tagline.
     results = []
-    groupsqset = list(Group.objects.filter(groupname__contains=grpkeyword, description__contains=grpkeyword))
+    groupsqset = Group.objects.filter(Q(groupname__icontains=grpkeyword) | Q(description__icontains=grpkeyword))
     #groupsqset.append(Group.objects.filter(tagline__contains=grpkeyword))
     #groupsqset2 = list(Group.objects.filter())
     #for grp in groupsqset2:
@@ -1374,7 +1374,6 @@ def confirmpayment_payu(request):
         message = error_msg('1086')
         response = HttpResponse(message)
         return response
-    
     xchnginr = skillutils.fetch_currency_rate('INR', 'USD')
     xchngeur = skillutils.fetch_currency_rate('EUR', 'USD')
     xchngpln = skillutils.fetch_currency_rate('PLN', 'USD')
@@ -3502,6 +3501,10 @@ def showwithdrawscreen(request):
         contextdict['earnings'] = earnings
         contextdict['lasttransactiondate'] = lasttransactdate
         contextdict['cutpercent'] = mysettings.CUT_FRACTION * 100
+    contextdict['client_id'] = mysettings.WEPAY_CLIENT_ID
+    contextdict['user_name'] = userobj.firstname + " " + userobj.lastname
+    contextdict['email'] = userobj.emailid
+    contextdict['redirect_uri'] = mysettings.APP_URL_PREFIX + mysettings.WEPAY_REGISTER_REDIRECT_URL
     # Select all available bank accounts of this user and create a select dropdown with it.
     bankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj)
     if bankacctqset.__len__() < 1:
@@ -3574,7 +3577,7 @@ def dowithdrawal(request):
         return response
     # Set the used securecode status to False
     withdrawalactivityqset[0].securecodestatus = False
-    withdrawalactivityqset[0].save()
+    
     # So everything is in order and we can do the transaction now. Get the account info for this user from the OwnerBankAccount table and start the transaction.
     bankacctqset = OwnerBankAccount.objects.filter(id=bankacct)
     if bankacctqset.__len__() < 1:
@@ -3585,11 +3588,26 @@ def dowithdrawal(request):
     contextdict['redirect_uri'] = mysettings.APP_URL_PREFIX + mysettings.WEPAY_REGISTER_REDIRECT_URL
     contextdict['user_name'] = userobj.firstname + " " + userobj.lastname
     contextdict['email'] = userobj.emailid
-    tmpl = get_template("network/wepayauthorize.html")
-    contextdict.update(csrf(request))
-    cxt = Context(contextdict)
-    wepayauthhtml = tmpl.render(cxt)
-    return HttpResponse(wepayauthhtml)
+    
+    # Now, we make the call to 'https://wepay.com/v2/oauth2/authorize' with all the GET params and retrieve the 'code' value
+    authorizeuri = mysettings.WEPAY_USER_REGISTER_URL
+    no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'}
+    authorizeuri = authorizeuri[:-1]
+    data = { 'client_id' : mysettings.WEPAY_CLIENT_ID, 'scope' : 'manage_accounts,collect_payments,view_user,send_money,preapprove_payments', 'redirect_uri' : mysettings.APP_URL_PREFIX + mysettings.WEPAY_REGISTER_REDIRECT_URL, 'user_name' : userobj.firstname + " " + userobj.lastname, 'user_email' : userobj.emailid, 'state' : 'robot', 'popup' : '1'}
+    getdata = urllib.urlencode(data)
+    authorizeuri = authorizeuri + "?" + getdata
+    pageRequest = urllib2.Request(authorizeuri, None, httpHeaders)
+    pageResponse = None
+    message = ""
+    try:
+        pageResponse = no_redirect_opener.open(pageRequest)
+    except:
+        pageResponse = None
+        message = "Error: %s\n"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
+    return HttpResponse(responsecontent)
 
 
 
@@ -3600,9 +3618,7 @@ are to be sent to the wepay endpoint and it does this by using the
 data collected from the wepay form embedded in withdrawal.html and
 then making a urllib2 request with that collected data.
 """
-"""
-@skillutils.is_session_valid
-@skillutils.session_location_match
+
 @csrf_exempt
 def wepayauthorize(request):
     if request.method != 'POST':
@@ -3613,14 +3629,28 @@ def wepayauthorize(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     request_url = request.get_full_path()
-    no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    #no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
     httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'application/json', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive'}
+    """
     ff = open("/home/supriyo/work/testyard/tmpfiles/authorizedump.txt", "w")
-    ff.write(request_url)
+    try:
+        ff.write(str(request.POST))
+    except:
+        pass
+    try:
+        ff.write(str(request.GET))
+    except:
+        pass
+    ff.write("FULL URL: %s\n"%request_url)
+    """
+    #Send a request to mysettings.APP_URL_PREFIX + request.path + "?"
+    """
+    ff.write("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    ff.write(request.META['QUERY_STRING'])
     ff.close()
-
+    """
     return HttpResponse("")
-"""
+
 
 
 """
@@ -3628,12 +3658,14 @@ This is the second stage of the withdrawal process. We need to
 get the code parameter from the request URL, and use it to get
 the access_token.
 """
-@csrf_protect
+@csrf_exempt
 def wepayoauthredirect(request):
     request_url = request.get_full_path()
+    """
     ff = open("/home/supriyo/work/testyard/tmpfiles/urldump.txt","w")
     ff.write(request_url)
     ff.close()
+    """
     # Get the 'code' param here.
     request_url_parts = request_url.split("?")
     request_url_qs_parts = request_url_parts.split("&")
@@ -3666,11 +3698,12 @@ def wepayoauthredirect(request):
     expires_in = responsedict['expires_in']
     # Now that we have got our access_token, we need to create a wepay account for this user.
     
-    return HttpResponse("")
+    return HttpResponse(str(responsedict))
 
 
 def payumoneyfailure(request):
     pass
+
 
 
 

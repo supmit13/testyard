@@ -214,6 +214,7 @@ class WithdrawalActivity(models.Model):
     securecode = models.CharField(max_length=8, null=False, blank=False)
     activitytime = models.DateTimeField(auto_now=True)
     securecodestatus = models.BooleanField(default=True)
+    wepaycode = models.CharField(max_length=255)
 
     class Meta:
         verbose_name = "WithdrawalActivity Table"
@@ -230,6 +231,7 @@ class WePay(models.Model):
     wepay_authorized = models.BooleanField(default=False)
     ownerbankaccount = models.ForeignKey(OwnerBankAccount, related_name="+", null=False, blank=True)
     create_datetime = models.DateTimeField(auto_now=True)
+    code = models.CharField(max_length=255)
 
     class Meta:
         verbose_name = "WePay Table"
