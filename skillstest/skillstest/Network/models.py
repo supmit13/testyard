@@ -225,13 +225,14 @@ class WePay(models.Model):
     user = models.ForeignKey(User, related_name="+", null=False, blank=False)
     access_token = models.CharField(max_length=200, null=True)
     token_type = models.CharField(max_length=20, null=False, default="bearer")
-    access_token_expires = models.IntegerField(null=True, default=0)
+    access_token_expires = models.BigIntegerField(null=True, default=0)
     wepay_state = models.CharField(max_length=200, null=False, default="not initiated")
-    wepay_user_id = models.IntegerField(null=True, default=-1)
+    wepay_user_id = models.BigIntegerField(null=True, default=-1)
     wepay_authorized = models.BooleanField(default=False)
     ownerbankaccount = models.ForeignKey(OwnerBankAccount, related_name="+", null=False, blank=True)
     create_datetime = models.DateTimeField(auto_now=True)
     code = models.CharField(max_length=255)
+    wepayacctid = models.CharField(max_length=255)
 
     class Meta:
         verbose_name = "WePay Table"

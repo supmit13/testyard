@@ -1009,6 +1009,8 @@ alter table Network_withdrawal add column securecodestatus boolean not null defa
 
 alter table Network_wepay add column code varchar(200);
 alter table Network_withdrawal add column wepaycode varchar(255);
+alter table Network_wepay add column wepayacctid varchar(255) default "";
+alter table Network_wepay modify column wepay_user_id bigint;
 
 COMMIT;
 

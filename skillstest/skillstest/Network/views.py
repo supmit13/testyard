@@ -3658,30 +3658,45 @@ This is the second stage of the withdrawal process. We need to
 get the code parameter from the request URL, and use it to get
 the access_token.
 """
-@csrf_exempt
+@csrf_protect
 def wepayoauthredirect(request):
-    request_url = request.get_full_path()
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    codeval, username, useremail, bankacctid, securecode = "", "", "", "", ""
+    if request.POST.has_key('code'):
+        codeval = request.POST['code']
+    if request.POST.has_key('username'):
+        username = request.POST['username']
+    if request.POST.has_key('useremail'):
+        useremail = request.POST['useremail']
+    if request.POST.has_key('bankacctvalue'):
+        bankacctid = request.POST['bankacctvalue']
+    if request.POST.has_key('securecode'):
+        securecode = request.POST['securecode']
     """
-    ff = open("/home/supriyo/work/testyard/tmpfiles/urldump.txt","w")
-    ff.write(request_url)
+    ff = open("/home/supriyo/work/testyard/tmpfiles/request_data.txt","w")
+    ff.write(codeval + "####" + username + "####" + useremail + "####" + bankacctid)
     ff.close()
     """
-    # Get the 'code' param here.
-    request_url_parts = request_url.split("?")
-    request_url_qs_parts = request_url_parts.split("&")
-    codeval = ""
-    for ruqs in request_url_qs_parts:
-        rukey, ruvalue = ruqs.split("=")
-        if rukey == "code":
-            codeval = ruvalue
-            break
+    bankacctobj = None
+    try:
+        bankacctobj = OwnerBankAccount.objects.get(id=bankacctid)
+    except:
+        message = "Error: A bank account could not be associated with your account. Please enter bank account details while creating a paid group before continuing with this procedure."
+        return HttpResponse(message)
     # Create a request here to get access_token
-    request_uri = "https://wepayapi.com/v2/oauth2/token"
+    request_uri = mysettings.WEPAY_OAUTH2_URI
     paramsdict = {'client_id' : mysettings.WEPAY_CLIENT_ID, 'redirect_uri' : mysettings.APP_URL_PREFIX + mysettings.WEPAY_REGISTER_REDIRECT_URL, 'client_secret' : mysettings.WEPAY_CLIENT_SECRET, 'code' : codeval}
-    postparams = urllib.urlencode(paramsdict)
+    requestparams = urllib.urlencode(paramsdict)
     no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
     httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'application/json', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive'}
-    pageRequest = urllib2.Request(request_uri, postparams, httpHeaders)
+    pageRequest = urllib2.Request(request_uri, requestparams, httpHeaders)
+    """
+    ff = open("/home/supriyo/work/testyard/tmpfiles/at_request_data.txt","w")
+    ff.write(request_uri + "?" + requestparams)
+    ff.close()
+    """
     message = ""
     try:
         pageResponse = no_redirect_opener.open(pageRequest)
@@ -3690,15 +3705,104 @@ def wepayoauthredirect(request):
         message = sys.exc_info()[1].__str__()
         return HttpResponse(message)
     responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
+    """
+    ff = open("/home/supriyo/work/testyard/tmpfiles/response_data.txt","w")
+    ff.write(responsecontent)
+    ff.close()
+    """
     responsedict = json.loads(responsecontent)
-    user_id, access_token, token_type, expires_in = "", "", "", ""
-    user_id = responsedict['user_id']
-    access_token = responsedict['access_token']
-    token_type = responsedict['token_type']
-    expires_in = responsedict['expires_in']
+    user_id, access_token, token_type, expires_in = -1, "", "", 0
+    if responsedict.has_key('user_id'):
+        user_id = responsedict['user_id']
+    if responsedict.has_key('access_token'):
+        access_token = responsedict['access_token']
+    if responsedict.has_key('token_type'):
+        token_type = responsedict['token_type']
+    if responsedict.has_key('expires_in'):
+        expires_in = responsedict['expires_in']
+    userobj = None
+    try:
+        userobj = User.objects.get(emailid=useremail)
+    except:
+        message = "Could not determine the user from the given username and email Id. Please ensure that you are using the same email Id that is registered with your testyard account"
+        return HttpResponse(message)
     # Now that we have got our access_token, we need to create a wepay account for this user.
-    
-    return HttpResponse(str(responsedict))
+    # If an account already exists, we will simply update the access_token field.
+    wepayobj = None
+    wepayacctid = ""
+    try:
+        wepayobj = WePay.objects.get(user=userobj)
+        wepayacctid = wepayobj.wepayacctid
+    except:
+        wepayobj = WePay()
+        wepayobj.user = userobj
+    try:
+        wepayobj.access_token = access_token
+        wepayobj.token_type = token_type
+        wepayobj.access_token_expires = expires_in
+        wepayobj.wepay_state = "initiated"
+        wepayobj.wepay_user_id = user_id
+        wepayobj.wepay_authorized = True
+        wepayobj.ownerbankaccount = bankacctobj
+        #wepayobj.create_datetime = datetime.datetime.now()
+        wepayobj.code = codeval
+        wepayobj.save()
+    except:
+        message = "Error in creating/modifying a wepay object - %s"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    """
+    ff = open("/home/supriyo/work/testyard/tmpfiles/access_token.txt","w")
+    ff.write(access_token + "####" + token_type + "####" + expires_in)
+    ff.close()
+    """
+    # Update WithdrawalActivity
+    withdrawalobj = None
+    try:
+        withdrawalobj = WithdrawalActivity.objects.get(securecode=securecode)
+    except:
+        message = "A withdrawal activity could not be associated with this transaction. Please note that your securecode is %s and report this to customer care at customercare@testyard.in."%securecode
+        return HttpResponse(message)
+    withdrawalobj.wepaycode = codeval
+    withdrawalobj.save()
+    # Done with data saving, we now get on with the rest of the withdrawal process.
+    # We will now go to the last step (step #4) of the process, where we either create 
+    # WePay account (if it doesn't already exists), or do nothing (if it exists).
+    if not wepayacctid: # We need to create one
+        acct_create_uri = mysettings.WEPAY_ACCT_CREATE_URI
+        # Account name will be the same as User object's 'displayname' field. This
+        # field is unique for every user on testyard, and hence we may safely use it for this purpose.
+        paramsdict = {'name' : userobj.displayname, 'description' : userobj.displayname + "'s account",}
+        requestparams = urllib.urlencode(paramsdict)
+        no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+        httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive', 'Authorization' : 'Bearer %s'%access_token}
+        pageRequest = urllib2.Request(acct_create_uri, requestparams, httpHeaders)
+        try:
+            pageResponse = no_redirect_opener.open(pageRequest)
+        except:
+            pageResponse = None
+            message = sys.exc_info()[1].__str__()
+            return HttpResponse(message)
+        responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
+        
+        ff = open("/home/supriyo/work/testyard/tmpfiles/account_id_content.txt","w")
+        ff.write(responsecontent.__str__())
+        ff.close()
+        
+        responsecontentdict = json.loads(responsecontent)
+        acct_id = responsecontentdict['account_id']
+        state = responsecontentdict['state']
+        owneruserid = responsecontentdict['owner_user_id']
+        try:
+            wepayuserobj = WePay.object.get(wepay_user_id=owneruserid)
+        except:
+            message = "Couldn't find the required fields in the JSON results."
+            return HttpResponse(message)
+        wepayuserobj.wepayacctid = acct_id
+        wepayuserobj.wepay_state = state
+        wepayuserobj.save()
+    message = "Successfully settled the records for the WePay model."
+    return HttpResponse(message)
+
 
 
 def payumoneyfailure(request):

@@ -3474,7 +3474,22 @@ Monday, August 05, 2019, 01:50 HRS.
 12.git add files_to_commit.txt
 
 =========================================
+Thursday, August 08, 2019, 06:23 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add skillstest/Network/models.py
+3. git add skillstest/Subscription/views.py
+4. git add skillstest/Subscription/models.py
+5. git add templates/network/network.html
+6. git add templates/network/wepayauthorize.html
+7. git add templates/subscription/withdrawalscreen.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add skillstest/skills_settings.py
+11.git add skillstest/urls.py
+12.git add files_to_commit.txt
 
+=========================================
 
 
 
