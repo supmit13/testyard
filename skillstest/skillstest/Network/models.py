@@ -142,6 +142,7 @@ class OwnerBankAccount(models.Model):
     ifsccode = models.CharField(max_length=25, null=False, blank=False)
     accountownername = models.CharField(max_length=255, null=False, blank=False)
     creationdate = models.DateTimeField(auto_now=True, default=None)
+    razor_account_id = models.CharField(max_length=100, default="")
 
     class Meta:
         verbose_name = "ownerbankaccount Table"
@@ -215,6 +216,7 @@ class WithdrawalActivity(models.Model):
     activitytime = models.DateTimeField(auto_now=True)
     securecodestatus = models.BooleanField(default=True)
     wepaycode = models.CharField(max_length=255)
+    razorpaycode = models.CharField(max_length=200)
 
     class Meta:
         verbose_name = "WithdrawalActivity Table"
@@ -238,5 +240,27 @@ class WePay(models.Model):
         verbose_name = "WePay Table"
         db_table = 'Network_wepay'
 
+
+class RazorPayTransaction(models.Model):
+    bankacct = models.ForeignKey(OwnerBankAccount, related_name="+", null=False, blank=False)
+    source = models.CharField(max_length=50,null=False, blank=False)
+    recipient_merchant_id = models.CharField(max_length=50, null=False, blank=False)
+    transaction_id = models.CharField(max_length=100, null=False, blank=False) # id field of the razorpay /transfer response
+    recipient = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    amount = models.FloatField(null=False, blank=False)
+    currency = models.CharField(max_length=20, null=False, blank=False, default="INR")
+    on_hold = models.BooleanField(default=False)
+    tax = models.FloatField(null=False, blank=False, default=0.00)
+    fees = models.FloatField(null=False, blank=False, default=0.00)
+    trxtimestamp = models.BigIntegerField(null=True, default=0)
+
+    class Meta:
+        verbose_name = "RazorPay Transaction Table"
+        db_table = 'Network_razorpaytransaction'
+
+
+
+
+    
 
 

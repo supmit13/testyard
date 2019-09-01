@@ -12,6 +12,7 @@ import hashlib,hmac
 import base64
 import socket
 import simplejson as json
+import razorpay
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -26,7 +27,7 @@ from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse, PostLinkedin
 from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon
-from skillstest.Network.models import ExchangeRates
+from skillstest.Network.models import ExchangeRates, OwnerBankAccount
 
 multiplecommapattern = re.compile("\,+")
 endcommapattern = re.compile("\,$")
@@ -708,7 +709,7 @@ def readabledatetime(mysqldatefmt):
     MM = dateelements[1]
     DD = dateelements[2]
     mon = mysettings.REV_MONTHS_DICT[str(MM)]
-    readabledatetimestr = "%s %s %s, %s"%(DD, mon, YYYY, cleantimeparts)
+    readabledatetimestr = '%s %s %s, %s'%(DD, mon, YYYY, cleantimeparts)
     return readabledatetimestr
 
 
@@ -833,7 +834,9 @@ def get_client_ip(request):
 
 def des3Decrypt(encString, key, iv):
     # Method to decrypt DES3 encrypted strings.
-    # For now, this is just a placeholder.
+    # For now, this is just a placeholder. But
+    # please do not start making edits here as
+    # it gets called from Tests.views code.
     """
     des3 = DES3.new(key, DES3.MODE_CFB, iv)
     des3.decrypt(encString)
@@ -877,6 +880,101 @@ def applycoupon(couponobj, xobj, objtype='plan'):
     if discountedamt < float(0):
         discountedamt = 0.00
     return discountedamt
+
+"""
+Automation for onboarding a client on razorpay.
+It should add razorpayid in OwnerBankAccount object.
+"""
+def onboardclientonrazor_old(bankacctid):
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8'}
+    bankacctobj = OwnerBankAccount.objects.get(id=bankacctid)
+    linked_acct_name = bankacctobj.groupowner.firstname + " " + bankacctobj.groupowner.lastname
+    clienttype = 2
+    phone_no = bankacctobj.groupowner.mobileno
+    if not phone_no:
+        phone_no = mysettings.DEFAULT_PHONENO_PLACEHOLDER
+    emailid = bankacctobj.groupowner.emailid
+    acctno = bankacctobj.accountnumber
+    accttype = 2
+    ifsccode = bankacctobj.ifsccode
+    beneficiary_name = bankacctobj.accountownername
+    targeturi = mysettings.RAZORPAY_BASEURI + "/transfers"
+    data = {'name' : beneficiary_name, 'email' : emailid, 'contact' : phone_no, 'data-key' : mysettings.RAZORPAY_KEY}
+    postdata = urllib.urlencode(data)
+    onboardrequest = urllib2.Request(targeturi, postdata,httpHeaders)
+    try:
+        onboardresponse = opener.open(onboardrequest)
+    except:
+        message = "The Onboarding API request failed with the following reason: %s\n"%sys.exc_info()[1].__str__()
+        return message
+    responsecontent = decodeGzippedContent(onboardresponse.read())
+    return responsecontent
+    
+
+
+def onboardclientonrazor(bankacctid):
+    try:
+        bankacctobj = OwnerBankAccount.objects.get(id=bankacctid)
+    except:
+        message = "Could not find the OwnerBankAccount object with the ID %s. Error: %s\n"%(bankacctid, sys.exc_info()[1].__str__())
+        return message
+    ff = open("/home/supriyo/work/testyard/tmpfiles/message0004.txt", "w")
+    ff.write("HERE")
+    ff.close()
+    start_url = "https://dashboard.razorpay.com/submerchants"
+    linked_accts_url = "https://dashboard.razorpay.com/merchant/api/test/linked_accounts?count=25"
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/png,*/*;q=0.8'}
+    data = { 'account': True, 'name': bankacctobj.accountownername, 'email': bankacctobj.groupowner.emailid, 'mode': "test"}
+    postdata = urllib.urlencode(data)
+    ff = open("/home/supriyo/work/testyard/tmpfiles/postdump0002.txt", "w")
+    ff.write(str(postdata))
+    ff.close()
+    pageRequest = urllib2.Request(start_url, postdata, httpHeaders)
+    pageResponse= None
+    cookies = {'XSRF-TOKEN' : '', 'rzp_usr_session' : ''}
+    try:
+        pageResponse = opener.open(pageRequest)
+        pageResponseContent = _decodeGzippedContent(pageResponse.read())
+        ff = open("/home/supriyo/work/testyard/tmpfiles/responsedump.txt", "w")
+        ff.write(str(pageResponseContent))
+        ff.close()
+    except:
+        msg = "Could not fetch start url. Error: %s"%sys.exc_info()[1].__str__()
+        ff = open("/home/supriyo/work/testyard/tmpfiles/responsedump.txt", "w")
+        ff.write(str(pageResponseContent))
+        ff.close()
+        return msg
+    pageResponseHeaders = pageResponse.info()
+    cookieheaders = pageResponseHeaders['Set-Cookie']
+    ff = open("/home/supriyo/work/testyard/tmpfiles/customerdump.txt", "w")
+    ff.write(str(cookieheaders))
+    ff.close()
+    """
+    try:
+        bankacctobj = OwnerBankAccount.objects.get(id=bankacctid)
+    except:
+        message = "Could not find the OwnerBankAccount object with the ID %s\n"%bankacctid
+        return message
+    client = razorpay.Client(auth=(mysettings.RAZORPAY_KEY, mysettings.RAZORPAY_SECRET))
+    try:
+        client.customer.create(data={'name' : bankacctobj.accountownername, 'email' : bankacctobj.groupowner.emailid, 'contact' : bankacctobj.groupowner.mobileno, 'notes' : {}})
+        # Set the OwnerBankAccount model's 'razor_account_id' field to its correct value
+        ff = open("/home/supriyo/work/testyard/tmpfiles/customerdump.txt", "w")
+        ff.write(str(dir(client)))
+        ff.close()
+    except:
+        message = "Something went wrong while we were creating a 'customer'. Error: %s\n"%sys.exc_info()[1].__str__()
+        ff = open("/home/supriyo/work/testyard/tmpfiles/customerdumperr.txt", "w")
+        ff.write(message)
+        ff.close()
+        return message
+    return "Successfully created customer." # Return the object that has been initialized.
+    """
+
+
+
 
 
 

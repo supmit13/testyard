@@ -872,5 +872,13 @@ alter table Network_withdrawal add column wepaycode varchar(255);
 alter table Network_wepay add column wepayacctid varchar(255) default "";
 alter table Network_wepay modify column wepay_user_id bigint;
 
+alter table Network_ownerbankaccount add column razor_account_id varchar(100) default "";
+alter table Network_withdrawal add column razorpaycode varchar(200) default "";
+
+create table Network_razorpaytransaction (id int NOT NULL PRIMARY KEY AUTO_INCREMENT, bankacct_id INT NOT NULL, recipient_id INT NOT NULL, amount double NOT NULL DEFAULT 0.00, currency varchar(20) DEFAULT "INR", on_hold boolean default False, tax double default 0.00, fees double default 0.00, trxtimestamp INT(11) NOT NULL, FOREIGN KEY (bankacct_id) REFERENCES Network_ownerbankaccount(id),  FOREIGN KEY (recipient_id) REFERENCES Auth_user(id));
+
+alter table Network_razorpaytransaction add column source varchar(50) NOT NULL;
+alter table Network_razorpaytransaction add column recipient_merchant_id varchar(50) NOT NULL;
+
 COMMIT;
 

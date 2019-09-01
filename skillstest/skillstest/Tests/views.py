@@ -3570,7 +3570,7 @@ def evaluate(request):
         #fp = open("/home/supriyo/work/testyard/tmpfiles/answes.txt","w+")
         for ut in utqset:
             if ut.active and not ut.cancelled and ut.status == 2:
-                candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment, 'evalcommitstate' : ut.evalcommitstate, 'disqualified' : ut.disqualified}
+                candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment, 'evalcommitstate' : ut.evalcommitstate, 'disqualified' : ut.disqualified, 'windowchangeattempts' : ut.windowchangeattempts}
                 userresputqueryset = UserResponse.objects.filter(test=testobj, tabref='usertest', tabid=ut.id, emailaddr=ut.emailaddr)
                 
                 for userrespobj in userresputqueryset:
@@ -3604,10 +3604,10 @@ def evaluate(request):
         #fp.close()
         for wbu in wbuqset:
             if wbu.active and not wbu.cancelled and wbu.status == 2:
-                candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment, 'evalcommitstate' : wbu.evalcommitstate, 'disqualified' : wbu.disqualified}
+                candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment, 'evalcommitstate' : wbu.evalcommitstate, 'disqualified' : wbu.disqualified, 'windowchangeattempts' : wbu.windowchangeattempts}
                 userrespwbequeryset = UserResponse.objects.filter(test=testobj, tabref='wouldbeusers', tabid=wbu.id, emailaddr=wbu.emailaddr)
                 for userrespobj in userrespwbequeryset:
-                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
+                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks, 'windowchangeattempts' : wbu.windowchangeattempts }
                 candidateresponses[wbu.emailaddr + "####" + str(wbu.id)] = candidaterec
     return HttpResponse(base64.b64encode(json.dumps(candidateresponses)))
 
@@ -7303,7 +7303,6 @@ def mobile_setschedule(request):
     return response
 
 
-
 def linkedinredirect(request):
     code = request.GET.get('code', '')
     state = request.GET.get('state', '')
@@ -7311,7 +7310,6 @@ def linkedinredirect(request):
     sid = sesscode.replace('"', '')
     rolename = request.GET.get('role', '')
     postlinkedinobj = None
-    #return HttpResponse(sid)
     #First check if the CSRF token received matches our csrftoken in the DB for this session (identified by the sesscode variable)
     try:
         postlinkedinobj = PostLinkedin.objects.filter(sessionid=sid).order_by("-current_ts")[0]
@@ -7321,22 +7319,72 @@ def linkedinredirect(request):
     if postlinkedinobj.sessionid != sid:
         message = error_msg('1184')
         return HttpResponse(message)
+    """
     # Check if the state value equals our stored access token
     if postlinkedinobj.csrftoken != state:
         message = "The response could not be authenticated due to the difference in CSRF token values. Please contact support@testyard.in for resolving this."
         return HttpResponse(message, status=401)
+    """
     if not rolename:
         rolename = postlinkedinobj.role
-    # Now, we will try to retrieve our access token.
+    # Now, we will try to retrieve our authorization code.
     httpHeaders = {}
     for k in skillutils.gHttpHeaders.keys():
         httpHeaders[k] = skillutils.gHttpHeaders[k]
-    postdatadict = {"grant_type" : "authorization_code", "code" : code, "redirect_uri" : mysettings.REDIRECT_URI + "?sesscode=" + sesscode, "client_id" : mysettings.OAUTH_API_KEY, "client_secret" : mysettings.OAUTH_SECRET_KEY} 
+    getdatadict = {"response_type" : "code", "client_id" : mysettings.OAUTH_API_KEY, "redirect_uri" : mysettings.REDIRECT_URI, "scope" : "r_liteprofile w_member_social", "state" : ""} 
+    getdata = urllib.urlencode(getdatadict)
+    httpHeaders['Host'] = "www.linkedin.com"
+    httpHeaders['Content-Type'] = "application/x-www-form-urlencoded"
+    authrequest = urllib2.Request("https://www.linkedin.com/oauth/v2/authorization?" + getdata, None, httpHeaders)
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    authresponse = None
+    try:
+        authresponse = opener.open(authrequest)
+        respHeaders = authresponse.info()
+    except:
+        print "Could not make HTTP authorization request: %s"%sys.exc_info()[1].__str__()
+        return HttpResponse("Could not make HTTP authorization request: %s"%sys.exc_info()[1].__str__())
+    state,code = "", ""
+    ff0 = open("/home/supriyo/work/testyard/tmpfiles/linkedinresponse_0.txt", "w")
+    while respHeaders.has_key('Location') or respHeaders.has_key('location'): 
+        if respHeaders.has_key('Location'):   
+            redirectUri = respHeaders['Location']
+        else:
+            redirectUri = respHeaders['location']
+        ff0.write("REDIRECTURI = " + redirectUri + "\n\n")
+        httpHeaders['Referer'] = "https://www.linkedin.com/oauth/v2/authorization"
+        authrequest = urllib2.Request(redirectUri, None, httpHeaders)
+        try:
+            authresponse = opener.open(authrequest)
+            respHeaders = authresponse.info()
+        except:
+            print "Could not make HTTP authorization request: %s"%sys.exc_info()[1].__str__()
+            return HttpResponse("Could not make HTTP authorization request: %s"%sys.exc_info()[1].__str__())
+    requrl = authresponse.url
+    uriparts = requrl.split("?")
+    if uriparts.__len__() > 1:
+        datachunks = uriparts[1].split("&")
+        for chunk in datachunks:
+            chunkparts = chunk.split("=")
+            if chunkparts[0] == "code":
+                code = chunkparts[1]
+            elif chunkparts[0] == "state":
+                state = chunkparts[1]
+            else:
+                pass
+    
+    ff0.write(getdata + "\n\n code = %s\n================= \n\nredirectUri = %s\n\n"%(code, requrl))
+    ff0.close()
+    postdatadict = {"grant_type" : "client_credentials", "code" : code, "redirect_uri" : mysettings.REDIRECT_URI, "client_id" : mysettings.OAUTH_API_KEY, "client_secret" : mysettings.OAUTH_SECRET_KEY} 
     postdata = urllib.urlencode(postdatadict)
     httpHeaders['Host'] = "www.linkedin.com"
     httpHeaders['Content-Type'] = "application/x-www-form-urlencoded"
     tokenrequest = urllib2.Request("https://www.linkedin.com/oauth/v2/accessToken", postdata, httpHeaders)
-    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
+    ff1 = open("/home/supriyo/work/testyard/tmpfiles/linkedinresponse_1.txt", "w")
+    ff1.write(postdata.__str__())
+    ff1.write("\n\n#################################\n\n")
+    ff1.write(httpHeaders.__str__())
+    ff1.close()
     tokenResponse = None
     try:
         tokenResponse = opener.open(tokenrequest)
@@ -7348,13 +7396,7 @@ def linkedinredirect(request):
     urn = ""
     responsejson = json.loads(tokenResponseContent)
     accesstoken = responsejson['access_token']
-    """
-    ff = open("/home/supriyo/work/testyard/tmpfiles/linkedinresponse.txt", "w")
-    ff.write(tokenResponseContent)
-    ff.write("\n\n#################################\n\n")
-    ff.write(accesstoken)
-    ff.close()
-    """
+    
     # Make a GET request to /v2/me to get the URN value.
     httpHeaders = {}
     httpHeaders['Content-Type'] = "application/json"

@@ -29,7 +29,7 @@ from threading import Thread
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers
-from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions, WithdrawalActivity, WePay
+from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group, Post, OwnerBankAccount, GroupJoinRequest, GentleReminder, ExchangeRates, SubscriptionEarnings, GroupPaidTransactions, WithdrawalActivity, WePay, RazorPayTransaction
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -3521,6 +3521,7 @@ def showwithdrawscreen(request):
     return HttpResponse(withdrawhtml)
 
 
+""" This was for wepay - we do not need this just now.
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
@@ -3608,8 +3609,145 @@ def dowithdrawal(request):
         return HttpResponse(message)
     responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
     return HttpResponse(responsecontent)
+"""
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def dowithdrawal(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    balance, withdrawamount, earnings, securecode = "", "", "", ""
+    message = "At least one of the required argument is missing. Please try again."
+    if request.POST.has_key('balance'):
+        balance = request.POST['balance']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('withdrawamount'):
+        withdrawamount = request.POST['withdrawamount']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('earnings'):
+        earnings = request.POST['earnings']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('securecode'):
+        securecode = request.POST['securecode']
+    else:
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('bankaccts'):
+        bankacct = request.POST['bankaccts']
+    else:
+        response = HttpResponse(message)
+        return response
+    csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
+    customer_ip = ""
+    if request.META.has_key('REMOTE_ADDR'): 
+        customer_ip = request.META['REMOTE_ADDR']
+    customer_ua = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36"
+    if request.META.has_key('HTTP_USER_AGENT'):
+        customer_ua = request.META['HTTP_USER_AGENT']
+    if withdrawamount > balance:
+        message = "Withdrawal amount cannot be greater than the balance amount in your account. Please rectify this and try again"
+        return HttpResponse(message)
+    # Check if the secure code is correct or not.
+    withdrawalactivityqset = WithdrawalActivity.objects.filter(user=userobj, sessioncode=sesscode, securecode=securecode, securecodestatus=True)
+    if withdrawalactivityqset.__len__() < 1:
+        message = "The securecode was incorrect or your session got corrupted. Please try again"
+        response = HttpResponse(message)
+        return response
+    # Set the used securecode status to False
+    withdrawalactivityqset[0].securecodestatus = False
+    
+    # So everything is in order and we can do the transaction now. Get the account info for this user from the OwnerBankAccount table and start the transaction.
+    bankacctqset = OwnerBankAccount.objects.filter(id=bankacct)
+    ff = open("/home/supriyo/work/testyard/tmpfiles/bankqset.txt", "w")
+    ff.write(str(bankacctqset[0].id))
+    ff.close()
+    if bankacctqset.__len__() < 1:
+        message = "It looks like you do not have a bank account registered with TestYard. Please register an account by going to the 'settings and Join Requests' section of 'Manage Owned Groups' screen. Then please come to this screen to try to perform this activity again. That will register your account with our payment partner, and thereafter you would be able to transact easily."
+        return HttpResponse(message)
+    contextdict = {}
+    # First check if the bank account has a value in razor_account_id field.
+    if bankacctqset[0].razor_account_id == "":
+        ff = open("/home/supriyo/work/testyard/tmpfiles/bankqset2.txt", "w")
+        ff.write(str(bankacctqset[0].id))
+        ff.close()
+        msg = skillutils.onboardclientonrazor(bankacctqset[0].id)
+        return HttpResponse("Your account is not included in our payment partner's website. So we are doing it now. Please try the transaction after 30 mins")
+    transferuri = mysettings.RAZORPAY_BASEURI + "/transfers"
+    
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler())
+    httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/png,*/*;q=0.8'}
+    exchgratesqset = ExchangeRates.objects.filter(curr_from='USD', curr_to='INR').order_by('-dateofrate')
+    amounttowithdraw = exchgratesqset[0]*withdrawamount * 100 # Convert to paisa as Razorpay handles figures in paisa only.
+    data = { 'account' : bankacctqset[0].razor_account_id, 'amount' : amounttowithdraw, 'currency' : 'INR'}
+    postdata = urllib.urlencode(data)
+    pageRequest = urllib2.Request(transferuri, postdata, httpHeaders)
+    pageResponse = None
+    message = ""
+    try:
+        pageResponse = opener.open(pageRequest)
+    except:
+        pageResponse = None
+        message = "Error: %s\n"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
+    responsedict = json.loads(responsecontent)
+    rptrx = RazorPayTransaction()
+    for rpkey in responsedict.keys():
+        if rpkey == "id":
+            withdrawalactivityqset[0].razorpaycode = responsedict[rpkey]
+            rptrx.transaction_id = responsedict[rpkey]
+        elif rpkey == "source":
+            rptrx.source = mysettings.RAZORPAY_MERCHANT_ID
+        elif rpkey == "recipient":
+            rptrx.recipient_merchant_id = responsedict[rpkey]
+            rptrx.recipient = userobj
+        elif rpkey == "amount":
+            rptrx.amount = responsedict[rpkey]
+        elif rpkey == "currency":
+            rptrx.currency = responsedict[rpkey]
+        elif rpkey == "on_hold":
+            rptrx.on_hold = responsedict[rpkey]
+        elif rpkey == "tax":
+            rptrx.tax = responsedict[rpkey]
+        elif rpkey == "fees":
+            rptrx.fees = responsedict[rpkey]
+        elif rpkey == "created_at":
+            rptrx.trxtimestamp = responsedict[rpkey]
+    rptrx.save()
+    withdrawalactivityqset[0].save()
+    # Decrease the amount from the SubscriptionEarnings table.
+    try:
+        subscriptionearningsobj = SubscriptionEarnings.objects.get(user=userobj)
+        subscriptionearningsobj.balance = subscriptionearningsobj.balance - withdrawamount # This is in USD
+        subscriptionearningsobj.save()
+    except:
+        message = "Could not get the subscription earnings record. This money had to be refunded now."
+        refundamount(rptrx.transaction_id, rptrx.amount)
+    ff = open("/home/supriyo/work/testyard/tmpfiles/razorpayresponse.txt", "w")
+    ff.write(responsecontent)
+    ff.close()
+    return HttpResponse(responsecontent)
+
+
+"""
+This method will get called if the subscriptionearnings record could not be found
+or could not be appropriately changed for some reason.
+"""
+def refundamount(trxid, amount):
+    pass
 
 
 """
@@ -3692,11 +3830,11 @@ def wepayoauthredirect(request):
     no_redirect_opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler(), skillutils.NoRedirectHandler())
     httpHeaders = { 'User-Agent' : r'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/27.0.1453.110 Safari/537.36',  'Accept' : 'application/json', 'Accept-Language' : 'en-US,en;q=0.8', 'Accept-Encoding' : 'gzip,deflate,sdch', 'Connection' : 'keep-alive'}
     pageRequest = urllib2.Request(request_uri, requestparams, httpHeaders)
-    """
+    
     ff = open("/home/supriyo/work/testyard/tmpfiles/at_request_data.txt","w")
     ff.write(request_uri + "?" + requestparams)
     ff.close()
-    """
+
     message = ""
     try:
         pageResponse = no_redirect_opener.open(pageRequest)
@@ -3705,11 +3843,11 @@ def wepayoauthredirect(request):
         message = sys.exc_info()[1].__str__()
         return HttpResponse(message)
     responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
-    """
+    
     ff = open("/home/supriyo/work/testyard/tmpfiles/response_data.txt","w")
     ff.write(responsecontent)
     ff.close()
-    """
+    
     responsedict = json.loads(responsecontent)
     user_id, access_token, token_type, expires_in = -1, "", "", 0
     if responsedict.has_key('user_id'):
@@ -3750,11 +3888,11 @@ def wepayoauthredirect(request):
     except:
         message = "Error in creating/modifying a wepay object - %s"%sys.exc_info()[1].__str__()
         return HttpResponse(message)
-    """
+    
     ff = open("/home/supriyo/work/testyard/tmpfiles/access_token.txt","w")
     ff.write(access_token + "####" + token_type + "####" + expires_in)
     ff.close()
-    """
+    
     # Update WithdrawalActivity
     withdrawalobj = None
     try:
@@ -3783,11 +3921,11 @@ def wepayoauthredirect(request):
             message = sys.exc_info()[1].__str__()
             return HttpResponse(message)
         responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
-        
+        """
         ff = open("/home/supriyo/work/testyard/tmpfiles/account_id_content.txt","w")
         ff.write(responsecontent.__str__())
         ff.close()
-        
+        """
         responsecontentdict = json.loads(responsecontent)
         acct_id = responsecontentdict['account_id']
         state = responsecontentdict['state']
