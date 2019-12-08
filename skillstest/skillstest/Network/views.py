@@ -3921,11 +3921,6 @@ def wepayoauthredirect(request):
             message = sys.exc_info()[1].__str__()
             return HttpResponse(message)
         responsecontent = skillutils.decodeGzippedContent(pageResponse.read())
-        """
-        ff = open("/home/supriyo/work/testyard/tmpfiles/account_id_content.txt","w")
-        ff.write(responsecontent.__str__())
-        ff.close()
-        """
         responsecontentdict = json.loads(responsecontent)
         acct_id = responsecontentdict['account_id']
         state = responsecontentdict['state']
