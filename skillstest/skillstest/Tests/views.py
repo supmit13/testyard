@@ -3223,7 +3223,7 @@ def sendtestinvitations(request):
         Regards,
         The TestYard Team.
         """%(testlink)
-        fromaddr = "testyardteam@testyard.com"
+        fromaddr = "testyardteam@testyard.in"
         retval = 0
         try:
             retval = send_mail(emailsubject, emailmessage, fromaddr, [email,], False)
@@ -3241,6 +3241,7 @@ def sendtestinvitations(request):
             continue # Continue processing the rest of the emails in the list.
     message = "Success! All candidates have been emailed with the link."
     # Dump all emails Ids to which email could not be sent
+    failure = False
     for error_email in error_emails_list:
         print error_email
         emailfail = EmailFailure()
@@ -3252,9 +3253,12 @@ def sendtestinvitations(request):
         emailfail.tryagain = 1
         try:
             emailfail.save()
+            failure = True
         except:
             message = sys.exc_info()[1].__str__()
             print message
+    if failure:
+        message = "The emails could not be sent. Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"    
     response = HttpResponse(message)
     return(response)
 
