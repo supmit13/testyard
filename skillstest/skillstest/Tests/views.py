@@ -7634,5 +7634,76 @@ def reportwindowchange(request):
     return HttpResponse(str(changeattempts))
 
 
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_searchtest(request):
+    """
+    This function searches for tests created by the logged in user to have them displayed so that
+    she may schedule it for candidates.
+    """
+    message = ""
+    if request.method != 'POST':
+        msgdict = {"Error" : "%s"%error_msg('1004')}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
+    sessid = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sessid)
+    if not sessionqset or sessionqset.__len__() == 0:
+        msgdict = {"Error" : "%s"%error_msg('1008')}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    if not request.POST.has_key('testname'):
+        msgdict = {"Error" : "Required parameter 'testname' is missing. Can't proceed further."}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
+    testname = request.POST['testname']
+    testnamepattern = re.compile(testname, re.IGNORECASE|re.DOTALL)
+    if testname == "":
+        alltestsbyuser = Tests.objects.filter(creator=userobj)
+    else:
+        alltestsbyuser = Tests.objects.filter(creator=userobj, testname__icontains=testname)
+    matchedtests = {}
+    for testobj in alltestsbyuser:
+        tname = testobj.testname
+        tid = testobj.id
+        matchedtests[tname] = tid
+    jsonstr = json.dumps(matchedtests)
+    return HttpResponse(jsonstr)
+
+
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_pendingtests(request):
+    """
+    List of tests pending to be taken by the user.
+    Called from "TakeTestActivity.java".
+    """
+    pass
+
+
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_opentest(request):
+    """
+    Open the selected test pending to be taken by the user.
+    Called from "TakeTestActivity.java".
+    """
+    pass
+
+
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_createinterview(request):
+    """
+    Create an interview using mobile handset.
+    Called from "ConductInterviewActivity.java"
+    """
+    pass
 
 

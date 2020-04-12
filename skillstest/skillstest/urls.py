@@ -198,6 +198,10 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MOBILE_CHALLENGE_ADDITION_URL, 'skillstest.Tests.views.mobile_addchallenge', name='mobile_addchallenge'),
     url(r'%s$'%mysettings.MOBILE_LIST_CREATOR_TESTS_URL, 'skillstest.Tests.views.mobile_listcreatortests', name='mobile_listcreatortests'),
     url(r'%s$'%mysettings.MOBILE_TEST_SET_SCHEDULE_URL, 'skillstest.Tests.views.mobile_setschedule', name='mobile_setschedule'),
+    url(r'%s$'%mysettings.MOBILE_SEARCH_TEST_URL, 'skillstest.Tests.views.mobile_searchtest', name='mobile_searchtest'),
+    url(r'%s$'%mysettings.MOBILE_PENDING_TESTS_URL, 'skillstest.Tests.views.mobile_pendingtests', name='mobile_pendingtests'),
+    url(r'%s$'%mysettings.MOBILE_OPEN_TEST_URL, 'skillstest.Tests.views.mobile_opentest', name='mobile_opentest'),
+    url(r'%s$'%mysettings.MOBILE_CREATE_INTERVIEW_URL, 'skillstest.Tests.views.mobile_createinterview', name='mobile_createinterview'),
 
     url(r'^.*$', 'skillstest.views.returnRedirect', name='returnRedirectHttp'), # All other URLs are handled here...
 )
