@@ -3523,5 +3523,11 @@ Friday, April 10, 2020, 10:45 HRS.
 4. git add files_to_commit.txt
 
 =========================================
+Friday, April 24, 2020, 23:42 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add files_to_commit.txt
+
+=========================================
 
 

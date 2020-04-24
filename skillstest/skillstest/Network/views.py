@@ -132,8 +132,8 @@ def network(request):
     userobj = sessionobj[0].user
     # Display contacts and groups associated with the user.
     contactsqset = Connection.objects.filter(focususer=userobj, deleted=False)
-    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False)
-    groupsownerqset = Group.objects.filter(owner=userobj)
+    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group')
+    groupsownerqset = Group.objects.filter(owner=userobj).order_by('-id')
     connectioninvitationsqset = ConnectionInvitation.objects.filter(touser=userobj, invitationstatus='open').order_by('invitationdate')
     contacts = []
     groups = []
