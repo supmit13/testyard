@@ -1039,6 +1039,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var thediv=document.getElementById('createtestdiv');
 		  if(thediv.style.display == "none"){
 		    thediv.style.display = "";
+		    thediv.style='height:2400px;width:800px;padding-left:20px;';
 		    thediv.innerHTML = "{% include 'tests/create_test_form.html' %}";
 		  }
 		  else{
@@ -2776,7 +2777,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	// previously selected rule that is mutually exclusive of the currently selected rule.
 	function checkmutualexclusion(){
 	    //alert(document.createtestform.testrules.options[document.createtestform.testrules.options.selectedIndex].value);
-	    if(document.createtestform.testrules.options[document.createtestform.testrules.options.selectedIndex].value == "\"showonebyone\""){
+	    for(j=0; j < document.createtestform.testrules.options.length;j++){
+	    if(document.createtestform.testrules.options[j].value == "\"showonebyone\"" && document.createtestform.testrules.options[j].selected == true){
 		//alert(document.createtestform.testrules.options.length);
 	 	for(i=0; i < document.createtestform.testrules.options.length;i++){
 		    //alert(i);
@@ -2792,7 +2794,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		}
 	    }
-	    else if(document.createtestform.testrules.options[document.createtestform.testrules.options.selectedIndex].value == "\"showatonce\""){
+	    else if(document.createtestform.testrules.options[j].value == "\"showatonce\"" && document.createtestform.testrules.options[j].selected == true){
 		for(i=0; i < document.createtestform.testrules.options.length;i++){
 		    if(document.createtestform.testrules.options[i].value != "\"showonebyone\""){
 			continue;
@@ -2805,6 +2807,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			}
 		    }
 		}
+	    }
 	    }
  	}
 
