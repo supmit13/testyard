@@ -1845,10 +1845,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     			}
 		    }
 		    if(!testname || testname == ""){
-			var html = "<div class='semitrans' align='left'><font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'><br /><br />";
+			var html = "<div class='semitrans' align='left' style='background-color: rgba(0,0,255,0.5);'><font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'><br /><br />";
 			return (html);
 		    }
-		    var html = "<div class='semitrans' align='left'><font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
+		    var html = "<div class='semitrans' align='left' style='background-color: rgba(0,0,255,0.5);><font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
 		    html += "<table border=0 cellspacing='3' cellpadding='3'>";
 		    html += "<tr><td><b>Email</b></td><td><b>Test URL</b></td><td><b>Start Time</b></td><td><b>End Time</b></td><td><b>Responses</b></td><td><b>Outcome</b></td><td><b>Grand Total</b></td><td><b>Test Status</b></td><td><b>Disqualify</b></td><td><b>Comments</b></td></tr>";
 		    rowctr = 1;
@@ -2188,16 +2188,19 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      successpattern = new RegExp("Success:\\s*");
 		      if(errorpattern.test(xmlhttp.responseText)){
 			alert("Could not send the invitations to the candidates - " + xmlhttp.responseText);
+			document.getElementById('btnsendinvite').disabled = false;
 			return (false);
 		      }
 		      else if(successpattern.test(xmlhttp.responseText)){
 		        alert("The candidates have been invited for the test " + testid.toString());
 			closedivbyid('invitationdiv' + testid.toString());
+			document.getElementById('btnsendinvite').disabled = false;
 		        return (true);
 		      }
 		      else{
 			alert(xmlhttp.responseText);
 			closedivbyid('invitationdiv' + testid.toString());
+			document.getElementById('btnsendinvite').disabled = false;
 			return (true);
 		      }
   		    }
@@ -2206,6 +2209,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		  xmlhttp.send(postdata);
 		  sendinvitestatusdiv = document.getElementById('sendinvitestatus');
 		  sendinvitestatusdiv.style = "";
+		  document.getElementById('btnsendinvite').disabled = true;
 		  sendinvitestatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>&nbsp;<font size=-2 color='#00FF00'>Sending emails... Please wait.</font>";
 		}
 
