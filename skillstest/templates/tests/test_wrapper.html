@@ -1443,9 +1443,9 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
         if(j < randomlist.length - 1){
 	    html += "<tr><td width='5%'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
         }
-        else{
-            html += "<tr><td width='5%'><font color='AA0000'>" + slno + "</font></td><td width='80%'><font color='AA0000'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><font color='AA0000'>Please click on this link once you have answered all your questions. If you do not click on this link in the end, some or all of your answers may not be saved on our system.</font></a></i></font></td><td width='15%'><font color='AA0000'><i>0</i></font></td></tr>";
-        }
+        //else{
+        //    html += "<tr><td width='5%'><font color='AA0000'>" + slno + "</font></td><td width='80%'><font color='AA0000'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><font color='AA0000'>Please click on this link once you have answered all your questions. If you do not click on this link in the end, some or all of your answers may not be saved on our system.</font></a></i></font></td><td width='15%'><font color='AA0000'><i>0</i></font></td></tr>";
+        //}
 	slno++;
     }
     html += "</table>";
