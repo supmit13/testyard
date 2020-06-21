@@ -191,7 +191,7 @@ def get_user_tests(request):
         else:
             continue
         tests_candidate_ordered_createdate.append(test.testname)
-    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj)
+    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-scheduledtime')
     interviews_list = {}
     interviews_list['asinterviewer'] = {}
     for interview in interviewsasinterviewer:
@@ -223,7 +223,7 @@ def get_user_tests(request):
         intlinkid = interview.interviewlinkid
         intdata = (inttitle, inttopic, inttopicname, intmedium, intlanguage, intcreatedate, intpublishdate, intstatus, intmaxscore, intmaxduration, intrealtime, intlinkid, interviewerslist)
         interviews_list['asinterviewer'][inttitle] = intdata
-    interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)
+    interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')
     interviews_list['asinterviewee'] = {}
     for intcandidate in interviewsasinterviewees:
         interviewname = intcandidate.interview.title
@@ -7663,7 +7663,6 @@ def mobile_searchtest(request):
         response = HttpResponse(message)
         return response
     testname = request.POST['testname']
-    testnamepattern = re.compile(testname, re.IGNORECASE|re.DOTALL)
     if testname == "":
         alltestsbyuser = Tests.objects.filter(creator=userobj)
     else:
@@ -7705,5 +7704,49 @@ def mobile_createinterview(request):
     Called from "ConductInterviewActivity.java"
     """
     pass
+
+
+@skillutils.is_session_valid
+@csrf_protect
+def mobile_listinterviews(request):
+    """
+    List out the scheduled interviews (in future) for the given user.
+    Called from "AttendInterviewActivity.java"
+    """
+    message = ""
+    if request.method != 'POST':
+        msgdict = {"Error" : "%s"%error_msg('1004')}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
+    sessid = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sessid)
+    if not sessionqset or sessionqset.__len__() == 0:
+        msgdict = {"Error" : "%s"%error_msg('1008')}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    # List out the list of scheduled interviews for this user.
+    curdatetime = datetime.datetime.now()
+    interviewqset = InterviewCandidates.objects.filter(emailaddr=userobj.emailid, scheduledtime__gte=curdatetime).order_by('-scheduledtime')
+    datadict = {}
+    for interviewobj in interviewqset:
+        interviewname = interviewobj.interview.title
+        interviewurl = interviewobj.interviewurl
+        scheduledtime = interviewobj.scheduledtime
+        if not datadict.has_key(interviewname):
+            datadict[interviewname] = [interviewurl, scheduledtime]
+    jsonstr = json.dumps(datadict)
+    return HttpResponse(jsonstr)
+
+
+
+
+
+
+
 
 
