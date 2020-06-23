@@ -122,6 +122,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.SEND_CONNECTION_URL, 'skillstest.Network.views.sendconnectionrequest', name='sendconnectionrequest'),
     url(r'%s$'%mysettings.SAVE_GROUP_JOIN_STATUS_URL, 'skillstest.Network.views.savegroupjoinstatus', name='savegroupjoinstatus'),
     url(r'%s$'%mysettings.CONNECTION_INVITE_HANDLER_URL, 'skillstest.Network.views.handleconnectinvitation', name='handleconnectinvitation'),
+    url(r'%s$'%mysettings.LEAVE_GROUP_URL, 'skillstest.Network.views.leavegroup', name='leavegroup'),
     url(r'%s$'%mysettings.WITHDRAWSCREEN_URL, 'skillstest.Network.views.showwithdrawscreen', name='showwithdrawscreen'),
     url(r'%s$'%mysettings.DOWITHDRAWAL_URL, 'skillstest.Network.views.dowithdrawal', name='dowithdrawal'),
     url(r'%s$'%mysettings.LISTEN_AUDIO_URL, 'skillstest.Tests.views.convertspeechtotext', name='convertspeechtotext'),
@@ -202,6 +203,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MOBILE_PENDING_TESTS_URL, 'skillstest.Tests.views.mobile_pendingtests', name='mobile_pendingtests'),
     url(r'%s$'%mysettings.MOBILE_OPEN_TEST_URL, 'skillstest.Tests.views.mobile_opentest', name='mobile_opentest'),
     url(r'%s$'%mysettings.MOBILE_CREATE_INTERVIEW_URL, 'skillstest.Tests.views.mobile_createinterview', name='mobile_createinterview'),
+    url(r'%s$'%mysettings.MOBILE_LIST_INTERVIEW_URL, 'skillstest.Tests.views.mobile_listinterviews', name='mobile_listinterviews'),
 
     url(r'^.*$', 'skillstest.views.returnRedirect', name='returnRedirectHttp'), # All other URLs are handled here...
 )

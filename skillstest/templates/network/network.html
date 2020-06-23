@@ -388,6 +388,33 @@
 	    xmlhttp.send(encodedpostdata);
 	}
 
+	function leavegroup(groupname){
+	    var xmlhttp;
+	    yn = confirm("Are you sure you want to leave this group?");
+	    if(!yn){
+		return (false);
+	    }
+	    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value;
+	    //alert(postdata);
+	    encodedpostdata = encodeURI(postdata);
+	    statusdiv = document.getElementById('leavestatus');
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    window.location.reload();
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ leavegroupurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	    statusdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
 
 	function manageownedgroup(membername, groupname, currency){
 	    var xmlhttp;
@@ -439,6 +466,7 @@
 		{% endfor %}
 		html += "</select></td></tr>";
 		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee: </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Fee: </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20'></td></tr>";
 	    	html += "</table>";
 		document.frmcreategroup.require_owner_perms.checked = false;
 		document.frmcreategroup.require_owner_perms.disabled = true;
@@ -473,6 +501,7 @@
 	    acctownername = "";
 	    acctnumber = "";
  	    entryfee = "";
+	    subscriptionfee = "";
 	    currency = "INR";
 	    if(ispaid.checked == true){
 		bankname = document.frmcreategroup.bankname.value;
@@ -481,6 +510,7 @@
 		acctownername = document.frmcreategroup.acctownername.value.trim();
 		acctnumber = document.frmcreategroup.acctnumber.value.trim();
 		entryfee = document.frmcreategroup.entryfee.value.trim();
+		subscriptionfee = document.frmcreategroup.subscriptionfee.value.trim();
 		currency = document.frmcreategroup.currency.options[document.frmcreategroup.currency.options.selectedIndex].value;
 	    }
 	    ////// Validate the input here
@@ -539,11 +569,17 @@
 		    document.frmcreategroup.entryfee.focus();
 		    return(false);
 		}
+		if(subscriptionfee == "" || !floatnumpattern.test(subscriptionfee)){
+		    alert("Subscription Fee cannot be empty and should contain decimal number only.");
+		    document.frmcreategroup.subscriptionfee.value = "";
+		    document.frmcreategroup.subscriptionfee.focus();
+		    return(false);
+		}
 	    }
 	    ////// Input validation ends here. If we have come thus far, the input is good enough!
 	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline + "&grouptype=" + grouptype;
 	    if(ispaid.checked == true){
-		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee + "&currency=" + currency;
+		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee + "&currency=" + currency + "&subscriptionfee=" + subscriptionfee;
 	    }
 	    else{
 		postdata += "&ispaid=0";
@@ -842,6 +878,7 @@
 	function changefinancialcontrolstate(ctrl){
 	    if(ctrl.checked == false){
 		document.frmsettings.entryfee.disabled = true;
+	 	document.frmsettings.subscriptionfee.disabled = true;
 		document.frmsettings.bankname.disabled = true;
 		document.frmsettings.bankbranch.disabled = true;
 		document.frmsettings.acctname.disabled = true;
@@ -850,6 +887,7 @@
 	    }
             else{
 		document.frmsettings.entryfee.disabled = false;
+		document.frmsettings.subscriptionfee.disabled = false;
 		document.frmsettings.bankname.disabled = false;
 		document.frmsettings.bankbranch.disabled = false;
 		document.frmsettings.acctname.disabled = false;
@@ -871,14 +909,14 @@
 	}
 
 
-	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency, require_owner_perms){
+	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, subscriptionfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency, require_owner_perms){
 	    openclosediv = document.getElementById('openclose');
 	    paramspaneldiv = document.getElementById('paramspanel');
 	    openpattern = new RegExp("Open");
 	    openclosecontent = openclosediv.innerHTML;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
  	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
-		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
 		if(!grpimgfile){
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
 		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='static/images/nopic.png' height='{{image_height}}' width='{{image_width}}' alt='Group Image' id='groupimage'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
@@ -928,6 +966,7 @@
 		}
 		if(ispaid == 'True'){
 		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
 		    {% for curr in allcurrencies %}
 			if(currency == '{{curr}}'){
@@ -944,6 +983,7 @@
 		}
 		else{
 		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked'>";
 		    {% for curr in allcurrencies %}
 			if(currency == '{{curr}}'){
@@ -964,7 +1004,7 @@
 	 	paramspaneldiv.innerHTML = html;
 	    }
 	    else{
-		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + require_owner_perms + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee +  '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + require_owner_perms + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
 		paramspaneldiv.innerHTML = "";
 		paramspaneldiv.style.display = "none";
 	    }
@@ -2441,7 +2481,7 @@
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();'>Add a contact</a></h3>
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();'>Post a message</a></h3><br />
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage owned groups</a></h3><div id='managewait'></div>
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br />
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard&copy; will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br />
 
 			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();'>Give a test to one or more groups</a></h3><br />
 			</div>

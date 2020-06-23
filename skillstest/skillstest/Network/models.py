@@ -33,6 +33,7 @@ class Group(models.Model):
     currency = models.CharField(max_length=3, blank=False, null=False, default='USD')
     entryfee = models.FloatField(default=0.0) # If paid, then this will contain the entry fee for the group.
     require_owner_permission = models.BooleanField(null=False, blank=False, default=False) # Require owner's permission before allowing any user to become a member.
+    subscription_fee = models.FloatField(default=0.00)
 
     class Meta:
         verbose_name = "Group Table"

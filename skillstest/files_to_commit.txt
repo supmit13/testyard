@@ -3537,4 +3537,16 @@ Sunday, June 21, 2020, 06:03 HRS.
 
 =========================================
 
+Tuesday, June 23, 2020, 20:28 HRS.
+-----------------------------------------
+1. git add templates/network/managegroups.html
+2. git add templates/network/network.html
+3. git add skillstest/Network/views.py
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add skillstest/Network/models.py
+9. git add files_to_commit.txt
 
+=========================================

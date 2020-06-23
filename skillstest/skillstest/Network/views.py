@@ -46,6 +46,7 @@ def get_network_template_vars(userobj):
     templatevars['joinrequesturl'] = mysettings.SEND_JOIN_REQUEST_URL
     templatevars['gentlereminderurl'] = mysettings.SEND_GENTLE_REMINDER_URL
     templatevars['getgroupdataurl'] = mysettings.GET_GROUP_DATA_URL
+    templatevars['leavegroupurl'] = mysettings.LEAVE_GROUP_URL
     templatevars['grpimguploadurl'] = mysettings.GROUP_IMG_UPLOAD_URL + '?groupname='
     templatevars['savegrpdataurl'] = mysettings.SAVE_GROUP_DATA_URL
     templatevars['getpaymentgwurl'] = mysettings.PAYMENT_GW_URL
@@ -279,7 +280,7 @@ def creategroup(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, entryfee, tagline, currency, require_owner_perms =  ("" for i in range(0,18))
+    groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, entryfee, subscriptionfee, tagline, currency, require_owner_perms =  ("" for i in range(0,19))
     if request.POST.has_key('groupname'):
         groupname = urllib.unquote(request.POST['groupname']).decode('utf8')
     if request.POST.has_key('groupdescription'):
@@ -305,6 +306,7 @@ def creategroup(request):
 	    acctownername = request.POST['acctownername']
 	    acctnumber = request.POST['acctnumber']
             entryfee = request.POST['entryfee']
+            subscriptionfee = request.POST['subscriptionfee']
             currency = request.POST['currency']
         else:
             ispaid = False
@@ -343,6 +345,9 @@ def creategroup(request):
     if not entryfee or entryfee == "":
         entryfee = 0.0
     grpobj.entryfee = float(entryfee)
+    if not subscriptionfee or subscriptionfee == "":
+        subscriptionfee = 0.0
+    grpobj.subscription_fee = float(subscriptionfee)
     grpobj.currency = currency
     grpmember.member = userobj
     grpmember.status = True
@@ -522,6 +527,7 @@ def getgroupinfo(request):
         grpdict['stars'] = groupobj.stars
         grpdict['ispaid'] = groupobj.ispaid
         grpdict['entryfee'] = groupobj.entryfee
+        grpdict['subscriptionfee'] = groupobj.subscription_fee
         grpdict['currency'] = groupobj.currency
         grpdict['basedontopic'] = groupobj.basedontopic
         grpdict['adminremarks'] = groupobj.adminremarks
@@ -820,6 +826,7 @@ def getgroupdata(request):
             contextdict['accountownername'] = ""
     if grpobj.ispaid:
         contextdict['entryfee'] = grpobj.entryfee
+        contextdict['subscriptionfee'] = grpobj.subscription_fee
         contextdict['currency'] = grpobj.currency
     # Is the user the owner of this group? If so, we will need to display all the join requests to the group.
     # The owner (user) should be able to review the join requests and selectively allow some of them into the group.
@@ -1128,7 +1135,7 @@ def savegroupdata(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
-    topics, maxmemberslimit, grouptypes, allowentry, ispaid, entryfee, bankname, bankbranch, acctname, acctnum, ifsccode, alltestsowned, adminremarks, groupname, currency = ("" for i in range(0,15))
+    topics, maxmemberslimit, grouptypes, allowentry, ispaid, entryfee, subscriptionfee, bankname, bankbranch, acctname, acctnum, ifsccode, alltestsowned, adminremarks, groupname, currency = ("" for i in range(0,16))
     req_owner_perms = False
     if request.POST.has_key('topics'):
         topics = request.POST['topics']
@@ -1147,6 +1154,8 @@ def savegroupdata(request):
         ispaid = False
     if request.POST.has_key('entryfee'):
         entryfee = request.POST['entryfee']
+    if request.POST.has_key('subscriptionfee'):
+        subscriptionfee = request.POST['subscriptionfee']
     if request.POST.has_key('currency'):
         currency = request.POST['currency']
     if request.POST.has_key('bankname'):
@@ -1184,6 +1193,10 @@ def savegroupdata(request):
     else:
         groupobj.entryfee = float(entryfee)
         groupobj.currency = currency
+    if subscriptionfee == "":
+        groupobj.subscription_fee = 0
+    else:
+        groupobj.subscription_fee = float(subscriptionfee)
     bankacctqset = OwnerBankAccount.objects.filter(groupowner=userobj, group=groupobj)
     bankacctobj = None
     if bankacctqset.__len__() == 0:
@@ -1221,10 +1234,13 @@ def showpaymentscreen(request):
     message = ""
     groupid = -1
     entryfee = ""
+    subscriptionfee = ""
     if request.POST.has_key('groupid'):
         groupid = request.POST['groupid']
     if request.POST.has_key('entryfee'):
         entryfee = request.POST['entryfee']
+    if request.POST.has_key('subscriptionfee'):
+        subscriptionfee = request.POST['subscriptionfee']
     if groupid == -1 or groupid == '':
         message = error_msg('1085')
         response = HttpResponse(message)
@@ -1252,7 +1268,7 @@ def showpaymentscreen(request):
     contextdict['posId'] = mysettings.PAYU_POS_ID
     contextdict['groupname'] = groupobj.groupname
     contextdict['groupid'] = groupid
-    contextdict['subscription_amt'] = entryfee
+    contextdict['subscription_amt'] = subscriptionfee
     contextdict['total_amt'] = entryfee
     contextdict['signature'] = mysettings.PAYU_SECOND_ID
     contextdict['extOrderId'] = skillutils.generate_random_string()
@@ -3940,6 +3956,37 @@ def wepayoauthredirect(request):
 
 def payumoneyfailure(request):
     pass
+
+# Set the 'removed' flag in 'GroupMember' model to True.
+@csrf_protect
+def leavegroup(request): 
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponse(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    groupname, groupid = "", ""
+    if request.POST.has_key('groupname'):
+        groupname = request.POST['groupname']
+    if not groupname:
+        return HttpResponse("Could not find required parameter groupname")
+    grpqset = Group.objects.filter(groupname=groupname)
+    if list(grpqset).__len__() == 0:
+        return HttpResponse("Could not find the named group. Please check the group name and try again. If the problem persists, contact the support desk with the details of the operation")
+    grpobj = grpqset[0]
+    groupid = grpobj.id
+    grpmemberqset = GroupMember.objects.filter(group=grpobj,member=userobj)
+    #Due to a previous bug, some groups will have the same member multiple times. 
+    #The bug has been fixed but the erroneous records remain in DB.
+    for grpmemberobj in grpmemberqset:
+        grpmemberobj.removed = True
+        grpmemberobj.removeagent = "user"
+        grpmemberobj.lastremovaldate = datetime.datetime.now()
+        grpmemberobj.save()
+    message = "You have successfully left the group."
+    return HttpResponse(message)
 
 
 

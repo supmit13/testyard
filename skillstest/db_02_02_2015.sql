@@ -1020,6 +1020,8 @@ create table Network_razorpaytransaction (id int NOT NULL PRIMARY KEY AUTO_INCRE
 alter table Network_razorpaytransaction add column source varchar(50) NOT NULL;
 alter table Network_razorpaytransaction add column recipient_merchant_id varchar(50) NOT NULL;
 
+alter table Network_group add column subscription_fee float default 0.00;
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
