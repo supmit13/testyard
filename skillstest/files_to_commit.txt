@@ -3563,12 +3563,13 @@ Tuesday, June 23, 2020, 21:10 HRS.
 
 =========================================
 
-Friday, June 26, 2020, 12:31 HRS.
+Friday, June 26, 2020, 17:49 HRS.
 -----------------------------------------
 1. git add templates/network/manageownedgroups.html
 2. git add skillstest/Network/views.py
 3. git add templates/network/stripe_payment.html
 4. git add templates/network/network.html
+5. git add skillstest/utils.py
 5. git add files_to_commit.txt
 
 

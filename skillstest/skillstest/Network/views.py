@@ -1599,9 +1599,14 @@ def confirmpayment_stripe(request):
         message = error_msg('1086')
         response = HttpResponse(message)
         return response
-    xchnginr = skillutils.fetch_currency_rate('INR', 'USD')
-    xchngeur = skillutils.fetch_currency_rate('EUR', 'USD')
-    xchnggbp = skillutils.fetch_currency_rate('GBP', 'USD')
+    """
+    xchnginr = skillutils.fetch_currency_rate('USD', 'INR')
+    xchngeur = skillutils.fetch_currency_rate('USD', 'EUR')
+    xchnggbp = skillutils.fetch_currency_rate('USD', 'GBP')
+    """
+    xchnginr = 77.00
+    xchngeur = 0.89
+    xchnggbp = 0.81
     # Add or update a record in the Network_groupjoinrequest table.
     joinreq = GroupJoinRequest()
     joinreq.group = groupobj
@@ -1621,12 +1626,13 @@ def confirmpayment_stripe(request):
     txnobj.usersession = sesscode
     joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
     txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
+    # txnobj.payamount should always be stored as USD
     if groupobj.currency == 'INR':
-        txnobj.payamount = groupobj.entryfee * xchnginr
+        txnobj.payamount = groupobj.entryfee/xchnginr
     elif groupobj.currency == 'EUR':
-        txnobj.payamount = groupobj.entryfee * xchngeur
+        txnobj.payamount = groupobj.entryfee/xchngeur
     elif groupobj.currency == 'GBP':
-        txnobj.payamount = groupobj.entryfee * xchnggbp
+        txnobj.payamount = groupobj.entryfee/xchnggbp
     else:
         pass
     if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
@@ -1635,16 +1641,28 @@ def confirmpayment_stripe(request):
     txnobj.paymode = 'STRIPE'
     txnobj.comments = "Join paid group named '%s' by user '%s'"%(groupobj.groupname, userobj.displayname)
     txnobj.invoice_email = buyeremail
-    txnobj.trans_status = False # Initialized to False. Once payment is made, it will be updated to True.
+    txnobj.trans_status = True # Payment is made, hence True.
     txnobj.clientIp = ""
     txnobj.extOrderId = ""
+    grpmember = GroupMember()
+    grpmember.member = userobj
+    grpmember.group = groupobj
+    grpmember.status = True
+    grpmember.removed = False
+    grpmember.blocked = False
     try:
         txnobj.save()
-        joinreq.reason = "payment successful"
+        message = "Successfully joined group."
+        joinreq.reason = message
         joinreq.active = True
+        joinreq.outcome = "accept" # Set the outcome of this request to 'accept' as the group owner has already received the entry fee.
         joinreq.save()
     except:
         response = HttpResponse(sys.exc_info()[1].__str__())
+    try:
+        grpmember.save()
+    except:
+        message = error_msg('1097')%(sys.exc_info()[1].__str__())
     return response
 
 

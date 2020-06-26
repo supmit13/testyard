@@ -779,7 +779,7 @@ def fetch_currency_rate(fromcurr, tocurr):
         return float(xchangeqset[0].conv_rate)
     except:
         print "Error: ",sys.exc_info()[1].__str__()
-        return 0
+        return 1
 
 
 
