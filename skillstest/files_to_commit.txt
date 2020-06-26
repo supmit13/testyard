@@ -3550,3 +3550,16 @@ Tuesday, June 23, 2020, 20:28 HRS.
 9. git add files_to_commit.txt
 
 =========================================
+
+Tuesday, June 23, 2020, 21:10 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/Network/views.py
+3. git add templates/network/stripe_payment.html
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add static/css/main.css
+7. git add files_to_commit.txt
+
+=========================================
+

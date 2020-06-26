@@ -89,6 +89,9 @@
 	    xmlhttp.onreadystatechange = function(){
                 //alert(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    screendiv = document.getElementById('transscreens');
+	    	    screendiv.style.display = "none";
+	    	    //screendiv.innerHTML = "<font color='#0000AA' style='font-weight:bold' size=-1>Group created successfully</font>";
 		    alert(xmlhttp.responseText);
 	        }
 	    };
@@ -319,6 +322,7 @@
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br>";
 		    if(jsobj.ispaid){
 		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.currency + " " + jsobj.entryfee + "</font></span><br>";
+			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Subscription Fee: " + jsobj.currency + " " + jsobj.subscriptionfee + "</font></span><br>";
 		    }
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br>";
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Need Owner's Consent: " + jsobj.require_owner_perms + "</font></span><br>";
@@ -596,10 +600,10 @@
 	    postdata += "&csrfmiddlewaretoken=" + csrftoken;
 	    postdata = encodeURI(postdata);
 	    //alert(postdata);
+	    waiter = document.getElementById('waitspan');
+	    waiter.innerHTML = "<img src='static/images/loading_small.gif'>";
 	    senddataasync(postdata, "POST", '{{ creategroupurl }}');
-	    screendiv = document.getElementById('transscreens');
-	    screendiv.style.display = "none";
-	    screendiv.innerHTML = "<font color='#0000AA' style='font-weight:bold' size=-1>Group created successfully</font>";
+	    
 	}
 
 
@@ -663,7 +667,7 @@
 	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked class='glowing-border'><br>";
    	    html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1' class='glowing-border'><br>";
 	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5 class='glowing-border'><br>";
-	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'></td></tr>";
+	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'><span id='waitspan'></span></td></tr>";
 	    html += "</table>";
 	    html += "</form>";
 	    screendiv.display = "";

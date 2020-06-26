@@ -13,6 +13,7 @@ from django.template.loader import get_template
 from django.contrib.sites.models import get_current_site
 from django.core.mail import send_mail
 from django.contrib.sessions.backends.db import SessionStore
+import stripe
 
 # Standard libraries...
 import os, sys, re, time, datetime
@@ -51,6 +52,7 @@ def get_network_template_vars(userobj):
     templatevars['savegrpdataurl'] = mysettings.SAVE_GROUP_DATA_URL
     templatevars['getpaymentgwurl'] = mysettings.PAYMENT_GW_URL
     templatevars['payuconfirmurl'] = mysettings.PAYU_CONFIRM_URL
+    templatevars['stripeconfirmurl'] = mysettings.STRIPE_CONFIRM_URL
     templatevars['searchuserurl'] = mysettings.SEARCH_USER_URL
     templatevars['sendconnectionurl'] = mysettings.SEND_CONNECTION_URL
     templatevars['savegroupjoinstatusurl'] = mysettings.SAVE_GROUP_JOIN_STATUS_URL
@@ -1273,17 +1275,29 @@ def showpaymentscreen(request):
     contextdict['signature'] = mysettings.PAYU_SECOND_ID
     contextdict['extOrderId'] = skillutils.generate_random_string()
     contextdict['discountamt'] = 0
-    contextdict['payuconfirmurl'] = skillutils.gethosturl(request) + "/" + mysettings.PAYU_CONFIRM_URL
+    contextdict['stripeconfirmurl'] = skillutils.gethosturl(request) + "/" + mysettings.STRIPE_CONFIRM_URL
     contextdict['buyeremail'] = userobj.emailid
     contextdict['buyerphone'] = userobj.mobileno
     contextdict['firstname'] = userobj.firstname
     contextdict['lastname'] = userobj.lastname
-    tmpl = get_template("network/payu_payment.html")
+    contextdict['currencyrateurl'] = skillutils.gethosturl(request) + "/" + mysettings.CURRENCY_RATE_URL
+    #tmpl = get_template("network/payu_payment.html")
+    tmpl = get_template("network/stripe_payment.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
-    payuhtml = tmpl.render(cxt)
-    response = HttpResponse(payuhtml)
+    stripehtml = tmpl.render(cxt)
+    response = HttpResponse(stripehtml)
     return response
+
+
+def getcurrencyrate(request):
+    if request.POST.has_key('currname'):
+        currname = request.POST['currname']
+    exchangerateqset = ExchangeRates.objects.filter(curr_from='USD', curr_to=currname).order_by('-dateofrate')
+    if exchangerateqset.__len__() > 0:
+        exchangerate = exchangerateqset[0].conv_rate
+        return HttpResponse(exchangerate)
+    return HttpResponse("1")
 
 
 def _create_payu_signature(paramsdict, second_id=mysettings.PAYU_SECOND_ID, posId=mysettings.PAYU_POS_ID):
@@ -1393,7 +1407,7 @@ def confirmpayment_payu(request):
     xchnginr = skillutils.fetch_currency_rate('INR', 'USD')
     xchngeur = skillutils.fetch_currency_rate('EUR', 'USD')
     xchngpln = skillutils.fetch_currency_rate('PLN', 'USD')
-    """
+    
     productunitprice = groupobj.entryfee
     if groupobj.currency == 'INR':
         productunitprice = groupobj.entryfee * xchnginr
@@ -1403,13 +1417,14 @@ def confirmpayment_payu(request):
         productunitprice = groupobj.entryfee * xchngpln
     else:
         pass
-    totalamount = productunitprice
-    """
-    data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(int(float(totalamount))*100), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(int(float(productunitprice))*100),  "quantity": "1"  }]}
-    #data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(totalamount), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(productunitprice),  "quantity": "1"  }]}
+    #totalamount = productunitprice
+    #data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(int(totalamount)*100), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(int(float(productunitprice))*100),  "quantity": "1"  }]}
+    data = { 'notifyUrl' : urlnotify, 'customerIp' : customerIP, 'merchantPosId' : payuposid, 'description' : orderdesc, 'currencyCode' : 'PLN', 'totalAmount' : str(totalamount), 'buyer' : { "email": buyeremail,  "phone": buyerphone, "firstName": buyerfirstname, "lastName": buyerlastname, "language": "en"  }, 'settings' : { "invoiceDisabled":"true" }, 'products' : [{ "name": productname, "unitPrice": str(productunitprice),  "quantity": "1"  }]}
     # We are sending PLN above, but it should be USD. Need to see how to do that. 
     # PayU has this irritating behaviour of hard setting the currency value to fucking PLN.
     jsondata = json.dumps(data)
+    response = HttpResponse(jsondata)
+    return response
     content_length = jsondata.__len__()
     httpHeaders['Content-Length'] = content_length
     pageRequest = urllib2.Request(ordersUrl, jsondata, httpHeaders)
@@ -1458,6 +1473,155 @@ def confirmpayment_payu(request):
         pass
     txnobj.transactiondate = datetime.datetime.now()
     txnobj.paymode = 'PAYU'
+    txnobj.comments = "Join paid group named '%s' by user '%s'"%(groupobj.groupname, userobj.displayname)
+    txnobj.invoice_email = buyeremail
+    txnobj.trans_status = False # Initialized to False. Once payment is made, it will be updated to True.
+    txnobj.clientIp = ""
+    txnobj.extOrderId = ""
+    try:
+        txnobj.save()
+        joinreq.save()
+    except:
+        response = HttpResponse(sys.exc_info()[1].__str__())
+    orderId = contentDict['orderId']
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def confirmpayment_stripe(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    customerIP, orderdesc, currencycode, posId, notifyurl, continueurl, productname, productquantity, productunitprice, totalamount, orderId, groupid, buyeremail, customernameoncard, currency, cardnumber, cvv, expirymonth, expiryyear, city, state, country, zipcode, cardtype, address1, address2 = ('' for i in range(0, 26))
+    paramnamesdict = {}
+    if request.POST.has_key('customerIp'):
+        customerIP = request.POST['customerIp']
+    if request.POST.has_key('description'):
+        orderdesc = request.POST['description']
+    if request.POST.has_key('merchantPosId'):
+        posId = request.POST['merchantPosId']
+    if request.POST.has_key('notifyUrl'):
+        notifyurl = request.POST['notifyUrl']
+    if request.POST.has_key('continueUrl'):
+        continueurl = request.POST['continueUrl']
+    if request.POST.has_key('currencyCode'):
+        currencycode = request.POST['currencyCode']
+    if request.POST.has_key('productname'):
+        productname = request.POST['productname']
+    if request.POST.has_key('productquantity'):
+        productquantity = request.POST['productquantity']
+    if request.POST.has_key('productunitprice'):
+        productunitprice = request.POST['productunitprice']
+    if request.POST.has_key('totalamount'):
+        totalamount = request.POST['totalamount']
+    if request.POST.has_key('currency'):
+        currency = request.POST['currency']
+    #convert the amount (in USD) to whatever currency selected by the user.
+    exchangerateqset = ExchangeRates.objects.filter(curr_from='USD', curr_to=currency).order_by('-dateofrate')
+    #exchangerate = mysettings.PLN_TO_USD
+    if exchangerateqset.__len__() > 0:
+        exchangerate = exchangerateqset[0].conv_rate
+    else:
+        exchangerate = 1
+        return HttpResponse("Exchange rate for USD to " + currency + "does not exist")
+    totalamount = float(totalamount)*float(exchangerate) # This is in currency selected by user.
+    if request.POST.has_key('customername'):
+        customernameoncard = request.POST['customername']
+    if request.POST.has_key('card_no'):
+        cardnumber = request.POST['card_no']
+    if request.POST.has_key('cvvNumber'):
+        cvv = request.POST['cvvNumber']
+    if request.POST.has_key('ccExpiryMonth'):
+        expirymonth = request.POST['ccExpiryMonth']
+    if request.POST.has_key('ccExpiryYear'):
+        expiryyear = request.POST['ccExpiryYear']
+    if request.POST.has_key('addressline1'):
+        address1 = request.POST['addressline1']
+    if request.POST.has_key('addressline2'):
+        address2 = request.POST['addressline2']
+    if request.POST.has_key('city'):
+        city = request.POST['city']
+    if request.POST.has_key('state'):
+        state = request.POST['state']
+    if request.POST.has_key('country'):
+        country = request.POST['country']
+    if request.POST.has_key('zipcode'):
+        zipcode = request.POST['zipcode']
+    if request.POST.has_key('cardtype'):
+        cardtype = request.POST['cardtype']
+    if request.POST.has_key('extOrderId'):
+        orderId = request.POST['extOrderId']
+    if request.POST.has_key('groupid'):
+        groupid = request.POST['groupid']
+    if request.POST.has_key('buyeremail'):
+        buyeremail = request.POST['buyeremail']
+    if request.POST.has_key('buyerphone'):
+        buyerphone = request.POST['buyerphone']
+    if request.POST.has_key('buyerfirstname'):
+        buyerfirstname = request.POST['buyerfirstname']
+    if request.POST.has_key('buyerlastname'):
+        buyerlastname = request.POST['buyerlastname']
+    address = address1 + " " + address2
+
+    stripesecret = mysettings.STRIPE_API_SECRET
+    stripe.api_key = stripesecret
+    client_ip = skillutils.get_client_ip(request)
+    token = stripe.Token.create(
+        card={
+            "number": cardnumber,
+            "exp_month": expirymonth,
+            "exp_year": expiryyear,
+            "cvc": cvv,
+	  },
+    )
+    if not token.id:
+        return HttpResponse("Token object could not be created")
+    customer = stripe.Customer.create(name=customernameoncard, address=address, source=token)
+    if not customer.id:
+        return HttpResponse("Customer object could not be created")
+    custid = customer.id
+    charge = stripe.Charge.create(amount=totalamount*100, currency=currency,customer=custid, source=token.id)
+    if not charge.id:
+        return HttpResponse("Charge object could not be created")
+    response = HttpResponse("The amount %s was successfully paid"%str(totalamount))
+    # Add or update a record in the Network_groupjoinrequest table.
+    joinreq = GroupJoinRequest()
+    joinreq.group = groupobj
+    joinreq.user = userobj
+    joinreq.orderId = orderId
+    joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
+    joinreq.outcome = 'open'
+    joinreq.active = False # IMPORTANT NOTE: Remember to set this to 'True' when the transaction completes successfully.
+    joinreq.reason = 'payment in progress'
+    # Create a transaction object and post the data to payU ordering API.
+    txnobj = Transaction()
+    txnobj.orderId = orderId
+    txnobj.username = userobj.displayname
+    txnobj.user = userobj
+    txnobj.group = groupobj
+    txnobj.plan = None
+    txnobj.usersession = sesscode
+    joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
+    txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
+    if groupobj.currency == 'INR':
+        txnobj.payamount = groupobj.entryfee * xchnginr
+    elif groupobj.currency == 'EUR':
+        txnobj.payamount = groupobj.entryfee * xchngeur
+    elif groupobj.currency == 'PLN':
+        txnobj.payamount = groupobj.entryfee * xchngpln
+    else:
+        pass
+    if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
+        pass
+    txnobj.transactiondate = datetime.datetime.now()
+    txnobj.paymode = 'STRIPE'
     txnobj.comments = "Join paid group named '%s' by user '%s'"%(groupobj.groupname, userobj.displayname)
     txnobj.invoice_email = buyeremail
     txnobj.trans_status = False # Initialized to False. Once payment is made, it will be updated to True.
