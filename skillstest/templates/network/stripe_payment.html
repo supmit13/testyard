@@ -24,13 +24,71 @@
     </style>
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 <script language='JavaScript'>
+String.prototype.trim = function() {
+    a = this.replace(/^\s+/, '');
+    return a.replace(/\s+$/, '');
+};
+
+function validate_payment_details(){
+    // customername, card_no, cvvNumber, ccExpiryMonth, ccExpiryYear, addressline1, country, zipcode, cardtype, currency
+    if(document.frmpaymentconfirm.customername.value.trim() == ""){
+	alert("Customer name cannot be empty");
+	document.frmpaymentconfirm.customername.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.card_no.value.trim() == ""){
+	alert("Card number cannot be empty");
+	document.frmpaymentconfirm.card_no.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.cvvNumber.value.trim() == ""){
+	alert("CVV Number cannot be empty");
+	document.frmpaymentconfirm.cvvNumber.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.addressline1.value.trim() == ""){
+	alert("Address line 1 cannot be empty");
+	document.frmpaymentconfirm.addressline1.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.zipcode.value.trim() == ""){
+	alert("Zip code cannot be empty");
+	document.frmpaymentconfirm.zipcode.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.country.options[document.frmpaymentconfirm.country.options.selectedIndex].value == ""){
+	alert("Please select a country from the list");
+	document.frmpaymentconfirm.country.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.ccExpiryMonth.options[document.frmpaymentconfirm.ccExpiryMonth.options.selectedIndex].value == ""){
+	alert("Please select a month of expiry from the list");
+	document.frmpaymentconfirm.ccExpiryMonth.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.ccExpiryYear.options[document.frmpaymentconfirm.ccExpiryYear.options.selectedIndex].value == ""){
+	alert("Please select a year of expiry from the list");
+	document.frmpaymentconfirm.ccExpiryYear.focus();
+	return(false);
+    }
+    if(document.frmpaymentconfirm.cardtype.options[document.frmpaymentconfirm.cardtype.options.selectedIndex].value == ""){
+	alert("Please select a card type from the list");
+	document.frmpaymentconfirm.cardtype.focus();
+	return(false);
+    }
+    return(true);
+}
+
 function makepayment_stripe(){
     if(document.frmpaymentconfirm.buyeremail.value.trim() == ""){
 	alert("Buyer email may not be empty");
 	document.frmpaymentconfirm.buyeremail.focus();
 	return (false);
     }
-    
+    res = validate_payment_details();
+    if(!res){
+	return (false);
+    }
     document.frmpaymentconfirm.btnnojoin.disabled = true;
     document.frmpaymentconfirm.btnconfirmpayment_stripe.disabled = true;
     targeturl = document.frmpaymentconfirm.action;
@@ -51,9 +109,12 @@ function makepayment_stripe(){
     xmlhttp.onreadystatechange = function(){
         if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 	    //alert(xmlhttp.responseText);
-	    waiterspan.innerHTML = "";
-	    payu_url = xmlhttp.responseText;
-	    payuwin = window.open(payu_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+	    waiterspan.innerHTML = xmlhttp.responseText;
+	    document.frmpaymentconfirm.btnnojoin.value = "Close";
+  	    document.frmpaymentconfirm.btnnojoin.disabled = false;
+	    paybtn = document.frmpaymentconfirm.btnconfirmpayment_stripe;
+	    paybtn.parentNode.removeChild(paybtn);
+	    alert(xmlhttp.responseText);
             //self.close();
         }
     };
@@ -174,6 +235,7 @@ function adjustpayamt(){
 			    <td>
                             <span class='col-xs-12 col-md-4 form-group expiration required'>
                                 <label class='control-label'>Expiration&nbsp;Month *</label> <select id="ccExpiryMonth" name="ccExpiryMonth" class='form-control card-expiry-month'>
+				    <option value="">00</option>
 				    <option value="01">01</option>
 				    <option value="02">02</option>
 				    <option value="03">03</option>
@@ -192,6 +254,7 @@ function adjustpayamt(){
 			    <td>
                             <span class='col-xs-12 col-md-4 form-group expiration required'>
                                 <label class='control-label'>Expiration&nbsp;Year *</label> <select id="ccExpiryYear" name="ccExpiryYear" class='form-control card-expiry-year'>
+				    <option value="">0000</option>
 				    <option value="2020">2020</option>
 				    <option value="2021">2021</option>
 				    <option value="2022">2022</option>
@@ -241,6 +304,7 @@ function adjustpayamt(){
                             <div class='col-xs-12 col-md-4 form-group country required'>
                                 <label class='control-label'>Country *</label> 
 				<select id="country" name="country" class='form-control'>
+				   <option value="">Select Country</option>
 				   <option value="Afganistan">Afghanistan</option>
 				   <option value="Albania">Albania</option>
 				   <option value="Algeria">Algeria</option>
@@ -506,6 +570,7 @@ function adjustpayamt(){
 			    <div class='col-xs-12 col-md-4 form-group required'>
                                 <label class='control-label'>Card Type *</label> 
 				<select id="cardtype" name="cardtype" class='form-control'>
+				    <option value="">--------</option>
 				    <option value="credit">Credit Card</option>
 				    <option value="debit">Debit Card</option>
 				</select>

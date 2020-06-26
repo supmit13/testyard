@@ -1525,7 +1525,6 @@ def confirmpayment_stripe(request):
         currency = request.POST['currency']
     #convert the amount (in USD) to whatever currency selected by the user.
     exchangerateqset = ExchangeRates.objects.filter(curr_from='USD', curr_to=currency).order_by('-dateofrate')
-    #exchangerate = mysettings.PLN_TO_USD
     if exchangerateqset.__len__() > 0:
         exchangerate = exchangerateqset[0].conv_rate
     else:
@@ -1573,24 +1572,36 @@ def confirmpayment_stripe(request):
     stripesecret = mysettings.STRIPE_API_SECRET
     stripe.api_key = stripesecret
     client_ip = skillutils.get_client_ip(request)
-    token = stripe.Token.create(
+    try:
+        token = stripe.Token.create(
         card={
             "number": cardnumber,
             "exp_month": expirymonth,
             "exp_year": expiryyear,
             "cvc": cvv,
 	  },
-    )
-    if not token.id:
-        return HttpResponse("Token object could not be created")
-    customer = stripe.Customer.create(name=customernameoncard, address=address, source=token)
-    if not customer.id:
-        return HttpResponse("Customer object could not be created")
+        )
+    except:
+        return HttpResponse("Token object could not be created: %s"%sys.exc_info()[1].__str__())
+    try:
+        addressdict = {"line1" : address1, "city" : city, "country" : country, "postal_code" : zipcode }
+        customer = stripe.Customer.create(name=customernameoncard, address=addressdict, source=token.id, description="Customer Email: " + buyeremail)
+    except:
+        return HttpResponse("Customer object could not be created: %s"%sys.exc_info()[1].__str__())
     custid = customer.id
-    charge = stripe.Charge.create(amount=totalamount*100, currency=currency,customer=custid, source=token.id)
-    if not charge.id:
-        return HttpResponse("Charge object could not be created")
-    response = HttpResponse("The amount %s was successfully paid"%str(totalamount))
+    try:
+        charge = stripe.Charge.create(amount=int(totalamount*100), currency=currency.lower(), customer=custid)
+    except:
+        return HttpResponse("Charge object could not be created: %s"%sys.exc_info()[1].__str__())
+    response = HttpResponse("<p style='color:blue;'>The amount %s was successfully paid. The Transaction (Charge) Id is %s. Please note it down for any future reference.</p>"%(str(round(totalamount, 2)), charge.id))
+    groupobj = Group.objects.get(id=groupid)
+    if not groupobj:
+        message = error_msg('1086')
+        response = HttpResponse(message)
+        return response
+    xchnginr = skillutils.fetch_currency_rate('INR', 'USD')
+    xchngeur = skillutils.fetch_currency_rate('EUR', 'USD')
+    xchnggbp = skillutils.fetch_currency_rate('GBP', 'USD')
     # Add or update a record in the Network_groupjoinrequest table.
     joinreq = GroupJoinRequest()
     joinreq.group = groupobj
@@ -1600,7 +1611,7 @@ def confirmpayment_stripe(request):
     joinreq.outcome = 'open'
     joinreq.active = False # IMPORTANT NOTE: Remember to set this to 'True' when the transaction completes successfully.
     joinreq.reason = 'payment in progress'
-    # Create a transaction object and post the data to payU ordering API.
+    # Create a transaction object.
     txnobj = Transaction()
     txnobj.orderId = orderId
     txnobj.username = userobj.displayname
@@ -1614,8 +1625,8 @@ def confirmpayment_stripe(request):
         txnobj.payamount = groupobj.entryfee * xchnginr
     elif groupobj.currency == 'EUR':
         txnobj.payamount = groupobj.entryfee * xchngeur
-    elif groupobj.currency == 'PLN':
-        txnobj.payamount = groupobj.entryfee * xchngpln
+    elif groupobj.currency == 'GBP':
+        txnobj.payamount = groupobj.entryfee * xchnggbp
     else:
         pass
     if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
@@ -1629,10 +1640,11 @@ def confirmpayment_stripe(request):
     txnobj.extOrderId = ""
     try:
         txnobj.save()
+        joinreq.reason = "payment successful"
+        joinreq.active = True
         joinreq.save()
     except:
         response = HttpResponse(sys.exc_info()[1].__str__())
-    orderId = contentDict['orderId']
     return response
 
 
