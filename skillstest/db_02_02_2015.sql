@@ -1022,6 +1022,10 @@ alter table Network_razorpaytransaction add column recipient_merchant_id varchar
 
 alter table Network_group add column subscription_fee float default 0.00;
 
+alter table Network_grouppaidtransactions add column targetperiod datetime;
+alter table Network_grouppaidtransactions add column reason varchar(25) ;
+alter table Network_grouppaidtransactions add CONSTRAINT chk_reason CHECK (reason in ('entryfee', 'subscriptionfee'));
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;

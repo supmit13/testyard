@@ -175,7 +175,7 @@ function adjustpayamt(){
 <form name='frmpaymentconfirm' id='frmpaymentconfirm' method="POST" action="{{stripeconfirmurl}}">
 <h2>Process Payment</h2>
     <table border=0 cellspacing=4 cellpadding=4><tr><td nowrap><font color='#0000AA'  style='font-weight:bold'>Confirm request to join group '{{groupname}}'?</font></td></tr>
-    <tr><td nowrap><font color='#0000AA'  style='font-weight:bold' size=-1>You will be charged USD {{total_amt}} for the membership. This is a one time charge.</font></td></tr>
+    <tr><td nowrap><font color='#0000AA'  style='font-weight:bold' size=-1>You will be charged USD {{total_amt}} for the membership. </font></td></tr>
     <tr><td><input type="hidden" name="continueUrl" value="{{hosturl}}/continue">
     <input type="hidden" name="currencyCode" value="USD" >
     <input type="hidden" name="customerIp" value="{{ customer_ip }}" >
@@ -190,6 +190,7 @@ function adjustpayamt(){
     <input type="hidden" name="groupid" value="{{groupid}}" >
     <input type="hidden" name="buyerfirstname" value="{{firstname}}" >
     <input type="hidden" name="buyerlastname" value="{{lastname}}" >
+    <input type="hidden" name="payscheme" value="{{payscheme}}" >
     <input type="hidden" name="discountamt" value="{{discountamt}}" ></td></tr>
     <tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Enter Email (Invoice will be sent to this address):</font><input type='text' name='buyeremail' id='buyeremail' value='{{buyeremail}}' required> </td></tr>
     

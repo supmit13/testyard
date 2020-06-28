@@ -3572,4 +3572,20 @@ Friday, June 26, 2020, 17:49 HRS.
 5. git add skillstest/utils.py
 5. git add files_to_commit.txt
 
+=========================================
+
+Friday, June 26, 2020, 21:35 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add templates/network/stripe_payment.html
+3. git add templates/network/network.html
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add templates/network/managegroups.html
+9. git add files_to_commit.txt
+
+=========================================
+
 

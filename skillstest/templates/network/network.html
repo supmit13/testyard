@@ -281,6 +281,31 @@
 	    xmlhttp.send(postdata);
 	}
 
+	function showpaymentgwsubscriptionform(grpid, ctr, subscriptionfee){
+	    ///alert(subscriptionfee);
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    postdata = "groupid=" + grpid + "&subscriptionfee=" + subscriptionfee.toString() + "&ctr=" + ctr.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+		    payinfowin.document.write(xmlhttp.responseText);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getsubscriptiongwurl }}', true);
+	    xmlhttp.send(postdata);
+	}
+
 
 	// This function opens the page of the group's profile to the user. Tests given to the group's
     	// users and other elements private to the group are not displayed to the user. (unless the user
@@ -316,51 +341,62 @@
 			html += "<img src='" + jsobj.groupimagefile + "' height='100px' width='100px'>";
 		    }
 		    html += "<br /><form name='csrfform_" + ctr + "' id='csrfform_" + ctr + "'>{% csrf_token %}</form><br />";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Number of members: " + jsobj.memberscount + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Type: " + jsobj.grouptype + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Topic: " + jsobj.topic + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Owner: " + jsobj.owner + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Created On: " + jsobj.creationdate + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Stars: " + jsobj.stars + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Number of members: " + jsobj.memberscount + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Type: " + jsobj.grouptype + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Topic: " + jsobj.topic + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Owner: " + jsobj.owner + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Created On: " + jsobj.creationdate + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Stars: " + jsobj.stars + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br><br>";
 		    if(jsobj.ispaid){
-		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.currency + " " + jsobj.entryfee + "</font></span><br>";
-			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Subscription Fee: " + jsobj.currency + " " + jsobj.subscriptionfee + "</font></span><br>";
+		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.currency + " " + jsobj.entryfee + "</font></span><br><br>";
+			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Subscription Fee: " + jsobj.currency + " " + jsobj.subscriptionfee + "</font></span><br><br>";
 		    }
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br>";
-		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Need Owner's Consent: " + jsobj.require_owner_perms + "</font></span><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Membership Status: " + jsobj.memberstatus + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Need Owner's Consent: " + jsobj.require_owner_perms + "</font></span><br><br>";
 		    if(jsobj.allowentry){
 			if(jsobj.alreadyrequested == '0' && jsobj.alreadyrefused == '0' && jsobj.alreadyallowed == '0' && jsobj.alreadyignored == '0'){
-			    if(!jsobj.ispaid || !jsobj.entryfee){
-		            	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    if(!jsobj.ispaid || (!jsobj.entryfee && !jsobj.subscriptionfee)){
+		            	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			    }
 			    else{
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+				if(jsobj.entryfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
+				else if(jsobj.subscriptionfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
 			    }
 			}
 			else if(jsobj.alreadyrequested == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 			else if(jsobj.alreadyrefused == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 			else if(jsobj.alreadyallowed == '1' && jsobj.removedblocked != '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 			else if(jsobj.alreadyignored == '1'){
 			    if(!jsobj.ispaid){
-			    	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			    }
 			    else{
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+				if(jsobj.entryfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
+				else if(jsobj.subscriptionfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
 			    }
 			}
 			else if(jsobj.removedblocked == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been removed or blocked from entering this group in the past. Hence, you may not send a request to join this group. However, you may request the group's owner to unblock you or reinstate you in the group. You may do so by clicking on the 'Review my Membership' button here.&nbsp;&nbsp;</font><input type='button' name='btnreviewmembership' id='btnreviewmembership' value='Review my Membership' onClick='javascript:reviewmembership(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been removed or blocked from entering this group in the past. Hence, you may not send a request to join this group. However, you may request the group's owner to unblock you or reinstate you in the group. You may do so by clicking on the 'Review my Membership' button here.&nbsp;&nbsp;</font><input type='button' name='btnreviewmembership' id='btnreviewmembership' value='Review my Membership' onClick='javascript:reviewmembership(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 		    }
 		    else{
-			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></span><br>";
+			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></span><br><br>";
 		    }
 		    showgroupdivarea.style.display = "";
 		    showgroupdivarea.innerHTML = html;
@@ -447,6 +483,20 @@
 	    xmlhttp.send(encodedpostdata);
 	}
 
+	function handlepayschemescreate(){
+	    payscheme = document.frmcreategroup.payscheme.options[document.frmcreategroup.payscheme.options.selectedIndex].value;
+	    if(payscheme == "entryfeebased"){
+		document.frmcreategroup.subscriptionfee.disabled=true;
+		document.frmcreategroup.entryfee.disabled=false;
+		document.frmcreategroup.subscriptionfee.value = "";
+	    }
+	    else{
+		document.frmcreategroup.entryfee.disabled=true;
+		document.frmcreategroup.subscriptionfee.disabled=false;
+		document.frmcreategroup.entryfee.value = "";
+	    }
+	}
+
 
 	function showpaymentoption(){
 	    ispaid = document.getElementById('ispaid');
@@ -459,21 +509,24 @@
 			html += "<option value='{{ bankcode }}'>{{ bankname }}</option>";
 	    	{% endfor %}
 	    	html += "</select></td></tr>";
+	 	
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' max_length='250' size='10'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' size='10'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' max_length='255' size='20'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' max_length='255' size='20'></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Currency: </font></td><td><select name='currency'>";
-		{% for currency in allcurrencies %}
-		    {% if currency == defaultcurrency %}
-		        html += "<option value='{{currency}}' selected>{{currency}}</option>";
-		    {% else %}
-			html += "<option value='{{currency}}'>{{currency}}</option>";
-		    {% endif %}
-		{% endfor %}
-		html += "</select></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee: </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Fee: </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20'></td></tr>";
+		//html += "<tr><td nowrap><font color='#0000AA' size=-1>Currency: </font></td><td><select name='currency'>";
+		//{% for currency in allcurrencies %}
+		//    {% if currency == defaultcurrency %}
+		//        html += "<option value='{{currency}}' selected>{{currency}}</option>";
+		//    {% else %}
+		//	html += "<option value='{{currency}}'>{{currency}}</option>";
+		//    {% endif %}
+		//{% endfor %}
+		//html += "</select></td></tr>";
+		html += "<tr><td nowrap colspan=2><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
+		html += "<tr><td nowrap><font size=-1 color='#0000AA'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemescreate();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee (in USD): </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Fee (in USD): </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20' disabled=true></td></tr>";
 	    	html += "</table>";
 		document.frmcreategroup.require_owner_perms.checked = false;
 		document.frmcreategroup.require_owner_perms.disabled = true;
@@ -516,9 +569,11 @@
 		ifsccode = document.frmcreategroup.ifsccode.value.trim();
 		acctownername = document.frmcreategroup.acctownername.value.trim();
 		acctnumber = document.frmcreategroup.acctnumber.value.trim();
+		payschemeval = document.frmcreategroup.payscheme.options[document.frmcreategroup.payscheme.options.selectedIndex].value;
 		entryfee = document.frmcreategroup.entryfee.value.trim();
 		subscriptionfee = document.frmcreategroup.subscriptionfee.value.trim();
-		currency = document.frmcreategroup.currency.options[document.frmcreategroup.currency.options.selectedIndex].value;
+		//currency = document.frmcreategroup.currency.options[document.frmcreategroup.currency.options.selectedIndex].value;
+		currency = document.frmcreategroup.currency.value;
 	    }
 	    ////// Validate the input here
 	    alphanumericpattern = new RegExp("^([\\w\\d]+)$");
@@ -570,13 +625,13 @@
 		    document.frmcreategroup.acctnumber.focus();
 		    return(false);
 		}
-		if(entryfee == "" || !floatnumpattern.test(entryfee)){
+		if((entryfee == "" || !floatnumpattern.test(entryfee)) && payschemeval == "entryfeebased"){
 		    alert("Entry Fee cannot be empty and should contain decimal number only.");
 		    document.frmcreategroup.entryfee.value = "";
 		    document.frmcreategroup.entryfee.focus();
 		    return(false);
 		}
-		if(subscriptionfee == "" || !floatnumpattern.test(subscriptionfee)){
+		if((subscriptionfee == "" || !floatnumpattern.test(subscriptionfee)) && payschemeval == "subscriptionbased"){
 		    alert("Subscription Fee cannot be empty and should contain decimal number only.");
 		    document.frmcreategroup.subscriptionfee.value = "";
 		    document.frmcreategroup.subscriptionfee.focus();
@@ -586,7 +641,7 @@
 	    ////// Input validation ends here. If we have come thus far, the input is good enough!
 	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline + "&grouptype=" + grouptype;
 	    if(ispaid.checked == true){
-		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee + "&currency=" + currency + "&subscriptionfee=" + subscriptionfee;
+		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee + "&currency=" + currency + "&subscriptionfee=" + subscriptionfee + "&payscheme=" + payschemeval;
 	    }
 	    else{
 		postdata += "&ispaid=0";
@@ -891,15 +946,17 @@
 		document.frmsettings.acctname.disabled = true;
 		document.frmsettings.acctnum.disabled = true;
 		document.frmsettings.ifsccode.disabled = true;
+		document.frmsettings.payscheme.disabled = true;
 	    }
             else{
 		document.frmsettings.entryfee.disabled = false;
-		document.frmsettings.subscriptionfee.disabled = false;
+		document.frmsettings.subscriptionfee.disabled = true;
 		document.frmsettings.bankname.disabled = false;
 		document.frmsettings.bankbranch.disabled = false;
 		document.frmsettings.acctname.disabled = false;
 		document.frmsettings.acctnum.disabled = false;
 		document.frmsettings.ifsccode.disabled = false;
+		document.frmsettings.payscheme.disabled = false;
 	    }
 	}
 
@@ -912,6 +969,20 @@
 	    else{
 		document.frmsettings.ispaid.disabled=true;
 		document.frmsettings.ispaid.checked=false;
+	    }
+	}
+
+	function handlepayschemes(){
+	    payscheme = document.frmsettings.payscheme.options[document.frmsettings.payscheme.options.selectedIndex].value;
+	    if(payscheme == "entryfeebased"){
+		document.frmsettings.subscriptionfee.disabled=true;
+		document.frmsettings.entryfee.disabled=false;
+		document.frmsettings.subscriptionfee.value = "";
+	    }
+	    else{
+		document.frmsettings.entryfee.disabled=true;
+		document.frmsettings.subscriptionfee.disabled=false;
+		document.frmsettings.entryfee.value = "";
 	    }
 	}
 
@@ -972,35 +1043,50 @@
 		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' onchange='javascript:changepaidstatus();'>";
 		}
 		if(ispaid == 'True'){
-		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
-		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "'></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
-		    {% for curr in allcurrencies %}
-			if(currency == '{{curr}}'){
-			    html += "<option value='{{curr}}' selected>{{curr}}</option>";
-			}
-			else{
-			    html += "<option value='{{curr}}'>{{curr}}</option>";
-			}
-		    {%  endfor %}
-		    html += "</select></td></tr>";
+		    if(entryfee > 0){
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		    }
+		    else{
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();'><option value='entryfeebased'>Entry Fee Based</option><option value='subscriptionbased' selected>Subscription Based</option></select></td></tr>";
+		    }
+		    if(entryfee > 0){
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
+		    }
+		    else{
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "'></td></tr>";
+		    }
+		    //html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
+		    //{% for curr in allcurrencies %}
+		    //  if(currency == '{{curr}}'){
+		    //	    html += "<option value='{{curr}}' selected>{{curr}}</option>";
+		    //	}
+		    //	else{
+		    //	    html += "<option value='{{curr}}'>{{curr}}</option>";
+		    //	}
+		    //{%  endfor %}
+		    //html += "</select></td></tr>";
+		    html += "<tr><td nowrap width='50%' colspan='2'><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";
 		}
 		else{
-		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
-		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked'>";
-		    {% for curr in allcurrencies %}
-			if(currency == '{{curr}}'){
-			    html += "<option value='{{curr}}' selected>{{curr}}</option>";
-			}
-			else{
-			    html += "<option value='{{curr}}'>{{curr}}</option>";
-			}
-		    {%  endfor %}
-		    html += "</select></td></tr>";
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' disabled=true><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
+		    //html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked'>";
+		    //{% for curr in allcurrencies %}
+		    //	if(currency == '{{curr}}'){
+		    //	    html += "<option value='{{curr}}' selected>{{curr}}</option>";
+		    //	}
+		    //	else{
+		    //	    html += "<option value='{{curr}}'>{{curr}}</option>";
+		    //	}
+		    //{%  endfor %}
+		    //html += "</select></td></tr>";
+		    html += "<tr><td nowrap width='50%' colspan='2'><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' disabled=true></td></tr>";
 		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
     		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap><font size=-1 color='#0000AA' style='font-weight: bold'>&nbsp;&nbsp; </font></td><td nowrap>&nbsp;&nbsp;</td></tr>";

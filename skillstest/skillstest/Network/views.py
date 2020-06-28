@@ -51,6 +51,7 @@ def get_network_template_vars(userobj):
     templatevars['grpimguploadurl'] = mysettings.GROUP_IMG_UPLOAD_URL + '?groupname='
     templatevars['savegrpdataurl'] = mysettings.SAVE_GROUP_DATA_URL
     templatevars['getpaymentgwurl'] = mysettings.PAYMENT_GW_URL
+    templatevars['getsubscriptiongwurl'] = mysettings.SUBSCRIPTION_GW_URL
     templatevars['payuconfirmurl'] = mysettings.PAYU_CONFIRM_URL
     templatevars['stripeconfirmurl'] = mysettings.STRIPE_CONFIRM_URL
     templatevars['searchuserurl'] = mysettings.SEARCH_USER_URL
@@ -282,7 +283,7 @@ def creategroup(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, entryfee, subscriptionfee, tagline, currency, require_owner_perms =  ("" for i in range(0,19))
+    groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, entryfee, subscriptionfee, tagline, currency, require_owner_perms, payschemeval =  ("" for i in range(0,20))
     if request.POST.has_key('groupname'):
         groupname = urllib.unquote(request.POST['groupname']).decode('utf8')
     if request.POST.has_key('groupdescription'):
@@ -307,6 +308,7 @@ def creategroup(request):
 	    ifsccode = request.POST['ifsccode']
 	    acctownername = request.POST['acctownername']
 	    acctnumber = request.POST['acctnumber']
+            payschemeval = request.POST['payscheme']
             entryfee = request.POST['entryfee']
             subscriptionfee = request.POST['subscriptionfee']
             currency = request.POST['currency']
@@ -344,10 +346,10 @@ def creategroup(request):
     grpobj.ispaid = ispaid
     grpobj.adminremarks = "admin"
     grpobj.stars = 0
-    if not entryfee or entryfee == "":
+    if not entryfee or entryfee == "" or payschemeval != "entryfeebased":
         entryfee = 0.0
     grpobj.entryfee = float(entryfee)
-    if not subscriptionfee or subscriptionfee == "":
+    if not subscriptionfee or subscriptionfee == "" or payschemeval != "subscriptionbased":
         subscriptionfee = 0.0
     grpobj.subscription_fee = float(subscriptionfee)
     grpobj.currency = currency
@@ -578,6 +580,19 @@ def getgroupinfo(request):
         grpignoredqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj, outcome='close')
         if grpignoredqset.__len__() > 0:
             grpdict['alreadyignored'] = 1
+        grppaidtxnqset = GroupPaidTransactions.objects.filter(group=groupobj, payer=userobj).order_by('-transdatetime')
+        grpdict['memberstatus'] = "Not a member yet"
+        if list(grppaidtxnqset).__len__() > 0:
+            grppaidtxnobj = grppaidtxnqset[0]
+            targetdate = grppaidtxnobj.targetperiod
+            grpdict['memberstatus'] = "Member till %s"%str(targetdate)
+            tz_info = targetdate.tzinfo
+            currdate = datetime.datetime.now(tz_info)
+            if currdate > targetdate:
+                grpdict['memberstatus'] = "Subscription expired on %s"%str(targetdate)
+                grpdict['alreadyallowed'] = 0 # This user needs to pay again to be a member of the group. The previous membership has expired.
+            else:
+                pass
     try:
         groupcontent = json.dumps(grpdict) # serialize json
     except:
@@ -1154,10 +1169,18 @@ def savegroupdata(request):
         ispaid = True
     else:
         ispaid = False
-    if request.POST.has_key('entryfee'):
-        entryfee = request.POST['entryfee']
-    if request.POST.has_key('subscriptionfee'):
-        subscriptionfee = request.POST['subscriptionfee']
+    if request.POST.has_key('payscheme'):
+        payscheme = request.POST['payscheme']
+    if(payscheme == "entryfeebased"):
+        if request.POST.has_key('entryfee'):
+            entryfee = request.POST['entryfee']
+        else:
+            entryfee = 0.00
+    else:
+        if request.POST.has_key('subscriptionfee'):
+            subscriptionfee = request.POST['subscriptionfee']
+        else:
+            subscriptionfee = 0.00
     if request.POST.has_key('currency'):
         currency = request.POST['currency']
     if request.POST.has_key('bankname'):
@@ -1280,6 +1303,74 @@ def showpaymentscreen(request):
     contextdict['buyerphone'] = userobj.mobileno
     contextdict['firstname'] = userobj.firstname
     contextdict['lastname'] = userobj.lastname
+    contextdict['payscheme'] = "entryfee"
+    contextdict['currencyrateurl'] = skillutils.gethosturl(request) + "/" + mysettings.CURRENCY_RATE_URL
+    #tmpl = get_template("network/payu_payment.html")
+    tmpl = get_template("network/stripe_payment.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    stripehtml = tmpl.render(cxt)
+    response = HttpResponse(stripehtml)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showsubscriptionpaymentscreen(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    message = ""
+    groupid = -1
+    entryfee = ""
+    subscriptionfee = ""
+    if request.POST.has_key('groupid'):
+        groupid = request.POST['groupid']
+    if request.POST.has_key('subscriptionfee'):
+        subscriptionfee = request.POST['subscriptionfee']
+    if groupid == -1 or groupid == '':
+        message = error_msg('1085')
+        response = HttpResponse(message)
+        return response
+    groupobj = Group.objects.get(id=groupid)
+    contextdict = {}
+    if not groupobj:
+        message = error_msg('1086')
+        response = HttpResponse(message)
+        return response
+    contextdict['hosturl'] = skillutils.gethosturl(request)
+    contextdict['customer_ip'] = mysettings.CUSTOMER_IP_ADDRESS
+    # if we receive the 'REMOTE_ADDR' header, we use it here. This is what the customerIp value should be.
+    if request.META.has_key('REMOTE_ADDR'): 
+        contextdict['customer_ip'] = request.META['REMOTE_ADDR']
+    subscriptionfee = groupobj.subscription_fee
+    curr = groupobj.currency
+    if curr == 'USD':
+        equiv_rs = subscriptionfee * skillutils.fetch_currency_rate('USD', 'INR')
+    elif curr == 'EUR':
+        equiv_rs = subscriptionfee * skillutils.fetch_currency_rate('EUR', 'INR')
+    else:
+        equiv_rs = subscriptionfee
+    contextdict['order_desc'] = subscriptionfee
+    contextdict['posId'] = mysettings.PAYU_POS_ID
+    contextdict['groupname'] = groupobj.groupname
+    contextdict['groupid'] = groupid
+    contextdict['subscription_amt'] = subscriptionfee
+    contextdict['total_amt'] = subscriptionfee
+    contextdict['signature'] = mysettings.PAYU_SECOND_ID
+    contextdict['extOrderId'] = skillutils.generate_random_string()
+    contextdict['discountamt'] = 0
+    contextdict['stripeconfirmurl'] = skillutils.gethosturl(request) + "/" + mysettings.STRIPE_CONFIRM_URL
+    contextdict['buyeremail'] = userobj.emailid
+    contextdict['buyerphone'] = userobj.mobileno
+    contextdict['firstname'] = userobj.firstname
+    contextdict['lastname'] = userobj.lastname
+    contextdict['payscheme'] = "subscriptionfee"
     contextdict['currencyrateurl'] = skillutils.gethosturl(request) + "/" + mysettings.CURRENCY_RATE_URL
     #tmpl = get_template("network/payu_payment.html")
     tmpl = get_template("network/stripe_payment.html")
@@ -1499,10 +1590,12 @@ def confirmpayment_stripe(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
-    customerIP, orderdesc, currencycode, posId, notifyurl, continueurl, productname, productquantity, productunitprice, totalamount, orderId, groupid, buyeremail, customernameoncard, currency, cardnumber, cvv, expirymonth, expiryyear, city, state, country, zipcode, cardtype, address1, address2 = ('' for i in range(0, 26))
+    customerIP, orderdesc, currencycode, posId, notifyurl, continueurl, productname, productquantity, productunitprice, totalamount, orderId, groupid, buyeremail, customernameoncard, currency, cardnumber, cvv, expirymonth, expiryyear, city, state, country, zipcode, cardtype, address1, address2, payscheme = ('' for i in range(0, 27))
     paramnamesdict = {}
     if request.POST.has_key('customerIp'):
         customerIP = request.POST['customerIp']
+    if request.POST.has_key('payscheme'):
+        payscheme = request.POST['payscheme']
     if request.POST.has_key('description'):
         orderdesc = request.POST['description']
     if request.POST.has_key('merchantPosId'):
@@ -1625,14 +1718,38 @@ def confirmpayment_stripe(request):
     txnobj.plan = None
     txnobj.usersession = sesscode
     joinreq.requestdate = skillutils.pythontomysqldatetime2(str(datetime.datetime.now()))
-    txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
-    # txnobj.payamount should always be stored as USD
-    if groupobj.currency == 'INR':
-        txnobj.payamount = groupobj.entryfee/xchnginr
-    elif groupobj.currency == 'EUR':
-        txnobj.payamount = groupobj.entryfee/xchngeur
-    elif groupobj.currency == 'GBP':
-        txnobj.payamount = groupobj.entryfee/xchnggbp
+    grppaidtxnobj = GroupPaidTransactions()
+    grppaidtxnobj.group = groupobj
+    grppaidtxnobj.payer = userobj
+    grppaidtxnobj.currency = "USD"
+    grppaidtxnobj.payeripaddress = customerIP
+    # Handle payscheme here... txnobj.payamount should always be stored as USD
+    if payscheme == "entryfee":
+        txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
+        if groupobj.currency == 'INR':
+            txnobj.payamount = float(groupobj.entryfee/xchnginr) * (1 - mysettings.CUT_FRACTION)
+        elif groupobj.currency == 'EUR':
+            txnobj.payamount = float(groupobj.entryfee/xchngeur) * (1 - mysettings.CUT_FRACTION)
+        elif groupobj.currency == 'GBP':
+            txnobj.payamount = float(groupobj.entryfee/xchnggbp) * (1 - mysettings.CUT_FRACTION)
+        else:
+            pass
+        grppaidtxnobj.amount = txnobj.payamount
+        grppaidtxnobj.reason = "entryfee"
+        grppaidtxnobj.targetperiod = datetime.datetime.now() + datetime.timedelta(days=36500) # Set a time long enough into the future.
+    elif payscheme == "subscriptionfee":
+        txnobj.payamount = groupobj.subscription_fee * (1 - mysettings.CUT_FRACTION)
+        if groupobj.currency == 'INR':
+            txnobj.payamount = float(groupobj.subscription_fee/xchnginr) * (1 - mysettings.CUT_FRACTION)
+        elif groupobj.currency == 'EUR':
+            txnobj.payamount = float(groupobj.subscription_fee/xchngeur) * (1 - mysettings.CUT_FRACTION)
+        elif groupobj.currency == 'GBP':
+            txnobj.payamount = float(groupobj.subscription_fee/xchnggbp) * (1 - mysettings.CUT_FRACTION)
+        else:
+            pass
+        grppaidtxnobj.amount = txnobj.payamount
+        grppaidtxnobj.reason = "subscriptionfee"
+        grppaidtxnobj.targetperiod = datetime.datetime.now() + datetime.timedelta(days=30)
     else:
         pass
     if totalamount < txnobj.payamount: # TODO: check if any discount is to be processed
@@ -1657,6 +1774,7 @@ def confirmpayment_stripe(request):
         joinreq.active = True
         joinreq.outcome = "accept" # Set the outcome of this request to 'accept' as the group owner has already received the entry fee.
         joinreq.save()
+        grppaidtxnobj.save()
     except:
         response = HttpResponse(sys.exc_info()[1].__str__())
     try:
