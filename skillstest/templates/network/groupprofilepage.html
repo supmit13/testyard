@@ -10,7 +10,141 @@
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script type='text/javascript'>
+  function joingroup(grpid){
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+    //alert(encodedpostdata);
+    waitspan = document.getElementById('waitspan');
+    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    waitspan.style = "";
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	    waitspan.style = "display:none";
+    	    waitspan.innerHTML = "The request has been successfully sent";
+	    document.grouppagefrm.btnjoin.disabled = true;
+        }
+    };
+    xmlhttp.open('POST', '{{ joinrequesturl }}', true);
+    xmlhttp.send(encodedpostdata);
+  }
 
+  function showpaymentgwform(grpid, entryfee){
+    if(entryfee == 0){
+	return (false); // Write code to allow users to join directly.
+    }
+    document.grouppagefrm.btnjoin.disabled = true;
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    postdata = "groupid=" + grpid + "&entryfee=" + entryfee.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+	    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+	    payinfowin.document.write(xmlhttp.responseText);
+        }
+    };
+    xmlhttp.open('POST', '{{ getpaymentgwurl }}', true);
+    xmlhttp.send(postdata);
+  }
+
+  function showpaymentgwsubscriptionform(grpid, subscriptionfee){
+    ///alert(subscriptionfee);
+    document.grouppagefrm.btnjoin.disabled = true;
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    postdata = "groupid=" + grpid + "&subscriptionfee=" + subscriptionfee.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+	    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+	    payinfowin.document.write(xmlhttp.responseText);
+        }
+    };
+    xmlhttp.open('POST', '{{ getsubscriptiongwurl }}', true);
+    xmlhttp.send(postdata);
+  }
+
+  function exitgroup(grpid){
+    yesno = confirm("Are you sure you want to exit from this group?");
+    if(yesno == false){
+	return(0);
+    }
+    //alert(grpid);
+    //Send a post request to {{exitgroupurl}} with appropriate params - groupId and csrfmiddlewaretoken should be enough.
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+    //alert(encodedpostdata);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	    waitspan.style = "display:none";
+    	    waitspan.innerHTML = "";
+        }
+    };
+    xmlhttp.open('POST', '{{exitgroupurl}}', true);
+    xmlhttp.send(encodedpostdata);
+    // Show progress circle to user...
+    waitspan = document.getElementById('waitspan');
+    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    waitspan.style = "";
+  }
+
+  function sendgentlereminder(grpid){
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+    if(testid && testid != null){
+	encodedpostdata += "&testid=" + testid;
+    }
+    waitspan = document.getElementById('waitspan');
+    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    waitspan.style = "";
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	    waitspan.style = "display:none";
+    	    waitspan.innerHTML = "";
+	    closegroupdivscreen(ctr);
+        }
+    };
+    xmlhttp.open('POST', '{{ gentlereminderurl }}', true);
+    xmlhttp.send(encodedpostdata);
+  }
 </script>
 <link href="static/css/font_awesome_min.css" rel="stylesheet">
 </head>
@@ -60,7 +194,10 @@
 			    {% if grppaid %}
                             <p><strong>Entry Fee</strong>
                                  <span class="fa fa-star-o">{{grpcurrency}}&nbsp;&nbsp;{{grpentryfee}}</span>
-                            </p> 
+                            </p>
+			    <p><strong>Subscription Fee</strong>
+                                 <span class="fa fa-star-o">{{grpcurrency}}&nbsp;&nbsp;{{grpsubscriptionfee}}</span>
+                            </p>  
 			    {% endif %}
                         </figcaption>
                     </figure>
@@ -80,8 +217,25 @@
 		    <br /><br /><br />
 	    	    {% endfor %}
 		    -->
+		    <form name='grouppagefrm'>
+		    {% if joinstatus == 0 %}
+			{% if grpentryfee > 0 %}
+			    <input type='button' name='btnjoin' value='Join Group' onClick='javascript:showpaymentgwform({{grpid}}, "{{grpentryfee}}");'>
+			{% elif grpsubscriptionfee > 0 %}
+			    <input type='button' name='btnjoin' value='Join Group' onClick='javascript:showpaymentgwsubscriptionform({{grpid}}, "{{grpsubscriptionfee}}");'>
+			{% else %}
+		    	    <input type='button' name='btnjoin' value='Join Group' onClick='javascript:joingroup({{grpid}});'>
+			{% endif %}
+		    {% elif joinstatus == 1 %}
+		    <input type='button' name='btnexit' value='Exit Group' onClick='javascript:exitgroup({{grpid}});'>
+		    {% elif joinstatus == 2 %}
+		    <input type='button' name='btnreminder' value='Send Gentle Reminder' onClick='javascript:sendgentlereminder({{grpid}});'>
+	    	    {% endif %}
+		    <span id='waitspan'></span>
 		    <input type='button' name='btnclose' value='Close Window' onClick='javascript:window.close();'>
                     <!-- <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Follow </button> -->
+		    {% csrf_token %}
+		    </form>
                 </div>
 		
 	        <p>...</p>

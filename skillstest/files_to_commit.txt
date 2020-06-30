@@ -3588,4 +3588,17 @@ Friday, June 26, 2020, 21:35 HRS.
 
 =========================================
 
+Tuesday, June 30, 2020, 06:10 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add templates/network/stripe_payment.html
+3. git add db.sql
+4. git add db_02_02_2015.sql
+5. git add skillstest/Network/views.py
+6. git add skillstest/Network/models.py
+7. git add skillstest/Subscription/models.py
+8. git add templates/network/groupprofilepage.html
+9. git add skillstest/skills_settings.py
+10.git add files_to_commit.txt
 
+=========================================

@@ -886,5 +886,10 @@ alter table Network_grouppaidtransactions add column targetperiod datetime;
 alter table Network_grouppaidtransactions add column reason varchar(25) ;
 alter table Network_grouppaidtransactions add CONSTRAINT chk_reason CHECK (reason in ('entryfee', 'subscriptionfee'));
 
+alter table Network_grouppaidtransactions add column stripechargeid varchar(35);
+alter table Subscription_transaction add column txnid_stripe varchar(35);
+
+alter table Network_groupmember add column grppaidtxn_id int(8) default null, ADD FOREIGN KEY fk_grppaidtxn(grppaidtxn_id) REFERENCES Network_grouppaidtransactions(id) ON DELETE CASCADE;
+
 COMMIT;
 

@@ -258,6 +258,7 @@
 	    if(entryfee == 0){
 		return (false); // Write code to allow users to join directly.
 	    }
+	    document.frmjoingroup.btnjoinrequest.disabled = true;
  	    formid = "csrfform_" + ctr;
 	    csrfform = document.getElementById(formid);
 	    csrftoken = csrfform.csrfmiddlewaretoken.value;
@@ -283,6 +284,7 @@
 
 	function showpaymentgwsubscriptionform(grpid, ctr, subscriptionfee){
 	    ///alert(subscriptionfee);
+	    document.frmjoingroup.btnjoinrequest.disabled = true;
 	    formid = "csrfform_" + ctr;
 	    csrfform = document.getElementById(formid);
 	    csrftoken = csrfform.csrfmiddlewaretoken.value;
@@ -350,7 +352,7 @@
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br><br>";
 		    if(jsobj.ispaid){
 		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.currency + " " + jsobj.entryfee + "</font></span><br><br>";
-			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Subscription Fee: " + jsobj.currency + " " + jsobj.subscriptionfee + "</font></span><br><br>";
+			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Subscription Fee: " + jsobj.currency + " " + jsobj.subscriptionfee + " /month</font></span><br><br>";
 		    }
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br><br>";
 		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Membership Status: " + jsobj.memberstatus + "</font></span><br><br>";
@@ -527,6 +529,7 @@
 		html += "<tr><td nowrap><font size=-1 color='#0000AA'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemescreate();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
 		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee (in USD): </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
 		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Fee (in USD): </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20' disabled=true></td></tr>";
+		html += "<tr><td nowrap colspan='2' style='font-style:italic;'><font color='#0000AA' size=-1>Subscription Fee is for a period of 30 days starting from the instant of payment. </td></tr>";
 	    	html += "</table>";
 		document.frmcreategroup.require_owner_perms.checked = false;
 		document.frmcreategroup.require_owner_perms.disabled = true;
@@ -1052,10 +1055,12 @@
 		    if(entryfee > 0){
 		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
 		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
 		    }
 		    else{
 			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
 		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
 		    }
 		    //html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
 		    //{% for curr in allcurrencies %}
@@ -1076,6 +1081,7 @@
 		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' disabled=true><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
 		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
 		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
 		    //html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked'>";
 		    //{% for curr in allcurrencies %}
 		    //	if(currency == '{{curr}}'){

@@ -173,7 +173,7 @@ function adjustpayamt(){
 <body bgcolor='#669999'>
 
 <form name='frmpaymentconfirm' id='frmpaymentconfirm' method="POST" action="{{stripeconfirmurl}}">
-<h2>Process Payment</h2>
+<p style='font-weight:bold;color:blue;padding:8px;text-align:center;'>Process Payment</p>
     <table border=0 cellspacing=4 cellpadding=4><tr><td nowrap><font color='#0000AA'  style='font-weight:bold'>Confirm request to join group '{{groupname}}'?</font></td></tr>
     <tr><td nowrap><font color='#0000AA'  style='font-weight:bold' size=-1>You will be charged USD {{total_amt}} for the membership. </font></td></tr>
     <tr><td><input type="hidden" name="continueUrl" value="{{hosturl}}/continue">
@@ -601,6 +601,9 @@ function adjustpayamt(){
                         <div class="row">
                             <div class="col-xs-12">
 				<center><input type="button" name='btnconfirmpayment_stripe' id='btnconfirmpayment_stripe' value="Pay US$ {{total_amt}}"  onClick="javascript:makepayment_stripe();"><span id='waiter'></span>&nbsp;&nbsp;<!-- <input type="button" name='btnconfirmpayment_paypal' id='btnconfirmpayment_paypal' value="Yes, pay using paypal"  onClick="javascript:makepayment_paypal();"> <a href="/#" data-paypal-button="true" onClick='javascript:makepayment_paypal();'>  <img src="//www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Check out with PayPal" /></a> --><span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
+				<p style="color:blue;font-style:italic;text-align:center;">
+				    Joining now will make you a member till {{targetdate}}*
+				</p>
                             </div>
                         </div>
 			<input type='hidden' name='payamt' id='payamt' value="{{total_amt}}">                        
@@ -609,7 +612,9 @@ function adjustpayamt(){
             </div>        
         </div>
     </div>
-
+	<p style="color:#AA0000;font-style:italic;text-align:center;">
+	* Note: Memberships are subject to changes made to the group by group owners. TestYard doesn't take ownership of any changes to any group made by its owner.
+	</p>
 </form >
 </body>
 </html>

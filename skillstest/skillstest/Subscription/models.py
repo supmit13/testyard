@@ -138,6 +138,7 @@ class Transaction(models.Model):
     trans_status = models.BooleanField(default=False)
     clientIp = models.CharField(max_length=20, null=False, blank=True)
     extOrderId = models.CharField(max_length=40, null=True, blank=True)
+    txnid_stripe = models.CharField(max_length=35, blank=False)
 
     class Meta:
         verbose_name = "Transactions Table"

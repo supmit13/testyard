@@ -70,6 +70,24 @@ class Post(models.Model):
         return "%s"%(self.poster + "'s post")
 
 
+
+# This table keeps track of all individual transactions performed on any paid group
+class GroupPaidTransactions(models.Model):
+    group = models.ForeignKey(Group, related_name="+", null=False, blank=False)
+    payer = models.ForeignKey(User, related_name="+", null=False, blank=False)
+    amount = models.IntegerField(null=False, blank=False, default=0)
+    currency = models.CharField(max_length=3, null=False, blank=False)
+    transdatetime = models.DateTimeField(auto_now=True) # Date and time at which the transaction was made.
+    targetperiod = models.DateTimeField()
+    reason = models.CharField(max_length=25, choices=(('entryfee', 'Entry Fee'), ('subscriptionfee', 'Subscription Fee')), default='entryfee')
+    stripechargeid = models.CharField(max_length=35, blank=False, default=None)
+    payeripaddress = models.CharField(max_length=20, null=True, blank=True, default='')
+
+    class Meta:
+        verbose_name = "GroupPaidTransactions Table"
+        db_table = 'Network_grouppaidtransactions'
+
+
 class GroupMember(models.Model):
     group = models.ForeignKey(Group, null=False, blank=False)
     member = models.ForeignKey(User, null=False, blank=False)
@@ -81,6 +99,7 @@ class GroupMember(models.Model):
     # A member may be removed from the group by herself/himself, or the owner.
     removeagent = models.CharField(null=True, blank=True, default=None, max_length=10) # May have one of the following 3 values: user, owner, null.
     lastremovaldate = models.DateTimeField(default=None)
+    grppaidtxn = models.ForeignKey(GroupPaidTransactions, null=True)
 
     class Meta:
         verbose_name = "GroupMember Table"
@@ -195,19 +214,6 @@ class SubscriptionEarnings(models.Model):
         verbose_name = "SubscriptionEarnings Table"
         db_table = 'Network_subscriptionearnings'
 
-
-# This table keeps track of all individual transactions performed on any paid group
-class GroupPaidTransactions(models.Model):
-    group = models.ForeignKey(Group, related_name="+", null=False, blank=False)
-    payer = models.ForeignKey(User, related_name="+", null=False, blank=False)
-    amount = models.IntegerField(null=False, blank=False, default=0)
-    currency = models.CharField(max_length=3, null=False, blank=False)
-    transdatetime = models.DateTimeField(auto_now=True) # Date and time at which the transaction was made.
-    payeripaddress = models.CharField(max_length=20, null=True, blank=True, default='')
-
-    class Meta:
-        verbose_name = "GroupPaidTransactions Table"
-        db_table = 'Network_grouppaidtransactions'
 
 
 class WithdrawalActivity(models.Model):

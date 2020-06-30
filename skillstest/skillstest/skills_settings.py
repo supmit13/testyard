@@ -97,8 +97,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 #EMAIL_HOST_USER = 'codexaddict@gmail.com'
 EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = '*****************'
-EMAIL_HOST_PASSWORD = '********************'
+#EMAIL_HOST_PASSWORD = '*******************'
+EMAIL_HOST_PASSWORD = '****************'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.in"
@@ -364,10 +364,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '****************'
-OAUTH_SECRET_KEY = '******************'
-OAUTH_USER_TOKEN = '*************************'
-OAUTH_USER_SECRET = '*******************************'
+OAUTH_API_KEY = '***************'
+OAUTH_SECRET_KEY = '*******************'
+OAUTH_USER_TOKEN = '***************************************'
+OAUTH_USER_SECRET = '***********************************'
 #REDIRECT_URI = "https://192.168.0.103/skillstest/test/linkedin/"
 REDIRECT_URI = "https://testyard.in/skillstest/test/linkedin/"
 TESTYARD_GROUP_ID = "testyard" # This is the Id of the TestYard group on LinkedIn.
@@ -381,10 +381,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = '**************' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
+BITLY_OAUTH_ACCESS_TOKEN = "*******************************"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
@@ -447,12 +447,12 @@ DEFAULT_PHONENO_PLACEHOLDER = 9999999999
 
 # Payment gateway settings
 # PayU settings
-#PAYU_POS_ID = *******
-PAYU_POS_ID = "*********"
-PAYU_CLIENT_SECRET = "**************************"
-#PAYU_SECOND_ID = '***********************'
-PAYU_SECOND_ID = '**************************'
-PAYU_POS_AUTH_KEY = "*****"
+#PAYU_POS_ID = *****
+PAYU_POS_ID = "**********"
+PAYU_CLIENT_SECRET = "****************************"
+#PAYU_SECOND_ID = '****************************'
+PAYU_SECOND_ID = '****************************'
+PAYU_POS_AUTH_KEY = "*******"
 PAYU_ORDER_CREATION_URL = "https://secure.snd.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -465,11 +465,11 @@ PAYU_DOMAIN = "secure.snd.payu.com"
 #WEPAY_BASEURL = "https://stage.wepayapi.com/v2/"
 WEPAY_BASEURL = "https://wepayapi.com/v2/" # Production URL
 
-WEPAY_CLIENT_ID = "******"
-#WEPAY_CLIENT_SECRET = "***********"
-WEPAY_CLIENT_SECRET = "*************"
-WEPAY_ACCESS_TOKEN = "*******************************"
-WEPAY_ACCOUNT_ID = "*************"
+WEPAY_CLIENT_ID = "6963"
+#WEPAY_CLIENT_SECRET = "****************"
+WEPAY_CLIENT_SECRET = "*******************"
+WEPAY_ACCESS_TOKEN = "*********************************************"
+WEPAY_ACCOUNT_ID = "***************"
 WEPAY_OAUTH2_URL = "https://www.wepay.com/v2/oauth2/authorize?client_id=6963&redirect_uri=https%3A%2F%2Ftestyard.in%2F&scope=manage_accounts%2Ccollect_payments%2Cview_user%2Csend_money%2Cpreapprove_payments%2Cmanage_subscriptions"
 WEPAY_USER_REGISTER_URL = WEPAY_BASEURL + "oauth2/authorize/"
 #WEPAY_OAUTH2_URI = "https://stage.wepayapi.com/v2/oauth2/token"
@@ -481,9 +481,9 @@ WEPAY_ACCOUNT_USERNAME = "testyard.in@gmail.com"
 WEPAY_ACCOUNT_PASSWORD = "***********"
 
 RAZORPAY_USEREMAIL = "testyard.in@gmail.com"
-PAZORPAY_PASSWORD = "***************"
-RAZORPAY_KEY = "******************"
-RAZORPAY_SECRET = "*********************"
+PAZORPAY_PASSWORD = "***********"
+RAZORPAY_KEY = "************************"
+RAZORPAY_SECRET = "****************************"
 #RAZORPAY_BASEURI = "https://%s:%s@api.razorpay.com/v1"%(RAZORPAY_KEY, RAZORPAY_SECRET)
 RAZORPAY_BASEURI = "https://api.razorpay.com/v1"
 RAZORPAY_DASHBOARD = "https://dashboard.razorpay.com/#/app/dashboard"
@@ -494,14 +494,14 @@ PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
 
 PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
-PAYPAL_SANDBOX_ACCESS_TOKEN = "******************************"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "**************************************"
 PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
 PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
 PAYPAL_RETURN_URL = "http://www.paypal.com/return"
 PAYPAL_CANCEL_URL = "http://www.paypal.com/cancel"
 
-STRIPE_API_KEY="*******************************"
-STRIPE_API_SECRET="*********************************"
+STRIPE_API_KEY="***********************************"
+STRIPE_API_SECRET="****************************************"
 
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
@@ -512,17 +512,17 @@ CUSTOMER_IP_ADDRESS = '192.168.0.103'
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
 EASYAPI_PASSWORD = '**********'
-EASYAPI_KEY = '***************************'
+EASYAPI_KEY = '**************************************'
 EASYAPI_URL = 'https://xmlfeed.theeasyapi.com'
 
 # Fixer API Params:
 FIXERAPI_EMAILID = 'testyard.in@gmail.com'
-FIXERAPI_PASSWD = '************'
-FIXERAPI_KEY = '*****************************'
+FIXERAPI_PASSWD = '**********'
+FIXERAPI_KEY = '*********************************8'
 FIXERAPI_URL = 'http://data.fixer.io/api/latest'
 
-GO_DADDY_CUST_NUM = *******
-GO_DADDY_PASSWD = "***********@"
+GO_DADDY_CUST_NUM = **********
+GO_DADDY_PASSWD = "***********"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -533,25 +533,25 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "********************"
-SECRET_ACCESS_KEY = "*******************************+"
+ACCESS_KEY_ID = "****************"
+SECRET_ACCESS_KEY = "***************************+"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "************"
+AMAZON_ACCT_PASSWD = "**********"
 
-AMAZON_ACCT_ID = "**************"
+AMAZON_ACCT_ID = "*****************"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "************"
+IAM_PASSWD = "*************"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "****************"
+REPL_SECRET = "*****************"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "************"
+REPL_PASSWORD = "****************"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
@@ -585,6 +585,6 @@ MAX_VM_INSTANCES_WIN = 5
 # Certificate generation command: openssl req -x509 -newkey rsa:2048 -keyout testyard.key -out testyard.crt -days 365
 
 TWILIO_EMAIL = "testyard.in@gmail.com"
-TWILIO_PASSWD = "**************"
-TWILIO_AUTH_TOKEN = "*************************"
-TWILIO_ACCT_SID = "*********************************"
+TWILIO_PASSWD = "***************"
+TWILIO_AUTH_TOKEN = "***************************************"
+TWILIO_ACCT_SID = "**********************************"

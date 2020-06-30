@@ -136,7 +136,7 @@ def network(request):
     userobj = sessionobj[0].user
     # Display contacts and groups associated with the user.
     contactsqset = Connection.objects.filter(focususer=userobj, deleted=False)
-    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group')
+    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group').order_by('-membersince')
     groupsownerqset = Group.objects.filter(owner=userobj).order_by('-id')
     connectioninvitationsqset = ConnectionInvitation.objects.filter(touser=userobj, invitationstatus='open').order_by('invitationdate')
     contacts = []
@@ -158,8 +158,12 @@ def network(request):
             uobjlist.append(uobj)
         else:
             pass
+    uniqgroups = {}
     for groupmember in groupmembersqset:
         grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
+        if uniqgroups.has_key(groupmember.group.groupname):
+            continue
+        uniqgroups[groupmember.group.groupname] = 1
         groups.append(grouplink)
         if not groupsdict.has_key(groupmember.group.id):
             groupsdict[groupmember.group.id] = groupmember.group.groupname
@@ -569,7 +573,7 @@ def getgroupinfo(request):
         grpallowedqset = GroupJoinRequest.objects.filter(group=groupobj, user=userobj, outcome='accept')
         if grpallowedqset.__len__() > 0:
             # Check if the user is present in the GroupMember records for this group with status set to True and removed and blocked set to False.
-            gmqset = GroupMember.objects.filter(group=groupobj, member=userobj, status=True)
+            gmqset = GroupMember.objects.filter(group=groupobj, member=userobj, status=True).order_by('-membersince')
             if gmqset.__len__() == 0:
                 grpdict['alreadyallowed'] = 0
             else:
@@ -1304,6 +1308,8 @@ def showpaymentscreen(request):
     contextdict['firstname'] = userobj.firstname
     contextdict['lastname'] = userobj.lastname
     contextdict['payscheme'] = "entryfee"
+    targetdate = datetime.datetime.now() + datetime.timedelta(days=36500)
+    contextdict['targetdate'] = targetdate
     contextdict['currencyrateurl'] = skillutils.gethosturl(request) + "/" + mysettings.CURRENCY_RATE_URL
     #tmpl = get_template("network/payu_payment.html")
     tmpl = get_template("network/stripe_payment.html")
@@ -1371,6 +1377,8 @@ def showsubscriptionpaymentscreen(request):
     contextdict['firstname'] = userobj.firstname
     contextdict['lastname'] = userobj.lastname
     contextdict['payscheme'] = "subscriptionfee"
+    targetdate = datetime.datetime.now() + datetime.timedelta(days=30)
+    contextdict['targetdate'] = targetdate
     contextdict['currencyrateurl'] = skillutils.gethosturl(request) + "/" + mysettings.CURRENCY_RATE_URL
     #tmpl = get_template("network/payu_payment.html")
     tmpl = get_template("network/stripe_payment.html")
@@ -1682,11 +1690,13 @@ def confirmpayment_stripe(request):
     except:
         return HttpResponse("Customer object could not be created: %s"%sys.exc_info()[1].__str__())
     custid = customer.id
+    chargeid = None
     try:
         charge = stripe.Charge.create(amount=int(totalamount*100), currency=currency.lower(), customer=custid)
     except:
         return HttpResponse("Charge object could not be created: %s"%sys.exc_info()[1].__str__())
     response = HttpResponse("<p style='color:blue;'>The amount %s was successfully paid. The Transaction (Charge) Id is %s. Please note it down for any future reference.</p>"%(str(round(totalamount, 2)), charge.id))
+    chargeid = charge.id
     groupobj = Group.objects.get(id=groupid)
     if not groupobj:
         message = error_msg('1086')
@@ -1723,6 +1733,7 @@ def confirmpayment_stripe(request):
     grppaidtxnobj.payer = userobj
     grppaidtxnobj.currency = "USD"
     grppaidtxnobj.payeripaddress = customerIP
+    grppaidtxnobj.stripechargeid = chargeid
     # Handle payscheme here... txnobj.payamount should always be stored as USD
     if payscheme == "entryfee":
         txnobj.payamount = groupobj.entryfee * (1 - mysettings.CUT_FRACTION)
@@ -1761,6 +1772,7 @@ def confirmpayment_stripe(request):
     txnobj.trans_status = True # Payment is made, hence True.
     txnobj.clientIp = ""
     txnobj.extOrderId = ""
+    txnobj.txnid_stripe = chargeid
     grpmember = GroupMember()
     grpmember.member = userobj
     grpmember.group = groupobj
@@ -1778,6 +1790,7 @@ def confirmpayment_stripe(request):
     except:
         response = HttpResponse(sys.exc_info()[1].__str__())
     try:
+        grpmember.grppaidtxn_id = grppaidtxnobj.id
         grpmember.save()
     except:
         message = error_msg('1097')%(sys.exc_info()[1].__str__())
@@ -2225,7 +2238,7 @@ def postmessagecontent(request):
             post = Post()
             targetgroup = Group.objects.get(id=tgid)
             # Check if the user is blocked from posting to the group. If so, continue with the next group.
-            grpmemqset = GroupMember.objects.filter(group=targetgroup, member=userobj)
+            grpmemqset = GroupMember.objects.filter(group=targetgroup, member=userobj).order_by('-membersince')
             if grpmemqset.__len__() == 0: # user is not a member of this group, hence she can't post.
                 continue
             if grpmemqset.__len__() > 0:
@@ -3706,6 +3719,7 @@ def showgroupprofile(request):
     datadict['grpowner'] = groupobj.owner
     userdisplayname = groupobj.owner.displayname
     datadict['grpname'] = groupobj.groupname
+    datadict['grpid'] = groupobj.id
     datadict['grptagline'] = groupobj.tagline
     datadict['grpdescription'] = groupobj.description
     datadict['grpmemberscount'] = groupobj.memberscount
@@ -3719,7 +3733,13 @@ def showgroupprofile(request):
     datadict['grppaid'] = groupobj.ispaid
     datadict['grpcurrency'] = groupobj.currency
     datadict['grpentryfee'] = groupobj.entryfee
+    datadict['grpsubscriptionfee'] = groupobj.subscription_fee
     datadict['grpownerperm'] = groupobj.require_owner_permission
+    datadict['joinrequesturl'] = mysettings.SEND_JOIN_REQUEST_URL
+    datadict['getpaymentgwurl'] = mysettings.PAYMENT_GW_URL
+    datadict['getsubscriptiongwurl'] = mysettings.SUBSCRIPTION_GW_URL
+    datadict['exitgroupurl'] = mysettings.EXIT_GROUP_URL
+    datadict['gentlereminderurl'] = mysettings.SEND_GENTLE_REMINDER_URL
     datadict['posts'] = []
     # **** The code below doesn't work as of now. Need to fix it ASAP.
     if groupobj.grouptype != 'PRIV':
@@ -3729,6 +3749,30 @@ def showgroupprofile(request):
             postcontent = post.postcontent
             postcreator = post.poster.displayname
             datadict['posts'].append({'content' : postcontent, 'poster' : postcreator })
+    grpjoinreqset = GroupJoinRequest.objects.filter(user=userobj, group=groupobj).order_by('-requestdate')
+    if list(grpjoinreqset).__len__() == 0:
+        datadict['joinstatus'] = 0
+    else:
+        status = grpjoinreqset[0].outcome
+        if status == 'accept' and (groupobj.entryfee > 0 or groupobj.ispaid == False):
+            datadict['joinstatus'] = 1
+        else:
+            grppaidtxnqset = GroupPaidTransactions.objects.filter(group=groupobj, payer=userobj).order_by('-transdatetime')
+            if list(grppaidtxnqset).__len__() > 0:
+                targetdate = grppaidtxnqset[0].targetperiod
+                tz_info = targetdate.tzinfo
+                currdate = datetime.datetime.now(tz_info)
+                if targetdate > currdate:
+                    datadict['joinstatus'] = 1
+                else:
+                    datadict['joinstatus'] = 0
+        if status != "accept" and groupobj.entryfee == 0 and groupobj.subscription_fee == 0:
+            datadict['joinstatus'] = 2
+    # Treat users who have exited the group before
+    grpmemberqset = GroupMember.objects.filter(group=groupobj, member=userobj).order_by('-membersince')
+    if list(grpmemberqset).__len__() > 0:
+        if grpmemberqset[0].removed == True and grpmemberqset[0].blocked == False:
+            datadict['joinstatus'] = 0
     tmpl = get_template("network/groupprofilepage.html")
     datadict.update(csrf(request))
     cxt = Context(datadict)
@@ -4289,7 +4333,7 @@ def leavegroup(request):
         return HttpResponse("Could not find the named group. Please check the group name and try again. If the problem persists, contact the support desk with the details of the operation")
     grpobj = grpqset[0]
     groupid = grpobj.id
-    grpmemberqset = GroupMember.objects.filter(group=grpobj,member=userobj)
+    grpmemberqset = GroupMember.objects.filter(group=grpobj, member=userobj).order_by('-membersince')
     #Due to a previous bug, some groups will have the same member multiple times. 
     #The bug has been fixed but the erroneous records remain in DB.
     for grpmemberobj in grpmemberqset:
