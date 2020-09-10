@@ -276,6 +276,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  activeyyyy = activedateparts[2];
 		  activedateobj = Date.parse(activeyyyy + "-" + activemm + "-" + activedd);
 		  today = new Date();
+		  today.setDate(today.getDate() - 2);
+		  //alert(today);
 		  if(pubdateobj < today || activedateobj < today){
 		    alert("Publish date and activation date cannot be historical");
 		    return(false);

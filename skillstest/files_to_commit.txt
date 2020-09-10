@@ -3602,3 +3602,23 @@ Tuesday, June 30, 2020, 06:10 HRS.
 10.git add files_to_commit.txt
 
 =========================================
+
+Tuesday, June 30, 2020, 09:58 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add skillstest/Network/models.py
+3. git add db.sql
+4. git add db_02_02_2015.sql
+5. git add templates/network/network.html
+6. git add templates/subscription/withdrawalscreen.html
+7. git add templates/network/stripe_payment.html
+
+=========================================
+
+Thursday, September 09, 2020, 09:33 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+
