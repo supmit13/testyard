@@ -2589,6 +2589,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
   	    xmlhttp.send(postdata);
             waitdiv.innerHTML = "<font color='#0000FF' style='font-weight:bold;' size=-1>Interview has been scheduled successfully.</font>";
+	    document.createinterviewform.btncreateinterview.disabled = true;
             }
             else{
 	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'><font style='font-weight:bold;' size=-1 color='#0000AA'>Please bear with us while we prepare and launch the interview window...</font>";
@@ -2622,6 +2623,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    }
 	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
   	    xmlhttp.send(postdata);
+	    document.createinterviewform.btncreateinterview.disabled = true;
             }
 	}
 
