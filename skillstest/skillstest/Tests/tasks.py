@@ -138,6 +138,9 @@ def process_answer_scripts():
         testpagesstr = (base64.b64decode(testpagesenc + padding)).decode('iso-8859-1') 
         for hexkey in skillutils.hextoascii.keys():
             testpagesstr = testpagesstr.replace(hexkey, skillutils.hextoascii[hexkey])
+        testpagesstr = re.sub("value='([^']*)<([^']*)'", r"value='\1&lt;\2'", testpagesstr, flags=re.DOTALL)
+        testpagesstr = re.sub("value='([^']*)>([^']*)'", r"value='\1&gt;\2'", testpagesstr, flags=re.DOTALL)
+        #print testpagesstr
         testpages = json.loads(testpagesstr, strict=False)
         testendmessage = testpages.pop() # The last entity contains the test end message
         for challengeresp in testpages:
@@ -183,9 +186,11 @@ def process_answer_scripts():
                     inputdatatag = soup.findAll("input", {'type' : 'radio', 'checked' : True})
                 for j in range(0, inputdatatag.__len__()):
                     inputdata = inputdata + "#||#" + inputdatatag[j]['value']
+                    #print inputdatatag[j]['value']
             else:
                 print "Unhandled challenge type"
                 continue
+            inputdata = re.sub(re.compile("^\s*#\|\|#"), "", inputdata)
             #print "#### " + inputdata
             userrespobj.answer = inputdata
             userrespobj.attachments = None
