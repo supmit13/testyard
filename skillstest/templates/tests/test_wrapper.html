@@ -375,7 +375,7 @@ function sendtoserver(postdata){
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "<font color='#0000AA'>This test falls in the '" + topicname + "' category.</font><br /><br />";
     qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you. Please also note that trying to move away from this tab/window during the course of the test will be reported.</u></font><br /><br />";
-    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
+    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
     // Make a check here to see if starttest
     clock();
     encodedemail = Base64.encode(targetemail);
@@ -1747,10 +1747,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	//alert(ruleflag);
 		testpagesstr = Base64.encode(JSON.stringify(pages));
 		if(ruleflag != 1){
-            pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+            pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
 		}
 		else{ // showatonce
-			pages[pagectr][0] += "<input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
 		}
 	challengestmt = challenge;
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");

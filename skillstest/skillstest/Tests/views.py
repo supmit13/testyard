@@ -5359,7 +5359,7 @@ def gettestschedule(request):
         pass
     if not status:
         message = "<font color='#AA0000'>" + error_msg('1162') + "</font>"
-        message += "<br /><font color='#0000AA'> If you think you are done with editing and ready to start scheduling this test, then you may first activate it. You may do so by clicking on the \"<i>Activate Now</i>\" link for this test at the far right hand side of the main screen."
+        message += "<br /><font color='#0000AA'> If you think you are done with editing and ready to start scheduling this test, then you must activate it first. You may do so by clicking on the \"<i>Activate Test Now</i>\" link for this test at the far right hand side of the main screen."
         response = HttpResponse(message)
         return response
     if curdatetime < publishdate or curdatetime < activationdate:
