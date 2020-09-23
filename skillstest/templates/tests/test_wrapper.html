@@ -1437,6 +1437,9 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
     for(var j=0; j <= randomlist.length - 1;j++){
 	elem = randomlist[j];
 	challengeentity = testpages[elem][2];
+        //alert(challengeentity);
+        //challengeentity = challengeentity.replace("\\n", "<br>")
+        //challengeentity = challengeentity.replace("\\r\\n", "<br>")
         maxtime = testpages[elem][1];
  	challengeresponsescreen = testpages[elem][0];
 	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
