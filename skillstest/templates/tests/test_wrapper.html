@@ -343,7 +343,7 @@ function sendtoserver(postdata){
     }
     qareadiv.innerHTML += "<hr>";
     qareadiv.innerHTML += "<br /><br /><b><font color='#0000AA'>Please note the following: </font></b><br />";
-    if(jsonobj.progenv != ""){
+    if(jsonobj.progenv != "" && jsonobj.progenv != null){
         qareadiv.innerHTML += "<font color='#0000AA'>You may be given a '" + jsonobj.progenv + "' programming environment while taking this test. You will need it to solve some of the challenges.</font><br />";
     }
     qareadiv.innerHTML += "<font color='#0000AA'>This test is intended for '" + skillquality + "' quality candidates.</font><br />";
