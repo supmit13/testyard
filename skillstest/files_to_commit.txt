@@ -3683,3 +3683,11 @@ Saturday, September 26, 2020, 20:29 HRS.
 
 ========================================
 
+Monday, September 28, 2020, 17:38 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+
+========================================
+

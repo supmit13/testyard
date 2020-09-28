@@ -2874,7 +2874,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
 			  <tr bgcolor='#f56e62'>
 			  {% else %}
-			  <tr bgcolor='#03fccf'>
+			  <tr>
 			  {% endif %}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
 			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
@@ -3067,7 +3067,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% for interviewtitle in interviewlist_asinterviewer %}  
 			    <tr>
   			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:1 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:2 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:3 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:4 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:5 }}</font></td>
@@ -3109,7 +3109,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% for interviewtitle in interviewlist_asinterviewee %}  
 			<tr>
   			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:1 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:2 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:3 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:4 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:5 }}</font></td>
