@@ -5978,6 +5978,8 @@ def createinterview(request):
         scheduledatetime = ''
     if not scheduledatetime:
         scheduledatetime = request.POST['interviewdatetime']
+    if request.POST['chkrightnow'] == '1':
+        scheduledatetime = datetime.datetime.now()
     if realtime: # Email invitation to all interviewees should be sent.
       emailinvitationtarget = request.POST['invitationemailaddr']
       #scheduledatetime = request.POST['scheduledatetime']
