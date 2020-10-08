@@ -3700,3 +3700,12 @@ Thursday, October 08, 2020, 01:47 HRS.
 
 ========================================
 
+Thursday, October 08, 2020, 19:57 HTS.
+---------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/create_interview_form.html
+4. git add files_to_commit.txt
+
+
+
