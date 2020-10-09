@@ -1031,6 +1031,8 @@ alter table Subscription_transaction add column txnid_stripe varchar(35);
 
 alter table Network_groupmember add column grppaidtxn_id int(8) default null, ADD FOREIGN KEY fk_grppaidtxn(grppaidtxn_id) REFERENCES Network_grouppaidtransactions(id) ON DELETE CASCADE;
 
+alter table Network_subscriptionearnings add column grppaidtxn_id int(8) default null, ADD FOREIGN KEY fk_grppaidtxn2(grppaidtxn_id) REFERENCES Network_grouppaidtransactions(id) ON DELETE CASCADE;
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1045,3 +1047,7 @@ COMMIT;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2012-09-01 13:17:22
+
+
+
+
