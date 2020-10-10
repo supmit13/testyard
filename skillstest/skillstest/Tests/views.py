@@ -5268,6 +5268,7 @@ def disqualifycandidate(request):
     TestYard Support<br />
     """%testobj.testname
     fromaddr = 'support@testyard.com'
+    #str(emailmessage).content_subtype = 'html'
     """
     try:
         retval = send_mail(emailsubject, emailmessage, fromaddr, [ emailid, ], False)
@@ -5534,6 +5535,7 @@ def setschedule(request):
             The TestYard Team.<br />
             """%(utobj.testurl)
             fromaddr = "testyardteam@testyard.com"
+            #str(emailmessage).content_subtype = 'html'
             retval = 0
             try:
                 retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
@@ -6064,6 +6066,7 @@ def createinterview(request):
     """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
+        #str(message).content_subtype = 'html'
         # Send email
         try:
             retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
@@ -6112,7 +6115,7 @@ def createinterview(request):
         if scheduledatetime_dt > currentdatetime:
             message = """Dear Candidate,
                      <br /><br />
-                     This is an invitation to attend an interview with %s on %s.  Please click on the 
+                     This is an invitation to attend an interview named '%s' with %s on %s.  Please click on the 
                      link below to load the interview interface. If it doesn't work, then copy
                      the link and paste it in your browser's address bar and hit <enter>.
                      <br /><br />
@@ -6124,9 +6127,10 @@ def createinterview(request):
                      Good Luck!
                      <br /><br />
                      The TestYard Interview Team.<br />
-    """%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
+    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
+            #str(message).content_subtype = 'html'
             # Send email
             try:
                 retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
@@ -6136,7 +6140,7 @@ def createinterview(request):
                     return HttpResponse(retmsg)
             # Now, send a similar email to the creator/conductor of the interview with the appropriate interview URL.
             message = """Dear Interviewer,
-        You have successfully set up an interview for %s at %s hours. You may click on the following link to access the interview application
+        You have successfully set up an interview titled '%s' for %s at %s hours. You may click on the following link to access the interview application
         that will assist you in conducting the interview at the aforementioned time.
 
         %s
@@ -6144,7 +6148,8 @@ def createinterview(request):
         Good Luck!
 
         The TestYard Team.
-        """%(emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl)
+        """%(interviewobj.title, emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl)
+            #str(message).content_subtype = 'html'
             subject = "Interview Scheduled"
             fromaddr = userobj.emailid
             toaddr = userobj.emailid
@@ -6157,6 +6162,7 @@ def createinterview(request):
             html = "The interview has been scheduled at %s hours, and the candidate has been informed about it by email."%scheduledatetime
             html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
             html += "<br />The interview link (above) has also been sent to your email address."
+            #str(html).content_subtype = 'html'
             return HttpResponse(html)
         else:
             pass
