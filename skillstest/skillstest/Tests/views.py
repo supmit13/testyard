@@ -3208,7 +3208,7 @@ def sendtestinvitations(request):
         if validtill == 'onwards':
             emailmessage += """ This test will remain valid from %s %s, """%(validfrom, validtill)
         else:
-            emailmessage += """ This test will remain valid from %s and %s, """%(validfrom, validtill)
+            emailmessage += """ This test will remain valid from %s till %s, """%(validfrom, validtill)
         emailmessage += """and hence you are kindly requested to take the test
         within that interval. You would be able to access the test by clicking
         on the following link: %s.
@@ -3895,19 +3895,19 @@ def evaluateresponses(request):
             outcome = "Fail"
         message = """
             Dear Candidate,
-
-            Your answer script for the test '%s' has been evaluated and the results are as follows:
-            Score: %s/%s (%s out of %s)
-            Outcome: %s
-            Pass Score: %s
-
+            <br /><br />
+            Your answer script for the test '%s' has been evaluated and the results are as follows:<br />
+            Score: %s/%s (%s out of %s)<br />
+            Outcome: %s<br />
+            Pass Score: %s<br />
+            <br />
             To be able to refer to the score permanently, we suggest you create an account on testyard. If
             you already have one, then you would be able to refer to the test's outcome in the 'Tests' tab.
-
+            <br /><br />
             Thank you for using TestYard as a test partner.
-
-            Regards,
-            TestYard Test Facilitation Team.
+            <br /><br />
+            Regards,<br />
+            TestYard Test Facilitation Team.<br />
         """%(utobj.test.testname, utobj.score, utobj.test.maxscore, utobj.score, utobj.test.maxscore, outcome, passscore)
         try:
             retval = send_mail(subject, message, fromaddr, [email,], False)
@@ -5259,13 +5259,13 @@ def disqualifycandidate(request):
     emailsubject = "Disqualification of your candidature from the test"
     emailmessage = """
     Dear candidate,
-
+    <br /><br />
     Your candidature for the test named '%s' has been disqualified. If you
     consider to be unjust, please feel free to talk to our support team. They
-    will help you sort the matter.
-
-    Thanks,
-    TestYard Support
+    will help you sort the matter.<br />
+    <br />
+    Thanks,<br />
+    TestYard Support<br />
     """%testobj.testname
     fromaddr = 'support@testyard.com'
     """
@@ -5514,24 +5514,24 @@ def setschedule(request):
             error_emails_list = []
             candidatename = "candidate"
             emailsubject = "A test has been scheduled for you on testyard"
-            emailmessage = """Dear %s,
+            emailmessage = """Dear %s,<br /><br />
 
-         A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+         A test with the name '%s' has been scheduled for you by <i>%s</i>. <br /><br />
              """%(candidatename, testobj.testname, userobj.displayname)
-            emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
+            emailmessage += """The test will start from %s and end at %s.<br />"""%(validfrom, validtill)
             emailmessage += """and hence you are kindly requested to take the test
             within that interval. You would be able to access the test by clicking
-            on the following link: %s.
+            on the following link: %s.<br /><br />
 
             If clicking on the above link doesn't work for you, please copy it and 
             paste it in your browser's address bar and hit enter. Do please feel
             free to let us know in case of any issues. We would do our best to
-            resolve it at the earliest.
+            resolve it at the earliest.<br /><br />
 
-            We wish you all the best for the test.
+            We wish you all the best for the test.<br /><br />
 
-            Regards,
-            The TestYard Team.
+            Regards,<br />
+            The TestYard Team.<br />
             """%(utobj.testurl)
             fromaddr = "testyardteam@testyard.com"
             retval = 0
@@ -5978,7 +5978,7 @@ def createinterview(request):
         scheduledatetime = ''
     if not scheduledatetime:
         scheduledatetime = request.POST['interviewdatetime']
-    if request.POST['chkrightnow'] == '1':
+    if request.POST.has_key('chkrightnow') and request.POST['chkrightnow'] == '1':
         scheduledatetime = datetime.datetime.now()
     if realtime: # Email invitation to all interviewees should be sent.
       emailinvitationtarget = request.POST['invitationemailaddr']
@@ -6047,19 +6047,19 @@ def createinterview(request):
     hashtoken = binascii.hexlify(os.urandom(16))
     if emailinvitationtarget: # Send an email invitation link to the email address.
         message = """Dear Candidate,
-                     
+                     <br /><br />
                      This is an invitation to attend an interview with %s on %s hours. Please click on the 
                      link below to load the interview interface. If it doesn't work, then copy
                      the link and paste it in your browser's address bar and hit <enter>.
-
+                     <br /><br />
                      %s/%s
-
+                     <br /><br />
                      Important Note: Please use Chrome, Firefox or Opera to attend the interview.
                      Browsers other than these 3 may not support every feature used by the inter-
-                     view application.
-
+                     view application.<br />
+                     <br />
                      Good Luck!
-
+                     <br />
                      The TestYard Interview Team.
     """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)
         subject = "TestYard Interview Invitation"
@@ -6111,19 +6111,19 @@ def createinterview(request):
         #if datetime.datetime.strptime(scheduledatetime_dt, "%Y-%m-%d %H:%M:%S") > currentdatetime:
         if scheduledatetime_dt > currentdatetime:
             message = """Dear Candidate,
-                     
+                     <br /><br />
                      This is an invitation to attend an interview with %s on %s.  Please click on the 
                      link below to load the interview interface. If it doesn't work, then copy
                      the link and paste it in your browser's address bar and hit <enter>.
-
+                     <br /><br />
                      %s
-
+                     <br /><br />
                      Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview.
                      Browsers other than these 3 may not support every feature used by the interview application.
-
+                     <br /><br />
                      Good Luck!
-
-                     The TestYard Interview Team.
+                     <br /><br />
+                     The TestYard Interview Team.<br />
     """%(userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
@@ -7256,23 +7256,23 @@ def mobile_setschedule(request):
         error_emails_list = []
         candidatename = "candidate"
         emailsubject = "A test has been scheduled for you on testyard"
-        emailmessage = """Dear %s,
+        emailmessage = """Dear %s,<br /><br />
 
-         A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+         A test with the name '%s' has been scheduled for you by <i>%s</i>. <br /><br />
              """%(candidatename, testobj.testname, userobj.displayname)
-        emailmessage += """The test will start from %s and end at %s."""%(validfrom, validtill)
+        emailmessage += """The test will start from %s and end at %s.<br />"""%(validfrom, validtill)
         emailmessage += """and hence you are kindly requested to take the test
             within that interval. You would be able to access the test by clicking
             on the following link: <a href='%s' target=_blank>%s</a>.
-
+            <br /><br />
             If clicking on the above link doesn't work for you, please copy it and 
             paste it in your browser's address bar and hit enter. Do please feel
             free to let us know in case of any issues. We would do our best to
             resolve it at the earliest.
-
+            <br /><br />
             We wish you all the best for the test.
-
-            Regards,
+            <br /><br />
+            Regards,<br />
             The TestYard Team.
             """%(utobj.testurl, utobj.testurl)
         fromaddr = "testyardteam@testyard.com"
