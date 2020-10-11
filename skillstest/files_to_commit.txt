@@ -3718,5 +3718,27 @@ Saturday, October 10, 2020, 02:11 HRS.
 
 ========================================
 
+Sunday, October 11, 2020, 19:30 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/create_interview_form.html
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+
+========================================
+
+Sunday, October 11, 2020, 19:30 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/create_interview_form.html
+3. git add templates/tests/tests.html
+4. git add templates/tests/audiovisual.html
+5. git add templates/tests/invitecandidatesform.html
+6. git add files_to_commit.txt
+
+========================================
+6. git add files_to_commit.txt
+
+========================================
 
 

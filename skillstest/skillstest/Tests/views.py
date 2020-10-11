@@ -6066,7 +6066,7 @@ def createinterview(request):
     """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
-        #str(message).content_subtype = 'html'
+        str(message).content_subtype = 'html'
         # Send email
         try:
             retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)

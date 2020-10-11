@@ -176,8 +176,8 @@ function start() {
 
   //signaling_server = new WebSocket("wss://54.201.126.160:8888");
   //signaling_server = new WebSocket("wss://122.161.84.190:8888"); // My system IP on the internet.
-  //signaling_server = new WebSocket("wss://192.168.1.4:8888");
-  signaling_server = new WebSocket("wss://testyard.in:8888");
+  signaling_server = new WebSocket("wss://192.168.1.4:8888");
+  //signaling_server = new WebSocket("wss://testyard.in:8888");
   if (document.location.hash === "" || document.location.hash === undefined || document.location.hash === "#/") { // you are the Caller
     var token = "{{hashtoken}}";
     call_token = "#"+token;
@@ -291,7 +291,6 @@ function caller_signal_handler(event) {
     // extend with your own signal types here
     alert(signal.type); 
   }
-
 }
 
 // handle signals as a callee

@@ -19,7 +19,9 @@
 	    tex2jax: {inlineMath: [["\[","\]"],["\\(","\\)"]]}
 	  });
 	</script>
-         
+         <!-- Datetime Picker for Start and End activities -->
+	<link rel="stylesheet" type="text/css" href="static/css/jquery.datetimepicker.css">
+
 
         <script>
 
@@ -236,6 +238,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    limitToToday : false
 		  });
 		}
+
 
 		// Javascript todo's:
 		// 1. evaluator groups drag and drop
@@ -1418,14 +1421,34 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 
+		function loaddateinvitescreen(testid){
+		  testidhash = "####TESTID####";
+		  repl = testidhash.replace(/####TESTID####/g, testid);
+		  r_frmstr = "validfrom" + repl;
+		  r_tostr = "validtill" + repl;
+		  new JsDatePick({
+		    useMode:2,
+		    target:r_frmstr,
+		    dateFormat:"%d-%M-%Y", 
+		    limitToToday : false
+		  });
+		  new JsDatePick({
+		    useMode:2,
+		    target:r_tostr,
+		    dateFormat:"%d-%M-%Y",
+		    limitToToday : false
+		  });
+		  }
+
 		function invitecandidates(testid){ // Only test creator can invite candidates. So the user will be the user object.
-		  // Form to be open in 'createtestdiv'
+		  // Form to be open in 'createtestdiv'		  
 		  var thediv = document.getElementById('invitationdiv' + testid);
 		  thediv.style.display = "";
 		  var divinnerhtml = "{% include 'tests/invitecandidatesform.html' %}";
 		  divinnerhtml = divinnerhtml.replace(/####TESTID####/g, testid);
 		  //alert(divinnerhtml);
 		  thediv.innerHTML = divinnerhtml;
+		  thediv.onfocus = loaddateinvitescreen(testid);
 		}
 
 
