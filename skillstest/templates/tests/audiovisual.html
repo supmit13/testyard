@@ -643,6 +643,12 @@ function saveAs(data){
   download.click();
 }
 
+function closewindow(){
+  var resp = confirm("Confirm window close operation");
+  if(resp){
+    window.close();
+  }
+}
 
 // The function below facilitates the upload of the image and the 
 // audio captured. The first argument is the content (either audio
@@ -793,6 +799,9 @@ html, body {
   <br /><hr><br />
   <div class="center">
     <img id="photo" style="display:none;"/>
+  </div>
+  <div class="center">
+    <input type='button' id="stopme" name= 'stopme' value='Stop Me' onclick="javascript:closewindow();" />
   </div>
   </form>
   </div>
