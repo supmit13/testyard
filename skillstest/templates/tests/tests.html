@@ -1991,7 +1991,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  }
 		  var newlinewspattern = new RegExp("[\\n\\s]+");
 		  var emailpattern = new RegExp("^\\s*\\w+[\.\\w\_]*\@[\\w\.\-\_]+\\s*$");
-		  var datepattern = new RegExp("\\d{2}\\-\\d{2}\\-\\d{4}(\s+\\d{2}\\:\\d{2}\\:\\d{2})?");
+		  var datepattern = new RegExp("\\d{4}\-\\d{2}\-\\d{2}(\s*\\d{2}\:\\d{2})?");
+		  var validfromfield = document.getElementById('validfrom' + testid.toString());
+		  //alert(validfromfield.value);
 		  if(newlinewspattern.test(emailsfield.value)){
 		    emailslist = "";
 		    emailvalues = emailsfield.value.split("\n");
@@ -2015,28 +2017,35 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var validtillfield = document.getElementById('validtill' + testid.toString());
 		  var validtillmonth = '';
 		  var defaultvalidtillvalue = '';
-		  if(validfromfield.value.trim() == "" || validfromfield.value == "dd-mm-yyyy hh:mm:ss"){ // user did not enter a value
+		  if(validfromfield.value.trim() == "" || validfromfield.value == "dd/mm/yyyy hh:mm:ss"){ // user did not enter a value
 		    var now = new Date();
 		    dateparts = now.toString().split(" ");
-		    validfromfieldstr = dateparts[2] + "-" + monthdict[dateparts[1]] + "-" + dateparts[3] + " " + dateparts[4];
+		    validfromfieldstr = dateparts[2] + "-" + monthdict[dateparts[1]] + "-" + dateparts[2] + " " + dateparts[4];
 		    validtillmonth = Number(monthdict[dateparts[1]]) + 3; // By default, a test will be valid till 3 months only.
 		    if(validtillmonth.toString().length < 2){
 		      validtillmonth = '0' + validtillmonth.toString();
 		    }
 		    validfromfield.value = validfromfieldstr;
-		    defaultvalidtillvalue = dateparts[2] + "-" + validtillmonth.toString() + "-" + dateparts[3] + " " + dateparts[4];
+		    defaultvalidtillvalue = dateparts[3] + "-" + validtillmonth.toString() + "-" + dateparts[2] + " " + dateparts[4];
 		  }
-		  
-		  if(validtillfield.value.trim() == "dd-mm-yyyy hh:mm:ss" || validtillfield.value.trim() == ""){
+		  //alert(validfromfield.value);
+		  validfromfieldvalue = validfromfield.value;
+		  validfromfieldvalues = validfromfieldvalue.split("T");
+		  validfromfieldvalue = validfromfieldvalues.join(" ");
+		  if(validtillfield.value.trim() == "dd/mm/yyyy hh:mm:ss" || validtillfield.value.trim() == ""){
 		    validtillfield.value = defaultvalidtillvalue;
 		  }
-		  if(!validfromfield.value.match(datepattern)){
+		  //alert(validfromfieldvalue);
+		  validtillfieldvalue = validtillfield.value;
+		  validtillfieldvalues = validtillfieldvalue.split("T", ' ')
+		  validtillfieldvalue = validtillfieldvalues.join(" ");
+		  if(!validfromfieldvalue.match(datepattern)){
 		    alert("The valid from field has inappropriate format. Please correct it and try again.");
 		    validfromfield.focus();
 		    return(false);
 		  }
 		  else{ // user has entered a value
-		    validfromstr = validfromfield.value;
+		    validfromstr = validfromfieldvalue;
 		    validfromparts = validfromstr.split(" ");
 		    if(validfromparts.length == 2){
 		      validfromdate = validfromparts[0];
@@ -2052,9 +2061,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      validfromfield.focus();
 		      return(false);
 		    }
-		    validfromdd = validfromdateparts[0];
+		    validfromdd = validfromdateparts[2];
 		    validfrommm = validfromdateparts[1];
-		    validfromyyyy = validfromdateparts[2];
+		    validfromyyyy = validfromdateparts[0];
 		    if(parseInt(validfrommm) > 12){
 		      alert("Incorrect Valid From field month value");
 		      validfromfield.focus();
@@ -2104,13 +2113,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      }
 		    }
 		  }
-		  if(validtillfield.value != "" && !datepattern.test(validtillfield.value)){
+		  if(validtillfieldvalue != "" && !datepattern.test(validtillfieldvalue)){
 		    alert("The valid till field has inappropriate format. Please correct it and try again.");
 		    validtillfield.focus();
 		    return(false);
 		  }
-		  if(validtillfield.value != "" && datepattern.test(validtillfield.value)){ // user has entered a value
-		    validtillstr = validtillfield.value;
+		  if(validtillfieldvalue != "" && datepattern.test(validtillfieldvalue)){ // user has entered a value
+		    validtillstr = validtillfieldvalue;
 		    validtillparts = validtillstr.split(" ");
 		    if(validtillparts.length == 2){
 		      validtilldate = validtillparts[0];
@@ -2126,9 +2135,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      validtillfield.focus();
 		      return(false);
 		    }
-		    validtilldd = validtilldateparts[0];
+		    validtilldd = validtilldateparts[2];
 		    validtillmm = validtilldateparts[1];
-		    validtillyyyy = validtilldateparts[2];
+		    validtillyyyy = validtilldateparts[0];
 		    if(parseInt(validtillmm) > 12){
 		      alert("Incorrect Valid Till field month value");
 		      validtillfield.focus();
@@ -2202,11 +2211,20 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  //alert(emailslist.value);
   	 	  validfrom = document.getElementById('validfrom' + testid.toString());
 		  validtill = document.getElementById('validtill' + testid.toString());
+		  validfromvalue = validfrom.value;
+		  validfromvalues = validfromvalue.split("T");
+		  validfromvalueparts = validfromvalues[0].split("-");
+		  validfromvalue = validfromvalueparts[2] + "-" + validfromvalueparts[1] + "-" + validfromvalueparts[0] + " " + validfromvalues[1];
+		  validtillvalue = validtill.value;
+		  validtillvalues = validtillvalue.split("T");
+		  validtillvalueparts = validtillvalues[0].split("-");
+		  validtillvalue = validtillvalueparts[2] + "-" + validtillvalueparts[1] + "-" + validtillvalueparts[0] + " " + validtillvalues[1];
    		  baseurl = document.getElementById('baseurl' + testid.toString());
   	 	  forcefreshurl = document.getElementById('forcefreshurl').value;
-		  postdata = postdata + "&csrfmiddlewaretoken=" + csrftoken.value + "&txtemailslist=" + emailslist.value + "&validfrom=" + validfrom.value + "&validtill=" + validtill.value + "&baseurl=" + baseurl.value + "&forcefreshurl=" + forcefreshurl;
+		  postdata = postdata + "&csrfmiddlewaretoken=" + csrftoken.value + "&txtemailslist=" + emailslist.value + "&validfrom=" + validfromvalue + "&validtill=" + validtillvalue + "&baseurl=" + baseurl.value + "&forcefreshurl=" + forcefreshurl;
 		  xmlhttp.onreadystatechange = function(){
 		    //alert(xmlhttp.responseText);
+		    //alert(postdata);
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      sendinvitestatusdiv.innerHTML = "";
 		      sendinvitestatusdiv.style = "display:none";
