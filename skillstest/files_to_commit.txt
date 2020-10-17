@@ -3760,3 +3760,12 @@ Wednesday, October 14, 2020, 18:01 HRS.
 2. git add templates/tests/tests.html
 3. git add files_to_commit.txt
 ========================================
+
+Sunday, October 18, 2020, 02:07 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/create_test_form.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+========================================
+

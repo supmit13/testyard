@@ -3077,12 +3077,12 @@ def sendtestinvitations(request):
         if validfromdateparts.__len__() == 3:
             validfromdate = validfromdateparts[2] + "-" + validfromdateparts[1] + "-" + validfromdateparts[0]
         else:
-            message = "Error: It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+            message = "Error: It seems there is some problem with your valid from date. The format of the date should be 'dd/mm/yyyy hh:mm'. Please rectify it and try again."
             response = HttpResponse(message)
             return response
         validfrom = validfromdate + " " + validfromtime
     else:
-        message = "Error: It seems there is some problem with your valid from date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+        message = "Error: It seems there is some problem with your valid from date. The format of the date should be 'dd/mm/yyyy hh:mm'. Please rectify it and try again."
         response = HttpResponse(message)
         return response
     validtill = ""
@@ -3098,12 +3098,12 @@ def sendtestinvitations(request):
             if validtilldateparts.__len__() == 3:
                 validtilldate = validtilldateparts[2] + "-" + validtilldateparts[1] + "-" + validtilldateparts[0]
             else:
-                message = "Error: It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+                message = "Error: It seems there is some problem with your valid till date. The format of the date should be 'dd/mm/yyyy hh:mm'. Please rectify it and try again."
                 response = HttpResponse(message)
                 return response
             validtill = validtilldate + " " + validtilltime
         else:
-            message = "Error: It seems there is some problem with your valid till date. The format of the date should be 'dd-mm-yyyy hh:mm:ss'. Please rectify it and try again."
+            message = "Error: It seems there is some problem with your valid till date. The format of the date should be 'dd/mm/yyyy hh:mm'. Please rectify it and try again."
             response = HttpResponse(message)
             return response
     else:
