@@ -94,6 +94,7 @@ function saveschedules(){
 	    waittag.innerHTML = "";
 	}
     };
+    //alert(postdata);
     xmlhttp.open("POST", '{{ settestscheduleurl }}', true);
     xmlhttp.send(postdata);
     waittag.style= "";

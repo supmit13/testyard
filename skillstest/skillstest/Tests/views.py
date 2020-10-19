@@ -3284,7 +3284,7 @@ def sendtestinvitations(request):
             message = sys.exc_info()[1].__str__()
             print message
     if failure:
-        message = "The emails could not be sent. Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"    
+        message = "The emails could not be sent. Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"
     response = HttpResponse(message)
     return(response)
 
@@ -5492,6 +5492,11 @@ def setschedule(request):
         testevalemailidlist.append(testevaluator.groupmember10.emailid)
     start_new = request.POST['start_new']
     end_new = request.POST['end_new']
+    start_new_dtobj = datetime.datetime.strptime(start_new, "%Y-%m-%d %H:%M:%S")
+    end_new_dtobj = datetime.datetime.strptime(end_new, "%Y-%m-%d %H:%M:%S")
+    if start_new_dtobj > end_new_dtobj:
+        message = "Your schedule start date/time is later than your schedule end date/time. Kindly rectify this error and try again"
+        return HttpResponse(message)
     if start_new and end_new:
         #duration = testobj.duration
         timeslot = start_new + "#||#" + end_new
