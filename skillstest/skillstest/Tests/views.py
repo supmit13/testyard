@@ -3067,6 +3067,10 @@ def sendtestinvitations(request):
         validfromdt = request.POST['validfrom']
     else:
         validfromdt = str(datetime.datetime.now())
+    validfromdtprts = validfromdt.split(".")
+    if validfromdtprts.__len__() >= 1:
+        validfromdt = validfromdtprts[0]
+    validfromdtobj = datetime.datetime.strptime(validfromdt, '%d-%m-%Y %H:%M:%S')
     validfromdatetimeparts = validfromdt.split(' ')
     message = ""
     if validfromdatetimeparts.__len__() == 1:
@@ -3088,6 +3092,10 @@ def sendtestinvitations(request):
     validtill = ""
     if request.POST.has_key('validtill') and request.POST['validtill'] != "":
         validtilldt = request.POST['validtill']
+        validtilldtprts = validtilldt.split(".")
+        if validtilldtprts.__len__() >= 1:
+            validtilldt = validtilldtprts[0]
+        validtilldtobj = datetime.datetime.strptime(validtilldt, '%d-%m-%Y %H:%M:%S')
         validtilldatetimeparts = validtilldt.split(' ')
         message = ""
         if validtilldatetimeparts.__len__() == 1:
@@ -3108,6 +3116,24 @@ def sendtestinvitations(request):
             return response
     else:
         validtill = "onwards"
+    currentdateobj = datetime.datetime.now()
+    try:
+        if currentdateobj > validfromdtobj:
+            message = "Your 'Valid From' date is prior to the current date/time. Please set it to the current date/time or some time in future"
+            response = HttpResponse(message)
+            return response
+        if currentdateobj > validtilldtobj:
+            message = "Your 'Valid Till' date is prior to the current date/time. Please set it to the current date/time or some time in future"
+            response = HttpResponse(message)
+            return response
+        if validfromdtobj > validtilldtobj:
+            message = "Your 'Valid From' date is later than the 'Valid Till' date/time. 'Valid Till' date/time should be later than 'Valid From' date/time. Please rectify this mistake and try again."
+            response = HttpResponse(message)
+            return response
+    except:
+        message = sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
     # Find the list of all evaluator's emails.
     testevaluator = testobj.evaluator
     testevalemailidlist = []

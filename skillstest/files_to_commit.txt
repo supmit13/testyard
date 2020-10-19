@@ -3776,3 +3776,12 @@ Monday, October 19, 2020, 00:33 HRS.
 3. git add files_to_commit.txt
 ========================================
 
+Monday, October 19, 2020, 12:47 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+========================================
+
+========================================
