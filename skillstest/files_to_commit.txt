@@ -3803,7 +3803,8 @@ Friday, October 30, 2020, 00:47 HRS.
 Friday, October 30, 2020, 00:47 HRS.
 ----------------------------------------
 1. git add templates/tests/invitecandidatesform.html
-2. git add files_to_commit.txt
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
 ========================================
 
 
