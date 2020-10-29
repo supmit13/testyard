@@ -34,9 +34,9 @@ from xlrd import open_workbook
 import csv, string
 import xml.etree.ElementTree as et
 from itertools import chain
-import rpy2
-import rpy2.robjects as robjects
-import rpy2.rinterface as ri
+#import rpy2
+#import rpy2.robjects as robjects
+#import rpy2.rinterface as ri
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege

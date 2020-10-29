@@ -5429,7 +5429,7 @@ def gettestschedule(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
-def setschedule(request):           
+def setschedule(request):
     message = ""
     if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')

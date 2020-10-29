@@ -3791,3 +3791,14 @@ Tuesday, October 20, 2020, 02:24 HRS.
 3. git add files_to_commit.txt
 ========================================
 
+Friday, October 30, 2020, 00:47 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/Analytics/views.py
+3. git add ../internet_code_sources.txt
+4. git add ../Steps_to_install_mysql_5.5.txt
+5. git add files_to_commit.txt
+========================================
+
+
+

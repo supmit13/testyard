@@ -1,1 +1,420 @@
 Basis of VMWare ESXi instance creation script: http://www.tamas.io/automatic-virtual-machine-creation-from-command-line-in-vmwares-esxi/
+
+https://en.wikibooks.org/wiki/LaTeX/Mathematics
+
+http://math.typeit.org
+
+https://www.coursera.org/learn/machine-learning
+
+https://www.datacamp.com/community/tutorials/tensorflow-tutorial
+
+
+MathJax Material
+-----------------
+https://www.mathjax.org/#gettingstarted
+http://docs.mathjax.org/en/latest/advanced/dynamic.html
+http://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm
+http://docs.mathjax.org/en/latest/tex.html
+
+Math Equations:
+---------------
+https://mike-ward.net/2015/11/29/markdown-edit-math-equations/
+https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference
+
+
+A Good Place to understand Learning Rate in the context of Gradient Descent Algorithm.
+--------------------------------------------------------------------------------------
+https://www.youtube.com/watch?v=4BZBog1Zx6c 
+https://towardsdatascience.com/understanding-learning-rates-and-how-it-improves-performance-in-deep-learning-d0d4059c1c10
+https://machinelearningmastery.com/gradient-descent-for-machine-learning/
+https://www.tutorialspoint.com/machine_learning_with_python/machine_learning_with_python_data_preprocessing_analysis_visualization.htm
+https://machinelearningmastery.com/machine-learning-in-python-step-by-step/
+https://data.library.virginia.edu/understanding-q-q-plots/
+https://www.itl.nist.gov/div898/handbook/eda/section3/eda33o.htm
+https://machinelearningmastery.com/statistics-for-machine-learning-mini-course/
+
+
+Latex to math symbol conversion:
+--------------------------------
+http://web.ift.uib.no/Teori/KURS/WRK/TeX/symALL.html
+https://en.wikipedia.org/wiki/List_of_mathematical_symbols
+https://www.overleaf.com/learn/latex/Mathematical_expressions
+https://www.overleaf.com/learn/latex/Integrals,_sums_and_limits
+https://www.overleaf.com/learn/latex/List_of_Greek_letters_and_math_symbols
+http://docs.mathjax.org/en/latest/advanced/dynamic.html
+https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference
+
+
+Hex to ASCII codes:
+--------------------
+https://www.rapidtables.com/convert/number/hex-to-ascii.html
+
+
+Numpy Courses:
+--------------
+https://docs.scipy.org/doc/numpy/user/quickstart.html (WIP)
+https://www.geeksforgeeks.org/numpy-in-python-set-1-introduction/ (Read all subsequent parts as well).
+http://cs231n.github.io/python-numpy-tutorial/
+https://docs.scipy.org/doc/numpy/reference/generated/numpy.ndarray.html
+http://scikit-image.org/docs/dev/user_guide/numpy_images.html
+http://scikit-image.org/docs/dev/user_guide/getting_started.html
+http://scikit-image.org/docs/dev/api/skimage.io.html
+
+
+NumPy for Images:
+-----------------
+https://scikit-image.org/docs/dev/user_guide/numpy_images.html
+
+
+Python Data Science:
+--------------------
+https://www.analyticsvidhya.com/blog/2015/09/build-predictive-model-10-minutes-python/
+https://pythonprogramminglanguage.com/training-and-test-data/
+https://machinelearningmastery.com/prepare-data-machine-learning-python-scikit-learn/
+https://medium.freecodecamp.org/a-beginners-guide-to-training-and-deploying-machine-learning-models-using-python-48a313502e5a
+https://www.digitalocean.com/community/tutorials/how-to-build-a-machine-learning-classifier-in-python-with-scikit-learn
+https://www.quantinsti.com/blog/machine-learning-classification-strategy-python
+https://www.analyticsvidhya.com/blog/2016/04/complete-tutorial-tree-based-modeling-scratch-in-python/
+https://pythonprogramminglanguage.com/bag-of-words/
+https://www.geeksforgeeks.org/graph-plotting-in-python-set-1/
+https://towardsdatascience.com/solving-a-simple-classification-problem-with-python-fruits-lovers-edition-d20ab6b071d2
+https://towardsdatascience.com/supervised-learning-with-python-cf2c1ae543c1
+https://pythonspot.com/category/nltk/
+
+https://scikit-image.org/docs/dev/user_guide
+
+https://github.com/MasazI/InceptionV3_TensorFlow
+
+Tensorflow Serving and Docker:
+-------------------------------
+1. Installation: https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-docker-ce-1
+2. Post-Installation: https://docs.docker.com/install/linux/linux-postinstall/#manage-docker-as-a-non-root-user
+
+
+LaTeX Online Parser:
+---------------------
+1. https://quicklatex.com
+
+Network Scanner Examples:
+-------------------------
+https://programtalk.com/python-examples/pcapy.open_live/
+https://github.com/O-Luhishi/Python-Packet-Sniffer/blob/master/Packet-Sniffer.py
+https://github.com/Geovation/wifispy
+https://thepacketgeek.com/intro-to-pyshark-for-programmatic-packet-analysis/#more-334
+https://medium.com/python-pandemonium/using-pyshark-in-python-to-create-promiscuous-sniffer-ddb5217f3d5
+
+Mongo DB and Redis Issues:
+--------------------------
+https://forums.theregister.co.uk/forum/all/2017/01/11/mongodb_ransomware_followup/
+https://www.incapsula.com/blog/report-75-of-open-redis-servers-are-infected.html
+https://www.mongodb.com/who-uses-mongodb
+
+MathJax Issues:
+---------------
+https://moodle.org/mod/forum/discuss.php?d=239658
+https://forum.vuejs.org/t/how-to-trigger-mathjax-processing-after-vue-adds-it-to-the-dom/1764
+https://github.com/mathjax/MathJax/issues/1634
+https://math.meta.stackexchange.com/questions/5020/mathjax-basic-tutorial-and-quick-reference
+
+Image File Type Identification:
+-------------------------------
+https://stackoverflow.com/questions/42036890/how-to-decode-jpg-png-in-python
+https://github.com/python/cpython/blob/2.7/Lib/imghdr.py
+https://pillow.readthedocs.io/en/latest/handbook/image-file-formats.html
+https://auth0.com/blog/image-processing-in-python-with-pillow/
+https://milq.github.io/install-opencv-ubuntu-debian/
+https://scikit-image.org/docs/dev/user_guide
+http://effbot.org/imagingbook/introduction.htm
+
+
+Python Script to Executable:
+----------------------------
+https://stackoverflow.com/questions/48063990/how-to-automate-django-app-exe-created-by-using-pyinstaller-and-innosetup
+
+
+Face Recognition Stuff Using TensorFlow:
+----------------------------------------
+https://github.com/AITTSMD/MTCNN-Tensorflow
+https://bzdww.com/article/179569/
+https://github.com/AITTSMD/MTCNN-Tensorflow/blob/master/test/one_image_test.py
+
+
+Manipulating javascript variables in Python Django Templates:
+-------------------------------------------------------------
+https://stackoverflow.com/questions/4386168/how-to-concatenate-strings-in-django-templates/23783666
+
+
+Graph Traversal:
+----------------
+https://stackoverflow.com/questions/29314795/python-igraph-get-all-possible-paths-in-a-directed-graph
+
+Graph Handling in Python:
+-------------------------
+https://igraph.org/python/doc/tutorial/tutorial.html
+https://wiki.python.org/moin/PythonGraphLibraries
+https://github.com/igraph/python-igraph/blob/master/igraph/clustering.py
+
+Linear Programming in Python:
+-----------------------------
+https://school.geekwall.in/p/rkT4D3EDN/linear-programming-in-python-a-straight-forward-tutorial
+
+
+WebRTC Discussions:
+-------------------
+http://webrtc-security.github.io
+
+
+Neural Networks and Data Science:
+---------------------------------
+https://towardsdatascience.com/how-does-a-face-detection-program-work-using-neural-networks-17896df8e6ff
+https://towardsdatascience.com/how-do-you-train-a-face-detection-model-a60330f15fd5
+
+
+
+coTURN Server:
+--------------
+https://webrtchacks.com/coturn/
+
+React JS:
+---------
+https://www.tutorialspoint.com/reactjs/reactjs_environment_setup.htm
+https://reactjs.org/tutorial/tutorial.html
+https://www.w3schools.com/whatis/whatis_react.asp
+https://www.codecademy.com/learn/react-101
+
+How to create statically and dynamically linked libraries:
+-----------------------------------------------------------
+https://renenyffenegger.ch/notes/development/languages/C-C-plus-plus/GCC/create-libraries/index
+
+
+Javascript String Replacement:
+------------------------------
+https://stackoverflow.com/questions/10474124/replacing-spaces-with-nbsp
+
+Port Scanner:
+-------------
+https://www.pythonforbeginners.com/code-snippets-source-code/port-scanner-in-python/
+
+Android Layouts:
+----------------
+https://developer.android.com/guide/topics/ui/layout/relative
+https://www.techotopia.com/index.php/Creating_an_Android_Tabbed_Interface_using_the_TabLayout_Component
+
+
+Analog and Digital Clocks for Android:
+--------------------------------------
+https://abhiandroid.com/ui/analogclock-digitalclock-textclock
+https://stackoverflow.com/questions/1957831/center-a-button-in-a-linear-layout
+
+Android Tabbed Layout and Material Design:
+------------------------------------------
+https://www.truiton.com/2015/06/android-tabs-example-fragments-viewpager/
+https://code.tutsplus.com/tutorials/create-a-material-design-tabbed-interface-in-an-android-app--cms-30120
+https://developer.android.com/guide/navigation/navigation-swipe-view#java
+https://www.techotopia.com/index.php/Creating_an_Android_Tabbed_Interface_using_the_TabLayout_Component
+
+Data Sources:
+-------------
+https://www.kaggle.com/datasets
+
+Cryptocurrency Data and APIs:
+--------------------
+https://www.investing.com/crypto/
+https://pro.coinmarketcap.com/account/
+
+
+Pandas:
+-------
+https://www.tutorialspoint.com/python_pandas/python_pandas_introduction.htm
+https://towardsdatascience.com/data-handling-using-pandas-machine-learning-in-real-life-be76a697418c
+https://www.edureka.co/blog/python-pandas-tutorial/
+https://www.dataquest.io/blog/pandas-python-tutorial/
+http://www.gregreda.com/2013/10/26/intro-to-pandas-data-structures/ [Good one]
+http://www.gregreda.com/2013/10/26/working-with-pandas-dataframes/ [Try to understand the groupby example]
+https://pandas.pydata.org/pandas-docs/stable/getting_started/tutorials.html
+For today's purpose:
+====================
+http://www.randalolson.com/2012/08/06/statistical-analysis-made-easy-in-python/
+http://conference.scipy.org/scipy2013/tutorial_detail.php?id=109
+https://towardsdatascience.com/data-handling-using-pandas-machine-learning-in-real-life-be76a697418c
+https://www.dataquest.io/blog/pandas-python-tutorial/
+Fixer Portal:
+-------------
+https://fixer.io/documentation
+
+How to Register a company/startup in India:
+-------------------------------------------
+https://www.indianweb2.com/2013/07/12/how-to-register-a-companystartup-in-india/
+
+
+PayUMoney Details Form:
+-----------------------
+https://onboarding.payumoney.com/app/onboarding
+https://merch-prod.snd.payu.com/cp/transactions?execution=e2s1&_token=772c6198-44c0-4b29-9c6e-10e003c5b921&menu=common
+http://developers.payu.com/en/restapi.html
+
+WePay OAuth Flow:
+-----------------
+https://www.wepay.com/developer/reference/create-wepay-account
+
+
+Python Mongo:
+-------------
+https://www.w3schools.com/cert/default.asp
+
+Python Scipy:
+-------------
+[For Today]
+https://docs.scipy.org/doc/scipy/reference/tutorial/
+https://www.tutorialspoint.com/scipy/
+https://www.datacamp.com/community/tutorials/python-scipy-tutorial
+https://scipy-lectures.org [Start with this]
+
+Data Analyses using Python:
+---------------------------
+[For Today]
+https://pythonprogramming.net/loading-images-python-opencv-tutorial/
+http://www.data-analysis-in-python.org
+http://wavedatalab.github.io/datawithpython/index.html
+https://pythonprogramming.net/introduction-python3-pandas-data-analysis/
+https://pythonprogramming.net/loading-images-python-opencv-tutorial/
+https://cognitiveclass.ai/courses/data-analysis-python/
+
+
+Pandas:
+-------
+https://www.learndatasci.com/tutorials/python-pandas-tutorial-complete-introduction-for-beginners/
+
+Android Video Call:
+-------------------
+https://www.agora.io/en/videocall-2/
+https://www.twilio.com/docs/video/android-getting-started
+
+LateX Cheatsheet:
+-----------------
+https://www.authorea.com/users/77723/articles/110898-how-to-write-mathematical-equations-expressions-and-symbols-with-latex-a-cheatsheet
+https://www.authorea.com/users/5713/articles/28015-how-to-write-latex-for-power-users
+https://www.authorea.com/users/3/articles/165181-latex-mathematics-examples
+
+
+https://www.patrick-wied.at/blog/image-protection-on-the-web
+https://www.rocketlawyer.com/document-checkout.rl?document=90701441&docID=90701441&template=95&templateId=95&templatetype=business&templatename=Non-Disclosure%20Agreement&esign=true&firstTime=trueUPDATE
+  mysql.user
+SET
+  Password = PASSWORD('YOURNEWPASSWORD')
+WHERE
+  User = 'root';
+FLUSH PRIVILEGES;
+exit;
+Note: o
+
+HTML Email Creation:
+---------------------
+https://blog.hubspot.com/marketing/html-email
+https://beefree.io/editor/?template=thank-you-for-subscribing
+
+Datetime picker Installation:
+-------------------------------
+https://www.jqueryscript.net/time-clock/Clean-jQuery-Date-Time-Picker-Plugin-datetimepicker.html
+
+Port Forwarding:
+----------------
+http://www3.truecorp.co.th/assets/files/files/Port_Forwarding_ZTE_F668_E.pdf
+
+Date Local:
+-----------
+https://www.w3schools.com/tags/tryit.asp?filename=tryhtml5_input_type_datetime-local
+http://jsfiddle.net/8tsCt/166/
+
+MySQL Related:
+--------------
+UPDATE
+  mysql.user
+SET
+  Password = PASSWORD('spmprx')
+WHERE
+  User = 'root';
+FLUSH PRIVILEGES;
+exit;
+
+https://stackoverflow.com/questions/16556497/mysql-how-to-reset-or-change-the-mysql-root-password
+
+Digital Ocean Creds:
+--------------------
+ssh supmit@157.245.105.140
+xtmt365Ij
+
+SCP Page:
+---------
+https://haydenjames.io/linux-securely-copy-files-using-scp/
+
+MySQL dump:
+-----------
+mysqldump -u root -d testyard -p >testyard.sql
+
+Get PIP:
+--------
+https://pip.pypa.io/en/stable/installing/
+
+Older Versions of R (To be used with TestYard):
+-----------------------------------------------
+https://cran.r-project.org/
+
+Install X11 dev packages:
+-------------------------
+https://unix.stackexchange.com/questions/215728/with-x-yes-default-and-x11-headers-libs-are-not-available
+https://github.com/Linuxbrew/legacy-linuxbrew/issues/242  -- apt-get install xorg-dev
+
+Finding Ubuntu version from command line:
+-----------------------------------------
+cat /etc/os-release
+lsb_release -a
+
+Had difficulty in installing R-3.4.4:
+-------------------------------------
+https://stackoverflow.com/questions/38690232/installing-r-on-linux-configure-error-libcurl-7-28-0-library-and-headers-a
+apt-get install libcurl4-openssl-dev
+Then download R-3.3.4 package from above mentioned link, untar it, cd to the resulting dir, and execute configure, make and make install.
+
+* make might throw an error pertaining to f95. Execute "make" like this: "make -j 1"
+There error has got to do with available memory to execute - needs atleast 8 GB available space.
+The above condition may or may NOT happen depending on the space you have on your system. If the space is sufficiently large, you possibly
+won't receive this error. However, in case your space is limited and somewhere around 4GB (primary storage), you might face this issue.
+**You have been warned.
+In order to avoid this issue, please refer to the following discussion:
+-----------------------------------------------------------------------
+https://stackoverflow.com/questions/30887143/make-j-8-g-internal-compiler-error-killed-program-cc1plus
+
+Process as discussed in the link above. Note - these commands need to be run as root user:
+------------------------------------------------------------------------------------------
+1. dd if=/dev/zero of=/swapfile bs=64M count=16
+2. mkswap /swapfile
+3. swapon /swapfile
+
+To Clean them after use, please do this positively (DO NOT FORGET):
+-------------------------------------------------------------------
+1. swapoff /swapfile
+2. rm /swapfile
+
+In order to install pycrypto, subprocess32 and a few other ones, you need to run the following:
+apt-get install python2.7-dev or python3.6-dev, as the case may be.
+
+If any error crops up during installation of PyAudio, please install portaudio19-dev as specified in the following page:
+https://stackoverflow.com/questions/48690984/portaudio-h-no-such-file-or-directory
+
+Mysql my_config.h source code:
+------------------------------
+https://dev.mysql.com/doc/dev/mysql-server/8.0.11/my__config_8h_source.html
+
+Installation of Pandas might fail after trying for a long time: One solution mentioned on SO is to pip install cython.
+
+Self Signed Certificate Creation using OpenSSL:
+-----------------------------------------------
+https://dzone.com/articles/create-a-self-signed-ssl-certificate-using-openssl
+
+MySQL Installation:
+--------------------
+https://gist.github.com/ahmadhasankhan/48fc9fc9a19807daef1622751a56884b
+
+
+
