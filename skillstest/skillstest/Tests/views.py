@@ -2648,6 +2648,7 @@ def showtestcandidatemode(request):
         challengesdict[statement]['oneormore'] = challenge.oneormore
         challengesdict[statement]['chid'] = challenge.id
         challengesdict[statement]['progenv'] = challenge.test.progenv
+        challengesdict[statement]['maxresponsesizeallowable'] = challenge.maxresponsesizeallowable
         if(challenge.test.progenv == "multi"):
             challengesdict[statement]['progenv'] = challenge.proglang
     testdict['challenges'] = challengesdict

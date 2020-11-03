@@ -1713,11 +1713,11 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             pages[pagectr][0] += "Please also refer <a href='" + jsonobj.challenges[challenge].additionalurl + "'>here</a> for some relevant information.<br />";
         }
         if(jsonobj.challenges[challenge].challengetype == 'SUBJ' || jsonobj.challenges[challenge].challengetype == 'ALGO'){
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><br /><br />";
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id='sa' style='display:block;'></span>";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
-            pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;'></textarea><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'><div id='output'></div><br /><br />";
+            pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'><div id='output'></div><br /><br />";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
             pages[pagectr][0] += "<b>Select from below:</b><br />";
@@ -1795,6 +1795,39 @@ function handletest(encjson){
     qareadiv.innerHTML += "<br /><center><input type='button' name='starttest' value='Start Test' onClick='javascript:starttest(\"" + encjson + "\");'>&nbsp;&nbsp;<input type='button' name='notnow' value='No, not now' onClick='javascript:closetest();'></center>";
 }
 
+
+function checkresponselength(e, id){
+    maxlimit = jsonobj.challenges[challenge].maxresponsesizeallowable;
+    k = e.keyCode;
+    idval = 'id_' + id;
+    challengeid = document.getElementById(idval);
+    if(k){ 
+      if(jsonobj.challenges[challenge].challengetype == 'CODN'){
+          cospan = document.getElementById('co');
+	  contents = challengeid.innerHTML;
+	  if(maxlimit > contents.length){
+              challengeid.innerHTML += String.fromCharCode(e.which);
+          }
+	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length);
+	  if(maxlimit < contents.length){
+	    cospan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
+            challengeid.onkeydown = e.preventDefault();
+          }
+      }
+      else if(jsonobj.challenges[challenge].challengetype == 'ALGO' || jsonobj.challenges[challenge].challengetype == 'SUBJ'){
+          saspan = document.getElementById('sa');
+          contents = challengeid.innerHTML;
+          if(maxlimit > contents.length){
+              challengeid.innerHTML += String.fromCharCode(e.which);
+          }
+	  saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length);
+	  if(maxlimit < contents.length){
+	    saspan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
+            challengeid.onkeydown = e.preventDefault();
+          }
+      }
+    }
+}
 
 
 function scrollclockhtml(){
