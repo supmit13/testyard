@@ -3824,3 +3824,12 @@ Sunday, November 01, 2020, 01:41 HRS.
 5. git add files_to_commit.txt
 ========================================
 
+Wednesday, November 04, 2020, 06:23 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/test_wrapper.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+========================================
+
