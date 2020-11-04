@@ -1810,7 +1810,12 @@ function checkresponselength(e, id, challenge){
           cospan = document.getElementById('co');
 	  contents = challengeid.innerHTML;
 	  if(maxlimit > contents.length){
-              challengeid.innerHTML += String.fromCharCode(e.which);
+	      if(k == 8 || k == 46){
+		challengeid.innerHTML += challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+	      }
+	      else{
+              	challengeid.innerHTML += String.fromCharCode(e.which);
+	      }
           }
 	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length);
 	  if(maxlimit < contents.length){
@@ -1822,7 +1827,12 @@ function checkresponselength(e, id, challenge){
           saspan = document.getElementById('sa');
           contents = challengeid.innerHTML;
           if(maxlimit > contents.length){
-              challengeid.innerHTML += String.fromCharCode(e.which);
+	      if(k == 8 || k == 46){
+		challengeid.innerHTML += challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+	      }
+	      else{
+                challengeid.innerHTML += String.fromCharCode(e.which);
+	      }
           }
 	  saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length);
 	  if(maxlimit < contents.length){
