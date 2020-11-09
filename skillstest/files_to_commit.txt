@@ -3833,11 +3833,24 @@ Wednesday, November 04, 2020, 06:23 HRS.
 5. git add files_to_commit.txt
 ========================================
 
-Monday, November 19, 2020, 16:01 HRS.
+Monday, November 09, 2020, 16:01 HRS.
 ----------------------------------------
 1. git add templates/tests/tests.html
 2. git add skillstest/Tests/views.py
 3. git add templates/tests/test_wrapper.html
 4. git add files_to_commit.txt
 ========================================
+
+Monday, November 09, 2020, 22:48 HRS.
+----------------------------------------
+1. git add static/css/jquery.datetimepicker.css
+2. git add static/css/font_awesome_min.css
+3. git add static/webaudiovisual/jquery-ui.min.js
+4. git add static/webaudiovisual/jquery.min.js
+5. git add static/MathJax/*
+6. git add ../Notes_for_DO_install.txt
+7. git add files_to_commit.txt
+========================================
+
+
 

@@ -1,0 +1,22 @@
+mysql-python installation - calling import MySQLdb error: this is MySQLdb version (1, 2, 5, 'final', 1), but _mysql is version (1, 4, 6, 'final', 0)
+
+To Fix it, do the following:
+pip uninstall mysqlclient
+pip install mysqlclient==1.4.1
+
+
+-------------------------------------------
+Steps to take after installing testyard on DO:
+----------------------------------------------
+cd /home/supriyo/work/testyard/testyard/skillstest/static/css
+scp jquery.datetimepicker.css root@157.245.105.140:/home/supmit/work/testyard/testyard/skillstest/static/css/
+scp font_awesome_min.css root@157.245.105.140:/home/supmit/work/testyard/testyard/skillstest/static/css/
+
+cd /home/supmit/work/testyard/testyard/skillstest/static/webaudiovisual
+scp jquery-ui.min.js root@157.245.105.140:/home/supmit/work/testyard/testyard/skillstest/static/webaudiovisual/
+scp jquery.min.js root@157.245.105.140:/home/supmit/work/testyard/testyard/skillstest/static/webaudiovisual/
+
+cd /home/supriyo/work/testyard/testyard/skillstest/static/MathJax
+scp -rp * root@157.245.105.140:/home/supmit/work/testyard/testyard/skillstest/static/MathJax/
+
+
