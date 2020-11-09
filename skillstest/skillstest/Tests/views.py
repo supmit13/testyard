@@ -1127,7 +1127,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
                 continue # A challenge cannot be composite
             else:
                 challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
-        challengetypeslist += "</select><br /><div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</font>(leave empty for no limit)</p></div>"
+        challengetypeslist += "</select><br /><div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> characters</font>(leave empty for no limit)</p></div>"
         edit_challenge_dict['challengetypeslist'] = challengetypeslist
     elif testtype == 'MULT' or testtype == 'FILB': # For 'CODN', 'ALGO' and 'SUBJ' type challenges, we need not provide any answering options.
         edit_challenge_dict['answeringoptions'] = "<p>"
@@ -1144,7 +1144,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     elif testtype == 'CODN' or testtype == 'ALGO': # For these testtypes user may want some constraints on the size of the response.
         edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </font>(leave empty for no limit.)</p>"
     elif testtype == 'SUBJ':
-        edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</font>(leave empty for no limit)</p>"
+        edit_challenge_dict['answeringoptions'] += "<font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> characters</font>(leave empty for no limit)</p>"
     lastchallengectr = int(lastchallengectr) + 1
     edit_challenge_dict['testlinkid'] = testlinkid
     edit_challenge_dict['test_id'] = testobj.id
@@ -2216,7 +2216,7 @@ def editchallenge(request):
                 challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
         challengetypeslist += "</select><br />"
         if challengeobj.challengetype == 'SUBJ':
-            challengetypeslist += "<div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> words</font><font color='#0000AA'>(leave empty for no limit)</font></p></div>"%(challenge_dict['maxsizeallowable'].__str__())
+            challengetypeslist += "<div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> characters</font><font color='#0000AA'>(leave empty for no limit)</font></p></div>"%(challenge_dict['maxsizeallowable'].__str__())
         elif challengeobj.challengetype == 'CODN' or challengeobj.challengetype == 'ALGO':
             challengetypeslist += "<div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6'> lines</font><font color='#0000AA'>(leave empty for no limit)</font></p></div>"%(challenge_dict['maxsizeallowable'].__str__())
         else:
@@ -2284,7 +2284,7 @@ def editchallenge(request):
         #challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p>"%(challenge_dict['maxsizeallowable'].__str__())
     elif challengeobj.challengetype == 'SUBJ':
         pass
-        #challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> words</b>(leave empty for no limit)</p>"%(challenge_dict['maxsizeallowable'].__str__())
+        #challenge_dict['answeringoptions'] += "<b>Answer should not exceed <input type='text' name='maxsizewords' value='%s' size='6' maxlength='6'> characters</b>(leave empty for no limit)</p>"%(challenge_dict['maxsizeallowable'].__str__())
     else:
         pass
     challenge_dict['evendistribution'] = evendistrib
