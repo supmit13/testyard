@@ -1757,27 +1757,51 @@ def editexistingtest(request):
     create_test_dict['grpname'] = testobj.evaluator
     evalobj = Evaluator.objects.filter(evalgroupname=testobj.evaluator)[0]
     create_test_dict['evaluators'] = ""
+    uniqueevaluators = {}
     if evalobj.groupmember1 and evalobj.groupmember1.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember1.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember1.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember1.emailid + ","
+            uniqueevaluators[evalobj.groupmember1.emailid] = 1
     if evalobj.groupmember2 and evalobj.groupmember2.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember2.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember2.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember2.emailid + ","
+            uniqueevaluators[evalobj.groupmember2.emailid] = 1
     if evalobj.groupmember3 and evalobj.groupmember3.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember3.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember3.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember3.emailid + ","
+            uniqueevaluators[evalobj.groupmember3.emailid] = 1
     if evalobj.groupmember4 and evalobj.groupmember4.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember4.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember4.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember4.emailid + ","
+            uniqueevaluators[evalobj.groupmember4.emailid] = 1
     if evalobj.groupmember5 and evalobj.groupmember5.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember5.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember5.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember5.emailid + ","
+            uniqueevaluators[evalobj.groupmember5.emailid] = 1
     if evalobj.groupmember6 and evalobj.groupmember6.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember6.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember6.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember6.emailid + ","
+            uniqueevaluators[evalobj.groupmember6.emailid] = 1
     if evalobj.groupmember7 and evalobj.groupmember7.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember7.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember7.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember7.emailid + ","
+            uniqueevaluators[evalobj.groupmember7.emailid] = 1
     if evalobj.groupmember8 and evalobj.groupmember8.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember8.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember8.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember8.emailid + ","
+            uniqueevaluators[evalobj.groupmember8.emailid] = 1
     if evalobj.groupmember9 and evalobj.groupmember9.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember9.emailid + ","
+        if not uniqueevaluators.has_key(evalobj.groupmember9.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember9.emailid + ","
+            uniqueevaluators[evalobj.groupmember9.emailid] = 1
     if evalobj.groupmember10 and evalobj.groupmember10.emailid != "":
-        create_test_dict['evaluators'] += evalobj.groupmember10.emailid + ","
-    create_test_dict['creatoremail'] = User.objects.filter(id=testobj.creator_id)[0].emailid + "," + create_test_dict['evaluators'] 
+        if not uniqueevaluators.has_key(evalobj.groupmember10.emailid):
+            create_test_dict['evaluators'] += evalobj.groupmember10.emailid + ","
+            uniqueevaluators[evalobj.groupmember10.emailid] = 1
+    if not uniqueevaluators.has_key(User.objects.filter(id=testobj.creator_id)[0].emailid):
+        create_test_dict['creatoremail'] = User.objects.filter(id=testobj.creator_id)[0].emailid + "," + create_test_dict['evaluators']
+    else:
+        create_test_dict['creatoremail'] = create_test_dict['evaluators']
     # The variable name 'creatoremail' (above) is very misleading, but since I 
     # had been using it since earlier and don't want to disturb the stable
     # code, I am continuing with its usage. Note that the 'creatoremail'
