@@ -1813,8 +1813,12 @@ function checkresponselength(e, id, challenge){
 	      if(k == 8 || k == 46){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
-	      else if((k >= 32 && k <= 126) || (k >= 160 && k <= 255)){
+	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255)){ // ELiminate up/down/left/right keys and non-printable characters
               	challengeid.innerHTML += String.fromCharCode(k)[0];
+	      }
+	      else if(k >= 17 && k <= 20){
+		challengeid.innerHTML += "";
+		challengeid.focus();
 	      }
           }
 	  contents = challengeid.innerHTML;
@@ -1831,8 +1835,12 @@ function checkresponselength(e, id, challenge){
 	      if(k == 8 || k == 46){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
-	      else if((k >= 32 && k <= 126) || (k >= 160 && k <= 255)){
+	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255)){// ELiminate up/down/left/right keys and non-printable characters
                 challengeid.innerHTML += String.fromCharCode(k)[0];
+	      }
+	      else if(k >= 17 && k <= 20){
+		challengeid.innerHTML += "";
+		challengeid.focus();
 	      }
           }
 	  contents = challengeid.innerHTML;
