@@ -1798,47 +1798,67 @@ function handletest(encjson){
 
 function checkresponselength(e, id, challenge){
     maxlimit = jsonobj.challenges[challenge].maxresponsesizeallowable;
-    k = e.keyCode;
+    k = e.which || e.keyCode;
     idval = 'id_' + id;
     challengeid = document.getElementById(idval);
     if(!maxlimit || maxlimit <= 0){ // an empty maxlimit or a maxlimit less than 0 means there is no limit as such. 
-	challengeid.innerHTML += String.fromCharCode(e.which);
+	challengeid.innerHTML += String.fromCharCode(k);
 	return(0);
     }
-    if(k){ 
+    if(k){
       if(jsonobj.challenges[challenge].challengetype == 'CODN'){
           cospan = document.getElementById('co');
 	  contents = challengeid.innerHTML;
 	  if(maxlimit > contents.length){
 	      if(k == 8 || k == 46){
-		challengeid.innerHTML += challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
-	      else{
-              	challengeid.innerHTML += String.fromCharCode(e.which);
+	      else if((k >= 32 && k <= 126) || (k >= 160 && k <= 255)){
+              	challengeid.innerHTML += String.fromCharCode(k)[0];
 	      }
           }
-	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length);
+	  contents = challengeid.innerHTML;
+	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed.</p>";
 	  if(maxlimit < contents.length){
 	    cospan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
             challengeid.onkeydown = e.preventDefault();
-          }
+          }	
       }
       else if(jsonobj.challenges[challenge].challengetype == 'ALGO' || jsonobj.challenges[challenge].challengetype == 'SUBJ'){
           saspan = document.getElementById('sa');
           contents = challengeid.innerHTML;
           if(maxlimit > contents.length){
 	      if(k == 8 || k == 46){
-		challengeid.innerHTML += challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
-	      else{
-                challengeid.innerHTML += String.fromCharCode(e.which);
+	      else if((k >= 32 && k <= 126) || (k >= 160 && k <= 255)){
+                challengeid.innerHTML += String.fromCharCode(k)[0];
 	      }
           }
-	  saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length);
-	  if(maxlimit < contents.length){
+	  contents = challengeid.innerHTML;
+	  saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed.</p>";
+	  if(maxlimit < contents.length &&  k >= 32){
 	    saspan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
             challengeid.onkeydown = e.preventDefault();
           }
+      }
+      if(contents.length == maxlimit){
+	saspan = document.getElementById('sa');
+	if(saspan){
+	    if(k == 8 || k == 46){
+		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+	    }
+	    contents = challengeid.innerHTML;
+	    saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed.</p>";
+	}
+	cospan = document.getElementById('co');
+	if(cospan){
+	    if(k == 8 || k == 46){
+		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+	    }
+	    contents = challengeid.innerHTML;
+	    cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed.</p>";
+	}
       }
     }
 }
