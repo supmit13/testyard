@@ -1796,11 +1796,22 @@ function handletest(encjson){
 }
 
 
+function getpastecontent(e, contentarea){
+    var clipbrddata, pastedcontent;
+    e.stopPropagation();
+    e.preventDefault();
+    clipbrddata = e.clipboardData || window.clipboardData;
+    pastedcontent = clipbrddata.getData('Text');
+    contentarea.innerHTML += pastedcontent;
+}
+
+
 function checkresponselength(e, id, challenge){
     maxlimit = jsonobj.challenges[challenge].maxresponsesizeallowable;
     k = e.which || e.keyCode;
     idval = 'id_' + id;
     challengeid = document.getElementById(idval);
+    //challengeid.addEventListener('paste', getpastecontent, challengeid);
     if(!maxlimit || maxlimit <= 0){ // an empty maxlimit or a maxlimit less than 0 means there is no limit as such. 
 	challengeid.innerHTML += String.fromCharCode(k);
 	return(0);
