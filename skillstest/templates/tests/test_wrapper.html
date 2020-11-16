@@ -1825,7 +1825,7 @@ function checkresponselength(e, id, challenge){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255)){ // ELiminate up/down/left/right keys and non-printable characters
-              	challengeid.innerHTML += String.fromCharCode(k)[0];
+              	challengeid.innerHTML += type(String.fromCharCode(k));
 	      }
 	      else if(k >= 17 && k <= 20){
 		challengeid.innerHTML += "";
@@ -1847,7 +1847,7 @@ function checkresponselength(e, id, challenge){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255)){// ELiminate up/down/left/right keys and non-printable characters
-                challengeid.innerHTML += String.fromCharCode(k)[0];
+                challengeid.innerHTML += type(String.fromCharCode(k));
 	      }
 	      else if(k >= 17 && k <= 20){
 		challengeid.innerHTML += "";
