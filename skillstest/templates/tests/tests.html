@@ -1380,6 +1380,27 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		    xmlhttp.send(postdata);
 		}
 
+                function popuplatexkbd(testid, challengeid){
+		    var latexdiv = document.getElementById('latexkeyboard');
+		    latexdiv.style.display = "";
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		          alert(xmlhttp.responseText);
+		          return (true);
+  		      }
+  		    };
+		    xmlhttp.open("POST", '{{ latexkbdurl }}', true);
+  		    xmlhttp.send(postdata);
+		}
 
 		// Decrypt a string encrypted with triple DES
 		function tripledesdecrypt(encstr){

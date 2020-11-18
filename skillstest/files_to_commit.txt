@@ -3871,5 +3871,12 @@ Monday, November 16, 2020, 23:24 HRS.
 2. git add files_to_commit.txt
 ========================================
 
+Tuesday, November 17, 2020, 03:59 HRS.
+----------------------------------------
+1. git add templates/tests/edit_challenge.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add skillstest/skills_settings.py
+4. git add files_to_commit.txt
 
 
