@@ -97,8 +97,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 #EMAIL_HOST_USER = 'codexaddict@gmail.com'
 EMAIL_HOST_USER = 'testyard.in@gmail.com'
-#EMAIL_HOST_PASSWORD = '*******************'
-EMAIL_HOST_PASSWORD = '****************'
+#EMAIL_HOST_PASSWORD = 'pmuxvshapykjoabk'
+EMAIL_HOST_PASSWORD = 'kyvuylcvwtwhyffm'
 EMAIL_USE_TLS = True
 
 MAILSENDER = "admin@testyard.in"
@@ -178,6 +178,7 @@ LINKEDIN_REDIRECT_URL = "skillstest/test/linkedin/"
 LINKEDINPOSTSESS_URL = "skillstest/test/linkedin/informserver/"
 WITHDRAWSCREEN_URL = "skillstest/subscription/withdrawscreen/"
 DOWITHDRAWAL_URL = "skillstest/subscriptions/dowithdrawal/"
+LATEX_KEYBOARD_URL = "skillstest/tests/latexkbd/"
 
 CREATE_NETWORK_GROUP_URL = "skillstest/network/group/create/"
 CHECK_GRPNAME_AVAIL_URL = "skillstest/network/group/checkavailability"
@@ -350,7 +351,7 @@ RULES_DICT = { \
         'noconsultextmat' : 'User may not consult online material on the subject of the test', \
         #'allowchallengenavigation' : 'Allow user to navigate between challenges', \
         #'windowalwaysontop' : 'The test window will be on top always. This will stop "cheats" from searching for answers on the internet while taking a test.', \ # This seems impossible to implement with all popular browsers.
-	'activatecameraduringtest' : 'Stream video of the test taker during the test. (Only for subscribed members)',\
+	'activatecameraduringtest' : 'Stream video of the test taker during the test.',\
         }
 
 ANSWER_LANG_DICT = { 'enus' : 'English - US', 'enuk' : 'English - UK', 'lat' : 'Latin', 'fr' : 'French', \
@@ -364,10 +365,10 @@ PAYMENT_PLATFORMS = {}
 
 # LinkedIn OAuth Details:
 APP_NAME = 'TestYard'
-OAUTH_API_KEY = '***************'
-OAUTH_SECRET_KEY = '*******************'
-OAUTH_USER_TOKEN = '***************************************'
-OAUTH_USER_SECRET = '***********************************'
+OAUTH_API_KEY = '78wxi7pqmstzbg'
+OAUTH_SECRET_KEY = 'fNRod3yXxOllBwJD'
+OAUTH_USER_TOKEN = '9f88127b-21fb-46fb-8235-e3fe8ca05e5b'
+OAUTH_USER_SECRET = '042a5b7c-2261-4979-b0c1-36ddfaec19b2'
 #REDIRECT_URI = "https://192.168.0.103/skillstest/test/linkedin/"
 REDIRECT_URI = "https://testyard.in/skillstest/test/linkedin/"
 TESTYARD_GROUP_ID = "testyard" # This is the Id of the TestYard group on LinkedIn.
@@ -381,10 +382,10 @@ MONTHS_DICT = {'JAN' : '01', 'FEB' : '02', 'MAR' : '03', 'APR' : '04', 'MAY' : '
 REV_MONTHS_DICT = {'01' : 'JAN', '02' : 'FEB', '03' : 'MAR', '04' : 'APR', '05' : 'MAY', '06' : 'JUN', '07' : 'JUL', '08' : 'AUG', '09' : 'SEP', '10' : 'OCT', '11' : 'NOV', '12' : 'DEC'}
 
 SEPARATOR_PATTERN = re.compile('#||#', re.MULTILINE|re.DOTALL)
-DES3_SECRET_KEY = '**************' # AES key must be either 16, 24, or 32 bytes long
+DES3_SECRET_KEY = 'fNRod3yXxOllBwJD' # AES key must be either 16, 24, or 32 bytes long
 
 # Bitly Details:
-BITLY_OAUTH_ACCESS_TOKEN = "*******************************"
+BITLY_OAUTH_ACCESS_TOKEN = "3e39f615e31db424691323ba1cfcbe759deade18"
 BITLY_LINK_API_ADDRESS = "https://api-ssl.bitly.com"
 
 LOG_PATH = "/home/supriyo/work/testyard/logs"
@@ -447,12 +448,12 @@ DEFAULT_PHONENO_PLACEHOLDER = 9999999999
 
 # Payment gateway settings
 # PayU settings
-#PAYU_POS_ID = *****
-PAYU_POS_ID = "**********"
-PAYU_CLIENT_SECRET = "****************************"
-#PAYU_SECOND_ID = '****************************'
-PAYU_SECOND_ID = '****************************'
-PAYU_POS_AUTH_KEY = "*******"
+#PAYU_POS_ID = 145227
+PAYU_POS_ID = "301085"
+PAYU_CLIENT_SECRET = "3ecfa97bab0c016f9f88070126fe7824"
+#PAYU_SECOND_ID = '13a980d4f851f3d9a1cfc792fb1f5e50'
+PAYU_SECOND_ID = '5e902285756f583856e8bf082a48163a'
+PAYU_POS_AUTH_KEY = "xqBWhKZ"
 PAYU_ORDER_CREATION_URL = "https://secure.snd.payu.com/api/v2_1/orders"
 PAYU_START_URL = "http://developers.payu.com/en/quick_start.html"
 
@@ -466,10 +467,10 @@ PAYU_DOMAIN = "secure.snd.payu.com"
 WEPAY_BASEURL = "https://wepayapi.com/v2/" # Production URL
 
 WEPAY_CLIENT_ID = "6963"
-#WEPAY_CLIENT_SECRET = "****************"
-WEPAY_CLIENT_SECRET = "*******************"
-WEPAY_ACCESS_TOKEN = "*********************************************"
-WEPAY_ACCOUNT_ID = "***************"
+#WEPAY_CLIENT_SECRET = "10614154f0"
+WEPAY_CLIENT_SECRET = "a9a44d89-d144-43"
+WEPAY_ACCESS_TOKEN = "PRODUCTION_37d66567da63db8b6b2e057e42f84154361a5e8ecbab89328c01aea26f80bf78"
+WEPAY_ACCOUNT_ID = "302873965"
 WEPAY_OAUTH2_URL = "https://www.wepay.com/v2/oauth2/authorize?client_id=6963&redirect_uri=https%3A%2F%2Ftestyard.in%2F&scope=manage_accounts%2Ccollect_payments%2Cview_user%2Csend_money%2Cpreapprove_payments%2Cmanage_subscriptions"
 WEPAY_USER_REGISTER_URL = WEPAY_BASEURL + "oauth2/authorize/"
 #WEPAY_OAUTH2_URI = "https://stage.wepayapi.com/v2/oauth2/token"
@@ -478,30 +479,30 @@ WEPAY_OAUTH2_URI = "https://wepayapi.com/v2/oauth2/token"
 WEPAY_ACCT_CREATE_URI = "https://wepayapi.com/v2/account/create"
 
 WEPAY_ACCOUNT_USERNAME = "testyard.in@gmail.com"
-WEPAY_ACCOUNT_PASSWORD = "***********"
+WEPAY_ACCOUNT_PASSWORD = "xtmt365i"
 
 RAZORPAY_USEREMAIL = "testyard.in@gmail.com"
-PAZORPAY_PASSWORD = "***********"
-RAZORPAY_KEY = "************************"
-RAZORPAY_SECRET = "****************************"
+PAZORPAY_PASSWORD = "xtmt365i"
+RAZORPAY_KEY = "rzp_test_PvNVCbisoqHTJi"
+RAZORPAY_SECRET = "0X6PA4Ob0R6TReCgxL6QjYQm"
 #RAZORPAY_BASEURI = "https://%s:%s@api.razorpay.com/v1"%(RAZORPAY_KEY, RAZORPAY_SECRET)
 RAZORPAY_BASEURI = "https://api.razorpay.com/v1"
 RAZORPAY_DASHBOARD = "https://dashboard.razorpay.com/#/app/dashboard"
 ADD_ACCOUNT_URL = "https://dashboard.razorpay.com/#/app/route/accounts"
-RAZORPAY_MERCHANT_ID = "******************"
+RAZORPAY_MERCHANT_ID = "D3yMBI0sr6jYbb"
 
 PAYPAL_SANDBOX_URL = "https://api.sandbox.paypal.com"
 PAYPAL_LIVE_URL = "https://api.paypal.com"
 
 PAYPAL_SANDBOX_ACCT = "supmit-facilitator@gmail.com"
-PAYPAL_SANDBOX_ACCESS_TOKEN = "**************************************"
+PAYPAL_SANDBOX_ACCESS_TOKEN = "access_token$sandbox$kn3fkcyv5r62c87w$fc0ccfd0fa73a2509f2914e6a6b11162"
 PAYPAL_SANDBOX_ACCESS_TOKEN_EXPIRY = "2027-06-02"
 PAYPAL_SANDBOX_ORDERS_URL = "https://api.sandbox.paypal.com/v1/payments/payment"
 PAYPAL_RETURN_URL = "http://www.paypal.com/return"
 PAYPAL_CANCEL_URL = "http://www.paypal.com/cancel"
 
-STRIPE_API_KEY="***********************************"
-STRIPE_API_SECRET="****************************************"
+STRIPE_API_KEY="pk_test_qDzQ9APBsG7uv2XKZR72hxd800QMqhZF4O"
+STRIPE_API_SECRET="sk_test_s6nneb2opNaycARoUZ3kbVNp00pNIMCLKo"
 
 SUPPORTED_CURRENCIES = ('INR', 'USD', 'EUR', 'PLN')
 DEFAULT_CURRENCY = 'PLN'
@@ -511,18 +512,18 @@ CUSTOMER_IP_ADDRESS = '192.168.0.103'
 
 # Easy API params:
 EASYAPI_USERNAME = 'supmit'
-EASYAPI_PASSWORD = '**********'
-EASYAPI_KEY = '**************************************'
+EASYAPI_PASSWORD = 'spmprx13'
+EASYAPI_KEY = 'cd1b91ddb08825277f2f72eda79015a1'
 EASYAPI_URL = 'https://xmlfeed.theeasyapi.com'
 
 # Fixer API Params:
 FIXERAPI_EMAILID = 'testyard.in@gmail.com'
-FIXERAPI_PASSWD = '**********'
-FIXERAPI_KEY = '*********************************8'
+FIXERAPI_PASSWD = 'spmprx13'
+FIXERAPI_KEY = 'd46a57aa57aa3d267f9edb663c44e3bd'
 FIXERAPI_URL = 'http://data.fixer.io/api/latest'
 
-GO_DADDY_CUST_NUM = **********
-GO_DADDY_PASSWD = "***********"
+GO_DADDY_CUST_NUM = 73165291
+GO_DADDY_PASSWD = "xtmt365I@"
 
 MAX_POSTS_IN_PAGE = 10
 
@@ -533,25 +534,25 @@ PROCESSED_SCRIPT_DUMP = "processed"
 
 ###### AMAZON AWS API INFO ######
 
-ACCESS_KEY_ID = "****************"
-SECRET_ACCESS_KEY = "***************************+"
+ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
+SECRET_ACCESS_KEY = "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"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "**********"
+AMAZON_ACCT_PASSWD = "spmprx13"
 
-AMAZON_ACCT_ID = "*****************"
+AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "*************"
+IAM_PASSWD = "spmprx13"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
 
 ########### REPL SETTINGS ############
 REPL_HOST = "api.repl.it"
-REPL_SECRET = "*****************"
+REPL_SECRET = "kwrwmse5en8a3l66"
 REPL_USERNAME = "supmit"
-REPL_PASSWORD = "****************"
+REPL_PASSWORD = "spmprx13"
 REPL_EMAIL = "codexaddict@gmail.com"
 ########## REPL SETTINGS END ##########
 
@@ -585,6 +586,6 @@ MAX_VM_INSTANCES_WIN = 5
 # Certificate generation command: openssl req -x509 -newkey rsa:2048 -keyout testyard.key -out testyard.crt -days 365
 
 TWILIO_EMAIL = "testyard.in@gmail.com"
-TWILIO_PASSWD = "***************"
-TWILIO_AUTH_TOKEN = "***************************************"
-TWILIO_ACCT_SID = "**********************************"
+TWILIO_PASSWD = "abracadabra123"
+TWILIO_AUTH_TOKEN = "42a0094fdd5a2d7fa20aec2fc8995fc3"
+TWILIO_ACCT_SID = "AC25841208dd33d29fb53c759add045ab5"
