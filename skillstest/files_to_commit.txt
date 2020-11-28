@@ -3873,6 +3873,7 @@ Monday, November 16, 2020, 23:24 HRS.
 
 Tuesday, November 17, 2020, 03:59 HRS.
 ----------------------------------------
+
 1. git add templates/tests/edit_challenge.html
 2. git add templates/tests/tests.html
 3. git add skillstest/Tests/views.py
@@ -3881,11 +3882,27 @@ Tuesday, November 17, 2020, 03:59 HRS.
 ========================================
 Friday, November 27, 2020, 20:48 HRS.
 ----------------------------------------
+
 1. git add templates/tests/edit_challenge.html
 2. git add templates/tests/tests.html
 3. git add skillstest/Tests/views.py
 4. git add skillstest/skills_settings.py
 5. git add files_to_commit.txt
 ========================================
+Friday, November 27, 2020, 23:18 HRS.
+----------------------------------------
 
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/invitecandidatesform.html
+3. git add templates/tests/tests.html
+4. git add templates/tests/create_test_form.html
+5. git add files_to_commit.txt
+========================================
+Saturday, November 28, 2020, 11:27 HRS.
+----------------------------------------
 
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/test_wrapper.html
+4. git add files_to_commit.txt
+========================================

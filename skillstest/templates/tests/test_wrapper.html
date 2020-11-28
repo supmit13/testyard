@@ -1717,7 +1717,12 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
-            pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'><div id='output'></div><br /><br />";
+	    if(jsonobj.challenges[challenge].proglang != ""){
+                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'><div id='output'></div><br /><br />";
+	    }
+	    else{
+		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><div id='output'></div><br /><br />";
+	    }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
             pages[pagectr][0] += "<b>Select from below:</b><br />";
@@ -1811,6 +1816,9 @@ function checkresponselength(e, id, challenge){
     k = e.which || e.keyCode;
     idval = 'id_' + id;
     challengeid = document.getElementById(idval);
+    if(k == 16 || k == 17 || k == 18 || k == 19 || k == 20 || k == 27){ // Handle the shift, ctrl, alt, caps lock, break and escape keys.
+	return ;
+    }
     //challengeid.addEventListener('paste', getpastecontent, challengeid);
     if(!maxlimit || maxlimit <= 0){ // an empty maxlimit or a maxlimit less than 0 means there is no limit as such. 
 	challengeid.innerHTML += String.fromCharCode(k);
@@ -1833,7 +1841,7 @@ function checkresponselength(e, id, challenge){
 	      }
           }
 	  contents = challengeid.innerHTML;
-	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed.</p>";
+	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the character count, though you would still be able to enter the maximum number of characters allowed.</p>";
 	  if(maxlimit < contents.length){
 	    cospan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
             challengeid.onkeydown = e.preventDefault();
