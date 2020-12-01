@@ -221,7 +221,7 @@ function testendscreen(testid, starttime, tabref, tabid){
         testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
     }
     else{
-        //testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnendtest' value='Save All Responses and End Test' onclick="javascript:endtest('{{testname}}', " + testid + ", '" + starttime + "', '" + tabref + "', '" + tabid + "');">&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
+        //testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnendtest' value='Save All Responses and End Test' onclick="javascript:endtest('{{testname}}', " + testid + ", '" + starttime + "', '" + tabref + "', '" + tabid + "');"><div id='saveendtest' style='display:none;'></div>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
     }
     // Enable F5
     $(document).off('keydown', disableF5);
@@ -241,8 +241,17 @@ function closetest(){
 
 
 function endtest(testname, testid, starttime, tabref, tabid){
-    resp = confirm("This will take you away from this page by closing the window. The test will be considered as completed by you. Do you want to continue?");
-    if(resp){
+    saveenddiv = document.getElementById('saveendtest');
+    saveenddiv.style.display = "";
+    saveenddiv.innerHTML = "This will take you away from this page by closing the window. The test will be considered as completed by you. Do you want to continue?"
+    saveenddiv.innerHTML += "<input type='button' name='btnyes' value='Yes' onClick='javascript:decide(1);'>&nbsp;&nbsp;<input type='button' name='btnno' value='No' onClick='javascript:decide(0);'>";
+}
+
+function decide(resp){
+    saveenddiv = document.getElementById('saveendtest');
+    saveenddiv.innerHTML = "";
+    saveenddiv.style.display = "none";
+    if(resp == '1'){
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
         //alert(testpages);
@@ -375,7 +384,7 @@ function sendtoserver(postdata){
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "<font color='#0000AA'>This test falls in the '" + topicname + "' category.</font><br /><br />";
     qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you. Please also note that trying to move away from this tab/window during the course of the test will be reported.</u></font><br /><br />";
-    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'></center><br/>";
+    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<br><br><hr><br><!-- <input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'><div id='saveendtest' style='display:none;'></div> --></center><br/>";
     // Make a check here to see if starttest
     clock();
     encodedemail = Base64.encode(targetemail);
@@ -1718,7 +1727,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
 	    if(jsonobj.challenges[challenge].proglang != ""){
-                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'><div id='output'></div><br /><br />";
+                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
 	    }
 	    else{
 		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><div id='output'></div><br /><br />";
@@ -1760,10 +1769,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	//alert(ruleflag);
 		testpagesstr = Base64.encode(JSON.stringify(pages));
 		if(ruleflag != 1){
-            pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+            pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<br><br><hr><br><!-- <input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'> -->";
 		}
 		else{ // showatonce
-			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'>";
+			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'><div id='saveendtest' style='display:none;'></div>";
 		}
 	challengestmt = challenge;
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");
@@ -1816,9 +1825,12 @@ function checkresponselength(e, id, challenge){
     k = e.which || e.keyCode;
     idval = 'id_' + id;
     challengeid = document.getElementById(idval);
-    if(k == 16 || k == 17 || k == 18 || k == 19 || k == 20 || k == 27){ // Handle the shift, ctrl, alt, caps lock, break and escape keys.
-	return ;
-    }
+    //alert(challengeid.innerHTML);
+    //if(k == 16 || k == 17 || k == 18 || k == 19 || k == 20 || k == 27){ // Handle the shift, ctrl, alt, caps lock, break and escape keys.
+    //	challengeid.innerHTML = challengeid.innerHTML - 0;
+    //	challengeid.focus();
+    //	return("");
+    //}
     //challengeid.addEventListener('paste', getpastecontent, challengeid);
     if(!maxlimit || maxlimit <= 0){ // an empty maxlimit or a maxlimit less than 0 means there is no limit as such. 
 	challengeid.innerHTML += String.fromCharCode(k);
@@ -1827,20 +1839,21 @@ function checkresponselength(e, id, challenge){
     if(k){
       if(jsonobj.challenges[challenge].challengetype == 'CODN'){
           cospan = document.getElementById('co');
-	  contents = challengeid.innerHTML;
+	  contents = challengeid.value;
 	  if(maxlimit > contents.length){
 	      if(k == 8 || k == 46){
-		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
+		challengeid.value = challengeid.value.substring(0,challengeid.value.length-1);
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255)){ // ELiminate up/down/left/right keys and non-printable characters
-              	challengeid.innerHTML += type(String.fromCharCode(k));
+              	//challengeid.innerHTML += type(String.fromCharCode(k));
+		challengeid.value += String.fromCharCode(k);
 	      }
 	      else if(k >= 17 && k <= 20){
-		challengeid.innerHTML += "";
+		challengeid.value += "";
 		challengeid.focus();
 	      }
           }
-	  contents = challengeid.innerHTML;
+	  contents = challengeid.value;
 	  cospan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the character count, though you would still be able to enter the maximum number of characters allowed.</p>";
 	  if(maxlimit < contents.length){
 	    cospan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
@@ -1854,8 +1867,9 @@ function checkresponselength(e, id, challenge){
 	      if(k == 8 || k == 46){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
-	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255)){// ELiminate up/down/left/right keys and non-printable characters
-                challengeid.innerHTML += type(String.fromCharCode(k));
+	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255) || k == 13){// ELiminate up/down/left/right keys and non-printable characters
+                //challengeid.innerHTML += type(String.fromCharCode(k));
+		challengeid.innerHTML += String.fromCharCode(k);
 	      }
 	      else if(k >= 17 && k <= 20){
 		challengeid.innerHTML += "";
