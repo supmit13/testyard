@@ -1862,15 +1862,20 @@ function checkresponselength(e, id, challenge){
       }
       else if(jsonobj.challenges[challenge].challengetype == 'ALGO' || jsonobj.challenges[challenge].challengetype == 'SUBJ'){
           saspan = document.getElementById('sa');
-          contents = challengeid.innerHTML;
+          contents = challengeid.value;
           if(maxlimit > contents.length){
 	      if(k == 8 || k == 46){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255) || k == 13){// ELiminate up/down/left/right keys and non-printable characters
-                //challengeid.innerHTML += type(String.fromCharCode(k));
-		challengeid.innerHTML += String.fromCharCode(k); // ***THIS CODE CAUSES AN EXTRA CHARACTER AT THE START OF THE RESPONSE***
-		// *** NEEDS TO BE FIXED AT ALL FUCKING COST. IT IS DRIVING ME NUTS AS I CAN'T FUGURE OUT WHY THIS IS HAPPENING ***
+		if(contents.length == 0){
+                    challengeid.innerHTML += type(String.fromCharCode(k));
+		    challengeid.focus();
+		}
+		else{
+		    challengeid.innerHTML += String.fromCharCode(k);
+		    challengeid.focus();
+		}
 	      }
 	      else if(k >= 17 && k <= 20){
 		challengeid.innerHTML += "";
