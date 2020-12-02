@@ -1858,7 +1858,7 @@ function checkresponselength(e, id, challenge){
 	  if(maxlimit < contents.length){
 	    cospan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
             challengeid.onkeydown = e.preventDefault();
-          }	
+          }
       }
       else if(jsonobj.challenges[challenge].challengetype == 'ALGO' || jsonobj.challenges[challenge].challengetype == 'SUBJ'){
           saspan = document.getElementById('sa');
@@ -1869,7 +1869,8 @@ function checkresponselength(e, id, challenge){
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255) || k == 13){// ELiminate up/down/left/right keys and non-printable characters
                 //challengeid.innerHTML += type(String.fromCharCode(k));
-		challengeid.innerHTML += String.fromCharCode(k);
+		challengeid.innerHTML += String.fromCharCode(k); // ***THIS CODE CAUSES AN EXTRA CHARACTER AT THE START OF THE RESPONSE***
+		// *** NEEDS TO BE FIXED AT ALL FUCKING COST. IT IS DRIVING ME NUTS AS I CAN'T FUGURE OUT WHY THIS IS HAPPENING ***
 	      }
 	      else if(k >= 17 && k <= 20){
 		challengeid.innerHTML += "";
