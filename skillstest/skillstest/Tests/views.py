@@ -1281,17 +1281,17 @@ def edit(request):
         challengeobj.mediafile = request.FILES['mediafile'].name
     #if request.POST.has_key('imagecreatedfile') and request.POST['imagecreatedfile'] != '':
     #    challengeobj.mediafile = request.POST['imagecreatedfile'] # An image drawn on canvas by the user overrides an image uploaded by the user.
-    challengeobj.maxresponsesizeallowable = -1
+    challengeobj.maxresponsesizeallowable = ""
     if request.POST.has_key('maxsizewords'):
         challengeobj.maxresponsesizeallowable = request.POST['maxsizewords']
         challengeobj.maxresponsesizeallowable = re.sub(re.compile(r"&#39;"), '', challengeobj.maxresponsesizeallowable)
         if challengeobj.maxresponsesizeallowable == "":
-            challengeobj.maxresponsesizeallowable = -1
+            challengeobj.maxresponsesizeallowable = mysettings.MAXRESPONSECHARCOUNT
     elif request.POST.has_key('maxsizelines'):
         challengeobj.maxresponsesizeallowable = request.POST['maxsizelines']
         challengeobj.maxresponsesizeallowable = re.sub(re.compile(r"&#39;"), '', challengeobj.maxresponsesizeallowable)
         if challengeobj.maxresponsesizeallowable == "":
-            challengeobj.maxresponsesizeallowable = -1
+            challengeobj.maxresponsesizeallowable = mysettings.MAXRESPONSECHARCOUNT
     if request.POST.has_key('oneormore'):
         oneormore = request.POST['oneormore']
     if request.POST.has_key('skillquality'):
@@ -2206,8 +2206,9 @@ def editchallenge(request):
     challenge_dict['mustrespond'] = challengeobj.mustrespond
     challenge_dict['challengedurationseconds'] = challengeobj.timeframe
     challenge_dict['maxsizeallowable'] = challengeobj.maxresponsesizeallowable
-    if challengeobj.maxresponsesizeallowable == -1: # no limit on response size
-        challenge_dict['maxsizeallowable'] = ''
+    if challengeobj.maxresponsesizeallowable == -1: # app limit on response size
+        challenge_dict['maxsizeallowable'] = mysettings.MAXRESPONSECHARCOUNT
+        challengeobj.maxresponsesizeallowable = mysettings.MAXRESPONSECHARCOUNT
     respkeys = challengeobj.responsekey
     challenge_dict['responsekey'] = []
     challenge_dict['options'] = [] # This will be populated in case of 'MULT' type
@@ -2677,7 +2678,10 @@ def showtestcandidatemode(request):
         challengesdict[statement]['chid'] = challenge.id
         challengesdict[statement]['progenv'] = challenge.test.progenv
         challengesdict[statement]['maxresponsesizeallowable'] = challenge.maxresponsesizeallowable
-        if(challenge.test.progenv == "multi"):
+        if challenge.maxresponsesizeallowable == "" or challenge.maxresponsesizeallowable == -1:
+            challengesdict[statement]['maxresponsesizeallowable'] = mysettings.MAXRESPONSECHARCOUNT
+            challenge.maxresponsesizeallowable = mysettings.MAXRESPONSECHARCOUNT
+        if challenge.test.progenv == "multi":
             challengesdict[statement]['progenv'] = challenge.proglang
     testdict['challenges'] = challengesdict
     jsonstr = json.dumps(testdict)
