@@ -1467,6 +1467,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  thediv.style.display = "";
 		  var divinnerhtml = "{% include 'tests/invitecandidatesform.html' %}";
 		  divinnerhtml = divinnerhtml.replace(/####TESTID####/g, testid);
+		  curdatetime = new Date();
+		  let d = curdatetime.setDate(curdatetime.getDate() + 1);
+	   	  isocurdatetime = new Date(d).toISOString();
+		  //alert(isocurdatetime);
+		  divinnerhtml = divinnerhtml.replace(/####CURDATETIME####/g, isocurdatetime);
 		  //alert(divinnerhtml);
 		  thediv.innerHTML = divinnerhtml;
 		  //thediv.onfocus = loaddateinvitescreen(testid);
