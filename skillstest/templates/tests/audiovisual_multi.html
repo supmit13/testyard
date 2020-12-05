@@ -109,6 +109,7 @@ var call_token; // unique token for this call
 var signaling_server; // signaling server for this call
 var peer_connection; // peer connection object
 var okstatus = false;
+i = 0;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -148,7 +149,7 @@ function start() {
     ]
   });
 
-  // generic handler that sends any ice candidates to the other peer
+  // generic handler that sends any ice candidates to the other peer for candidate
   peer_connection.onicecandidate = function (ice_event) {
     var token = "{{hashtoken}}";
     call_token = "#"+token;
@@ -163,9 +164,26 @@ function start() {
     }
   };
 
+  // generic handler to send ice candidates (interviewers) to other peers
+  {% for i in max_interviewers_count %}
+     peer_connection.onicecandidate = function (ice_event) {
+     var token = "{{ihashtoken}}";
+     call_token = "#"+token;
+     if (ice_event.candidate) {
+       signaling_server.send(
+        JSON.stringify({
+          token: call_token,
+          type: "new_ice_candidate",
+          candidate: ice_event.candidate ,
+        })
+      );
+     }
+   };
+  {% endfor %}
   // display remote video streams when they arrive using local <video> MediaElement
+  
   peer_connection.onaddstream = function (event) {
-    connect_stream_to_src(event.stream, document.getElementById("remote_video"));
+    connect_stream_to_src(event.stream, document.getElementById("remote_video" + i));
     // hide placeholder and show remote video
     //document.getElementById("loading_state").style.display = "none";
     //document.getElementById("open_call_state").style.display = "block";
@@ -176,8 +194,8 @@ function start() {
 
   //signaling_server = new WebSocket("wss://54.201.126.160:8888");
   //signaling_server = new WebSocket("wss://122.161.84.190:8888"); // My system IP on the internet.
-  signaling_server = new WebSocket("wss://192.168.1.10:8888");
-  //signaling_server = new WebSocket("wss://testyard.in:8888");
+  //signaling_server = new WebSocket("wss://192.168.1.10:8888");
+  signaling_server = new WebSocket("wss://testyard.in:8888");
   if (document.location.hash === "" || document.location.hash === undefined || document.location.hash === "#/") { // you are the Caller
     var token = "{{hashtoken}}";
     call_token = "#"+token;
@@ -186,7 +204,7 @@ function start() {
     signaling_server.onopen = function() {
       signaling_server.onmessage = caller_signal_handler;
       signaling_server.send(
-        JSON.stringify({
+        JSON.stringify({ 
           token:call_token,
           type:"join",
         })
@@ -284,7 +302,7 @@ function caller_signal_handler(event) {
       log_error
     );
     if (peer_connection.remoteDescription.type == "answer") {
-	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
+	  connect_stream_to_src(event.stream, document.getElementById("remote_video" + i));
     }
   } 
   else {
@@ -316,7 +334,7 @@ function callee_signal_handler(event) {
     // extend with your own signal types here
   }
 }
-
+i+= 1;
 </script>
 <!--
 <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
@@ -421,7 +439,7 @@ function startCapture(){
 function captureAudioPlusVideo(config) {
   //alert("In captureAudio+Video");
   captureUserMedia({video: true, audio: true}, function() {
-  remote_player = document.getElementById('remote_video');
+  remote_player = document.getElementById('remote_video1'); // Remote video1 is candidate's video
   audioVideoStream = remote_player.srcObject;
   remote_player.play();
   config.onMediaCaptured(audioVideoStream);
@@ -437,7 +455,7 @@ function captureAudioPlusVideo(config) {
 
 function captureAudio(config) {
   captureUserMedia({audio: true}, function() {
-    remote_player = document.getElementById('remote_video');
+    remote_player = document.getElementById('remote_video1');
     audioStream = remote_player.srcObject;
     remote_player.play();
     config.onMediaCaptured(audioStream);
@@ -643,12 +661,6 @@ function saveAs(data){
   download.click();
 }
 
-function closewindow(){
-  var resp = confirm("Confirm window close operation");
-  if(resp){
-    window.close();
-  }
-}
 
 // The function below facilitates the upload of the image and the 
 // audio captured. The first argument is the content (either audio
@@ -788,6 +800,13 @@ html, body {
   </div>
   <div id="open_call_state" class="center">
     <video id="remote_video"></video>
+    {% for i in max_interviewers_count %}
+	{% with y=i|stringformat:"i" %}
+        {% with rv_id="remote_video"|add:y %}
+    <video id="{{rv_id}}"></video>
+	{% endwith %}
+	{% endwith %}
+    {% endfor %}
     <video id="local_video" controls muted></video> 
   </div>
   <br />
@@ -799,9 +818,6 @@ html, body {
   <br /><hr><br />
   <div class="center">
     <img id="photo" style="display:none;"/>
-  </div>
-  <div class="center">
-    <input type='button' id="stopme" name= 'stopme' value='Stop Me' onclick="javascript:closewindow();" />
   </div>
   </form>
   </div>
