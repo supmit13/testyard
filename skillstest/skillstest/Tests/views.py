@@ -1310,6 +1310,7 @@ def edit(request):
             if not request.POST[controlname] or request.POST[controlname].strip() == "":
                 continue
             challengeobj.__dict__['option%s'%ctrlcounter] = smart_text(request.POST[controlname].strip(), encoding='utf-8')
+        challengeobj.maxresponsesizeallowable = -1
     # Store the responsekey if challengetype value is 'FILB' or 'MULT'
     # A note on the format used to store responsekey(s): For challengetype
     # value of 'FILB', the responsekey will be a single entry and will be
@@ -1330,6 +1331,8 @@ def edit(request):
             challengeobj.oneormore = True
             challengeobj.responsekey = smart_text('#||#'.join(responses), encoding='utf-8')
     # ... and finally save the challenge object.
+    if challengeobj.maxresponsesizeallowable == "":
+        challengeobj.maxresponsesizeallowable = -1
     challengeobj.save()
     savedchallengesqset = Challenge.objects.filter(test=testobj)
     savedchallengescount = savedchallengesqset.__len__()
@@ -2625,6 +2628,7 @@ def showtestcandidatemode(request):
         challengetype = challenge.challengetype
         maxresponsesizeallowable = challenge.maxresponsesizeallowable
         oftheabovePattern = re.compile("\s+of\s+the\s+above", re.IGNORECASE|re.DOTALL)
+        #noneabovePattern = re.compile("None\s+of\s+the\s+above", re.DOTALL|re.IGNORECASE)
         challengesdict[statement] = {'challengetype' : challengetype, 'maxresponsesizeallowable' : maxresponsesizeallowable}
         validoptionscount = 0
         if challengetype == 'MULT' or challengetype == 'FILB':
@@ -2653,6 +2657,7 @@ def showtestcandidatemode(request):
                 challengesdict[statement]['option8'] = challenge.option8
                 validoptionscount += 1
             log = Logger(mysettings.LOG_PATH + "/testyard.log")
+            opt1taken = False
             for opt in challengesdict[statement].keys():
                 optval = challengesdict[statement][opt]
                 if type(optval) != str and type(optval) != unicode:
@@ -2660,13 +2665,16 @@ def showtestcandidatemode(request):
                 log.logmessage(optval)
                 if oftheabovePattern.search(optval.encode('utf-8')):
                     tempval = challengesdict[statement][opt]
-                    #lastoption = 'option' + str(validoptionscount)
-                    lastoption = 'option1'
+                    if not opt1taken:
+                        #lastoption = 'option' + str(validoptionscount)
+                        lastoption = 'option1'
+                        opt1taken = True
+                    else:
+                        lastoption = 'option1'
                     challengesdict[statement][opt] = challengesdict[statement][lastoption]
                     challengesdict[statement][lastoption] = tempval
                 else:
                     pass
-            
         challengesdict[statement]['challengescore'] = challenge.challengescore
         challengesdict[statement]['negativescore'] = challenge.negativescore
         challengesdict[statement]['mustrespond'] = challenge.mustrespond

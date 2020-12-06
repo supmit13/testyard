@@ -389,7 +389,7 @@ function sendtoserver(postdata){
     clock();
     encodedemail = Base64.encode(targetemail);
     postdata = encodeURI("mode=7&starttest=1&starttime=" + starttime + "&testid=" + testid + "&useremail=" + encodedemail + "&tabref=" + tabref + "&tabid=" + tabid);
-    alert(postdata);
+    //alert(postdata);
     sendtoserver(postdata);
 }
 

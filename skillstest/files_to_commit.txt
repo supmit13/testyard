@@ -3933,8 +3933,16 @@ Saturday, December 05, 2020, 03:04 HRS.
 8. git add node_modules/signal_server.js
 9. git add templates/tests/audiovisual.html
 10.git add skillstest/tests/tests.html
-11.git add skillstest/audiovisual_multi.html
+11.git add templates/tests/audiovisual_multi.html
 6. git add files_to_commit.txt
 ========================================
+Saturday, December 05, 2020, 07:14 HRS.
+----------------------------------------
 
- 
+1. git add templates/tests/test_wrapper.html
+2. git add node_modules/signal_server.js
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/tests.html
+5. git add files_to_commit.txt
+========================================
+
