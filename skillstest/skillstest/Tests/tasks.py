@@ -144,6 +144,7 @@ def process_answer_scripts():
         testpages = json.loads(testpagesstr, strict=False)
         testendmessage = testpages.pop() # The last entity contains the test end message
         for challengeresp in testpages:
+            #print challengeresp[1], "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",challengeresp[2].decode("utf-8")
             testobj = Test.objects.get(id=testid)
             # First, create an UserResponse object
             userrespobj = UserResponse()
@@ -155,7 +156,8 @@ def process_answer_scripts():
             resp = challengeresp[0]
             #print "CHALLENGE RESPONSE: " + resp + "\n=================================\n"
             timereqd = challengeresp[1]
-            challengestatement = challengeresp[2]
+            challengestatement = challengeresp[2].encode("utf-8")
+            #print challengestatement, "+++++++++++++++++++++++++"
             try:
                 challengeobj = Challenge.objects.filter(test=testobj).filter(statement=challengestatement)[0]
             except:

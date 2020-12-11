@@ -1377,8 +1377,9 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    }
 	}
     }
+    document.getElementById('responsescreen').style.height = "auto";
     responsescreendiv = document.getElementById('responsescreen');
-    responsescreendiv.innerHTML = "";
+    //responsescreendiv.innerHTML = ""; // 
     testpages[elem][0] = testpages[elem][0].replace("value=''", "");
     //alert(testpages[elem][1]);
     textareapattern = new RegExp("textarea");
