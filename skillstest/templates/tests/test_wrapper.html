@@ -1157,6 +1157,8 @@ var myCodeMirror;
 function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     window.clearTimeout(mytime);
     challengeresponsescreen = Base64.decode(challengeresponsescreenencoded);
+    challengeresponseshort = challengeresponsescreen.slice(0, 25);
+    challengeresponsescreen = "<pre>" + challengeresponseshort + "</pre>";
     challengeendtime = new Date();
     challengeendtime = challengeendtime.getTime();
     timespentsecs = 0;
@@ -1450,10 +1452,10 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
         //challengeentity = challengeentity.replace(/[\n]+/g, "<br>");
         //challengeentity = challengeentity.replace(/[\r\n]+/g, "<br>");
         maxtime = testpages[elem][1];
- 	challengeresponsescreen = testpages[elem][0];
+ 	challengeresponsescreen = "<br>" + testpages[elem][0] + "</br>";
 	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
         if(j < randomlist.length - 1){
-	    html += "<tr><td width='5%' valign='top'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'>" + challengeentity + "</a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
+	    html += "<tr><td width='5%' valign='top'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><pre>" + challengeentity.substring(0, 30) + "...</pre></a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
         }
         //else{
         //    html += "<tr><td width='5%' valign='top'><font color='AA0000'>" + slno + "</font></td><td width='80%'><font color='AA0000'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><font color='AA0000'>Please click on this link once you have answered all your questions. If you do not click on this link in the end, some or all of your answers may not be saved on our system.</font></a></i></font></td><td width='15%'><font color='AA0000'><i>0</i></font></td></tr>";
@@ -1713,7 +1715,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengetext = challengetext.replace(" ", "&nbsp;");
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
 	//alert("getchallenges = " + challenge);
-        pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw'>" + challengetext + "</div></b><br />";
+        pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
         if(jsonobj.challenges[challenge].mediafile != null && jsonobj.challenges[challenge].mediafile != ''){
             var imgpath = "media/" + jsonobj.creator + "/tests/" + jsonobj.testid + "/" + jsonobj.challenges[challenge].mediafile;
             pages[pagectr][0] += "<img src='" + imgpath + "' height='200' width='300'><br />";

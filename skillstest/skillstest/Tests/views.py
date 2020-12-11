@@ -1214,6 +1214,7 @@ def edit(request):
         challengeobj.testlinkid = request.POST['testlinkid']
     if request.POST.has_key('statement'):
         challengeobj.statement = smart_text(request.POST['statement'], encoding='utf-8')
+        #challengeobj.statement = request.POST['statement']
     if request.POST.has_key('challengetype'):
         challengeobj.challengetype = request.POST['challengetype']
     else:
@@ -2069,7 +2070,7 @@ def showuserview(request):
     challenge_dict['challengeid'] = challengeid
     challengetype = challengeobj.challengetype
     challengemedia = challengeobj.mediafile
-    challenge_dict['challengestatement'] = challengeobj.statement
+    challenge_dict['challengestatement'] = challengeobj.statement.encode('utf-8')
     challenge_dict['challengetypedesc'] = ''
     if challengetype == 'MULT':
         challenge_dict['challengetypedesc'] = 'Multiple Choice'

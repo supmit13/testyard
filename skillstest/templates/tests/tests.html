@@ -643,7 +643,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.challengeform.csrfmiddlewaretoken.value;
 			}
 			catch(err3){
-			  postata = postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=";
+			  postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=";
 			}
 		      }
 		    }
@@ -664,7 +664,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			}
 		      }
 		      themaindiv.style = "";
-    		      themaindiv.innerHTML = xmlhttp.responseText;
+    		      themaindiv.innerHTML = "<pre>" + xmlhttp.responseText + "</pre>";
 		      return (true);
   		    }
   		  };
@@ -1342,7 +1342,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      resdiv = document.getElementById('maincontainer');
 		      resdiv.style = "";
-		      resdiv.innerHTML = xmlhttp.responseText;
+		      resdiv.innerHTML = "<pre>" + xmlhttp.responseText + "</pre>";
 		      return (true);
   		    }
   		  };
@@ -2252,8 +2252,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    //alert(xmlhttp.responseText);
 		    //alert(postdata);
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		      sendinvitestatusdiv.innerHTML = "";
-		      sendinvitestatusdiv.style = "display:none";
 		      errorpattern = new RegExp("Error:\\s*");
 		      successpattern = new RegExp("Success:\\s*");
 		      if(errorpattern.test(xmlhttp.responseText)){
@@ -2265,12 +2263,19 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		        alert("The candidates have been invited for the test " + testid.toString());
 			closedivbyid('invitationdiv' + testid.toString());
 			document.getElementById('btnsendinvite').disabled = false;
+			sendinvitestatusdiv.innerHTML = "";
+		        sendinvitestatusdiv.style = "display:none";
 		        return (true);
 		      }
 		      else{
 			alert(xmlhttp.responseText);
-			closedivbyid('invitationdiv' + testid.toString());
+			successpattern = new RegExp("Success!");
+			if(successpattern.test(xmlhttp.responseText)){
+			    closedivbyid('invitationdiv' + testid.toString());
+			}
 			document.getElementById('btnsendinvite').disabled = false;
+			sendinvitestatusdiv = document.getElementById('sendinvitestatus');
+			sendinvitestatusdiv.innerHTML = "";
 			return (true);
 		      }
   		    }
