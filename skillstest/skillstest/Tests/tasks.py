@@ -23,7 +23,10 @@ hex_to_ascii = {'%20' : ' ', '%21' : '!', '%22' : '"', '%23' : '#', '%24' : '$',
 	  '%77' : 'w', '%78' : 'x', '%79' : 'y', '%7A' : 'z', '%7B' : '{', '%7C' : '|' , '%7D' : '}', '%7E' : '~' }
 
 
-
+utf8_to_ascii = {'%E2%80%90' : '-', '%E2%80%97' : '_', '%E2%80%9C' : '"', '%E2%80%9D' : '"', '%E2%80%98' : "'", '%E2%80%99' : "'"}
+# More should be added later. Please note that we have not put the utf-8 characters, but we have replaced them using similar ascii
+# characters. This is because we intend to handle ASCII questionaires as of now. Later when we start supporting other languages,
+# we will replace them with real utf-8 characters and add more of them here.
 
 """
 This scans all tests and activates the ones whose publish and 
@@ -154,10 +157,11 @@ def process_answer_scripts():
             userrespobj.responsedatetime = starttime
             userrespobj.emailaddr = useremail
             resp = challengeresp[0]
-            #print "CHALLENGE RESPONSE: " + resp + "\n=================================\n"
             timereqd = challengeresp[1]
-            challengestatement = challengeresp[2].encode("utf-8")
-            #print challengestatement, "+++++++++++++++++++++++++"
+            challengestatement = challengeresp[2].decode("utf-8")
+            challengestatement = challengestatement.replace("%E2%80%9C", utf8_to_ascii["%E2%80%9C"])
+            challengestatement = challengestatement.replace("%E2%80%9D", utf8_to_ascii["%E2%80%9D"])
+            challengestatement = challengestatement.replace("%25", "%")
             try:
                 challengeobj = Challenge.objects.filter(test=testobj).filter(statement=challengestatement)[0]
             except:
