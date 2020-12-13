@@ -636,6 +636,24 @@ function number_found (random_number,number_array) {
     return (random_number);
 }
 
+function switchbutton(elem, rdbtnid){
+    rdbtn = document.getElementById(rdbtnid) ;
+    if(elem == "checkbox"){
+	if(rdbtn.checked == true || rdbtn.checked == 'checked'){
+	    //rdbtn.checked = false;
+	    rdbtn.checked = '';
+	}
+	else{
+	    //rdbtn.checked = true;
+	    rdbtn.checked = "checked";
+	}
+    }
+    if(elem == "radio"){
+	elem.checked = 'checked';
+    }
+
+}
+
 
 // Random list generation code ends here.
 // Code to impose chosen rules starts here:
@@ -1741,12 +1759,13 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             optionctr = 1;
             if(jsonobj.challenges[challenge].oneormore){
                 for (key in jsonobj.challenges[challenge]){
-                    if(optionpattern.test(key)){
+                    if(optionpattern.test(key)){		
                         checkboxvalue = jsonobj.challenges[challenge][key];
                         checkboxvalue = checkboxvalue.replace("'", "")
                         checkboxvalue = checkboxvalue.replace('"', '')
                         //alert(jsonobj.challenges[challenge][key]);
-                        pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        //pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onclick='javascript:switchbutton('checkbox',\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+			pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
@@ -1757,7 +1776,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                         radiobuttonvalue = jsonobj.challenges[challenge][key];
                         radiobuttonvalue = radiobuttonvalue.replace("'", "")
                         radiobuttonvalue = radiobuttonvalue.replace('"', '')
-                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "' onclick='javascript:switchbutton('radio', \"rdoption_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }

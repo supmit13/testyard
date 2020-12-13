@@ -3963,7 +3963,7 @@ Saturday, December 12, 2020, 11:54 HRS.
 4. git add templates/tests/test_wrapper.html
 5. git add files_to_commit.txt
 =========================================
-Saturday, December 12, 2020, 00:00 HRS.
+Sunday, December 13, 2020, 23:59 HRS.
 -----------------------------------------
 
 1. git add templates/tests/tests.html
