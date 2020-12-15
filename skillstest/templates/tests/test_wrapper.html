@@ -1734,6 +1734,9 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengetext = challengetext.replace(" ", "&nbsp;");
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
 	//alert("getchallenges = " + challenge);
+        challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&lt;$1&gt;")
+        //challengetext = challengetext.replace(/>/g, "&gt;");
+        //challengetext = challengetext.replace(/</g, "&lt;");
         pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
         if(jsonobj.challenges[challenge].mediafile != null && jsonobj.challenges[challenge].mediafile != ''){
             var imgpath = "media/" + jsonobj.creator + "/tests/" + jsonobj.testid + "/" + jsonobj.challenges[challenge].mediafile;
@@ -1800,6 +1803,9 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");
 	challengestmt = challengestmt.replace(/"/g, '&amp;quot;');
 	challengestmt = challengestmt.replace(/`/g, '&amp;grave;');
+        challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "&amp;lt;$1&gt;");
+        //challengestmt = challengestmt.replace(/</g, "&lt;");
+        //challengestmt = challengestmt.replace(/>/g, "&gt;");
 	//alert("getchallenges = " + challengestmt);
         pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challengestmt + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>{% csrf_token %}";
         pages[pagectr][0] += "</form>";
