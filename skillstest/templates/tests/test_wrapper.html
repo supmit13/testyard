@@ -1472,6 +1472,7 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
         //challengeentity = challengeentity.replace(/[\r\n]+/g, "<br>");
         maxtime = testpages[elem][1];
  	challengeresponsescreen = "<br>" + testpages[elem][0] + "</br>";
+	//alert(challengeresponsescreen);
 	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
         if(j < randomlist.length - 1){
 	    html += "<tr><td width='5%' valign='top'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><pre>" + challengeentity.substring(0, 30) + "...</pre></a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
@@ -1734,7 +1735,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengetext = challengetext.replace(" ", "&nbsp;");
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
 	//alert("getchallenges = " + challenge);
-        challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&lt;$1&gt;")
+        challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&amp;lt;\1&amp;gt;")
         //challengetext = challengetext.replace(/>/g, "&gt;");
         //challengetext = challengetext.replace(/</g, "&lt;");
         pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
@@ -1803,7 +1804,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");
 	challengestmt = challengestmt.replace(/"/g, '&amp;quot;');
 	challengestmt = challengestmt.replace(/`/g, '&amp;grave;');
-        challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "&amp;lt;$1&gt;");
+        challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "&amp;lt;\1&amp;gt;");
         //challengestmt = challengestmt.replace(/</g, "&lt;");
         //challengestmt = challengestmt.replace(/>/g, "&gt;");
 	//alert("getchallenges = " + challengestmt);
