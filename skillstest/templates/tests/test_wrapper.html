@@ -1192,6 +1192,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
  	curchallengeid = document.frmchallenge.challengeid.value;
 	if(curchallengetype == 'SUBJ' || curchallengetype == 'ALGO' || curchallengetype == 'CODN'){
 	    textval = document.getElementsByTagName('textarea')[0].value;
+
             if(curchallengetype == 'CODN'){
                 textval = myCodeMirror.getValue();
 	    }
@@ -1199,8 +1200,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    gth = new RegExp(">", 'g');
 	    lst = new RegExp("<", 'g');
             qt = new RegExp("'", 'g');
-	    textval = textval.replace(lst, "&amp;lt;");
-	    textval = textval.replace(gth, "&amp;gt;");
+	    textval = textval.replace(lst, "&amp;quot;"); // In c/c++ code we expect to find the header files in <...> format. We want to convert them to be placed inside double quotes so that the syntax doesn't mess with the HTML tags system, but it would still point to the correct header file.
+	    textval = textval.replace(gth, "&amp;quot;"); // Same logic here as above.
             textval = textval.replace(qt, "&amp;quot;");
 	    //alert(textval);
 	    txtareas = document.getElementsByTagName('textarea');
@@ -1352,8 +1353,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    textval = textval.replace('"', '__DOUBLEQUOTE__');
             grt = new RegExp(">", 'g');
 	    lst = new RegExp("<", 'g');
-	    textval = textval.replace(lst, "&amp;lt;");
-	    textval = textval.replace(grt, "&amp;gt;");
+	    textval = textval.replace(lst, "&amp;quot;");// In c/c++ code we expect to find the header files in <...> format. We want to convert them to be placed inside double quotes so that the syntax doesn't mess with the HTML tags system, but it would still point to the correct header file.
+	    textval = textval.replace(grt, "&amp;quot;");
 	    //alert(textval);
 	    for(j=0; j < testpages.length - 1; j++){
 		// Had a tough time figuring out this one.
@@ -1735,7 +1736,11 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengetext = challengetext.replace(" ", "&nbsp;");
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
 	//alert("getchallenges = " + challenge);
-        challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&amp;lt;\1&amp;gt;")
+        const headerregex = /<(\w+\.\w+)>/g;
+        lbmatch = headerregex.exec(challengetext);
+        if (lbmatch && lbmatch.length > 0){
+            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "\\<" + lbmatch[0] + "\\>") // for logic behind this, check above. Look for "&amp;quot;"
+        }
         //challengetext = challengetext.replace(/>/g, "&gt;");
         //challengetext = challengetext.replace(/</g, "&lt;");
         pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
@@ -1804,7 +1809,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");
 	challengestmt = challengestmt.replace(/"/g, '&amp;quot;');
 	challengestmt = challengestmt.replace(/`/g, '&amp;grave;');
-        challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "&amp;lt;\1&amp;gt;");
+        lbmatch = headerregex.exec(challengestmt);
+        if (lbmatch && lbmatch.length > 0){
+            challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "\\<" + lbmatch[0] + "\\>");
+        }
         //challengestmt = challengestmt.replace(/</g, "&lt;");
         //challengestmt = challengestmt.replace(/>/g, "&gt;");
 	//alert("getchallenges = " + challengestmt);
