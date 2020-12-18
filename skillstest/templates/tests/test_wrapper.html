@@ -218,7 +218,7 @@ function nomorechallenges(testname, testid, starttime, tabref, tabid){
 function testendscreen(testid, starttime, tabref, tabid){
     //alert(ruleselected);
     if(ruleselected != 0){
-        testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
+        testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br />Please close this window manually.</font></center></form>";
     }
     else{
         //testendhtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>Thats it! The test is over. The outcome of the test will be conveyed to you through e-mail.<br />You may now exit the window by closing it.</font><br /><input type='button' name='btnendtest' value='Save All Responses and End Test' onclick="javascript:endtest('{{testname}}', " + testid + ", '" + starttime + "', '" + tabref + "', '" + tabid + "');"><div id='saveendtest' style='display:none;'></div>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></font></center></form>";
@@ -1189,6 +1189,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	curchallengetype = document.frmchallenge.challengetype.value;
 	//alert(curchallengetype);
 	curchallengestatement = document.frmchallenge.challengestatement.value;
+	curchallengestatement = curchallengestatement.replace("__LT__", "<");
+        curchallengestatement = curchallengestatement.replace("__GT__", ">");
  	curchallengeid = document.frmchallenge.challengeid.value;
 	if(curchallengetype == 'SUBJ' || curchallengetype == 'ALGO' || curchallengetype == 'CODN'){
 	    textval = document.getElementsByTagName('textarea')[0].value;
@@ -1208,6 +1210,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
             //alert(txtareas.length);
 	    for(j=0; j < testpages.length - 1; j++){
 		challengestatement = testpages[j][2];
+                challengestatement = challengestatement.replace("__LT__", "<");
+                challengestatement = challengestatement.replace("__GT__", ">");
                 challengestatement = challengestatement.replace(/[\n]+/g, ""); // Do I need to put the '+' sign, since I am using the 'g' option already?
                 challengestatement = challengestatement.replace(/[\r\n]+/g, "");
                 curchallengestatement = curchallengestatement.replace(/[\n]+/g, "");
@@ -1736,10 +1740,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengetext = challengetext.replace(" ", "&nbsp;");
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
 	//alert("getchallenges = " + challenge);
-        const headerregex = /<(\w+\.\w+)>/g;
+        const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
         if (lbmatch && lbmatch.length > 0){
-            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "\\<" + lbmatch[0] + "\\>") // for logic behind this, check above. Look for "&amp;quot;"
+            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&amp;lt;" + lbmatch[0] + "&amp;gt;") // for logic behind this, check above. Look for "&amp;quot;"
         }
         //challengetext = challengetext.replace(/>/g, "&gt;");
         //challengetext = challengetext.replace(/</g, "&lt;");
@@ -1752,15 +1756,26 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             pages[pagectr][0] += "Please also refer <a href='" + jsonobj.challenges[challenge].additionalurl + "'>here</a> for some relevant information.<br />";
         }
         if(jsonobj.challenges[challenge].challengetype == 'SUBJ' || jsonobj.challenges[challenge].challengetype == 'ALGO'){
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id='sa' style='display:block;'></span>";
+            challengearg = challenge;
+            //challengearg = challengearg.replace("&amp;gt;", "__GT__");
+            //challengearg = challengearg.replace("&amp;lt;", "__LT__");
+            lbmatch = headerregex.exec(challengearg);
+            if (lbmatch && lbmatch.length > 0){
+                challengearg = challengearg.replace(/&amp;lt;(\w+\.\w+)&amp;gt;/g, "__LT__" + lbmatch[0] + "__GT__");
+                challengearg = challengearg.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[0] + "__GT__");
+            }
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id='sa' style='display:block;'></span>";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
+	    challengearg = challenge;
+            challengearg = challengearg.replace(">", "__GT__");
+            challengearg = challengearg.replace("<", "__LT__");
 	    if(jsonobj.challenges[challenge].proglang != ""){
-                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
+                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
 	    }
 	    else{
-		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challenge + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><div id='output'></div><br /><br />";
+		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><div id='output'></div><br /><br />";
 	    }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
@@ -1810,8 +1825,8 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengestmt = challengestmt.replace(/"/g, '&amp;quot;');
 	challengestmt = challengestmt.replace(/`/g, '&amp;grave;');
         lbmatch = headerregex.exec(challengestmt);
-        if (lbmatch && lbmatch.length > 0){
-            challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "\\<" + lbmatch[0] + "\\>");
+        if (lbmatch && lbmatch.length > 1){
+            challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__");
         }
         //challengestmt = challengestmt.replace(/</g, "&lt;");
         //challengestmt = challengestmt.replace(/>/g, "&gt;");
@@ -1858,6 +1873,8 @@ function getpastecontent(e, contentarea){
 
 
 function checkresponselength(e, id, challenge){
+    challenge = challenge.replace("__LT__", "<");
+    challenge = challenge.replace("__GT__", ">");
     maxlimit = jsonobj.challenges[challenge].maxresponsesizeallowable;
     k = e.which || e.keyCode;
     idval = 'id_' + id;
