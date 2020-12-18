@@ -1739,7 +1739,6 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         challengetext = challengetext.replace(/\s/g, "&nbsp;");
 	challengetext = challengetext.replace(" ", "&nbsp;");
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
-	//alert("getchallenges = " + challenge);
         const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
         if (lbmatch && lbmatch.length > 0){
