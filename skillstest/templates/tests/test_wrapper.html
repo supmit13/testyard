@@ -299,8 +299,9 @@ function stoptest(tabref, tabid){
     testtakerdiv.innerHTML = testendscreen('{{ testid }}', starttime, tabref, tabid);
     endtime = new Date();
     endtime = jsdatetomysqldatetime(String(endtime));
-    postdata = encodeURI("starttest=1&mode=2&starttime=" + starttime + "&endtime=" + endtime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}')) + "&status=2&tabref=" + tabref + "&tabid=" + tabid;
-    // alert(postdata);
+    q = "&testpages=" + Base64.encode(encodeURI(JSON.stringify(testpages)));
+    postdata = encodeURI("starttest=1&mode=2&starttime=" + starttime + "&endtime=" + endtime + "&testid={{ testid }}&useremail=" + Base64.encode('{{ targetemail }}')) + "&status=2&tabref=" + tabref + "&tabid=" + tabid + q;
+    alert(postdata);
     sendtoserver(postdata);
 }
 
@@ -320,6 +321,7 @@ function sendtoserver(postdata){
 	    // alert(message);
         }
     };
+    //alert(postdata);
     xmlhttp.open("POST", '{{ sendtestdataurl }}', true);
     xmlhttp.send(postdata);
 }
@@ -1741,8 +1743,8 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
         const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
-        if (lbmatch && lbmatch.length > 0){
-            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&amp;lt;" + lbmatch[0] + "&amp;gt;") // for logic behind this, check above. Look for "&amp;quot;"
+        if (lbmatch && lbmatch.length > 1){
+            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&amp;lt;" + lbmatch[1] + "&amp;gt;") // for logic behind this, check above. Look for "&amp;quot;"
         }
         //challengetext = challengetext.replace(/>/g, "&gt;");
         //challengetext = challengetext.replace(/</g, "&lt;");
@@ -1759,9 +1761,9 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             //challengearg = challengearg.replace("&amp;gt;", "__GT__");
             //challengearg = challengearg.replace("&amp;lt;", "__LT__");
             lbmatch = headerregex.exec(challengearg);
-            if (lbmatch && lbmatch.length > 0){
-                challengearg = challengearg.replace(/&amp;lt;(\w+\.\w+)&amp;gt;/g, "__LT__" + lbmatch[0] + "__GT__");
-                challengearg = challengearg.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[0] + "__GT__");
+            if (lbmatch && lbmatch.length > 1){
+                challengearg = challengearg.replace(/&amp;lt;(\w+\.\w+)&amp;gt;/g, "__LT__" + lbmatch[1] + "__GT__");
+                challengearg = challengearg.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__");
             }
             pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id='sa' style='display:block;'></span>";
         }
