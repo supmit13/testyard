@@ -712,6 +712,7 @@ function nextchallenge(index, randomlist, mytime, ruleflag, tabref, tabid){
 
 
 function disablechallenge(testpagesenc, curchallengestatement, challengetype, elem, ruleflag){
+    //alert(curchallengestatement);
     testpagesstr = Base64.decode(testpagesenc);
     testpages = JSON.parse(testpagesstr);
     //alert(challengetype);
@@ -812,11 +813,13 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 	}
     }
     testpages[elem][1] = 0; // Thats it, no more time left for this challenge.
-    alert("Your time is up for this challenge. You may not edit the response anymore.");
+    infodiv = document.getElementById("infomsg");
+    infodiv.innerHTML = "<p style='color:red;'>Your time is up for this challenge. You may not edit the response anymore.</p>";
+    //alert("Your time is up for this challenge. You may not edit the response anymore.");
     if(testpages[elem][1] <= 0 && ruleflag > 0){ //One by one mode is not eligible for this function
     	showchallengeresponsescreen(Base64.encode(testpages[elem][0]), elem);
     }
-    else if(ruleflag == 0){
+    if(ruleflag == 0){
         displaydisabledresponse1by1(elem);
     }
     testpagesstr = JSON.stringify(testpages);
@@ -1745,7 +1748,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         challengetext = challengetext.replace(/[\n]+/g, "<br>");
         challengetext = challengetext.replace(/\s/g, "&nbsp;");
 	challengetext = challengetext.replace(" ", "&nbsp;");
-        pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'>";
+        pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'><div id='infomsg'></div>";
         const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
         if (lbmatch && lbmatch.length > 1){
