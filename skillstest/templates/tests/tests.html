@@ -1679,7 +1679,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			}
 		        evalcomment = evalwin.document.getElementById('evalcomment_' + i).value;
 		        if(assessment > maxscore){
-		            alert("Assessment score cannot be greater than maximum score");
+		            evalwin.alert("Assessment score cannot be greater than maximum score");
 		            evalwin.document.getElementById('assessment_' + i).focus();
 		            return (0);
 		        }
