@@ -1785,7 +1785,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var separatorPattern = new RegExp("#||#");
 		    cctr = 1;
 		    for (challenge in candidateresponse){
-		        html += "<div id='challengestatement'><b><div id=\"mathexprcdusvwcndtch_" + cctr + "\">" + challenge + "</div></b></div>";
+		        html += "<div id='challengestatement'><b><div id=\"mathexprcdusvwcndtch_" + cctr + "\"><pre>" + challenge + "</pre></div></b></div>";
 			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
 			candidateresp = candidateresponse[challenge].answer;
 			if(separatorPattern.test(candidateresp)){
@@ -2234,6 +2234,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var processeddivid = 'invitationdiv' + testid.toString();
 		  csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0];
 		  emailslist = document.getElementById('txtemailslist' + testid.toString());
+		  listofemails = emailslist.value.split(",");
+		  // More than 20 emails per session is not allowed
+		  if(listofemails.length > 20){
+		      alert("More than 20 email Ids are not allowed per request");
+		      return(0);
+		  }
 		  //alert(emailslist.value);
   	 	  validfrom = document.getElementById('validfrom' + testid.toString());
 		  validtill = document.getElementById('validtill' + testid.toString());

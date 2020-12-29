@@ -32,8 +32,9 @@
 {% csrf_token %}
 		    
 		    {% cctr = 1 %}
+		    {% screen_deviation_count = 0  %}
 		    for (challenge in candidateresponse){
-		        <div id='challengestatement'><b><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}</div></b></div>
+		        <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}</div></pre></b></div>
 		        <input type='hidden' name='challengestatement_hidden' id='challengestatement_hidden' value='{{challenge}}'>
 			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
 			candidateresp = candidateresponse[challenge].answer;
@@ -44,7 +45,7 @@
 			}
 			candidaterespdecoded = decodeURIComponent(candidateresp);
 			-->
-			<br /><br /><b>Candidate's Response: </b><div id="mathexprcdusvwcndtresp_{{cctr}}">{{candidateresp}}</div>
+			<br /><br /><b>Candidate's Response: </b><pre><div id="mathexprcdusvwcndtresp_{{cctr}}">{{candidateresp}}</div></pre>
 			
 			<br /><br /><b>Max Score: </b>{{candidateresponse[challenge].maxscore}}
 
@@ -69,9 +70,10 @@
 			{% endif %}
 			<input type='hidden' name='challengeid_{{cctr}}' id='challengeid_{{cctr}}' value='{{candidateresponse[challenge].challengeid}}'>
 			<br /><br /><hr>
+			{%screen_deviation_count = candidateresponse[challenge].windowchangeattempts %}
 			{% cctr = cctr + 1 %}
 		    }
-		    
+		    <div style="font-color:'#0000CC';font-style:italic;">Candidate has deviated from the test screen {{screen_deviation_count}} times</div>
 		    <input type='hidden' name='maxcctr' id='maxcctr' value='{{cctr}}'>
 		    <!-- <textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />"; -->
 		    <textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>{{responsedata.evaltestcomment}}</textarea><br /><br />

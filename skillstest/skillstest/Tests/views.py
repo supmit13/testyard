@@ -21,6 +21,7 @@ from django.utils import timezone as utilstimezone
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 
+
 # Standard libraries...
 import os, sys, re, time, datetime, stat, gzip
 from datetime import timedelta
@@ -3090,6 +3091,9 @@ def sendtestinvitations(request):
     for email in emailslist:
         emailsdict[email] = 1
     emailslist = emailsdict.keys() # So now emailslist contains unique emails
+    if emailslist.__len__() > 20:
+        resp = HttpResponse("Error: More than 20 distinct emails are not permitted per request.")
+        return resp
     testobj = None
     try:
         testobj = Test.objects.filter(id=testid)[0]

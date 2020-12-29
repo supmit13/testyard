@@ -217,7 +217,7 @@ function nomorechallenges_old(testname, testid, starttime, tabref, tabid){
 function nomorechallenges(testname, testid, starttime, tabref, tabid){
     nomorehtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>The duration of the test has expired. Please close the window manually. Thank you for using TestYard as your skills testing service provider. We would like to see you use it in future.<div id='saveendtest' style='display:none;'></div></font></center></form>";
     return(nomorehtml);
-}_
+}
 
 
 function testendscreen(testid, starttime, tabref, tabid){
@@ -644,21 +644,50 @@ function number_found (random_number,number_array) {
 }
 
 function switchbutton(elem, rdbtnid){
+    //alert(rdbtnid);
     rdbtn = document.getElementById(rdbtnid) ;
-    if(elem == "checkbox"){
-	if(rdbtn.checked == true || rdbtn.checked == 'checked'){
-	    //rdbtn.checked = false;
-	    rdbtn.checked = '';
-	}
-	else{
-	    //rdbtn.checked = true;
-	    rdbtn.checked = "checked";
+    
+    //alert(rdbtn.checked + " " + rdbtnid);
+    //alert(elem);
+    //alert(rdbtn.checked);
+    if(elem == "radio" && (rdbtn.checked == "" || rdbtn.checked == false)){
+        if(elem == "radio"){
+            $('input[type=radio]').removeAttr("checked");
+        }
+	rdbtn.checked = true;
+        maxoptionscount = 20; //We do not allow for more than 20 options in a multiple choice question.
+	for(i=0; i < maxoptionscount; i++){
+	    if(!document.getElementById("rdoption_" + i)){
+		break;
+	    }
+	    else if("rdoption_" + i == rdbtnid){
+		rdbtn.checked = "checked";
+		//alert("rdoption_" + i + "  checked='" + rdbtn.checked + "'");
+		continue;
+	    }
+	    else{
+		optbtn = document.getElementById("rdoption_" + i);
+		optbtn.checked = false;
+		optbtn.checked = "";
+		//alert("rdoption_" + i + "  " + optbtn.checked);
+		optionbuttonpostchk = document.getElementById("rdoption_" + i);
+		//alert("rdoption_" + i + " is " + optionbuttonpostchk.checked);
+	    }
 	}
     }
-    if(elem == "radio"){
-	elem.checked = 'checked';
+    else if(elem == "radio" && rdbtn.checked == true){
+	//alert(rdbtn.checked + " in checked true");
+	//$('input[name=rdoption]').removeAttr("checked");
+	alloptions = document.getElementsByName('rdoption');
+        for(i=0;i < alloptions.length;i++){
+	    if(rdbtn.id == alloptions[i].id){
+		alloptions[i].checked = true;
+	    }
+	    else{
+	        alloptions[i].checked = false;
+	    }
+	}
     }
-
 }
 
 
@@ -1329,7 +1358,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		}
 	    }
 	    else if(radiobuttons.length > 0){
-		checkedpattern = new RegExp("checked='checked'");
+		checkedpattern = new RegExp(/checked="checked"/);
 		for(k=0;k < radiobuttons.length;k++){
 		    if(radiobuttons[k].checked == true){
 			radiobuttonvalue = radiobuttons[k].value;
@@ -1346,9 +1375,11 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 			    if(tpquestion == curquestion){
 				testpagesparts = testpages[j][0].split("value=");
 				testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+				//alert("testpages = " + testpages[j][0]);
 				for(var l=0; l < testpagesparts.length; l++){
 				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
-					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
+					//alert(radiobuttonvalue);
+					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked=\"checked\"");
 				    }
 				}
 				testpages[j][0] = testpagesparts.join("value=");
@@ -1482,7 +1513,6 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
     for(var j=0; j <= randomlist.length - 1;j++){
 	elem = randomlist[j];
 	challengeentity = testpages[elem][2];
-        //alert(challengeentity);
         //challengeentity = challengeentity.replace(/[\n]+/g, "<br>");
         //challengeentity = challengeentity.replace(/[\r\n]+/g, "<br>");
         maxtime = testpages[elem][1];
@@ -1752,7 +1782,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
         if (lbmatch && lbmatch.length > 1){
-            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "&amp;lt;" + lbmatch[1] + "&amp;gt;") // for logic behind this, check above. Look for "&amp;quot;"
+            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__") // for logic behind this, check above. Look for "&amp;quot;"
         }
         //challengetext = challengetext.replace(/>/g, "&gt;");
         //challengetext = challengetext.replace(/</g, "&lt;");
@@ -1773,7 +1803,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                 challengearg = challengearg.replace(/&amp;lt;(\w+\.\w+)&amp;gt;/g, "__LT__" + lbmatch[1] + "__GT__");
                 challengearg = challengearg.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__");
             }
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id='sa' style='display:block;'></span>";
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id=\"sa\" style=\"display:block;\"></span>";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
@@ -1784,7 +1814,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                 pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
 	    }
 	    else{
-		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><div id='output'></div><br /><br />";
+		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id=\"co\" style=\"display:block;\"></span><div id='output'></div><br /><br />";
 	    }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
@@ -1796,9 +1826,11 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                         checkboxvalue = jsonobj.challenges[challenge][key];
                         checkboxvalue = checkboxvalue.replace("'", "")
                         checkboxvalue = checkboxvalue.replace('"', '')
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
                         //alert(jsonobj.challenges[challenge][key]);
-                        //pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onclick='javascript:switchbutton('checkbox',\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
-			pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        //pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+			pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
@@ -1809,7 +1841,15 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                         radiobuttonvalue = jsonobj.challenges[challenge][key];
                         radiobuttonvalue = radiobuttonvalue.replace("'", "")
                         radiobuttonvalue = radiobuttonvalue.replace('"', '')
-                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "' onclick='javascript:switchbutton('radio', \"rdoption_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+			radiooptions = document.getElementsByName('rdoption');
+			for(j=1;j <= radiooptions.length;j++){
+			    radioelement = radiooptions[j];
+			    radiooptions[j].checked = '';
+			    radioelement.checked = false;
+			}
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
+                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "' onmousedown=\"javascript:switchbutton(\'radio\', \'rdoption_" + optionctr + "\');\">&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
@@ -1818,16 +1858,16 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
             pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;' value='Enter your answer here' onClick='javascript:this.value=\"\";'><br />";
         }
-        pages[pagectr][0] += "<br /><font size=-1>You may use the <a href='/static/mathkbd_response.html' target='_blank'>LaTeX keyboard</a> to answer the questions if you need to use special characters</font><br />";
+        pages[pagectr][0] += "<br /><font size=-1>You may use the <a href=\"/static/mathkbd_response.html\" target=\"_blank\">LaTeX keyboard</a> to answer the questions if you need to use special characters</font><br />";
         pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + " seconds</font><br />";
         pages[pagectr][0] += "<font size=-1>Score on this challenge: " + jsonobj.challenges[challenge].challengescore + "</font><br />";
 	//alert(ruleflag);
 		testpagesstr = Base64.encode(JSON.stringify(pages));
 		if(ruleflag != 1){
-            pages[pagectr][0] += "<input type='button' name='btnnextchallenge' id='btnnextchallenge' value='Next Challenge' onClick='javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'><div id='saveendtest' style='display:none;'></div>";
+            pages[pagectr][0] += "<input type=\"button\" name=\"btnnextchallenge\" id=\"btnnextchallenge\" value=\"Next Challenge\" onClick=\"javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");\">&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
 		}
 		else{ // showatonce
-			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", {{ testid }}, \"" + starttime + "\", \"" + jsonobj.tabtype + "\", \"" + jsonobj.tabid + "\");'><div id='saveendtest' style='display:none;'></div>";
+			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
 		}
 	challengestmt = challenge;
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");
@@ -1835,12 +1875,12 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	challengestmt = challengestmt.replace(/`/g, '&amp;grave;');
         lbmatch = headerregex.exec(challengestmt);
         if (lbmatch && lbmatch.length > 1){
-            challengestmt = challengestmt.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__");
+            challengestmt = challengestmt.replace(/\<(\w+\.\w+)\>/g, "__LT__" + lbmatch[1] + "__GT__");
         }
         //challengestmt = challengestmt.replace(/</g, "&lt;");
         //challengestmt = challengestmt.replace(/>/g, "&gt;");
 	//alert("getchallenges = " + challengestmt);
-        pages[pagectr][0] += "<input type='hidden' name='challengetype' id='challengetype' value='" + jsonobj.challenges[challenge].challengetype + "'><input type='hidden' name='oneormore' id='oneormore' value='" + jsonobj.challenges[challenge].oneormore + "'><input type='hidden' name='challengestatement' id='challengestatement' value='" + challengestmt + "'><input type='hidden' name='challengeid' id='challengeid' value='" + jsonobj.challenges[challenge].chid + "'><input type='hidden' name='testid' value='" + jsonobj.testid + "'><input type='hidden' name='useremail' id='useremail' value='" + Base64.encode(jsonobj.targetemail) + "'><input type='hidden' name='tabtype' value='" + jsonobj.tabtype + "'><input type='hidden' name='tabid' value='" + jsonobj.tabid + "'>{% csrf_token %}";
+        pages[pagectr][0] += "<input type=\"hidden\" name=\"challengetype\" id=\"challengetype\" value=\"" + jsonobj.challenges[challenge].challengetype + "\"><input type=\"hidden\" name=\"oneormore\" id=\"oneormore\" value=\"" + jsonobj.challenges[challenge].oneormore + "\"><input type=\"hidden\" name=\"challengestatement\" id=\"challengestatement\" value=\'" + challengestmt + "\'><input type=\"hidden\" name=\"challengeid\" id=\"challengeid\" value=\"" + jsonobj.challenges[challenge].chid + "\"><input type='hidden' name=\"testid\" value=\"" + jsonobj.testid + "\"><input type='hidden' name=\"useremail\" id=\"useremail\" value=\"" + Base64.encode(jsonobj.targetemail) + "\"><input type='hidden' name=\"tabtype\" value=\"" + jsonobj.tabtype + "\"><input type='hidden' name=\"tabid\" value=\"" + jsonobj.tabid + "\">{% csrf_token %}";
         pages[pagectr][0] += "</form>";
         //alert(challenge);
         pages[pagectr][1] = jsonobj.challenges[challenge].timeframe;
@@ -1882,8 +1922,8 @@ function getpastecontent(e, contentarea){
 
 
 function checkresponselength(e, id, challenge){
-    challenge = challenge.replace("__LT__", "<");
-    challenge = challenge.replace("__GT__", ">");
+    challenge = challenge.replace(/__LT__/g, "<");
+    challenge = challenge.replace(/__GT__/g, ">");
     maxlimit = jsonobj.challenges[challenge].maxresponsesizeallowable;
     k = e.which || e.keyCode;
     idval = 'id_' + id;
@@ -1899,6 +1939,7 @@ function checkresponselength(e, id, challenge){
 	challengeid.innerHTML += String.fromCharCode(k);
 	return(0);
     }
+    //alert(challengeid.innerHTML);
     if(k){
       if(jsonobj.challenges[challenge].challengetype == 'CODN'){
           cospan = document.getElementById('co');
@@ -1926,13 +1967,14 @@ function checkresponselength(e, id, challenge){
       else if(jsonobj.challenges[challenge].challengetype == 'ALGO' || jsonobj.challenges[challenge].challengetype == 'SUBJ'){
           saspan = document.getElementById('sa');
           contents = challengeid.value;
+	  //alert(contents);
           if(maxlimit > contents.length){
 	      if(k == 8 || k == 46){
 		challengeid.innerHTML = challengeid.innerHTML.substring(0,challengeid.innerHTML.length-1);
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255) || k == 13){// ELiminate up/down/left/right keys and non-printable characters
 		if(contents.length == 0){
-                    challengeid.innerHTML += type(String.fromCharCode(k));
+                    challengeid.innerHTML += typeof(String.fromCharCode(k));
 		    challengeid.focus();
 		}
 		else{
@@ -1946,7 +1988,7 @@ function checkresponselength(e, id, challenge){
 	      }
           }
 	  contents = challengeid.innerHTML;
-	  saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed.</p>";
+	  saspan.innerHTML = "Number of characters remaining: " + (maxlimit - contents.length) + "<p style='color:red;font-style:italic;'> You are supposed to type in the answer. Trying to paste content from another source will corrupt the count, though you would be able to enter the maximum number of characters allowed for the answer to this challenge/Question.</p>";
 	  if(maxlimit < contents.length &&  k >= 32){
 	    saspan.innerHTML = "The max word limit is " + maxlimit + ". You have exhausted it";
             challengeid.onkeydown = e.preventDefault();

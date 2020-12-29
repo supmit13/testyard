@@ -4017,3 +4017,13 @@ Sunday, December 20, 2020, 14:30 HRS.
 2. git add templates/tests/tests.html
 3. git add files_to_commit.txt
 ==========================================
+Monday, December 24, 2020, 04:00 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/evaluate_responses.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+==========================================
+
