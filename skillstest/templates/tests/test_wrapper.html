@@ -257,6 +257,13 @@ function decide(resp){
     saveenddiv.innerHTML = "";
     saveenddiv.style.display = "none";
     if(resp == '1'){
+	countchallenges = testpages.length;
+        randomlist = Array(countchallenges);
+        elem = 0;
+        challengeresponsescreen = "<br>" + testpages[elem][0] + "</br>";
+	//alert(challengeresponsescreen);
+	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
+        showchallengeresponsescreen(challengeresponsescreenencoded, elem);
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
         //alert(testpages);
@@ -1527,6 +1534,8 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
         //}
 	slno++;
     }
+    elem = randomlist[randomlist.length - 1];
+    //html += "<tr><td colspan='3'><a href='#/' onclick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", \"" + elem + "\", 1); '>Click here before terminating the test</a></td></tr>";
     html += "</table>";
     html += "<br /><hr><br />";
     html += "<div id='responsescreen'></div>";
