@@ -252,6 +252,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
     saveenddiv.innerHTML += "<input type='button' name='btnyes' value='Yes' onClick='javascript:decide(1);'>&nbsp;&nbsp;<input type='button' name='btnno' value='No' onClick='javascript:decide(0);'>";
 }
 
+
 function decide(resp){
     saveenddiv = document.getElementById('saveendtest');
     saveenddiv.innerHTML = "";
@@ -267,6 +268,7 @@ function decide(resp){
         showchallengeresponsescreen(challengeresponsescreenencoded, elem);
         testtakerdiv = document.getElementById('testtaker');
         testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
+	testtakerdiv.focus();
         //alert(testpages);
 	q = "&testpages=" + Base64.encode(encodeURI(JSON.stringify(testpages)));
         endtime = new Date();
@@ -1813,18 +1815,21 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                 challengearg = challengearg.replace(/&amp;lt;(\w+\.\w+)&amp;gt;/g, "__LT__" + lbmatch[1] + "__GT__");
                 challengearg = challengearg.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__");
             }
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id=\"sa\" style=\"display:block;\"></span>";
+	    challengeargenc = Base64.encode(challengearg);
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id=\"sa\" style=\"display:block;\"></span>";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
 	    challengearg = challenge;
             challengearg = challengearg.replace(">", "__GT__");
             challengearg = challengearg.replace("<", "__LT__");
+	    challengeargenc = Base64.encode(challengearg);
 	    if(jsonobj.challenges[challenge].proglang != ""){
-                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
+                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
 	    }
 	    else{
-		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengearg + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id=\"co\" style=\"display:block;\"></span><div id='output'></div><br /><br />";
+		challengeargenc = Base64.encode(challengearg);
+		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><span id=\"co\" style=\"display:block;\"></span><div id='output'></div><br /><br />";
 	    }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
@@ -1931,7 +1936,8 @@ function getpastecontent(e, contentarea){
 }
 
 
-function checkresponselength(e, id, challenge){
+function checkresponselength(e, id, challenge_enc){
+    challenge = Base64.decode(challenge_enc); // Decode Base64 encoded challenge screen.
     challenge = challenge.replace(/__LT__/g, "<");
     challenge = challenge.replace(/__GT__/g, ">");
     maxlimit = jsonobj.challenges[challenge].maxresponsesizeallowable;
