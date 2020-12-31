@@ -4039,4 +4039,11 @@ Wednesday, December 30, 2020, 23:07 HRS.
 2. git add skillstest/Tests/views.py
 3. git add files_to_commit.txt
 ==========================================
+Thursday, December 31, 2020, 00:56 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
 

@@ -267,7 +267,7 @@ function decide(resp){
 	// The line below  is to fix the bug where the last response is simply skipped.
         showchallengeresponsescreen(challengeresponsescreenencoded, elem);
         testtakerdiv = document.getElementById('testtaker');
-        testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator(s) evaluate your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
+        testtakerdiv.innerHTML = "<center><font color='#0000AA' style='font-weight:bold;' size=+1><i>The test is over. You will come to know about your score through email, once the evaluator group evaluates your responses. Thank you for choosing testyard to participate in your test.</i></font></center>";
 	testtakerdiv.focus();
         //alert(testpages);
 	q = "&testpages=" + Base64.encode(encodeURI(JSON.stringify(testpages)));
@@ -653,6 +653,7 @@ function number_found (random_number,number_array) {
     return (random_number);
 }
 
+
 function switchbutton(elem, rdbtnid){
     //alert(rdbtnid);
     rdbtn = document.getElementById(rdbtnid) ;
@@ -690,6 +691,7 @@ function switchbutton(elem, rdbtnid){
 	//$('input[name=rdoption]').removeAttr("checked");
 	alloptions = document.getElementsByName('rdoption');
         for(i=0;i < alloptions.length;i++){
+	    alert(rdbtn.id + "  " + alloptions[i].id);
 	    if(rdbtn.id == alloptions[i].id){
 		alloptions[i].checked = true;
 	    }
@@ -1879,7 +1881,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	//alert(ruleflag);
 		testpagesstr = Base64.encode(JSON.stringify(pages));
 		if(ruleflag != 1){
-            pages[pagectr][0] += "<input type=\"button\" name=\"btnnextchallenge\" id=\"btnnextchallenge\" value=\"Next Challenge\" onClick=\"javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " \"" + mytime + "\", \"" + ruleflag + "\", \"" + jsonobj.tabtype + "\", " + jsonobj.tabid + ");\">&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
+            pages[pagectr][0] += "<input type=\"button\" name=\"btnnextchallenge\" id=\"btnnextchallenge\" value=\"Next Challenge\" onClick=\"javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " '" + mytime + "', '" + ruleflag + "', '" + jsonobj.tabtype + "', " + jsonobj.tabid + ");\">&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
 		}
 		else{ // showatonce
 			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
