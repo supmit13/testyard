@@ -215,7 +215,7 @@ function nomorechallenges_old(testname, testid, starttime, tabref, tabid){
 }
 
 function nomorechallenges(testname, testid, starttime, tabref, tabid){
-    nomorehtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>The duration of the test has expired. Please close the window manually. Thank you for using TestYard as your skills testing service provider. We would like to see you use it in future.<div id='saveendtest' style='display:none;'></div></font></center></form>";
+    nomorehtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>The test has been completed. Please close the window manually. Thank you for using TestYard as your skills testing service provider. We would like to see you use it in future.<div id='saveendtest' style='display:none;'></div></font></center></form>";
     return(nomorehtml);
 }
 
@@ -655,43 +655,33 @@ function number_found (random_number,number_array) {
 
 
 function switchbutton(elem, rdbtnid){
-    //alert(rdbtnid);
     rdbtn = document.getElementById(rdbtnid) ;
-    
-    //alert(rdbtn.checked + " " + rdbtnid);
-    //alert(elem);
-    //alert(rdbtn.checked);
     if(elem == "radio" && (rdbtn.checked == "" || rdbtn.checked == false)){
-        if(elem == "radio"){
-            $('input[type=radio]').removeAttr("checked");
-        }
+        $('input[type=radio]').removeAttr("checked");
 	rdbtn.checked = true;
         maxoptionscount = 20; //We do not allow for more than 20 options in a multiple choice question.
-	for(i=0; i < maxoptionscount; i++){
+	for(i=1; i <= maxoptionscount; i++){
 	    if(!document.getElementById("rdoption_" + i)){
 		break;
 	    }
 	    else if("rdoption_" + i == rdbtnid){
-		rdbtn.checked = "checked";
-		//alert("rdoption_" + i + "  checked='" + rdbtn.checked + "'");
+		//$('input[name=rdoption]:nth-child(i+1)').attr('checked', true);
+		$("#" + rdbtnid).attr("checked", "checked");
 		continue;
 	    }
 	    else{
 		optbtn = document.getElementById("rdoption_" + i);
 		optbtn.checked = false;
-		optbtn.checked = "";
-		//alert("rdoption_" + i + "  " + optbtn.checked);
+		$("#rdoption_" + i).removeAttr("checked");
 		optionbuttonpostchk = document.getElementById("rdoption_" + i);
-		//alert("rdoption_" + i + " is " + optionbuttonpostchk.checked);
 	    }
 	}
     }
-    else if(elem == "radio" && rdbtn.checked == true){
-	//alert(rdbtn.checked + " in checked true");
+    else if(elem == "radio" && (rdbtn.checked == true || rdbtn.checked == "checked")){
 	//$('input[name=rdoption]').removeAttr("checked");
 	alloptions = document.getElementsByName('rdoption');
         for(i=0;i < alloptions.length;i++){
-	    alert(rdbtn.id + "  " + alloptions[i].id);
+	    //alert(rdbtn.id + "  " + alloptions[i].id);
 	    if(rdbtn.id == alloptions[i].id){
 		alloptions[i].checked = true;
 	    }
@@ -1328,14 +1318,21 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	 	}
 	    }
 	    if(checkboxes.length > 0){
-		checkedpattern = new RegExp("checked='checked'");
+		checkedpattern = new RegExp(/checked=["']checked["']/gi);
 		for(j=0; j < testpages.length; j++){
-		    tpquestion = testpages[j][2].replace(/\s+/g, "");
-		    curquestion = curchallengestatement.replace(/\s+/g, "");
+		    tpquestion = testpages[j][2].replace(/\s+/g, " ");
+		    curquestion = curchallengestatement.replace(/\s+/g, " ");
 		    tpquestion = tpquestion.replace('"', '');
 		    tpquestion = tpquestion.replace("'", "");
+		    curquestion = curquestion.replace('"', '');
+		    curquestion = curquestion.replace("'", "");
 		    if(tpquestion == curquestion){
-			testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+			//w = window.open("", "");
+		        //w.document.write(testpages[j][0]);
+			if(checkedpattern.test(testpages[j][0])){
+			    //alert(testpages[j][0]);
+			    testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
+			}
 		    }
 		}
 		for(k=0; k < checkboxes.length; k++){
@@ -1357,7 +1354,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 				testpagesparts = testpages[j][0].split("name=");
 				for(var l=0; l < testpagesparts.length; l++){
 				    if(checkboxnamepattern.test(testpagesparts[l])){
-					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked='checked'");
+					testpagesparts[l] = testpagesparts[l].replace(checkboxname + "'", checkboxname + "'" + " checked=\"checked\"");
 				    }
 				}
 				testpages[j][0] = testpagesparts.join("name=");
@@ -1370,10 +1367,11 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		}
 	    }
 	    else if(radiobuttons.length > 0){
-		checkedpattern = new RegExp(/checked="checked"/);
+		checkedpattern = new RegExp(/checked="checked"/gi);
 		for(k=0;k < radiobuttons.length;k++){
 		    if(radiobuttons[k].checked == true){
 			radiobuttonvalue = radiobuttons[k].value;
+			
 			radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
 			for(j=0; j < testpages.length; j++){
 			    tpquestion = testpages[j][2].replace(/\s+/g, "");
@@ -1385,12 +1383,12 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 			    //alert("testpages, j, 2 = " + tpquestion);
 			    //alert("current q = " + curquestion);
 			    if(tpquestion == curquestion){
-				testpagesparts = testpages[j][0].split("value=");
 				testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
-				//alert("testpages = " + testpages[j][0]);
+				testpagesparts = testpages[j][0].split("value=");
+				//w = window.open("", "");
+				//w.document.write(testpages[j][0]);
 				for(var l=0; l < testpagesparts.length; l++){
 				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
-					//alert(radiobuttonvalue);
 					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked=\"checked\"");
 				    }
 				}
@@ -1841,8 +1839,8 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                 for (key in jsonobj.challenges[challenge]){
                     if(optionpattern.test(key)){		
                         checkboxvalue = jsonobj.challenges[challenge][key];
-                        checkboxvalue = checkboxvalue.replace("'", "")
-                        checkboxvalue = checkboxvalue.replace('"', '')
+                        checkboxvalue = checkboxvalue.replace(/'/g, "");
+                        checkboxvalue = checkboxvalue.replace(/"/g, '');
 			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
 			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
                         //alert(jsonobj.challenges[challenge][key]);
