@@ -577,11 +577,13 @@ function rememberresponse(testpagesstr){
 		    	    if(radiobuttons[k].checked == true){
 				//alert(radiobuttons[k].name);
 				radiobuttonvalue = radiobuttons[k].value;
-				radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+				radiobuttonvaluepattern = '^' + radiobuttonvalue + '$';
+				radiobuttonvalueregex = new RegExp(radiobuttonvalue, 'g');				
+				//radiobuttonvalueregex = new RegExp(radiobuttonvaluepattern, 'g');
 				testpagesparts = testpages[i][0].split("value=");
 				testpages[i][0] = testpages[i][0].replace(checkedpattern, '');// Get rid of previous checked values
 				for(var l=0; l < testpagesparts.length; l++){
-				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+				    if(radiobuttonvalueregex.test(testpagesparts[l])){
 					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'" + " disabled=false");
 				    }
 				}
@@ -936,7 +938,9 @@ function displaydisabledresponse1by1(elem){
 		for(k=0;k < radiobuttons.length;k++){
 		    if(radiobuttons[k].checked == true){
 			radiobuttonvalue = radiobuttons[k].value;
-			radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+			radiobuttonvaluepattern = '^' + radiobuttonvalue + '$';
+			//radiobuttonvalueregex = new RegExp(radiobuttonvaluepattern, 'g');
+			radiobuttonvalueregex = new RegExp(radiobuttonvalue, 'g');
 			for(j=0; j < testpages.length; j++){
 			    tpquestion = testpages[j][2].replace(/\s+/g, "");
 			    curquestion = curchallengestatement.replace(/\s+/g, "");
@@ -948,7 +952,7 @@ function displaydisabledresponse1by1(elem){
 				testpagesparts = testpages[j][0].split("value=");
 				testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
 				for(var l=0; l < testpagesparts.length; l++){
-				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+				    if(radiobuttonvalueregex.test(testpagesparts[l])){
 					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
 				    }
 				}
@@ -1111,7 +1115,9 @@ function displaychallengesresponse1by1(elem){
 		for(k=0;k < radiobuttons.length;k++){
 		    if(radiobuttons[k].checked == true){
 			radiobuttonvalue = radiobuttons[k].value;
-			radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+			radiobuttonvaluepattern = '^' + radiobuttonvalue + '$';
+			//radiobuttonvalueregex = new RegExp(radiobuttonvaluepattern,'g');
+			radiobuttonvalueregex = new RegExp(radiobuttonvalue, 'g');
 			for(j=0; j < testpages.length; j++){
 			    tpquestion = testpages[j][2].replace(/\s+/g, "");
 			    curquestion = curchallengestatement.replace(/\s+/g, "");
@@ -1123,7 +1129,7 @@ function displaychallengesresponse1by1(elem){
 				testpagesparts = testpages[j][0].split("value=");
 				testpages[j][0] = testpages[j][0].replace(checkedpattern, '');// Get rid of previous checked values
 				for(var l=0; l < testpagesparts.length; l++){
-				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+				    if(radiobuttonvalueregex.test(testpagesparts[l])){
 					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked='checked'");
 				    }
 				}
@@ -1371,8 +1377,9 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		for(k=0;k < radiobuttons.length;k++){
 		    if(radiobuttons[k].checked == true){
 			radiobuttonvalue = radiobuttons[k].value;
-			
-			radiobuttonvaluepattern = new RegExp(radiobuttonvalue);
+			radiobuttonvaluepattern = '^' + radiobuttonvalue + '$';
+			//radiobuttonvalueregex = new RegExp(radiobuttonvaluepattern, 'g');
+			radiobuttonvalueregex = new RegExp(radiobuttonvalue, 'g');
 			for(j=0; j < testpages.length; j++){
 			    tpquestion = testpages[j][2].replace(/\s+/g, "");
 			    curquestion = curchallengestatement.replace(/\s+/g, "");
@@ -1388,7 +1395,7 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 				//w = window.open("", "");
 				//w.document.write(testpages[j][0]);
 				for(var l=0; l < testpagesparts.length; l++){
-				    if(radiobuttonvaluepattern.test(testpagesparts[l])){
+				    if(radiobuttonvalueregex.test(testpagesparts[l])){
 					testpagesparts[l] = testpagesparts[l].replace(radiobuttonvalue + "'", radiobuttonvalue + "'" + " checked=\"checked\"");
 				    }
 				}
@@ -1518,7 +1525,7 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
     timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
     clock();
     html = "<br /><table border=0 cellspacing='2' cellpadding='2'>";
-    html += "<tr><td width='5%'>&nbsp;</td><td width='80%'><font color='0000AA' style='font-weight:bold;'><i>Questions</i></font></td><td width='15%'><font color='0000AA' style='font-weight:bold;'><i>Time Available (secs)</i></font></td></tr>";
+    html += "<tr><td width='5%'>&nbsp;</td><td width='80%'><font color='0000AA' style='font-weight:bold;'><i>Questions</i></font></td><td width='15%'><font color='0000AA' style='font-weight:bold;'><i>Time Available (mins)</i></font></td></tr>";
     slno = 1;
     for(var j=0; j <= randomlist.length - 1;j++){
 	elem = randomlist[j];
@@ -1526,11 +1533,12 @@ function showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref
         //challengeentity = challengeentity.replace(/[\n]+/g, "<br>");
         //challengeentity = challengeentity.replace(/[\r\n]+/g, "<br>");
         maxtime = testpages[elem][1];
+	maxtimemins = maxtime/60;
  	challengeresponsescreen = "<br>" + testpages[elem][0] + "</br>";
 	//alert(challengeresponsescreen);
 	challengeresponsescreenencoded = Base64.encode(challengeresponsescreen);
         if(j < randomlist.length - 1){
-	    html += "<tr><td width='5%' valign='top'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><pre>" + challengeentity.substring(0, 30) + "...</pre></a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtime + "</i></font></td></tr>";
+	    html += "<tr><td width='5%' valign='top'><font color='0000AA'>" + slno + "</font></td><td width='80%'><font color='0000AA'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><pre>" + challengeentity.substring(0, 30) + "...</pre></a></i></font></td><td width='15%'><font color='0000AA'><i>" + maxtimemins + "</i></font></td></tr>";
         }
         //else{
         //    html += "<tr><td width='5%' valign='top'><font color='AA0000'>" + slno + "</font></td><td width='80%'><font color='AA0000'><i><a href='#/' onClick='javascript:showchallengeresponsescreen(\"" + challengeresponsescreenencoded + "\", " + elem + ", 1);'><font color='AA0000'>Please click on this link once you have answered all your questions. If you do not click on this link in the end, some or all of your answers may not be saved on our system.</font></a></i></font></td><td width='15%'><font color='AA0000'><i>0</i></font></td></tr>";
@@ -1648,7 +1656,6 @@ function facethemusic(encjson, starttime){
     stopid = setTimeout(stoptest, (jsonobj.duration * 1000), tabref, tabid);
     index = 1;
     qalist = {};
-    
     testpagesstr = Base64.encode(JSON.stringify(testpages));
     if(ruleflag == '1'){
         showchallengesindex(randomlist, testpagesstr, starttime, mytime, tabref, tabid, qalist);
