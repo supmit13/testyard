@@ -2566,6 +2566,7 @@ def showtestcandidatemode(request):
     testdict['codepadexecuteurl'] = skillutils.gethosturl(request) + "/" + mysettings.CODEPAD_EXECUTE_URL
     testdict['codeexecurl'] = skillutils.gethosturl(request) + "/" + mysettings.CODE_EXEC_URL
     testdict['reportwindowchangeurl'] = skillutils.gethosturl(request) + "/" + mysettings.REPORT_WINDOW_CHANGE_URL
+    testdict['gettimeremainingurl'] = skillutils.gethosturl(request) + "/" + mysettings.GET_TIME_REMAINING_URL
     #testdict['testlink'] = request.META['HTTP_REFERER']
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
@@ -7728,6 +7729,38 @@ def reportwindowchange(request):
     utobj.windowchangeattempts = changeattempts
     utobj.save()
     return HttpResponse(str(changeattempts))
+
+
+def gettimeremaining(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    tabref, tabid, csrftoken = "", 0, ""
+    tabref = request.POST.get("tabref")
+    tabid = request.POST.get("tabid")
+    csrftoken = request.POST.get("csrfmiddlewaretoken", "");
+    if not tabref or not tabid or not csrftoken:
+        return HttpResponse("")
+    utobjqset = UserTest.objects.filter(id=int(tabid))
+    if tabref == "wouldbeusers":
+        utobjqset = WouldbeUsers.objects.filter(id=int(tabid))
+    if list(utobjqset).__len__() < 1:
+        return HttpResponse("")
+    utobj = utobjqset[0]
+    # Get the test object and find the duration of the test.
+    testobj = utobj.test
+    duration = testobj.duration
+    # Find the start time of the usertest/wouldbeuser object.
+    starttime = utobj.starttime
+    tz_info = starttime.tzinfo
+    currenttime = datetime.datetime.now(tz_info)
+    # Get time elapsed
+    timeelapsed = currenttime - starttime
+    timeelapsedseconds = timeelapsed.total_seconds()
+    timeleft = duration - timeelapsedseconds
+    return HttpResponse(str(timeleft))
 
 
 @skillutils.is_session_valid

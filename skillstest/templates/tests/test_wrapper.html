@@ -91,6 +91,45 @@ div.sec {
 </style>
 <!-- Paned window styles end here -->
 
+<!-- Style for modal dialogue box -->
+<style type="text/css">
+.modalwin {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 30%;
+  height: 20%;
+  overflow: auto;
+  background-color: rgb(255,255,255);
+  background-color: rgba(255,255,255,0.4);
+}
+
+.modalwin-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+</style>
+<!-- End of style for modal dialogue box -->
+
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 
 <script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
@@ -119,7 +158,6 @@ div.sec {
 </script>
 <script>
 function displayMathExprCandidateUserView(){
-    //alert("HELLO");
     mathexprcdusvwdiv = document.getElementById('mathexprcdusvw');
     txtContents = mathexprcdusvwdiv.innerHTML; 
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprcdusvwdiv]);
@@ -321,6 +359,15 @@ function stoptest(tabref, tabid){
 }
 
 
+// This function checks how long a given test session is remaining. The 
+// test is identified by testid, the user is identified by userid, the 
+// referenced table is identified by tabref, the specific record in it is
+// identified by tabid and the function to execute when the time remaining
+// becomes 0 or less is passed as the last argument named 'func'.
+function checktimeleft(tabref, tabid, userid, testid, starttime, duration, func){
+}
+
+
 function sendtoserver(postdata){
     var xmlhttp;
     if (window.XMLHttpRequest){
@@ -401,7 +448,7 @@ function sendtoserver(postdata){
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "<font color='#0000AA'>This test falls in the '" + topicname + "' category.</font><br /><br />";
     qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you. Please also note that trying to move away from this tab/window during the course of the test will be reported.</u></font><br /><br />";
-    qareadiv.innerHTML += "<center><input type='button' name='facethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'><div id='saveendtest' style='display:none;'></div></center><br/>";
+    qareadiv.innerHTML += "<center><input type='button' name='btnfacethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'><div id='saveendtest' style='display:none;'></div></center><br/>";
     // Make a check here to see if starttest
     clock();
     encodedemail = Base64.encode(targetemail);
@@ -2076,9 +2123,46 @@ function warnuseronlosingfocus(encjson){
             //Do nothing here
         }
     };
-    
     postdata = "tabref=" + tabref + "&tabid=" + tabid + "&reportincident=1&csrfmiddlewaretoken=" + csrftoken;
     xmlhttp.open("POST", '{{ reportwindowchangeurl }}', true);
+    xmlhttp.send(postdata);
+}
+
+function gettimeremaining(encjson){
+    csrftoken = "";
+    try{
+        csrftoken = document.frmchallenge.csrfmiddlewaretoken.value;
+    }
+    catch(err){
+        csrftoken = "";
+    }
+    decodeddata = Base64.decode(encjson);
+    jsonobj = JSON.parse(decodeddata);
+    tabref = jsonobj.tabtype;
+    tabid = jsonobj.tabid;
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+            //Get the remaining number of seconds here.
+	    timeremaining = xmlhttp.responseText;
+	    //console.log(timeremaining);
+	    // If timeremaining is negative, stop the test immediately. Otherwise, setTimeout for the test with the remaining time.
+	    if(timeremaining < 0){
+		stoptest(tabref, tabid);
+	    }
+	    else{
+		setTimeout(stoptest, (timeremaining * 1000), tabref, tabid);
+   	    }
+        }
+    };
+    postdata = "tabref=" + tabref + "&tabid=" + tabid + "&csrfmiddlewaretoken=" + csrftoken;
+    xmlhttp.open("POST", '{{ gettimeremainingurl }}', true);
     xmlhttp.send(postdata);
 }
 
@@ -2101,7 +2185,7 @@ html { min-height: 400%; margin-bottom: 1px; }
     }
 </style>
 </head>
-<body onload="javascript:decryptwrapper('####ENCJSON####');" onblur="javascript:warnuseronlosingfocus('####ENCJSON####');">
+<body onload="javascript:decryptwrapper('####ENCJSON####');" onblur="javascript:warnuseronlosingfocus('####ENCJSON####');" onfocus="javascript:gettimeremaining('####ENCJSON####');">
 <script language="JavaScript">
 checkbrowser();
 </script>
