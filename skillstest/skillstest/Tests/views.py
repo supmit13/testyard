@@ -2567,6 +2567,7 @@ def showtestcandidatemode(request):
     testdict['codeexecurl'] = skillutils.gethosturl(request) + "/" + mysettings.CODE_EXEC_URL
     testdict['reportwindowchangeurl'] = skillutils.gethosturl(request) + "/" + mysettings.REPORT_WINDOW_CHANGE_URL
     testdict['gettimeremainingurl'] = skillutils.gethosturl(request) + "/" + mysettings.GET_TIME_REMAINING_URL
+    testdict['checkconnectionurl'] = skillutils.gethosturl(request) + "/" + mysettings.CHK_INTERNET_CONN_URL
     #testdict['testlink'] = request.META['HTTP_REFERER']
     # If the test taker is a candidate, we need to check for multiple attempts...
     if not testdict['usercreatorevaluatorflag']: 
@@ -7729,6 +7730,13 @@ def reportwindowchange(request):
     utobj.windowchangeattempts = changeattempts
     utobj.save()
     return HttpResponse(str(changeattempts))
+
+
+def chkinternetconnection(request):
+    if request.method == 'GET':
+        return HttpResponse("1")
+    else:
+        return HttpResponse("0")
 
 
 def gettimeremaining(request):

@@ -2128,7 +2128,26 @@ function warnuseronlosingfocus(encjson){
     xmlhttp.send(postdata);
 }
 
+
+function checkinternetconnection(){
+    $.ajax({
+    type: "GET",
+    url: "{{ checkconnectionurl }}",
+    success: function(msg){
+        console.log("Connection active!");
+    },
+    error: function(XMLHttpRequest, textStatus, errorThrown) {
+	//alert(textStatus);
+        if(textStatus == 'timeout'){
+            alert('It seems your internet connection is not working. Please connect to the internet first and then click "Ok" below.');
+        }
+    }
+    });
+}
+
+
 function gettimeremaining(encjson){
+    checkinternetconnection(); // If the connection is non-existent, this will continue to display an alert box and won't let the user to take the test without connecting to the internet.
     csrftoken = "";
     try{
         csrftoken = document.frmchallenge.csrfmiddlewaretoken.value;
@@ -2165,6 +2184,7 @@ function gettimeremaining(encjson){
     xmlhttp.open("POST", '{{ gettimeremainingurl }}', true);
     xmlhttp.send(postdata);
 }
+
 
 // Decrypt a string encrypted with triple DES
 function tripledesdecrypt(encstr){
