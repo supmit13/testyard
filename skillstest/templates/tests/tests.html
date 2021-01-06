@@ -2236,7 +2236,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  emailslist = document.getElementById('txtemailslist' + testid.toString());
 		  listofemails = emailslist.value.split(",");
 		  // More than 20 emails per session is not allowed
-		  if(listofemails.length > 20){
+		  if(listofemails.length > {{maxinvitationspersession}}){
 		      alert("More than 20 email Ids are not allowed per request");
 		      return(0);
 		  }
@@ -2923,7 +2923,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>

@@ -332,6 +332,7 @@ def get_user_tests(request):
     tests_user_dict['chkintnameavailabilityurl'] = skillutils.gethosturl(request) + "/" + chkintnameavailabilityurl
     tests_user_dict['postonlinkedinurl'] = skillutils.gethosturl(request) + "/" + postonlinkedinurl
     tests_user_dict['linkedinpostsessionurl'] = skillutils.gethosturl(request) + "/" + linkedinpostsessionurl
+    tests_user_dict['maxinvitationspersession'] = mysettings.MAX_INVITES_PER_SESSION
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
@@ -3093,8 +3094,8 @@ def sendtestinvitations(request):
     for email in emailslist:
         emailsdict[email] = 1
     emailslist = emailsdict.keys() # So now emailslist contains unique emails
-    if emailslist.__len__() > 20:
-        resp = HttpResponse("Error: More than 20 distinct emails are not permitted per request.")
+    if emailslist.__len__() > mysettings.MAX_INVITES_PER_SESSION:
+        resp = HttpResponse("Error: More than %s distinct emails are not permitted per request."%mysettings.MAX_INVITES_PER_SESSION)
         return resp
     testobj = None
     try:
