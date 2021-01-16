@@ -70,7 +70,7 @@ def get_user_tests(request):
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
-        interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Create an Interview</a>(<font color='#0000AA' face='verdana' size=-2>Please use either Chrome or Firefox or Safari to use this facility</font>)"%userobj.id
+        interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Create an Interview</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
             if ttcode == 'MULT':
@@ -2633,7 +2633,7 @@ def showtestcandidatemode(request):
         challengetype = challenge.challengetype
         maxresponsesizeallowable = challenge.maxresponsesizeallowable
         oftheabovePattern = re.compile("\s+of\s+the\s+above", re.IGNORECASE|re.DOTALL)
-        #noneabovePattern = re.compile("None\s+of\s+the\s+above", re.DOTALL|re.IGNORECASE)
+        #noneabovePattern = re.compile(/None\s+of\s+the\s+above/g, re.DOTALL|re.IGNORECASE)
         challengesdict[statement] = {'challengetype' : challengetype, 'maxresponsesizeallowable' : maxresponsesizeallowable}
         validoptionscount = 0
         if challengetype == 'MULT' or challengetype == 'FILB':
@@ -2662,20 +2662,29 @@ def showtestcandidatemode(request):
                 challengesdict[statement]['option8'] = challenge.option8
                 validoptionscount += 1
             log = Logger(mysettings.LOG_PATH + "/testyard.log")
-            opt1taken = False
+            opt1taken = 0
             for opt in challengesdict[statement].keys():
                 optval = challengesdict[statement][opt]
                 if type(optval) != str and type(optval) != unicode:
                     optval = str(optval)
                 log.logmessage(optval)
+                optval = optval.replace("__LT__", "&lt;")
+                optval = optval.replace("__GT__", "&gt;")
+                challengesdict[statement][opt] = optval
                 if oftheabovePattern.search(optval.encode('utf-8')):
                     tempval = challengesdict[statement][opt]
                     if not opt1taken:
                         #lastoption = 'option' + str(validoptionscount)
                         lastoption = 'option1'
-                        opt1taken = True
+                        opt1taken = 1
+                    elif opt1taken == 1:
+                        #lastoption = 'option' + str(validoptionscount - 1)
+                        lastoption = 'option2'
+                        opt1taken += 1
                     else:
-                        lastoption = 'option1'
+                        #lastoption = 'option' + str(validoptionscount - 2)
+                        lastoption = 'option3'
+                        opt1taken += 1
                     challengesdict[statement][opt] = challengesdict[statement][lastoption]
                     challengesdict[statement][lastoption] = tempval
                 else:
@@ -2696,6 +2705,9 @@ def showtestcandidatemode(request):
             challenge.maxresponsesizeallowable = mysettings.MAXRESPONSECHARCOUNT
         if challenge.test.progenv == "multi":
             challengesdict[statement]['progenv'] = challenge.proglang
+        alloptionslist = challengesdict[statement].keys()
+        alloptionslist.sort(reverse = True)
+        challengesdict[statement]['sortedoptions'] = alloptionslist
     testdict['challenges'] = challengesdict
     jsonstr = json.dumps(testdict)
     # Now, encrypt jsonstr...

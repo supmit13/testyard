@@ -488,27 +488,75 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		function getresponseoptionswithcheckboxes(){
 		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
 		  if(document.challengeform.choice1.value.trim() != ""){
+		    if(document.challengeform.choice1.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice1.value = "";
+			document.challengeform.choice1.value.focus();
+			return;
+		      }
 		    html += "<i>Option #a: <input type='checkbox' name='responsekey[]' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice2.value.trim() != ""){
+		    if(document.challengeform.choice2.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice2.value = "";
+			document.challengeform.choice2.value.focus();
+			return;
+		      }
 		    html += "<i>Option #b: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice3.value.trim() != ""){
+		    if(document.challengeform.choice3.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice3.value = "";
+			document.challengeform.choice3.value.focus();
+			return;
+		      }
 		    html += "<i>Option #c: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice4.value.trim() != ""){
+		    if(document.challengeform.choice4.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice4.value = "";
+			document.challengeform.choice4.value.focus();
+			return;
+		      }
 		    html += "<i>Option #d: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice5.value.trim() != ""){
+		    if(document.challengeform.choice5.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice5.value = "";
+			document.challengeform.choice5.value.focus();
+			return;
+		      }
 		    html += "<i>Option #e: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice6.value.trim() != ""){
+		    if(document.challengeform.choice6.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice6.value = "";
+			document.challengeform.choice6.value.focus();
+			return;
+		      }
 		    html += "<i>Option #f: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice7.value.trim() != ""){
+		    if(document.challengeform.choice7.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice7.value = "";
+			document.challengeform.choice7.value.focus();
+			return;
+		    }
 		    html += "<i>Option #g: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
 		  }
 		  if(document.challengeform.choice8.value.trim() != ""){
+		    if(document.challengeform.choice8.value.match(/of\s+the\s+above/ig)){
+			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
+			document.challengeform.choice8.value = "";
+			document.challengeform.choice8.value.focus();
+			return;
+		      }
 		    html += "<i>Option #h: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
 		  }
 		  return(html);
@@ -1462,7 +1510,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  }
 
 		function invitecandidates(testid){ // Only test creator can invite candidates. So the user will be the user object.
-		  // Form to be open in 'createtestdiv'		  
+		  // Form to be open in 'createtestdiv'
 		  var thediv = document.getElementById('invitationdiv' + testid);
 		  thediv.style.display = "";
 		  var divinnerhtml = "{% include 'tests/invitecandidatesform.html' %}";
@@ -2250,6 +2298,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  validtillvalue = validtill.value;
 		  validtillvalues = validtillvalue.split("T");
 		  validtillvalueparts = validtillvalues[0].split("-");
+		  vaidtillvaluepartssecs = validtillvalues[1].split(":");
+		  if (vaidtillvaluepartssecs.length < 3){
+		      validtillvalues[1] = validtillvalues[1] + ":00";
+		  }
 		  validtillvalue = validtillvalueparts[2] + "-" + validtillvalueparts[1] + "-" + validtillvalueparts[0] + " " + validtillvalues[1];
    		  baseurl = document.getElementById('baseurl' + testid.toString());
   	 	  forcefreshurl = document.getElementById('forcefreshurl').value;

@@ -1319,8 +1319,8 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 		    if(testpagesparts.length >= 2){
 			//valuepattern = new RegExp("value='(.*)'\\s+name=");
 			valuepattern = new RegExp("value='([^\\']+)'");
-			textval = textval.replace(">", "__GREATERTHAN__");
-			textval = textval.replace("<", "__LESSERTHAN__");
+			textval = textval.replace(">", "__GT__");
+			textval = textval.replace("<", "__LT__");
 			//alert(textval);
 			if(testpagesparts.length > 2){
 			    testpagesparts[1] = testpagesparts[1] + "<textarea" + testpagesparts[2];
@@ -1628,7 +1628,7 @@ function showchallengesonebyone (index, randomlist, testpagesstr, starttime, tab
     timeandnamediv.innerHTML = "<center>" + scrollclockhtml() + "</center><br />";
     timeandnamediv.innerHTML += "<center><font color='#0000AA' style='font-weight:bold;' size=+1>{{testname}}</center><br />";
     clock();
-    
+
     elem = randomlist[index - 1];
     testpage = testpages[elem][0];
     pages = testpages; // This one is for nextchallenge function.
@@ -1659,11 +1659,10 @@ function showchallengesonebyone (index, randomlist, testpagesstr, starttime, tab
     index = parseInt(index) + 1;
     qindxelement = document.getElementById('qindx');
     qindxelement.value = index;
-    //testpageenc = Base64.encode(testpage);
+    testpageenc = Base64.encode(testpage);
     //alert(timeframe_ms);
-    //mytime = window.setTimeout(displaychallengesresponse1by1, timeframe_ms, elem);
+    mytime = window.setTimeout(displaychallengesresponse1by1, timeframe_ms, elem);
 }
-
 
 
 function facethemusic(encjson, starttime){
@@ -1714,69 +1713,6 @@ function facethemusic(encjson, starttime){
     else if(ruleflag == '2'){
 	showchallenge2(index, randomlist, testpages, starttime, mytime, ruleflag, tabref, tabid, qalist);
     }
-}
-
-
-// This function is deprecated. Please refer to the function named "code_exec".
-function code_exec_old(){
-  var progenv = "{{progenv}}";
-  var repl_token = {'msg_mac' : "nfQ9mqPIArQO8lmgmdAogPsgHNh4koL0hR3Qtbq/2Vk=", 'time_created' : 1478372849000};
-  var repl = new ReplitClient('trial.repl.it', 80, "{{progenv}}", repl_token);
-  var codecontent = myCodeMirror.getValue();
-  var errstr = "";
-  //alert(codecontent);
-  if(codecontent == ""){
-    alert("No code to execute");
-    return(0);
-  }
-  repl.evaluateOnce(
-    codecontent, {
-    stdout: function(output) {
-      alert("AAA " + output);
-    }
-  }).then(
-   function success(result) {
-     alert(result);
-     if (result.error) {
-       alert('Error: ', result.error);
-     } else {
-       alert('Result: ', result.data);
-     }
-   },
-   function error(error) {
-     alert('Error connecting to repl.it: ' + error);
-   }
- );
-  //if(error == "Invalid language"){ // try using codepad.org
-    //alert("Could not get Repl to execute your code... trying codepad to execute your code.");
-    var xmlhttp;
-    if (window.XMLHttpRequest){
-        xmlhttp=new XMLHttpRequest();
-    }
-    else{
-    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-    }
-    xmlhttp.onreadystatechange = function(){
-      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-        if(xmlhttp.responseText != ''){
-          outputdiv = document.getElementById('output');
-          outputdiv.innerHTML = xmlhttp.responseText;
-	}
-	else{
-	  alert("The program did not generate any output. This may happen in case of an error condition. Please check your program and try again.");
-	  outputdiv.innerHTML= "";
-	}
-      }
-    };
-    outputdiv = document.getElementById('output');
-    outputdiv.innerHTML = "";
-    xmlhttp.open("POST", '{{ codepadexecuteurl }}', true);
-    codecontent_enc = Base64.encode(codecontent);
-    postdata = "code=" + codecontent_enc + "&progenv={{progenv}}&csrfmiddlewaretoken=" + document.frmchallenge.csrfmiddlewaretoken.value;
-    //alert(postdata);
-    xmlhttp.send(postdata);
-    outputdiv.innerHTML = "<img src='static/images/loading_small.gif'> Please wait while we execute your code. Might take a few minutes.";
-  //} // End of commented 'if' statement.
 }
 
 
@@ -1834,7 +1770,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
     optionpattern = new RegExp("^option\\d");
     pagectr = 0;
     if(ruleflag == 1){
-		alllist = new Array();
+	alllist = new Array();
     }
     scriptsetflag = 0;
     for (challenge in jsonobj.challenges){
@@ -1891,12 +1827,14 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             optionctr = 1;
             if(jsonobj.challenges[challenge].oneormore){
                 for (key in jsonobj.challenges[challenge]){
-                    if(optionpattern.test(key)){		
+                    if(optionpattern.test(key)){
                         checkboxvalue = jsonobj.challenges[challenge][key];
                         checkboxvalue = checkboxvalue.replace(/'/g, "");
                         checkboxvalue = checkboxvalue.replace(/"/g, '');
-			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
-			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
+			//jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
+			//jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__GT__/g, "&gt;");
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__LT__/g, "&lt;");
                         //alert(jsonobj.challenges[challenge][key]);
                         //pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
 			pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
@@ -1916,8 +1854,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 			    radiooptions[j].checked = '';
 			    radioelement.checked = false;
 			}
-			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
-			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
+			//jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/>/g, "__GT__");
+			//jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__GT__/g, "&gt;");
+			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__LT__/g, "&lt;");
                         pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "' onmousedown=\"javascript:switchbutton(\'radio\', \'rdoption_" + optionctr + "\');\">&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
@@ -2044,7 +1984,7 @@ function checkresponselength(e, id, challenge_enc){
 	      }
 	      else if(k == 32 || (k > 40 && k <= 126) || (k >= 160 && k <= 255) || k == 13){// ELiminate up/down/left/right keys and non-printable characters
 		if(contents.length == 0){
-                    challengeid.innerHTML += typeof(String.fromCharCode(k));
+                    challengeid.innerHTML += "";
 		    challengeid.focus();
 		}
 		else{
