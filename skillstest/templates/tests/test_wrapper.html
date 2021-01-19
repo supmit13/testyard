@@ -792,10 +792,9 @@ function nextchallenge(index, randomlist, mytime, ruleflag, tabref, tabid){
 
 
 function disablechallenge(testpagesenc, curchallengestatement, challengetype, elem, ruleflag){
-    //alert(curchallengestatement);
+    //console.log(curchallengestatement + " " + challengetype);
     testpagesstr = Base64.decode(testpagesenc);
     testpages = JSON.parse(testpagesstr);
-    //alert(challengetype);
     if(challengetype == 'SUBJ' || challengetype == 'ALGO' || challengetype == 'CODN'){
 	for(var j=0; j < testpages.length; j++){
 	    challengestatement = testpages[j][2];
@@ -803,13 +802,17 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 		testpagesparts = testpages[j][0].split('<textarea ');
 		if(testpagesparts.length == 2){
 		    disabledpattern = new RegExp("disabled");
-		    if(!disabledpattern.test(testpagesparts[1])){
+		    if(!disabledpattern.test(testpagesparts[1]) && challengetype != 'CODN'){
 			testpagesparts[1] = "disabled='disabled' " + testpagesparts[1];
+		    }
+		    else if(!disabledpattern.test(testpagesparts[1]) && challengetype == 'CODN'){
+			testpagesparts[1] = "readOnly='nocursor' " + testpagesparts[1];
 		    }
 		    else{
 			// Do nothing, it is already disabled.
 		    }
 		    testpages[j][0] = testpagesparts[0] + "<textarea " + testpagesparts[1];
+		    //console.log(testpagesparts[1]);
 		}
 		else{
 		    alert("It seems there is some technical issue with the rendering of this response submission page. Kindly contact the administrator. We deeply regret this inconvenience");
@@ -831,11 +834,12 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 	    }
 	}
 	if(checkboxes.length > 0){
+	    //console.log("testpages length " + testpages.length);
 	    for(j=0; j < testpages.length; j++){
 		tpquestion = testpages[j][2].replace(/\s+/g, "");
 		curquestion = curchallengestatement.replace(/\s+/g, "");
-		tpquestion = tpquestion.replace('"', '');
-		tpquestion = tpquestion.replace("'", "");
+		//tpquestion = tpquestion.replace('"', '');
+		//tpquestion = tpquestion.replace("'", "");
 		if(curquestion == tpquestion){
 		    testpagesparts = testpages[j][0].split("<input ");
 		    for(i=1; i < testpagesparts.length; i++){
@@ -853,8 +857,8 @@ function disablechallenge(testpagesenc, curchallengestatement, challengetype, el
 	    for(j=0; j < testpages.length; j++){
 		tpquestion = testpages[j][2].replace(/\s+/g, "");
 		curquestion = curchallengestatement.replace(/\s+/g, "");
-		tpquestion = tpquestion.replace('"', '');
-		tpquestion = tpquestion.replace("'", "");
+		//tpquestion = tpquestion.replace('"', '');
+		//tpquestion = tpquestion.replace("'", "");
 		if(curquestion == tpquestion){
 		    testpagesparts = testpages[j][0].split("<input ");
 		    for(i=1; i < testpagesparts.length; i++){
@@ -1296,9 +1300,11 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    gth = new RegExp(">", 'g');
 	    lst = new RegExp("<", 'g');
             qt = new RegExp("'", 'g');
-	    textval = textval.replace(lst, "&amp;quot;"); // In c/c++ code we expect to find the header files in <...> format. We want to convert them to be placed inside double quotes so that the syntax doesn't mess with the HTML tags system, but it would still point to the correct header file.
-	    textval = textval.replace(gth, "&amp;quot;"); // Same logic here as above.
-            textval = textval.replace(qt, "&amp;quot;");
+	    //textval = textval.replace(lst, "&amp;quot;"); // In c/c++ code we expect to find the header files in <...> format. We want to convert them to be placed inside double quotes so that the syntax doesn't mess with the HTML tags system, but it would still point to the correct header file.
+	    textval = textval.replace(lst, "__LT__");
+	    //textval = textval.replace(gth, "&amp;quot;"); // Same logic here as above.
+	    textval = textval.replace(gth, "__GT__");
+            //textval = textval.replace(qt, "&amp;quot;");
 	    //alert(textval);
 	    txtareas = document.getElementsByTagName('textarea');
             //alert(txtareas.length);
@@ -1414,13 +1420,14 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 				timeavailable = testpages[j][1];
 				timeleft = timeavailable - timespentsecs;
 				testpages[j][1] = timeleft;
+				//console.log("Time Left: " + testpages[j][1]);
 			    }
 			}
 		    }
 		}
 	    }
 	    else if(radiobuttons.length > 0){
-		checkedpattern = new RegExp(/checked="checked"/gi);
+		checkedpattern = new RegExp(/checked=["']checked["']/gi);
 		for(k=0;k < radiobuttons.length;k++){
 		    if(radiobuttons[k].checked == true){
 			radiobuttonvalue = radiobuttons[k].value;
@@ -1462,8 +1469,10 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
 	    textval = textval.replace('"', '__DOUBLEQUOTE__');
             grt = new RegExp(">", 'g');
 	    lst = new RegExp("<", 'g');
-	    textval = textval.replace(lst, "&amp;quot;");// In c/c++ code we expect to find the header files in <...> format. We want to convert them to be placed inside double quotes so that the syntax doesn't mess with the HTML tags system, but it would still point to the correct header file.
-	    textval = textval.replace(grt, "&amp;quot;");
+	    //textval = textval.replace(lst, "&amp;quot;");// In c/c++ code we expect to find the header files in <...> format. We want to convert them to be placed inside double quotes so that the syntax doesn't mess with the HTML tags system, but it would still point to the correct header file.
+	    textval = textval.replace(lst, "__LT__");
+	    //textval = textval.replace(grt, "&amp;quot;");
+	    textval = textval.replace(grt, "__GT__");
 	    //alert(textval);
 	    for(j=0; j < testpages.length - 1; j++){
 		// Had a tough time figuring out this one.
@@ -1554,9 +1563,14 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
     else{
 	progdiv.innerHTML = "";
     }
+    //console.log(testpages[elem][1]);
     if(testpages[elem][1] > 0){
+        console.log("Calling settimeout..." + testpages[elem][1]);
     	mytime = window.setTimeout(disablechallenge, testpages[elem][1] * 1000, testpagesenc, testpages[elem][2], challengetype, elem, 1);
     }
+    //else if(testpages[elem][1] == 0){
+    //  disablechallenge(testpagesenc, testpages[elem][2], challengetype, elem, 1);
+    //}
 }
 
 

@@ -4072,4 +4072,23 @@ Wednesday, January 06, 2021, 21:17 HRS.
 3. git add skillstest/Tests/views.py
 4. git add skillstest/skills_settings.py
 5. git add files_to_commit.txt
+==========================================
+Tuesday, January 12, 2021, 22:59 HRS.
+------------------------------------------
+
+1. git add templates/user/profile.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/test_wrapper.html
+5. git add files_to_commit.txt
+==========================================
+Tuesday, January 19, 2021, 22:15 HRS.
+------------------------------------------
+
+1. git add skillstest/errors.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/test_wrapper.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+==========================================
 
