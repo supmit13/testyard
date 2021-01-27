@@ -3,20 +3,8 @@
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
 <title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
-<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<link rel="stylesheet" type="text/css" href="static/css/styles.css" />
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
-<style>
-.glowing-border {
-    border: 2px solid #000088;
-    border-radius: 4px;
-}
-
-.glowing-border:focus { 
-    outline: none;
-    border-color: #9ecaed;
-    box-shadow: 0 0 10px #9ecaed;
-}
-</style>
 
 </head>
 <body>
@@ -54,14 +42,14 @@
 		
 		<div class="post">
 			
-			<h2>Welcome to TestYard - </h2><h3> {{ curdate }}
+			<h2>Welcome to TestYard </h2><h3> {{ curdate }}</h3>
 			
 			
 			<div class="entry">
 			
-			<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
-			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>
-			<blockquote><p>Check our Android&#8482; and iOS&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
+			<!--<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
+			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>-->
+			<blockquote><p class="note">Check our <b>Android</b>&#8482; and <b>iOS</b>&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
 			<p></p>
 			
 			</div>
@@ -74,15 +62,15 @@
 
 		<div class="post">
 			<span class="meta">
-			<h3>Login below&nbsp;&nbsp; |&nbsp;&nbsp; <font size=-2>New user?&nbsp;&nbsp;</font> <a href='{{ register_url }}'>Register here</a></h3>
+			<h3>Login below&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></h3>
 			{{ msg }}
 			<div class="entry">
 
 			<form name='loginform' method='POST' action='/skillstest/login/'>
-			<b>Username: </b><input type='text' name='username' value='' class='glowing-border'><br />
-			<b>Password: </b><input type='password' name='password' value='' class='glowing-border'><br />
+			<b>Username: </b><input type='text' name='username' value='' class='glowing-border glob-input'><br />
+			<b>Password: </b><input type='password' name='password' value='' class='glowing-border glob-input'><br />
 			{% csrf_token %}
-			<input type='button' name='login' value='Login' onClick='javascript:process_login();' class='glowing-border'>
+			<input type='button' name='login' value='Login' onClick='javascript:process_login();' class='glowing-border btn-gbl btn-suc'>
 			<!-- <input type='checkbox' name='keepmeloggedin' value='1' checked><b><i>Keep me logged in</i></b> -->
 			</form>
 			</div>

@@ -3,19 +3,9 @@
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
 <title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
-<link rel="stylesheet" type="text/css" href="static/css/style.css" />
-<style>
-.glowing-border {
-    border: 2px solid #000088;
-    border-radius: 4px;
-}
+<!-- <link rel="stylesheet" type="text/css" href="static/css/style.css" /> -->
+<link rel="stylesheet" type="text/css" href="static/css/styles.css" />
 
-.glowing-border:focus { 
-    outline: none;
-    border-color: #9ecaed;
-    box-shadow: 0 0 10px #9ecaed;
-}
-</style>
 
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 <script language='JavaScript'>
@@ -186,22 +176,27 @@ function clear_all(){
 
 		<div class="post">
 			<span class="meta">
-			<h3>Register below&nbsp;&nbsp; |&nbsp;&nbsp; <font size=-2>Already a user?&nbsp;&nbsp;</font> <a href='{{ login_url }}'>Sign in here</a></h3>
+			<h3>Register below&nbsp;&nbsp; |&nbsp;&nbsp; <font>Already a user?&nbsp;&nbsp;</font> <a href='{{ login_url }}'>Sign in here</a></h3>
 			{{ msg }}
 			<div class="entry">
 
 			<form name='registerform' method='POST' action="{{ register_url }}" enctype='multipart/form-data'>
-			<b>*Username or Display Name: </b><input type='text' name='username' id='username' value='{{ username }}' onblur='javascript:checkavailability();'  class='glowing-border'><span id='checkuser'></span><br />
-			<b>*Password: </b><input type='password' name='password' value='{{ password }}'  class='glowing-border'><br />
-			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}' class='glowing-border'><br />
-			<b>*Email: </b><input type='text' name='email' value='{{ email }}' class='glowing-border'><i>This will be verified before activating your account.</i><br />
-			<b>Firstname Middlename Lastname: </b><input type='text' name='firstname' value='{{ firstname }}' class='glowing-border'><input type='text' name='middlename' value='{{ middlename }}' max_length=10 class='glowing-border'><input type='text' name='lastname' value='{{ lastname }}' class='glowing-border'><br />
-			<b>*Sex: </b><select name='sex' class='glowing-border'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
-			<b>Mobile Number: </b><input type='text' name='mobilenum' value='{{ mobilenum }}' class='glowing-border'><br />
-			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value='' class='glowing-border'>(will be resized to {{ profpicheight }}x{{ profpicwidth }} pixels.)<br />
+			<b>*Username or Display Name: </b><input type='text' name='username' id='username' value='{{ username }}' onblur='javascript:checkavailability();'  class='glowing-border glob-input'><span id='checkuser'></span><br />
+			<b>*Password: </b><input type='password' name='password' value='{{ password }}'  class='glowing-border glob-input'><br />
+			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}' class='glowing-border glob-input'><br />
+			<b>*Email: </b><input type='text' name='email' value='{{ email }}' class='glowing-border glob-input'><i>This will be verified before activating your account.</i><br />
+			<b>Firstname: </b>
+			<input type='text' name='firstname' value='{{ firstname }}' class='glowing-border glob-input'>
+			<b>Middlename: </b>
+			<input type='text' name='middlename' value='{{ middlename }}' max_length=10 class='glowing-border glob-input'>
+			<b>Lastname: </b>
+			<input type='text' name='lastname' value='{{ lastname }}' class='glowing-border glob-input'><br />
+			<b>*Sex: </b><select name='sex' class='glowing-border glob-input'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype' class='glowing-border glob-input'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
+			<b>Mobile Number: </b><input type='text' name='mobilenum' value='{{ mobilenum }}' class='glowing-border glob-input'><br />
+			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value='' class='glowing-border glob-input'>(will be resized to {{ profpicheight }}x{{ profpicwidth }} pixels.)<br />
 			{% csrf_token %}
-			<input type='button' name='register' value='Register' onClick='javascript:process_register();' class='glowing-border'>
-			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();' class='glowing-border'>
+			<input type='button' name='register' value='Register' onClick='javascript:process_register();' class='glowing-border btn-gbl btn-suc'>
+			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();' class='glowing-border btn-gbl btn-suc'>
 			</form>
 			</div>
 			</span>

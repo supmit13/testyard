@@ -4091,4 +4091,22 @@ Tuesday, January 19, 2021, 22:15 HRS.
 4. git add skillstest/Tests/views.py
 5. git add files_to_commit.txt
 ==========================================
+Wednesday, January 27, 2021, 23:31 HRS. - Improved UI Changes.
+------------------------------------------
+
+1. git add static/images/bg2.jpg
+2. git add static/images/meeting.png
+3. git add static/images/upload.png
+4. git add static/images/newTest.png
+5. git add static/css/styles.css
+6. git add templates/inc/html_head.html
+7. git add templates/authentication/login.html
+8. git add templates/authentication/newuser.html
+9. git add templates/inc/mission_statement.html
+10.git add templates/inc/right_panel.html
+11.git add templates/user/profile.html
+12.git add templates/tests/invitecandidatesform.html
+13.git add templates/tests/tests.html
+14.git add files_to_commit.txt
+==========================================
 
