@@ -4109,4 +4109,11 @@ Wednesday, January 27, 2021, 23:31 HRS. - Improved UI Changes.
 13.git add templates/tests/tests.html
 14.git add files_to_commit.txt
 ==========================================
+Thursday, January 28, 2021, 00:15 HRS.
+------------------------------------------
+
+1. git add templates/authentication/login.html
+2. git add templates/authentication/newuser.html
+3. git add files_to_commit.txt
+==========================================
 
