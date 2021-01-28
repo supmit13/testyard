@@ -4116,4 +4116,13 @@ Thursday, January 28, 2021, 00:15 HRS.
 2. git add templates/authentication/newuser.html
 3. git add files_to_commit.txt
 ==========================================
+Thursday, January 28, 2021, 11:35 HRS.
+------------------------------------------
+
+1. git add static/css/style.css
+2. git add templates/inc/html_head.html
+3. git add templates/authentication/login.html
+4. git add templates/authentication/newuser.html
+5. git add files_to_commit.txt
+==========================================
 

@@ -1,20 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700&display=swap');
+
 body {
 	margin: 0px;
 	padding: 0px;
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Lato', sans-serif;
 	font-size: 14px;
-	background: #ffffff url('../../static/images/bg.gif') left top repeat-x; 
+	background: #ffffff url('../../static/images/bg2.jpg') left top repeat-x; 
 	color: #1e1e1e;
 }
 
-p {
+p.note {
 	margin: 14px 0px 14px 0px;
 	padding: 0px;
 	line-height: 130%;
+	font-family: 'Poppins', sans-serif;
+	color: #666;
+    font-weight: 300;
+}
+p{
+	font-family: 'Lato', sans-serif;
 }
 
 a, a:visited, a:active {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Poppins', sans-serif;
 	color: #1b6c8f;
 	text-decoration: none;
 }
@@ -70,7 +79,7 @@ img.alignleft {
 }
 
 #header h1, #header h1 a, #header h1 a:visited, #header h1 a:active, #header h1 a:hover {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Poppins', sans-serif;
 	letter-spacing: -1px;
 	color: #175c7a;
 	font-size: 52px;
@@ -110,26 +119,33 @@ img.alignleft {
 	float: left;
 	display: block;
 	color: #ffffff;
-	background: url('../../static/images/bbg.gif') top left repeat-x;
-	font-weight: bold;
-	font-size: 13px;
+	/*background: url('../../static/images/bbg.gif') top left repeat-x;*/
+	font-weight: 400;
+	font-size: 11px;
 	text-decoration: none;
-	margin: 1px 2px 0px 2px;
-	padding: 10px 25px 10px 25px;
+	margin: 0px 2px 0px 2px;
+	padding: 6px 6px 6px 6px;
+	background: #9ecaed;
+    color: #003044;
+    border-radius: 17px;
+    border: 2px solid #fff;
+	min-width:100px;
+	text-align:center;
 }
 
 #topmenu li a.highlight, #topmenu li a:visited.highlight, #topmenu li a:active.highlight {
 	background: #ffffff;
-	color: #1e1e1e;
-	padding: 10px 24px 10px 24px;
-	margin: 0px 2px 0px 2px;
-	border-left: 1px solid #52b4dc;
-	border-right: 1px solid #52b4dc;
-	border-top: 1px solid #52b4dc;
+	color: #09445D;
+	padding: 6px 19px 6px 19px;
+	margin: 0px 5px 0px 5px;
+	box-shadow: 0px 0px 0px 2px rgb(255 255 255 / 70%);
 }
 
 #topmenu li a:hover {
-	text-decoration: underline;
+	text-decoration: none;
+	background: #ffffff;
+	color: #09445D;
+	box-shadow: 0px 0px 0px 2px rgb(255 255 255 / 70%);
 }
 
 #content {
@@ -150,9 +166,21 @@ img.alignleft {
 	margin: 0px;	
 	padding: 6px 0px 12px 0px;
 }
+.entry > form b{
+	color:#004cab;
+}
+.actLink{
+	display:flex;
+}
+.actLink h3{
+	margin-right: 18px;
+    background: #f0f0f0;
+    padding: 10px 15px;
+	border-radius:8px;
+}
 
 #content h2 {
-	font-family: Arial, Helvetica, sans-serif;
+	font-family: 'Poppins', sans-serif;
 	font-size: 25px;
 	text-decoration: none;
 	letter-spacing: -1px;
@@ -370,4 +398,73 @@ h3 {
 
 #content2 a:hover {
 	text-decoration: underline;
+}
+.glob-input{
+	height: 30px;
+    width: 100%;
+    margin-bottom: 15px;
+    border: 1px solid #868686;
+    border-radius: 8px;
+}
+.btn-gbl{
+	padding: 6px 20px;
+    box-shadow: none;
+    outline: none;
+    border-radius: 8px;
+	font-size:16px;
+	border: 1px solid #868686;
+}
+.btn-suc{
+	background: #1b83ab;
+	color: #fff;
+}
+.btn-suc:hover, .btn-suc:active, .btn-suc:focus{
+	background: #025676;
+}
+.testtabUl {
+	border:none !important;
+	background-color:transparent !important;
+}
+ul.tab li a{
+	background: #0489ca;
+    margin-right:5px;
+	padding: 8px 16px;
+	color: #d6d6d6;
+	border-radius: 8px;
+}
+ul.tab li a:hover, ul.tab li a.active, ul.tab li a:active, ul.tab li a:focus{
+	background: #005680;
+	color: #fff;
+}
+.input-height-60{
+	height:60px;
+}
+.blue{
+	color:#0048a1;
+}
+#testsascreator > h3, #testsasevaluator > h3, #testsascandidate > h3,#interviewsconducted > h3,#interviewsattended > h3{
+	color:#0048a1;
+}
+.tabcontent{
+	border: none;
+}
+#testsascreator > table td, #testsasevaluator > table td, #testsascandidate > table td,#interviewsconducted > table td,#interviewsattended > table td{
+	border: none;
+	border-bottom: 1px solid #c2c2c2;
+	border-right: 1px solid #c2c2c2;
+}
+.th{
+	background:#005680;
+	
+}
+.th td{
+	padding: 13px 5px;
+	color: #ffffff;
+}
+.btn-invite{
+	float: left;
+    margin-right: 5px;
+}
+.max350{
+	max-width: 350px;
 }
