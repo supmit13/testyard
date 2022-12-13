@@ -1,0 +1,104 @@
+
+<html>
+<head>
+<title>Payment Process - Step #1</title>
+<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+<script language='JavaScript'>
+function makepayment_payu(){
+    if(document.frmpaymentconfirm.buyeremail.value.trim() == ""){
+	alert("Buyer email may not be empty");
+	document.frmpaymentconfirm.buyeremail.focus();
+	return (false);
+    }
+    numericpattern = new RegExp("^\\d+$");
+    if(document.frmpaymentconfirm.buyerphone.value.trim() == "" || !numericpattern.test(document.frmpaymentconfirm.buyerphone.value)){
+	alert("Buyer Phone may not be empty and has to have a numeric value");
+	document.frmpaymentconfirm.buyerphone.focus();
+	return (false);
+    }
+    document.frmpaymentconfirm.btnnojoin.disabled = true;
+    document.frmpaymentconfirm.btnconfirmpayment_payu.disabled = true;    
+    targeturl = document.frmpaymentconfirm.action;
+    postdata = "";
+    allelements = document.frmpaymentconfirm.elements;
+    for(var i=0; i < allelements.length;i++){
+        postdata += allelements[i].name + "=" + encodeURI(allelements[i].value) + "&";
+    }
+    //alert(postdata);
+    var xmlhttp;
+    waiterspan = document.getElementById('waiter');
+    if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+	    waiterspan.innerHTML = "";
+	    payu_url = xmlhttp.responseText;
+	    payuwin = window.open(payu_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+            //self.close();
+        }
+    };
+    xmlhttp.open('POST', targeturl, true);
+    xmlhttp.send(postdata);
+    waiterspan.innerHTML = "<img src='static/images/loading_small.gif'><font size=-2>processing... please wait</font>";
+}
+
+
+function makepayment_paypal(){
+    if(document.frmpaymentconfirm.buyeremail.value.trim() == ""){
+	alert("Buyer email may not be empty");
+	document.frmpaymentconfirm.buyeremail.focus();
+	return (false);
+    }
+    numericpattern = new RegExp("^\\d+$");
+    if(document.frmpaymentconfirm.buyerphone.value.trim() == "" || !numericpattern.test(document.frmpaymentconfirm.buyerphone.value)){
+	alert("Buyer Phone may not be empty and has to have a non-numeric value");
+	document.frmpaymentconfirm.buyerphone.focus();
+	return (false);
+    }
+    targeturl = document.frmpaymentconfirm.action;
+}
+</script>
+</head>
+
+<body bgcolor='#669999'>
+
+<form name='frmpaymentconfirm' id='frmpaymentconfirm' method="POST" action="{{payuconfirmurl}}">
+    <table border=0 cellspacing=4 cellpadding=4><tr><td nowrap><font color='#0000AA'  style='font-weight:bold'>Confirm request to join group '{{groupname}}'?</font></td></tr>
+    <tr><td nowrap><font color='#0000AA'  style='font-weight:bold' size=-1>You will be charged USD {{subscription_amt}} for the membership. This is a one time charge.</font></td></tr>
+    <tr><td><input type="hidden" name="continueUrl" value="{{hosturl}}/continue">
+    <input type="hidden" name="currencyCode" value="USD" >
+    <input type="hidden" name="customerIp" value="{{ customer_ip }}" >
+    <input type="hidden" name="description" value="{{order_desc}}" >
+    <input type="hidden" name="merchantPosId" value="{{posId}}" >    
+    <input type="hidden" name="notifyUrl" value="{{hosturl}}/skillstest/subscription/notify/" >
+    <input type="hidden" name="productname" value="{{groupname}}" >
+    <input type="hidden" name="productquantity" value="1" >
+    <input type="hidden" name="productunitprice" value="{{subscription_amt}}">
+    <input type="hidden" name="totalamount" value="{{total_amt}}" >
+    <input type="hidden" name="extOrderId" value="{{extOrderId}}" >
+    <input type="hidden" name="groupid" value="{{groupid}}" >
+    <input type="hidden" name="buyerfirstname" value="{{firstname}}" >
+    <input type="hidden" name="buyerlastname" value="{{lastname}}" >
+    <input type="hidden" name="discountamt" value="{{discountamt}}" ></td></tr>
+    <tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Enter Email (Invoice will be sent to this address):</font><input type='text' name='buyeremail' id='buyeremail' value='{{buyeremail}}' required> </td></tr>
+    <tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Contact Number (Required for transactions through PayU):</font><input type='text' name='buyerphone' id='buyerphone' value='{{buyerphone}}' required> </td></tr>
+    </table>
+    {% csrf_token %}
+    <span style="color:#AA0000;font-weight:bold;">{{paymentnote}}</span>
+    <br /><span id='popupmsg' style="color:#AA0000;font-style:italic;">Please ensure that your popup blocker is turned off. Clicking the above buttons will open a popup window.</span><br />
+    {% if paidflag == 0 %}
+    <center><input type="button" name='btnconfirmpayment_payu' id='btnconfirmpayment_payu' value="Yes, pay using Bank Transfer/Debit/Credit Cards"  onClick="javascript:makepayment_payu();"><span id='waiter'></span>&nbsp;&nbsp;<!-- <input type="button" name='btnconfirmpayment_paypal' id='btnconfirmpayment_paypal' value="Yes, pay using paypal"  onClick="javascript:makepayment_paypal();"> <a href="/#" data-paypal-button="true" onClick='javascript:makepayment_paypal();'>  <img src="//www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Check out with PayPal" /></a> --><span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
+    {% else %}
+    <center><input type="button" name='btnconfirmpayment_payu' id='btnconfirmpayment_payu' value="Yes, pay using Bank Transfer/Debit/Credit Cards"  onClick="javascript:makepayment_payu();" disabled><span id='waiter'></span>&nbsp;&nbsp;<!-- <input type="button" name='btnconfirmpayment_paypal' id='btnconfirmpayment_paypal' value="Yes, pay using paypal"  onClick="javascript:makepayment_paypal();"> <a href="/#" data-paypal-button="true" onClick='javascript:makepayment_paypal();'>  <img src="//www.paypalobjects.com/en_US/i/btn/btn_xpressCheckout.gif" alt="Check out with PayPal" /></a> --><span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
+    {% endif %}
+
+</form >
+</body>
+</html>
+
+

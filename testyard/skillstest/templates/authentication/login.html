@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+
+</head>
+<body>
+
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p>
+
+		<!-- ### Top Menu ### -->
+
+		<div id="topmenu">
+		<ul>
+			<li><a href="{{ profile_url }}"{{ select_profile }}>Profile</a></li>	
+			<!-- <li><a href="{{ dashboard_url }}"{{ select_dashboard }}>Dashboard</a></li>
+			<li><a href="{{ subscription_url }}"{{ select_subscription }}>Subscriptions</a></li> -->
+			<li><a href="{{ tests_url }}"{{ select_tests }}>Tests & Interviews</a></li>	
+			<li><a href="{{ search_url }}"{{ select_search }}>Search</a></li>
+			<li><a href="{{ network_url }}"{{ select_socnet }}>Network</a></li>
+			<li><a href="{{ analytics_url }}"{{ select_analytics }}>Analytics</a></li>
+			<li><a href="{{ aboutus_url }}"{{ select_aboutus }}>About Us</a></li>
+			<li><a href="{{ helpndoc_url }}"{{ select_helpndoc }}>Help</a></li>
+			<li><a href="{{ careers_url }}"{{ select_careers }}>Careers</a></li>	
+		</ul>	
+		</div>
+
+	</div>
+	
+	<div id="contentcontainer">
+	
+		<div id="content">
+
+		<!-- ### Post Entry Begin ###  -->
+		
+		<div class="post">
+			
+			<h2>Welcome to TestYard </h2><h3> {{ curdate }}</h3>
+			
+			
+			<div class="entry">
+			
+			<!--<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
+			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>-->
+			<blockquote><p class="note">Check our <b>Android</b>&#8482; and <b>iOS</b>&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
+			<p></p>
+			
+			</div>
+		
+		</div>
+
+		<!-- ### Post Entry End ### -->
+
+		<!-- ### Post Entry Begin ###  -->
+
+		<div class="post">
+			<span class="meta">
+			<h3>Login below&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></h3>
+			{{ msg }}
+			<div class="entry">
+
+			<form name='loginform' method='POST' action='/skillstest/login/'>
+			<b>Username: </b><input type='text' name='username' value='' class='glowing-border glob-input'><br />
+			<b>Password: </b><input type='password' name='password' value='' class='glowing-border glob-input'><br />
+			{% csrf_token %}
+			<input type='button' name='login' value='Login' onClick='javascript:process_login();' class='glowing-border btn-gbl btn-suc'>
+			<!-- <input type='checkbox' name='keepmeloggedin' value='1' checked><b><i>Keep me logged in</i></b> -->
+			</form>
+			</div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+		
+		
+
+		<div class="postpagesnav">
+		
+		</div>
+		
+		</div>
+		
+		<!-- ### Sidebar Begin ### -->
+
+		
+		<div id="sidebar">
+			
+		<ul>
+
+		<li><h2>Search</h2>
+		<form id="searchform" method="get" action="#">
+			<div>
+			<input type="text" value="" name="s" id="searchfield" />
+			<input type="hidden" id="searchsubmit" value="Search" />
+			</div>
+
+		</form>
+		</li>
+
+		</ul>	
+		
+		</div>
+
+		<!-- ### Sidebar End ### -->
+
+	</div>
+
+<div id="content2">
+	<p>Copyright &copy; 2010 YourSite.com 
+
+	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
+	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
+
+</div>
+
+</div>
+</body>
+</html>

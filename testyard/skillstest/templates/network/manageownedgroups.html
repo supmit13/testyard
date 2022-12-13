@@ -1,0 +1,33 @@
+<script language='JavaScript'>
+	alert({{require_owner_perms}});
+</script>
+<div id="headerpanel">
+    <center><font color='#0000AA' style='font-weight: bold'>{{groupname}}</font> - <font color='#0000AA'><i>{{tagline}}</i> [<a href='#/' onClick='javascript:closescreen("3");' style='color:#0000AA;'>Close Screen</a>]</font></center>
+    <p><div id='descdiv'><span width='70%' align='center' style="width:80%;overflow:auto;word-wrap:break-word;"><i><font size=-1 color='#0000AA'>{{ description }}</font></i></span></div></p>
+</div>
+
+{% if userisowner %}
+<div id='openclose'>
+<font size=-1 color='#0000AA' style='font-weight: bold'>Settings<a href='#/' onClick='javascript:expandcollapsesettings("{{groupimagefile}}", "{{memberscount}}", "{{maxmemberslimit}}", "{{basedontopic}}", "{{grouptype}}", "{{allowentry}}", "{{ispaid}}", "{{entryfee}}",  "{{subscriptionfee}}", "{{adminremarks}}", "{{groupname}}", "{{bankname}}", "{{bankbranch}}", "{{accountownername}}", "{{accountnumber}}", "{{ifsccode}}", "{{currency}}", "{{require_owner_perms}}", "{{gstin}}", "{{subscriptionperiod}}");'> Open</a></font>
+</div>
+<div id="paramspanel" style="">
+</div>
+<br /><br />
+{% if joinrequestsinfo|length > 0 %}
+<div id='showhidejoinrequests'>
+<font size='-1' color='#0000AA' style='font-weight:bold'>Join Requests<a href='#/' onClick="javascript:popupjoinrequests('{{groupname}}', '{{joinrequestsinfo}}', 'open');"> Show</a></font>
+</div>
+{% endif %}
+{% endif %}
+<br /><br />
+<hr>
+{% if groupposts|length > 0 %}
+<div id='showhideposts'>
+<font size=-1 color='#0000AA' style='font-weight: bold'>Group Posts<a href='#/' id = 'postsanchor' onClick="javascript:collapsiblegroupposts('{{groupname}}', '{{groupposts}}', {{postsperpage}});"> Show</a></font>
+</div>
+<div id="grouppostspanel" style="">
+</div>
+<div id='displaymorediv' style=""></div>
+{% endif %}
+<br /><br />
+

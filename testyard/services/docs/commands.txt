@@ -1,0 +1,108 @@
+1. Create a docker container with a certain name - 'testyard' in this case:
+docker run --name testyard -it ubuntu /bin/sh [Start with this command. If the docker container already exists, then go to step 4 command]
+
+2. Remove a named docker container:
+docker rm testyard
+
+3. Stop a docker container:
+Get out of the docker environment using "exit";
+Run 'docker stop testyard'
+where testyard is the name of the container being stopped.
+
+4. Restart a named docker container and get into its environment:
+docker start testyard [Run this when the docker container already exists.]
+where testyard is the name of the docker container.
+
+5. To check what containers are running, do
+docker ps
+To see containers in all states, use:
+docker ps -a
+
+6. The states of a docker container are:
+ a) created
+ b) restarting
+ c) running
+ d) paused
+ e) exited
+ f) dead
+
+7. Checking what is inside a docker container (while the container is running):
+  docker exec -it testyard /bin/bash
+
+8. To install gcc, follow steps in https://gist.github.com/application2000/73fd6f4bf1be6600a2cf9f56315a2d91
+sudo apt-get update && \
+sudo apt-get install build-essential software-properties-common -y && \
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test -y && \
+sudo apt-get update && \
+sudo apt-get install gcc-snapshot -y && \
+sudo apt-get update && \
+sudo apt-get install gcc-6 g++-6 -y && \
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-6 60 --slave /usr/bin/g++ g++ /usr/bin/g++-6 && \
+sudo apt-get install gcc-4.8 g++-4.8 -y && \
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 60 --slave /usr/bin/g++ g++ /usr/bin/g++-4.8;
+
+When completed, you must change to the gcc you want to work with by default. Type in your terminal:
+sudo update-alternatives --config gcc
+
+To verify if it worked. Just type in your terminal
+gcc -v
+
+If everything went fine you should see gcc 6.1.1
+
+9. Install all packages mentioned in "skills_settings.py". This should be done from the command line of the docker. This is displayed when you restarted docker in step #4.
+
+10. Explore https://stackoverflow.com/questions/20813486/exploring-docker-containers-file-system.
+
+11. Creating an image of a docker container: docker commit <container_name>
+This will create a container with the configuration of the container whose image is being created. Once it is created, it has to be tagged with a name.
+The following commands will describe how that is done. However, please note that the commit operation may take a long time depending upon how extensible your docker container is.
+
+12. docker images
+This command will list out all images of containers that are present on the system. This will also show us the new image we created but it will not have a  tag. In order to provide it with a tag, what we need to do is to run the following command.
+
+13. docker tag <image Id> <tag name>
+You will get the image Id from the previous command "docker images" which you will need to use in the place of <image Id> in this command.
+
+14. In order to combine the commands in points 11, 12 and 13, we can use the following command:
+docker commit <image name> <tag name>
+This will automatically create the image of the container in the <image name> with the tag specified in the <tag name> parameter.
+
+15. To run a docker container image, use the following command:
+docker run -it <container image name> /bin/bash
+
+16. In order to get and install expat to read XML data, you should get expat from the following link: https://github.com/libexpat/libexpat/releases
+You need to select the release that you want, and here we are using the https://github.com/libexpat/libexpat/archive/R_2_2_6.tar.gz
+
+17. In order to compile expat downloaded from the  above mentioned links, you must untar them and run "./buildconf.sh" from inside  the expat directory. This will need autoreconf. In case you do not  have it, you can have it using "apt-get install dh-autoreconf". After that, please also install docbook2x using "apt-get install docbook2x".
+
+18. Once you complete running buildconf.sh, you will have the standard "configure" file in the directory and you can set up expat using the following commands:
+	./configure
+	make
+	make install
+
+19. You would need to install docbook2x-man in order to be able to execute the above 'make' command successfully.
+
+20. In order to parse XML using libxml, you need to do the following:
+    apt-get install libxml2
+    apt-get install libxml2-dev
+Then, compile your code using the following:
+    gcc -Wall -o libxmltest $(xml2-config --cflags) $(xml2-config --libs) libxmltest.c  -I/usr/include/libxml2  -lxml2
+where libxmltest.c is your XML parsing code.
+
+gcc -Wall -o libxmltest2 $(xml2-config --cflags) $(xml2-config --libs) libxmltest2.c  -I/usr/include/libxml2  -lxml2
+
+gcc -Wall -o libxmltest3 $(xml2-config --cflags) $(xml2-config --libs) libxmltest3.c  -I/usr/include/libxml2  -lxml2
+
+=====================================================================================
+github repo creation commands:
+
+
+echo "# baseini" >> README.md
+git init
+git add README.md
+git commit -m "first commit"
+git remote add origin https://github.com/supmit13/baseini.git
+git push -u origin master
+
+
+

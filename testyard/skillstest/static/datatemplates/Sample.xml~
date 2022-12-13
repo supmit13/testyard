@@ -1,0 +1,120 @@
+<test>
+	<metadata>
+	  <testname>A Sample Test</testname>
+	  <testtype>COMP</testtype>
+	  <testrules>breaknotallowed#||#responsenoreturn#||#norevisit</testrules>
+	  <testtopic>Database__Management</testtopic>
+	  <othertopicname></othertopicname>
+	  <totalscore>50</totalscore>
+	  <numberofchallenges>5</numberofchallenges>
+	  <eachchallengesamescore>False</eachchallengesamescore>
+	  <incorrectresponsenegativescore>False</incorrectresponsenegativescore>
+	  <passscore>10</passscore>
+	  <testduration>5</testduration>
+	  <testdurationunit>m</testdurationunit>
+	  <maxchallengeduration>5</maxchallengeduration>
+	  <maxchallengedurationunit>m</maxchallengedurationunit>
+	  <evaluatoremailids>supriyo.mitra@rockstand.in,supmit@gmail.com</evaluatoremailids>
+	  <evaluatorgroupname>evalgroup_supriyo</evaluatorgroupname>
+	  <testpublishdate></testpublishdate>
+	  <testactivationdate></testactivationdate>
+	  <testtargetskilllevel>INT</testtargetskilllevel>
+	  <testscope></testscope>
+	  <answeringlanguage></answeringlanguage>
+	  <programmingenvironment>False</programmingenvironment>
+	  <needssoundimage>True</needssoundimage>
+	  <randomsequencing>True</randomsequencing>
+	  <allowmultipleattempts>True</allowmultipleattempts>
+	  <maxattemptsallowed>5</maxattemptsallowed>
+	  <intervalbetweenattempts>1</intervalbetweenattempts>
+	  <intervalunits>M</intervalunits>
+	</metadata>
+
+	<challenge>
+	  <challengestatement>What is a test in TestYard?</challengestatement>
+	  <challengescore>10</challengescore>
+	  <challengeallocatedtime></challengeallocatedtime>
+	  <negativescore></negativescore>
+	  <challengeimagepath>/home/supriyo/work/existing_project/rocksocialrest/rocksocialrest/media/uploads/books/imageresized/101_Mystics_of_India_128x192.jpg</challengeimagepath>
+	  <externalresourcepath></externalresourcepath>
+	  <challengetype>MULT</challengetype>
+	  <compulsoryforuser>False</compulsoryforuser>
+	  <morethanoneoptioncorrect>True</morethanoneoptioncorrect>
+	  <challengequality>INT</challengequality>
+	  <correctresponse>It is a free-form test.</correctresponse>
+	  <option_1>It is just a zzzzzzzz test.</option_1>
+	  <option_2>It is not a test.</option_2>
+	  <option_3>It is a free-form test.</option_3>
+  	  <option_4>It is a 'test' with a capital T.</option_4>
+	  <option_5>None of the above</option_5>
+	</challenge>
+
+	<challenge>
+	  <challengestatement>Why do you want to use TestYard to create a test?</challengestatement>
+	  <challengescore>10</challengescore>
+	  <challengeallocatedtime></challengeallocatedtime>
+	  <negativescore></negativescore>
+	  <challengeimagepath>/home/supriyo/work/existing_project/rocksocialrest/rocksocialrest/media/uploads/books/imageresized/Aarogya_Spandan_Marathi_November_2013_80x120.jpg</challengeimagepath>
+	  <externalresourcepath></externalresourcepath>
+	  <challengetype>MULT</challengetype>
+	  <compulsoryforuser>False</compulsoryforuser>
+	  <morethanoneoptioncorrect>True</morethanoneoptioncorrect>
+	  <challengequality>PRO</challengequality>
+	  <correctresponse>Because the score from a TestYard test can be shared across a group with a looking for similar skills|Because a TestYard test can be used as a skills filtering layer</correctresponse>
+	  <option_1>Because a TestYard test is easy</option_1>
+	  <option_2>Because the score from a TestYard test can be shared across a group with a looking for similar skills</option_2>
+	  <option_3>Because a TestYard test id difficult</option_3>
+  	  <option_4>Because a TestYard test can be used as a skills filtering layer</option_4>
+	  <option_5>All of the above</option_5>
+	</challenge>
+
+	<challenge>
+	  <challengestatement>When would you want to use a TestYard test?</challengestatement>
+	  <challengescore>10</challengescore>
+	  <challengeallocatedtime></challengeallocatedtime>
+	  <negativescore></negativescore>
+	  <challengeimagepath>/home/supriyo/work/existing_project/rocksocialrest/rocksocialrest/media/uploads/books/imageresized/Aarogya_Spandan_Marathi_November_2013_80x120.jpg</challengeimagepath>
+	  <externalresourcepath></externalresourcepath>
+	  <challengetype>SUBJ</challengetype>
+	  <compulsoryforuser>True</compulsoryforuser>
+	  <morethanoneoptioncorrect></morethanoneoptioncorrect>
+	  <challengequality></challengequality>
+	  <correctresponse></correctresponse>
+	</challenge>
+
+	<challenge>
+	  <challengestatement>What is so special about a TestYard test?</challengestatement>
+	  <challengescore>10</challengescore>
+	  <challengeallocatedtime></challengeallocatedtime>
+	  <negativescore></negativescore>
+	  <challengeimagepath></challengeimagepath>
+	  <externalresourcepath></externalresourcepath>
+	  <challengetype>CODN</challengetype>
+	  <compulsoryforuser>False</compulsoryforuser>
+	  <morethanoneoptioncorrect></morethanoneoptioncorrect>
+	  <challengequality>INT</challengequality>
+	  <correctresponse></correctresponse>
+	</challenge>
+
+	<challenge>
+	  <challengestatement>Why would I want to become a member on TestYard?</challengestatement>
+	  <challengescore>10</challengescore>
+	  <challengeallocatedtime></challengeallocatedtime>
+	  <negativescore></negativescore>
+	  <challengeimagepath></challengeimagepath>
+	  <externalresourcepath>http://www.testyard.com/</externalresourcepath>
+	  <challengetype>MULT</challengetype>
+	  <compulsoryforuser></compulsoryforuser>
+	  <morethanoneoptioncorrect>True</morethanoneoptioncorrect>
+	  <challengequality></challengequality>
+	  <correctresponse>Because it makes my life easier with recruiting skilled individuals|Because I find similarly skilled individuals easier from the groups</correctresponse>
+	  <option_1>Because I find similarly skilled individuals easier from the groups</option_1>
+	  <option_2>Another option</option_2>
+	  <option_3>Because it makes my life easier with recruiting skilled individuals</option_3>
+  	  <option_4>Yet another option</option_4>
+	  <option_5>A fifth option</option_5>
+	  <option_6>None of the above</option_6>
+	</challenge>
+</test>
+
+

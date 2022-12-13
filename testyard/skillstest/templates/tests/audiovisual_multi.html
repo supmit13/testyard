@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+/*
+
+  webrtc_polyfill.js by Rob Manson
+  NOTE: Based on adapter.js by Adam Barth
+
+  The MIT License
+
+  Copyright (c) 2010-2013 Rob Manson, http://buildAR.com. All rights reserved.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+*/
+
+var webrtc_capable = true;
+var rtc_peer_connection = null;
+var rtc_session_description = null;
+var get_user_media = null;
+var connect_stream_to_src = null;
+var stun_server = "stun.l.google.com:19302";
+
+if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
+  if (typeof RTCPeerConnection == 'undefined'){
+      rtc_peer_connection = webkitRTCPeerConnection;
+  }
+  else {
+  rtc_peer_connection = RTCPeerConnection;
+  }
+  rtc_session_description = RTCSessionDescription;
+  get_user_media = navigator.getUserMedia.bind(navigator);
+  connect_stream_to_src = function(media_stream, media_element) {
+    // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21606
+    media_element.srcObject = media_stream;
+    media_element.play();
+  };
+} 
+else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
+  rtc_peer_connection = mozRTCPeerConnection;
+  rtc_session_description = mozRTCSessionDescription;
+  get_user_media = navigator.mozGetUserMedia.bind(navigator);
+  connect_stream_to_src = function(media_stream, media_element) {
+    media_element.mozSrcObject = media_stream;
+    media_element.play();
+  };
+ stun_server = "74.125.204.127:19302";
+} 
+else if (navigator.webkitGetUserMedia) { // early webkit webrtc implementation
+  rtc_peer_connection = webkitRTCPeerConnection;
+  rtc_session_description = RTCSessionDescription;
+  get_user_media = navigator.webkitGetUserMedia.bind(navigator);
+  connect_stream_to_src = function(media_stream, media_element) {
+    media_element.src = webkitURL.createObjectURL(media_stream);
+  };
+} 
+else {
+  alert("This browser does not support WebRTC - visit WebRTC.org for more info");
+  webrtc_capable = false;
+}
+</script>
+<script>
+/*
+
+
+
+  The MIT License
+
+  Copyright (c) 2010-2013 Rob Manson, http://buildAR.com. All rights reserved.
+
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in
+  all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  THE SOFTWARE.
+
+*/
+
+var call_token; // unique token for this call
+var signaling_server; // signaling server for this call
+var peer_connection; // peer connection object
+var okstatus = false;
+i = 0;
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  for (var i = 0; i < 1e7; i++) {
+    if ((new Date().getTime() - start) > milliseconds){
+      break;
+    }
+  }
+}
+
+// setup stream from the local camera 
+function setup_video() {
+  get_user_media(
+    { 
+      "audio": true, // request access to local microphone
+      "video": true  // request access to local camera
+    }, 
+    function (local_stream) { // success callback
+      // display preview from the local camera & microphone using local <video> MediaElement
+      connect_stream_to_src(local_stream, document.getElementById("local_video"));
+      // add local camera stream to peer_connection ready to be sent to the remote peer
+      peer_connection.addStream(local_stream);
+    },
+    log_error
+  );
+}
+
+// generic error handler
+function log_error(error) {
+  console.log(error);
+}
+
+function start() {
+  peer_connection = new rtc_peer_connection({ // RTCPeerConnection configuration 
+    "iceServers": [ 
+      { "url": "stun:"+stun_server }, // stun server info
+    ]
+  });
+
+  // generic handler that sends any ice candidates to the other peer for candidate
+  peer_connection.onicecandidate = function (ice_event) {
+    var token = "{{hashtoken}}";
+    call_token = "#"+token;
+    if (ice_event.candidate) {
+      signaling_server.send(
+        JSON.stringify({
+          token: call_token,
+          type: "new_ice_candidate",
+          candidate: ice_event.candidate ,
+        })
+      );
+    }
+  };
+
+  // generic handler to send ice candidates (interviewers) to other peers
+  {% for i in max_interviewers_count %}
+     peer_connection.onicecandidate = function (ice_event) {
+     var token = "{{ihashtoken}}";
+     call_token = "#"+token;
+     if (ice_event.candidate) {
+       signaling_server.send(
+        JSON.stringify({
+          token: call_token,
+          type: "new_ice_candidate",
+          candidate: ice_event.candidate ,
+        })
+      );
+     }
+   };
+  {% endfor %}
+  // display remote video streams when they arrive using local <video> MediaElement
+  
+  peer_connection.onaddstream = function (event) {
+    connect_stream_to_src(event.stream, document.getElementById("remote_video" + i));
+    // hide placeholder and show remote video
+    //document.getElementById("loading_state").style.display = "none";
+    //document.getElementById("open_call_state").style.display = "block";
+  };
+
+  // setup stream from the local camera 
+  setup_video();
+
+  //signaling_server = new WebSocket("wss://54.201.126.160:8888");
+  //signaling_server = new WebSocket("wss://122.161.84.190:8888"); // My system IP on the internet.
+  //signaling_server = new WebSocket("wss://192.168.1.10:8888");
+  signaling_server = new WebSocket("wss://testyard.in:8888");
+  if (document.location.hash === "" || document.location.hash === undefined || document.location.hash === "#/") { // you are the Caller
+    var token = "{{hashtoken}}";
+    call_token = "#"+token;
+    document.location.hash = token;
+    //alert(document.location.hash);
+    signaling_server.onopen = function() {
+      signaling_server.onmessage = caller_signal_handler;
+      signaling_server.send(
+        JSON.stringify({ 
+          token:call_token,
+          type:"join",
+        })
+      );
+      /* Code below is not required */
+      /*signaling_server.send(
+        JSON.stringify({ 
+          token:call_token,
+          type:"callee_arrived",
+        })
+      );*/
+    }
+
+    document.title = "Calling target... Please wait";
+  }
+  
+  attendpattern = new RegExp("attend=");
+  matchres = attendpattern.exec(document.location);
+  //alert(matchres);
+  if(matchres){
+    
+    call_token = document.location.hash;
+    signaling_server.onopen = function() {
+      // setup caller signal handler
+      signaling_server.onmessage = callee_signal_handler;
+
+      // tell the signaling server you have joined the call 
+      signaling_server.send(
+        JSON.stringify({ 
+          token:call_token,
+          type:"join",
+        })
+      );
+
+      // let the caller know you have arrived so they can start the call
+      signaling_server.send(
+        JSON.stringify({ 
+          token:call_token,
+          type:"callee_arrived",
+        })
+      );
+    }
+
+    document.title = "Receiving the call...";
+    //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
+    document.captureinterview.btnstartcapture.disabled= true;
+    //document.captureinterview.btnstopcapture.disabled= true;
+  }
+
+}
+
+/* functions used above are defined below */
+
+// handler to process new descriptions
+function new_description_created(description) {
+  peer_connection.setLocalDescription(
+    description, 
+    function () {
+      signaling_server.send(
+        JSON.stringify({
+          token:call_token,
+          type:"new_description",
+          sdp:description 
+        })
+      );
+    }, 
+    log_error
+  );
+}
+
+// handle signals as a caller
+function caller_signal_handler(event) {
+  var signal = JSON.parse(event.data);
+  
+  if (signal.type === "callee_arrived") {
+    alert("Callee arrived. Please click ok to continue");
+    peer_connection.createOffer(
+      new_description_created, 
+      log_error
+    );
+  } 
+  else if (signal.type === "new_ice_candidate") {
+    //alert("Click OK to continue. You need to do this a few times till the connection gets established.");
+    peer_connection.addIceCandidate(
+      new RTCIceCandidate(signal.candidate)
+    );
+  } 
+  else if (signal.type === "new_description") {
+    //alert("Click OK to continue.");
+    peer_connection.setRemoteDescription(
+      new rtc_session_description(signal.sdp), 
+      function () {
+         // extend with your own custom answer handling here - Testing.
+      },
+      log_error
+    );
+    if (peer_connection.remoteDescription.type == "answer") {
+	  connect_stream_to_src(event.stream, document.getElementById("remote_video" + i));
+    }
+  } 
+  else {
+    // extend with your own signal types here
+    alert(signal.type); 
+  }
+}
+
+// handle signals as a callee
+function callee_signal_handler(event) {
+  var signal = JSON.parse(event.data);
+  if (signal.type === "new_ice_candidate") {
+    peer_connection.addIceCandidate(
+      new RTCIceCandidate(signal.candidate)
+    );
+  } 
+  else if (signal.type === "new_description") {
+    peer_connection.setRemoteDescription(
+      new rtc_session_description(signal.sdp), 
+      function () {
+        if (peer_connection.remoteDescription.type == "offer") {
+          peer_connection.createAnswer(new_description_created, log_error);
+        }
+      },
+      log_error
+    );
+  } 
+  else {
+    // extend with your own signal types here
+  }
+}
+i+= 1;
+</script>
+<!--
+<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+<script src="https://cdn.webrtc-experiment.com/getScreenId.js"></script>
+<script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
+-->
+
+<script src="static/webaudiovisual/webrtc/RecordRTC.js"></script>
+<script src="static/webaudiovisual/webrtc/getScreenId.js"></script>
+<script src="static/webaudiovisual/webrtc/gumadapter.js"></script>
+
+<script>
+	    var params = {},r = /([^&=]+)=?([^&]*)/g;
+            (function() {
+                var params = {},
+                    r = /([^&=]+)=?([^&]*)/g;
+                function d(s) {
+                    return decodeURIComponent(s.replace(/\+/g, ' '));
+                }
+                var match, search = window.location.search;
+                while (match = r.exec(search.substring(1))) {
+                    params[d(match[1])] = d(match[2]);
+                    if(d(match[2]) === 'true' || d(match[2]) === 'false') {
+                        params[d(match[1])] = d(match[2]) === 'true' ? true : false;
+                    }
+                }
+                window.params = params;
+            })();
+            
+
+            function addStreamStopListener(stream, callback) {
+                var streamEndedEvent = 'ended';
+                if ('oninactive' in stream) {
+                    streamEndedEvent = 'inactive';
+                }
+                stream.addEventListener(streamEndedEvent, function() {
+                    callback();
+                    callback = function() {};
+                }, false);
+
+                stream.getAudioTracks().forEach(function(track) {
+                    track.addEventListener(streamEndedEvent, function() {
+                       callback();
+                       callback = function() {};
+                    }, false);
+                });
+
+                stream.getVideoTracks().forEach(function(track) {
+                    track.addEventListener(streamEndedEvent, function() {
+                        callback();
+                        callback = function() {};
+                    }, false);
+                });
+            }
+</script>
+<script type="text/javascript">
+var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+</script>
+<script>
+recordingDIV = document.querySelector('.recordrtc');
+
+// This will execute when the user clicks on the button labelled "Start Recording".
+// The button will be in this state at the begining of the session, or if the user
+// resumes a session after a break.
+function startCapture(){
+  var recordingPayerlist = document.getElementsByTagName('video');
+  
+  recordingPlayer = null;
+  if (recordingPayerlist.length > 0){
+    recordingPlayer = recordingPayerlist[0];
+  }
+  var mimeType = 'video/webm';
+  //var mimeType = 'video/mp4';
+  var button = document.captureinterview.btnstartcapture;
+  
+  if(button.innerHTML == "Start Recording"){
+    button.innerHTML = "Stop Recording";
+    button.onclick = stopCapture;
+  }
+  else{ // We are not in appropriate state. So do nothing except for changing the button's face value to "Start Recording".
+    button.innerHTML = "Start Recording";
+    return;
+  }
+  var commonConfig = {
+    onMediaCaptured: function(stream){
+      button.stream = stream;
+      msgdiv = document.getElementById('msg');
+      msgdiv.innerHTML = "<span style='color: blue;align:center;'>Started Recording...</span>";
+      if(button.mediaCapturedCallback) {
+        button.mediaCapturedCallback();
+      }
+    },
+    onMediaStopped: function() {
+      button.innerHTML = "Start Recording";
+    },
+    onMediaCapturingFailed: function(err){
+      console.log(err);
+      alert("Media Capturing Failed: " + err);
+    }
+  };
+
+function captureAudioPlusVideo(config) {
+  //alert("In captureAudio+Video");
+  captureUserMedia({video: true, audio: true}, function() {
+  remote_player = document.getElementById('remote_video1'); // Remote video1 is candidate's video
+  audioVideoStream = remote_player.srcObject;
+  remote_player.play();
+  config.onMediaCaptured(audioVideoStream);
+  //alert("audioVideoStream = " + audioVideoStream);
+  addStreamStopListener(audioVideoStream, function() {
+    config.onMediaStopped();
+  });
+  }, function(error) {
+  config.onMediaCapturingFailed(error);
+  });
+}
+
+
+function captureAudio(config) {
+  captureUserMedia({audio: true}, function() {
+    remote_player = document.getElementById('remote_video1');
+    audioStream = remote_player.srcObject;
+    remote_player.play();
+    config.onMediaCaptured(audioStream);
+    addStreamStopListener(audioStream, function() {
+        config.onMediaStopped();
+    });
+    }, function(error) {
+    config.onMediaCapturingFailed(error);
+  });
+  canvas = document.getElementById('snapshot');
+  takepicture(canvas);
+}
+
+
+function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+  var isBlackBerry = !!(/BB10|BlackBerry/i.test(navigator.userAgent || ''));
+  if(isBlackBerry && !!(navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia)) {
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+    navigator.getUserMedia(mediaConstraints, successCallback, errorCallback);
+    return;
+  }
+  navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+}
+
+  
+  captureAudioPlusVideo(commonConfig);
+  /*button.mediaCapturedCallback = function(){
+    //alert("Type of MediaRecorder: " + typeof MediaRecorder);
+    if(typeof MediaRecorder === 'undefined') { // opera or chrome etc.
+      button.recordRTC = [];
+      //alert("params: " + params.bufferSize);
+      if(!params.bufferSize){
+         // it fixes audio issues whilst recording 720p
+         params.bufferSize = 16384;
+      }
+      var options = {
+        type: 'audio',
+        bufferSize: typeof params.bufferSize == 'undefined' ? 0 : parseInt(params.bufferSize),
+        sampleRate: typeof params.sampleRate == 'undefined' ? 44100 : parseInt(params.sampleRate),
+        leftChannel: params.leftChannel || false,
+        disableLogs: params.disableLogs || false,
+        recorderType: webrtcDetectedBrowser === 'edge' ? StereoAudioRecorder : null
+      };
+      if(typeof params.sampleRate == 'undefined') {
+        delete options.sampleRate;
+      }
+      remote_player = document.getElementById('remote_video');
+      var audioRecorder = RecordRTC(button.stream, options);
+      var videoRecorder = RecordRTC(button.stream,  { type : 'video',
+                           disableLogs : params.disableLogs || false,
+                           canvas : {
+                                   width : params.canvas_width || 320,
+                                   height : params.canvas_height || 240
+                           },
+                           frameInterval : typeof params.frameInterval !== 'undefined' ? parseInt(params.frameInterval) : 20
+      });
+
+      videoRecorder.initRecorder(function(){
+        audioRecorder.initRecorder(function(){
+          audioRecorder.startRecording();
+          videoRecorder.startRecording();
+        });
+      });
+      button.recordRTC.push(audioRecorder, videoRecorder);
+      alert(audioRecorder);
+      button.recordingEndedCallback = function(){
+        var audio = new Audio();
+        audio.src = audioRecorder.toURL();
+        audio.controls = true;
+        audio.autoplay = true;
+
+        audio.onloadmetadata = function(){
+	  alert("Video Recorder URL: " + videoRecorder.toURL());
+          remote_player.src = videoRecorder.toURL();
+          remote_player.play();
+        };
+        remote_player.parentNode.appendChild(document.createElement('hr'));
+        remote_player.parentNode.appendChild(audio);
+        if (audio.paused) audio.play();
+      };
+      return;
+    }
+    
+    button.recordRTC = RecordRTC( button.stream, {
+      type : 'video',
+      mimeType : mimeType,
+      disableLogs : params.disableLogs || false,
+      getNativeBlobs : true
+    });
+    
+    button.recordingEndedCallback = function (url){
+      remote_player.muted = false;
+      remote_player.removeAttribute('muted');
+      remote_player.src = url;
+      remote_player.play();
+      remote_player.onended = function(){
+        remote_player.pause();
+        remote_player.src = URL.createObjectURL(button.recordRTC.blob);
+        //alert ("Recording player.src = " + remote_player.src);
+      };
+    };
+  button.recordRTC.startRecording();
+};
+*/
+  
+  captureAudio(commonConfig);
+  button.mediaCapturedCallback = function() {
+        var options = {
+            type: 'audio',
+            mimeType: mimeType,
+            bufferSize: typeof params.bufferSize == 'undefined' ? 0 : parseInt(params.bufferSize),
+            sampleRate: typeof params.sampleRate == 'undefined' ? 44100 : parseInt(params.sampleRate),
+            leftChannel: params.leftChannel || false,
+            disableLogs: params.disableLogs || false,
+            recorderType: webrtcDetectedBrowser === 'edge' ? StereoAudioRecorder : null
+        };
+
+        if(typeof params.sampleRate == 'undefined') {
+            delete options.sampleRate;
+        }
+
+        button.recordRTC = RecordRTC(button.stream, options);
+        button.recordRTC.startRecording();
+    }; // End of button.mediaCapturedCallback...
+   
+} // Function 'startCapture' ends.
+
+
+// Function to stop capturing the stream. Additionally, this function is 
+// also responsible for uploading the video captured to the server.
+function stopCapture(){
+  btn = document.captureinterview.btnstartcapture;
+  btn.innerHTML = "Start Recording";
+  btn.onclick = startCapture;
+  function stopStream() {
+    if(btn.stream && btn.stream.stop) {
+      btn.stream.stop();
+      btn.stream = null;
+    }
+  }
+  if(btn.recordRTC){
+    if(btn.recordRTC.length){
+      btn.recordRTC[0].stopRecording(function(url) {
+        var audio = new Audio();
+  	audio.src = url;
+  	audio.controls = true;
+        if(!btn.recordRTC[1]){
+	  btn.recordRTC[0].blob = audio;
+          btn.recordRTC[0].save("{{interviewfilename}}");
+          alert("Saved recording...");
+	  //uploadInterviewData(audio, "mp4");
+          return;
+        }
+	else{
+          btn.recordRTC[1].stopRecording(function(url) {
+	  btn.recordRTC[1].blob = audio;
+          btn.recordRTC[1].save("{{interviewfilename}}");
+	  alert("Saved recording...");
+	  //uploadInterviewData(audio, "mp4");
+          });
+	}
+      }); // end of function(url){...
+    }
+    else{
+      btn.recordRTC.stopRecording(function(url) {
+	var audio = new Audio();
+  	audio.src = url;
+  	audio.controls = true;
+	btn.recordRTC.blob = audio;
+        btn.recordRTC.save("{{interviewfilename}}");
+        alert("Saved recording.");
+	//uploadInterviewData(audio, "mp4");
+      });
+    }
+  }
+  msgdiv = document.getElementById('msg');
+  msgdiv.innerHTML = "";
+  return;
+}
+
+
+
+
+function clearphoto(canvas) {
+    var context = canvas.getContext('2d');
+    context.fillStyle = "#AAA";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+
+    var data = canvas.toDataURL('image/png');
+    photo.setAttribute('src', data);
+}
+
+
+function saveAs(data){
+  var download = document.createElement('a');
+  download.setAttribute('href', data);
+  interviewfname = "{{interviewfilename}}";
+  fnameparts = interviewfname.split(".");
+  fnameparts.pop();
+  fnameparts.push('png');
+  imgfname = fnameparts.join(".");
+  download.setAttribute('download', imgfname);
+  download.click();
+}
+
+
+// The function below facilitates the upload of the image and the 
+// audio captured. The first argument is the content (either audio
+// or image) and the second argument specifies the type of data
+// being uploaded (either "png" or "mp4").
+function uploadInterviewData(data, type){
+  csrftoken = document.captureinterview.csrfmiddlewaretoken.value;
+  var frmdata = new FormData();
+  frmdata.append("csrfmiddlewaretoken", csrftoken);
+  if(type == "png"){
+    interviewfname = "{{interviewfilename}}";
+    fnameparts = interviewfname.split(".");
+    fnameparts.pop();
+    fnameparts.push('png');
+    imgfname = fnameparts.join(".");
+    //frmdata.append("image", data);
+    frmdata.append("image", Base64.encode(data));
+    frmdata.append("filename", imgfname);
+  }
+  else if(type == "mp4"){
+    //frmdata.append("audio", data);
+    frmdata.append("audio", Base64.encode(data));
+    frmdata.append("filename", "{{interviewfilename}}");
+  }
+  else{ //Unrecognized type element - ignore it.
+  }
+  frmdata.append('hashtoken', "{{hashtoken}}");
+  frmdata.append('interviewlinkid', "{{interviewlinkid}}");
+  // Now create an HTTP Post request and send the data to the server
+  var xmlhttp;
+  if (window.XMLHttpRequest){
+    xmlhttp=new XMLHttpRequest();
+  }
+  else{
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  xmlhttp.onreadystatechange = function(){
+  if(xmhttp.readyState == 4){
+    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	upload_record_div = document.getElementById('upload_record');
+	upload_record_div.innerHTML = "";
+        //alert(xmlhttp.responseText);
+    }
+	win = window.open("","evaluationwindow", "width=400, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
+	win.document.write(xmlhttp.responseText);
+    }
+  }
+  xmlhttp.open("POST","{{interview_data_upload_url}}", true);
+  xmlhttp.send(frmdata);
+  upload_record_div = document.getElementById('upload_record');
+  upload_record_div.innerHTML = "<span style='color:#0000AA'>Uploading interview recording data... Please wait!>&nbsp;&nbsp;<img src='static/images/loading_small.gif'></span>"; 
+}
+
+
+function takepicture(canvas) {
+    var context = canvas.getContext('2d');
+    var video = document.getElementById('remote_video');
+    width = 120;
+    height = 120;
+    if (width && height) {
+      canvas.setAttribute('width', width);
+      canvas.setAttribute('height', height);
+      context.drawImage(video, 0, 0, width, height);
+      var data = canvas.toDataURL('image/png');
+      photo.setAttribute('src', data);
+      saveAs(data);
+      //uploadInterviewData(data, "png");
+    } 
+    else {
+      clearphoto(canvas);
+    }
+}
+
+</script>
+
+
+<script type="text/css">
+.center {
+margin: 0 auto;
+}
+</script>
+<style>
+html, body {
+  padding: 0px;
+  margin: 0px;
+  font-family: "Arial","Helvetica",sans-serif;
+}
+#loading_state {
+  position: absolute;
+  top: 45%;
+  left: 0px;
+  width: 100%;
+  font-size: 20px;
+  text-align: center;
+}
+#open_call_state {
+}
+#local_video {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  width: 160px;
+  height: 120px;
+  background: #333333;
+}
+#remote_video {
+  position: absolute;
+  top: 100px;
+  left: 100px;
+  width: 70%;
+  height: 70%;
+  background: #999999;
+}
+</style>
+<style>
+.recordrtc button {
+    font-size: inherit;
+}
+
+.recordrtc button {
+    vertical-align: middle;
+    line-height: 1;
+    padding: 2px 5px;
+    height: auto;
+    font-size: inherit;
+    margin: 0;
+}
+</style>
+</head>
+<body onload="start()" onbeforeunload="stopCapture();"> 
+  <div id="loading_state">
+    loading... 
+  </div>
+  <div id='upload_record'>
+  </div>
+  <div id='msg'>
+  </div>
+  <div id="open_call_state" class="center">
+    <video id="remote_video"></video>
+    {% for i in max_interviewers_count %}
+	{% with y=i|stringformat:"i" %}
+        {% with rv_id="remote_video"|add:y %}
+    <video id="{{rv_id}}"></video>
+	{% endwith %}
+	{% endwith %}
+    {% endfor %}
+    <video id="local_video" controls muted></video> 
+  </div>
+  <br />
+  <div align='center'>
+  <form name='captureinterview' id='captureinterview' method='POST'>
+  <button name='btnstartcapture' type='button' onClick='javascript:startCapture();'>Start Recording</button>
+  {% csrf_token %}
+  <canvas id='snapshot' style="display:none;"></canvas>
+  <br /><hr><br />
+  <div class="center">
+    <img id="photo" style="display:none;"/>
+  </div>
+  </form>
+  </div>
+</body>
+</html>
+
+

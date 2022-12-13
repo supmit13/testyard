@@ -1,0 +1,9 @@
+
+<!-- <input type='button' id="start_oauth2" onClick="javascript:window.open('https://wepay.com/v2/oauth2/authorize?client_id={{client_id}}&amp;scope=manage_accounts,collect_payments,view_user,send_money,preapprove_payments&amp;redirect_uri={{redirect_uri}}&amp;user_name={{user_name}}&amp;user_email={{email}}&amp;state=robot&amp;popup=1', 'authwin', 'width=400, height=400, location=yes, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, status=no');" value='Click here to withdraw using WePay gateway'> -->
+
+<a href='#/' id="start_oauth2" onClick="javascript:window.open('https://wepay.com/v2/oauth2/authorize?client_id={{client_id}}&scope=manage_accounts,collect_payments,view_user,send_money,preapprove_payments&redirect_uri={{redirect_uri}}&user_name={{user_name}}&user_email={{email}}&state=robot&popup=1&code={{code}}', 'authwin', 'width=400, height=400, location=yes, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, status=no');">Click here to withdraw using WePay gateway</a>
+
+<div id='status'></div>
+
+
+

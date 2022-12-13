@@ -1,0 +1,139 @@
+Objective-C
+=============
+
+Step #1: apt-get install build-essential clang libblocksruntime-dev libkqueue-dev libpthread-workqueue-dev gobjc libxml2-dev libjpeg-dev libtiff-dev libpng12-dev libcups2-dev libfreetype6-dev libcairo2-dev libxt-dev libgl1-mesa-dev
+
+Step #2: Download GNUstep and libobj2 Sources from the GNUstep Website
+
+It’s important NOT to install the respective Ubuntu packages (gnustep-devel, libobjc2). Instead, download the following from the GNUstep resources site:
+
+    GNUstep Make
+    GNUstep Base
+    GNUstep GUI
+    GNUstep Backend
+
+Additionally, get the latest libobjc2 sources from http://download.gna.org/gnustep/.
+
+Finally, move the files into an install folder, and unpack them there. (I named mine ‘gnustep-dev’ and put it into my home directory.)
+
+Step #3: Change into the unpacked libobjc2 directory and then type the following on your terminal:
+
+export CC=clang
+make
+sudo make install
+
+Note: It’s important to complete the following steps within this terminal session. Otherwise, you need to repeat export CC=clang (set the C compiler to clang instead of gcc) if you continue with a fresh session.
+
+Step #4: Step 4: Install the GNUstep Tools and Libraries
+
+    Install GNUstep Make by changing into the unpacked gnustep-make-x.x.x directory and typing:
+
+    ./configure
+    sudo make install
+
+    Install GNUstep Base by changing into the unpacked gnustep-base-x.x.x directory and typing:
+
+    ./configure
+    make
+    sudo make install
+
+    Install GNUstep GUI by changing into the unpacked gnustep-gui-x.x.x directory and typing:
+
+    ./configure
+    make
+    sudo make install
+
+    Install GNUstep Backend by changing into the unpacked gnustep-back-x.x.x directory and typing:
+
+    ./configure
+    make
+    sudo make install
+
+Step #5:  Install libdispatch-dev
+
+On the terminal, type:
+
+sudo apt-get install libdispatch-dev
+
+Step #6: Try it out
+
+I have set up a simple test program and named it main.m
+
+On the terminal, go into the directory containing main.m and execute the following command to compile the source file:
+
+clang `gnustep-config --objc-flags` -o main -x objective-c main.m -fconstant-string-class=NSConstantString -fobjc-nonfragile-abi -fblocks -lgnustep-base -lgnustep-gui -ldispatch -I/usr/include/GNUstep -L/usr/lib/GNUstep
+
+Finally, execute the built binary by typing:
+
+./main
+
+If everything works correctly, you should see the following terminal output:
+
+2013-02-24 01:08:20.981 main[6710] 21
+Hello, world from a dispatch queue!
+
+Additionally, an alert panel should pop up as seen in the screenshot above.
+=====================================================================================
+
+Lisp Installation Error:
+
+Configure findings:
+  FFI:        no (user requested: default)
+  readline:   yes (user requested: default)
+  libsigsegv: no, consider installing GNU libsigsegv
+./configtesture: libsigsegv was not detected, thus some features, such as
+  generational garbage collection and
+  stack overflow detection in interpreted Lisp code
+cannot be provided.
+Please install libsigsegv like this:
+  mkdir tools; cd tools; prefix=`pwd`/x86_64-unknown-linux-gnu
+  wget http://ftp.gnu.org/pub/gnu/libsigsegv/libsigsegv-2.8.tar.gz
+  tar xfz libsigsegv-2.8.tar.gz
+  cd libsigsegv-2.8
+  ./configure --prefix=${prefix} && make && make check && make install
+  cd ../..
+  rm -f src/config.cache
+  ./configure --with-libsigsegv-prefix=${prefix} 
+If you insist on building without libsigsegv, please pass
+  --ignore-absence-of-libsigsegv
+to this script:
+  ./configure --ignore-absence-of-libsigsegv 
+If you have installed libsigsegv, but clisp does not detect it,
+you might have installed it incorrectly, see section 2 in in unix/INSTALL.
+
+
+===================================================================================
+
+Dependencies:
+--------------
+
+PIL-1.1.7
+
+
+
+
+==================================================================================
+Cloud9: 
+------
+Username: supmit (supmit2k3@yahoo.com)
+Password: spmprx
+
+Start mysql server: sudo service mysql start
+
+Login in to mysql client: mysql -u root
+(Note: no password entered).
+
+======================================================================================
+
+Install django-like
+Download django-like, and untar the tar gzipped file. cd into it and run 'python setup.py install'.
+
+======================================================================================
+
+Directory for shared virtual machines: /var/lib/vmware/SharedVMs
+--------------------------------------
+
+Port to use for https access to workstation: 444
+
+
+

@@ -1,0 +1,59 @@
+Phase #2:
+
+----------
+
+1. Popups in "Tests & Interviews" section should be redesigned with an appropriate page layout. Base color and structure of the base page in this section should be kept in mind while redesigning it. The popup names are as follows:
+  a) Create New Test
+  b) Upload New Test
+  c) Create an Interview
+  d) Manage Invitations
+  e) Edit Interface
+  f) Schedule Test
+  g) Change Profile Image (common for all sections/tabs)
+There is also a "popin" interface named "Invite" in "Test as Creator" tab. This should also be redesigned. 
+The "Change Profile Image" interface should allow for a given set of avatars, in addition to image files. Can we integrate some existing avatar creation interface with this?
+
+
+2. In the "Search" tab, the search form should be made to look better(?).  Also, the "Welcome <Username>" greeting text should be in blue (same shade as "Search Tests" text in the same page). This should reflect in all pages under all primary tabs.
+
+ 
+3. In all pages, the "Logged in as <Username>: Logout" should be in the top right corner of the page.
+
+ 
+4. In the "Network" tab, the popup items to redesign are as follows:
+  a) Create a group
+  b) Join a group
+  c) Add a Contact
+  d) Post a Message
+  e) Manage Owned Groups
+  f) Give a test to one or more groups
+  g) Groups Subscribed By You (in right panel)
+  h) Inbox (in right panel)
+  i) Your Connections (in right panel)
+  j) Invitations Received (in right panel)
+Items 'a' through 'f' should be presented with an icon, and the text labels should follow each of these icons. The labels should be in blue (the current shade is alright).
+
+ 
+
+5. The "Analytics" section should be redesigned with the following requirements: a) The tabs "Tests as Candidate", "Tests as Creator" and "Tests as Evaluator" should have the same look and feel as "Profile", "Tests and Interviews" tabs, and they should be in the same line. (Currently, they appear in 2 lines). b) Can we create a hamburger menu for these tabs if the screen size is small, like the screen size of a mobile handset. c) The dropdowns labeled "Select a comparison Technique" and "Click to select topic" should have the same width. Also, please think about how to present these dropdowns in a better way. (Professional looking???). d) The link "What does this statistic mean?" should open a balloon in which some text can be displayed (may be, dynamically from a db?).
+
+ 
+6. The "Profile" section form display should be redesigned, with base color in mind.
+
+
+7. In all primary tabs (like "Profile", "Tests and Interviews", etc), the right panel  with the text "Advertise with us here..." should be shifted more to the right so that the right border of this panel almost touches the page's right margin. The text "Logged in as <username>: Logout" should be situated right at the top of this panel as it is positioned now. Any other panel in the right should be directly below the "Advertise with us here..." panel. (an example of other right panels can be found in the "Network" tab labelled "Groups Subscribed by You").
+
+ 
+8. Each page (each under one of the primary tabs) should have all text in some shade of blue (Example text: "Welcome <username>"). This needs to be consistent in each page.
+
+ 
+9. In the "Tests and Interviews" primary tab, the "Invite" links in the table should display the invitation form with fields having the same width and should be aligned left. The text labels should be positioned at the top of the fields and these too should be appropriately positioned so that they are differentiated spatially. The "Send Invitation" and "Cancel" buttons should be in the same horizontal line.
+
+ 
+10. The table in the "Manage Invitations" overlay should be made presentable. The overlay may be modified to make the opacity higher and the text in the table should have more contrast with the color of the overlay. The only condition for all this is that everything in the table should be in some shade of blue. Also, please modify the look of the "Close Invitations View" button to blend with the overlay's design. Suggestions pertaining to the presentation of this overlay are most welcome.
+
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'spmprx';
+
+
+

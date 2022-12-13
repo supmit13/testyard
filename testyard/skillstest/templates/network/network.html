@@ -1,0 +1,2629 @@
+	{% include "inc/html_head.html" %}
+	
+	<style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:100px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+	.semitrans2 {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:100px; width:80%; height:25%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+	.tbl-fixed-width{
+    	  table-layout:fixed;
+    	  width: 100%;
+	  word-wrap: break-word;
+	}
+
+	.smallish-text{
+	   font-family: Verdana, Verdana,Courier";
+	   size: -1;
+	   color: #0000AA;
+	}
+	</style>
+
+	<style type="text/css">
+	.subtable{
+		width:100%; 
+		border:0; 
+	}
+	.subtable td{ 
+		padding:7px; width:100%;
+	}
+	.subtable tr{
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.subtable tr:nth-child(odd){ 
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.subtable tr:nth-child(even){
+		background: #a7eaf2;
+	}
+	</style>
+
+	<style>
+	.glowing-border {
+	    border: 2px solid #000088;
+	    border-radius: 4px;
+	}
+
+	.glowing-border:focus { 
+	    outline: none;
+	    border-color: #9ecaed;
+	    box-shadow: 0 0 10px #9ecaed;
+	}
+	</style>
+
+	{% load extratemptags %}
+	<script language='JavaScript'>
+
+	childisborn = 0;
+	var joinreqspopup = null;
+
+	var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+
+	function senddataasync(uriencodeddata, httpmethod, targeturl){
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    screendiv = document.getElementById('transscreens');
+	    	    screendiv.style.display = "none";
+	    	    //screendiv.innerHTML = "<font color='#0000AA' style='font-weight:bold' size=-1>Group created successfully</font>";
+                    // Check if the returned content is an URL
+                    const urlpattern = /^https?/i;
+                    res = urlpattern.test(xmlhttp.responseText);
+                    if(res == true){
+			// Redirect to this url - this would be a stripe url for creating connected account
+			window.location.href = xmlhttp.responseText;
+		    }
+		    else{ // Just display the content in an alert. This would be the result of an operation.
+		        alert(xmlhttp.responseText);
+		    }
+	        }
+	    };
+	    xmlhttp.open(httpmethod, targeturl, true);
+	    xmlhttp.send(uriencodeddata);
+	}
+
+
+	function closegroupdivscreen(ctr){
+	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
+	    showgroupdivarea.style.display = "none;";
+	    showgroupdivarea.innerHTML = "";
+	}
+
+
+        function showtestinfo(testid, ctr){
+	    var xmlhttp;
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + csrfform.csrfmiddlewaretoken.value;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Open popup (disgusting!) and show data.
+		    testinfowin = window.open("", "testinfowindow", "width=400, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    jsondata = JSON.parse(xmlhttp.responseText);
+		    html = "<html><head><title>Test Info</title></head><body bgcolor='#669999'>";
+		    if(jsondata['warning'] == ""){
+			html += "<center><h3>" + jsondata['testname'] + "</h3></center>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Topic: " + jsondata['topicname'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Owner: " + jsondata['creatorname'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Test Type: " + jsondata['testtype'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Max Score: " + jsondata['maxscore'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Pass Score: " + jsondata['passscore'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Number of Challenges: " + jsondata['numchallenges'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Number of attempts allowed: " + jsondata['maxattemptscount'] + "</font><br>";
+			if(parseInt(jsondata['maxattemptscount']) > 1){
+			    html += "<font color='#0000AA' style='font-weight:bold' size=-1>Minimum Interval between 2 successive attempts: " + jsondata['attemptsinterval'] + " " + jsondata['attemptsintervalunit'] + "</font><br>";
+			}
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Quality: " + jsondata['quality'] + "</font><br>";
+			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Negative Scoring: " + jsondata['negativescoreallowed'] + "</font><br>";
+		    }
+		    else{
+			html += "<center>" + jsondata['warning'] + "</center>";
+		    }
+		    html += "<br><center><input type='button' name='btnclose' id='btnclose' value='Close' onClick='javascript:window.close();'></center>";
+		    html += "</body></html>";
+		    testinfowin.document.write(html);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{showtestinfourl}}', true);
+	    xmlhttp.send(postdata);
+ 	}
+
+
+	function sendjoinrequest(grpid, ctr){
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    //alert(encodedpostdata);
+	    progdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    progdiv.style = "";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    progdiv.style = "display:none";
+	    	    progdiv.innerHTML = "";
+		    closegroupdivscreen(ctr);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ joinrequesturl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
+	// Function to send a gentle reminder to the group's owner to allow the 
+	// logged in user into the group.
+	function sendgentlereminder(grpid, ctr, testid){
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    if(testid && testid != null){
+		encodedpostdata += "&testid=" + testid;
+	    }
+	    progdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    progdiv.style = "";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    progdiv.style = "display:none";
+	    	    progdiv.innerHTML = "";
+		    closegroupdivscreen(ctr);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ gentlereminderurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
+	// Function to allow the user to exit from a given group.
+	function grpexitrequest(grpid, ctr){
+	    yesno = confirm("Are you sure you want to exit from this group?");
+	    if(yesno == false){
+		return(0);
+	    }
+	    //alert(grpid);
+	    //Send a post request to {{exitgroupurl}} with appropriate params - groupId and csrfmiddlewaretoken should be enough.
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+	    //alert(encodedpostdata);
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    progdiv.style = "display:none";
+	    	    progdiv.innerHTML = "";
+		    closegroupdivscreen(ctr);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{exitgroupurl}}', true);
+	    xmlhttp.send(encodedpostdata);
+	    // Show progress circle to user...
+	    progdiv = document.getElementById('showprogress_' + ctr.toString());
+	    progdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    progdiv.style = "";
+	}
+
+
+	// Review membership of group for 'blocked' and/or 'removed' users.
+	function reviewmembership(grpid, ctr){
+	}
+
+	
+	function showpaymentgwform(grpid, ctr, entryfee){
+	    if(entryfee == 0){
+		return (false); // Write code to allow users to join directly.
+	    }
+	    document.frmjoingroup.btnjoinrequest.disabled = true;
+ 	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    postdata = "groupid=" + grpid + "&entryfee=" + entryfee.toString() + "&ctr=" + ctr.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+		    payinfowin.document.write(xmlhttp.responseText);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getpaymentgwurl }}', true);
+	    xmlhttp.send(postdata);
+	}
+
+	function showpaymentgwsubscriptionform(grpid, ctr, subscriptionfee){
+	    ///alert(subscriptionfee);
+	    document.frmjoingroup.btnjoinrequest.disabled = true;
+	    formid = "csrfform_" + ctr;
+	    csrfform = document.getElementById(formid);
+	    csrftoken = csrfform.csrfmiddlewaretoken.value;
+	    postdata = "groupid=" + grpid + "&subscriptionfee=" + subscriptionfee.toString() + "&ctr=" + ctr.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+		    payinfowin.document.write(xmlhttp.responseText);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getsubscriptiongwurl }}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	// This function opens the page of the group's profile to the user. Tests given to the group's
+    	// users and other elements private to the group are not displayed to the user. (unless the user
+	// is an active member of the group).
+        function opengrouppage(grpid){
+	    grpprofileurl = "{{groupprofileurl}}";
+	    grpprofileurl = grpprofileurl + "?grp=" + grpid;
+	    //alert(grpprofileurl);
+	    grpprofilewin = window.open(grpprofileurl, "grpprofilewindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=yes, status=no"); 
+	    // That's it... We have opened up the group profile page. Let the user do whatever she wants.
+        }
+
+
+	function showgrouppage(grpmembername, grpname, csrftoken, ctr){
+	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
+	    showgroupdivarea.style = "";
+	    html = "";
+	    postdata = "groupname=" + grpname + "&csrfmiddlewaretoken=" + csrftoken + "&membername=" + grpmembername;
+	    postdatauriencoded = encodeURI(postdata);
+	    showgroupdivarea.innerHTML = "";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    jsobj = JSON.parse(xmlhttp.responseText);
+		    html = "";
+		    if(jsobj.groupimagefile){
+			html += "<img src='" + jsobj.groupimagefile + "' height='100px' width='100px'>";
+		    }
+		    html += "<br /><form name='csrfform_" + ctr + "' id='csrfform_" + ctr + "'>{% csrf_token %}</form><br />";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Number of members: " + jsobj.memberscount + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Type: " + jsobj.grouptype + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Topic: " + jsobj.topic + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Group Owner: " + jsobj.owner + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Created On: " + jsobj.creationdate + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Stars: " + jsobj.stars + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Paid: " + jsobj.ispaid + "</font></span><br><br>";
+		    if(jsobj.ispaid){
+		        html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Entry Fee: " + jsobj.currency + " " + jsobj.entryfee + "</font></span><br><br>";
+			html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Subscription Fee: " + jsobj.currency + " " + jsobj.subscriptionfee + " /month</font></span><br><br>";
+		    }
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Admin Remarks: " + jsobj.adminremarks + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Membership Status: " + jsobj.memberstatus + "</font></span><br><br>";
+		    html += "<span width='60%'><font color='#0000AA' style='font-weight:bold' size=-1>Need Owner's Consent: " + jsobj.require_owner_perms + "</font></span><br><br>";
+		    if(jsobj.allowentry){
+			if(jsobj.alreadyrequested == '0' && jsobj.alreadyrefused == '0' && jsobj.alreadyallowed == '0' && jsobj.alreadyignored == '0'){
+			    if(!jsobj.ispaid || (!jsobj.entryfee && !jsobj.subscriptionfee)){
+		            	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    }
+			    else{
+				if(jsobj.entryfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
+				else if(jsobj.subscriptionfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
+			    }
+			}
+			else if(jsobj.alreadyrequested == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			}
+			else if(jsobj.alreadyrefused == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			}
+			else if(jsobj.alreadyallowed == '1' && jsobj.removedblocked != '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			}
+			else if(jsobj.alreadyignored == '1'){
+			    if(!jsobj.ispaid){
+			    	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    }
+			    else{
+				if(jsobj.entryfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
+				else if(jsobj.subscriptionfee > 0){
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				}
+			    }
+			}
+			else if(jsobj.removedblocked == '1'){
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been removed or blocked from entering this group in the past. Hence, you may not send a request to join this group. However, you may request the group's owner to unblock you or reinstate you in the group. You may do so by clicking on the 'Review my Membership' button here.&nbsp;&nbsp;</font><input type='button' name='btnreviewmembership' id='btnreviewmembership' value='Review my Membership' onClick='javascript:reviewmembership(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			}
+		    }
+		    else{
+			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></span><br><br>";
+		    }
+		    showgroupdivarea.style.display = "";
+		    showgroupdivarea.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupinfouri }}', true);
+	    xmlhttp.send(postdatauriencoded);
+	}
+
+
+	function managegroup(membername, groupname, currency){
+	    var xmlhttp;
+	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency;
+	    //alert(postdata);
+	    encodedpostdata = encodeURI(postdata);
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    screendiv = document.getElementById('transscreens');
+		    groupdatahtml = xmlhttp.responseText;
+		    //alert(groupdatahtml);
+		    screendiv.innerHTML = groupdatahtml;
+		    screendiv.style.display = "";
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
+	function leavegroup(groupname){
+	    var xmlhttp;
+	    yn = confirm("Are you sure you want to leave this group?");
+	    if(!yn){
+		return (false);
+	    }
+	    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value;
+	    //alert(postdata);
+	    encodedpostdata = encodeURI(postdata);
+	    statusdiv = document.getElementById('leavestatus');
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    window.location.reload();
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ leavegroupurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	    statusdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function manageownedgroup(membername, groupname, currency){
+	    var xmlhttp;
+	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency + "&owned=1";
+	    //alert(postdata);
+	    encodedpostdata = encodeURI(postdata);
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    screendiv = document.getElementById('transscreens3');
+		    groupdatahtml = xmlhttp.responseText;
+		    //alert(groupdatahtml);
+		    screendiv.innerHTML = groupdatahtml;
+		    screendiv.style.display = "";
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
+	function handlepayschemescreate(){
+	    payscheme = document.frmcreategroup.payscheme.options[document.frmcreategroup.payscheme.options.selectedIndex].value;
+	    if(payscheme == "entryfeebased"){
+		document.frmcreategroup.subscriptionfee.disabled=true;
+                document.frmcreategroup.subscriptionperiod.disabled=true;
+		document.frmcreategroup.entryfee.disabled=false;
+		document.frmcreategroup.subscriptionfee.value = "";
+                document.frmcreategroup.subscriptionperiod.value = "0";
+	    }
+	    else{
+		document.frmcreategroup.entryfee.disabled=true;
+		document.frmcreategroup.subscriptionfee.disabled=false;
+                document.frmcreategroup.subscriptionperiod.disabled=false;
+		document.frmcreategroup.entryfee.value = "";
+	    }
+	}
+
+
+	function showpaymentoption(){
+	    ispaid = document.getElementById('ispaid');
+	    if(ispaid.checked == true){
+	    	paymentdiv = document.getElementById('paymentdiv');
+	    	// Create the HTML for innerHTML
+	    	html = "<table border='0' cellspacing='2' cellpadding='8'>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname'>";
+	    	{% for bankcode, bankname in availablebanks.iteritems %}
+			html += "<option value='{{ bankcode }}'>{{ bankname }}</option>";
+	    	{% endfor %}
+	    	html += "</select></td></tr>";
+	 	
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' max_length='250' size='10'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' size='10'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' max_length='255' size='20'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' max_length='255' size='20'></td></tr>";
+		//html += "<tr><td nowrap><font color='#0000AA' size=-1>Currency: </font></td><td><select name='currency'>";
+		//{% for currency in allcurrencies %}
+		//    {% if currency == defaultcurrency %}
+		//        html += "<option value='{{currency}}' selected>{{currency}}</option>";
+		//    {% else %}
+		//	html += "<option value='{{currency}}'>{{currency}}</option>";
+		//    {% endif %}
+		//{% endfor %}
+		//html += "</select></td></tr>";
+		html += "<tr><td nowrap colspan=2><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
+		html += "<tr><td nowrap><font size=-1 color='#0000AA'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemescreate();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee (in USD): </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Fee (in USD): </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20' disabled=true></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Period (in days): </font></td><td><input type='text' name='subscriptionperiod' value='' id='subscriptionperiod' max_length='5' size='20' disabled=true></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA' size=-1>GSTIN: </font></td><td><input type='text' name='gstin' value='' id='gstin' max_length='20' size='20'></td></tr>";
+		//html += "<tr><td nowrap colspan='2' style='font-style:italic;'><font color='#0000AA' size=-1>Subscription Fee is for a period of 30 days starting from the instant of payment. </td></tr>";
+	    	html += "</table>";
+		document.frmcreategroup.require_owner_perms.checked = false;
+		document.frmcreategroup.require_owner_perms.disabled = true;
+	    	paymentdiv.style.display = "";
+	    	paymentdiv.innerHTML = html;
+	    }
+	    else{
+		document.frmcreategroup.require_owner_perms.disabled = false;
+		paymentdiv = document.getElementById('paymentdiv');
+		paymentdiv.style.display = "none";
+	    	paymentdiv.innerHTML = "";
+	    }
+	}
+
+
+	function creategroup(){
+	    groupname = document.frmcreategroup.groupname.value.trim();
+	    groupdescription = document.frmcreategroup.groupdescription.value.trim();
+	    tagline = document.frmcreategroup.tagline.value.trim();
+	    grouptopic = document.frmcreategroup.grouptopic.value;
+	    ispaid = document.getElementById('ispaid');
+	    isactive = document.getElementById('isactive');
+	    allowentry = document.getElementById('allowentry');
+	    require_owner_perms = document.frmcreategroup.require_owner_perms;
+	    grouptype = document.frmcreategroup.grouptype.value;
+	    maxmemberscount = document.frmcreategroup.maxmemberscount.value;
+	    csrftoken = document.frmcreategroup.csrfmiddlewaretoken.value;
+
+	    bankname = "";
+	    branchname = "";
+	    ifsccode = "";
+	    acctownername = "";
+	    acctnumber = "";
+ 	    entryfee = "";
+	    subscriptionfee = "";
+	    subscriptionperiod = "";
+            gstin = "";
+	    currency = "INR";
+	    if(ispaid.checked == true){
+		bankname = document.frmcreategroup.bankname.value;
+		branchname = document.frmcreategroup.branchname.value.trim();
+		ifsccode = document.frmcreategroup.ifsccode.value.trim();
+		acctownername = document.frmcreategroup.acctownername.value.trim();
+		acctnumber = document.frmcreategroup.acctnumber.value.trim();
+		payschemeval = document.frmcreategroup.payscheme.options[document.frmcreategroup.payscheme.options.selectedIndex].value;
+		entryfee = document.frmcreategroup.entryfee.value.trim();
+		subscriptionfee = document.frmcreategroup.subscriptionfee.value.trim();
+		subscriptionperiod = document.frmcreategroup.subscriptionperiod.value.trim();
+                gstin = document.frmcreategroup.gstin.value.trim();
+		//currency = document.frmcreategroup.currency.options[document.frmcreategroup.currency.options.selectedIndex].value;
+		currency = document.frmcreategroup.currency.value;
+	    }
+	    ////// Validate the input here
+	    alphanumericpattern = new RegExp("^([\\w\\d]+)$");
+            alphabetspattern = new RegExp("^[\\w\\s,\\-:;]+$");
+	    if(groupname == ""){
+		alert("Group name may not be empty or contain only spaces.");
+		document.frmcreategroup.groupname.value = "";
+		document.frmcreategroup.groupname.focus();
+		return (false);
+	    }
+	    if(!alphabetspattern.test(groupname)){
+		alert("Group names may contain alphanumeric characters only.");
+		document.frmcreategroup.groupname.focus();
+		return(false);
+	    }
+	    numericpattern = new RegExp("^\\d+$");
+ 	    floatnumpattern = new RegExp("^\\d+\.?\\d*$")
+	    if(maxmemberscount == ""){
+		maxmemberscount = "10000";
+	    }
+	    if(!numericpattern.test(maxmemberscount)){
+		alert("Max Members Count should have a numeric value.");
+		document.frmcreategroup.maxmemberscount.value = "";
+		document.frmcreategroup.maxmemberscount.focus();
+		return(false);
+	    }
+	    if(ispaid.checked == true){
+		if(branchname == "" || !alphabetspattern.test(branchname)){
+		    alert("Branch name cannot be empty and should contain alphabets and whitespace characters only.");
+		    document.frmcreategroup.branchname.value = "";
+		    document.frmcreategroup.branchname.focus();
+		    return(false);
+		}
+		if(ifsccode == "" || !alphanumericpattern.test(ifsccode)){
+		    alert("IFSC Code cannot be empty and should contain alphanumeric characters only.");
+		    document.frmcreategroup.ifsccode.value = "";
+		    document.frmcreategroup.ifsccode.focus();
+		    return(false);
+		}
+		if(acctownername == "" || !alphabetspattern.test(acctownername)){
+		    alert("Account Owner's name cannot be empty and should contain alphabets only.");
+		    document.frmcreategroup.acctownername.value = "";
+		    document.frmcreategroup.acctownername.focus();
+		    return(false);
+		}
+		if(acctnumber == "" || !alphanumericpattern.test(acctnumber)){
+		    alert("Account number cannot be empty and should contain alphanumeric characters only.");
+		    document.frmcreategroup.acctnumber.value = "";
+		    document.frmcreategroup.acctnumber.focus();
+		    return(false);
+		}
+		if((entryfee == "" || !floatnumpattern.test(entryfee)) && payschemeval == "entryfeebased"){
+		    alert("Entry Fee cannot be empty and should contain decimal number only.");
+		    document.frmcreategroup.entryfee.value = "";
+		    document.frmcreategroup.entryfee.focus();
+		    return(false);
+		}
+		if((subscriptionfee == "" || !floatnumpattern.test(subscriptionfee)) && payschemeval == "subscriptionbased"){
+		    alert("Subscription Fee cannot be empty and should contain decimal number only.");
+		    document.frmcreategroup.subscriptionfee.value = "";
+		    document.frmcreategroup.subscriptionfee.focus();
+		    return(false);
+		}
+		if((subscriptionperiod == "" || !numericpattern.test(subscriptionperiod)) && payschemeval == "subscriptionbased"){
+		    alert("Subscription period is measured in days and it should have a numeric value greater than 0.");
+		    document.frmcreategroup.subscriptionperiod.value = "";
+		    document.frmcreategroup.subscriptionperiod.focus();
+		    return(false);
+	    	}
+		if(gstin == "" || !alphanumericpattern.test(gstin)){
+		    alert("GSTIN missing or invalid GSTIN.");
+		    document.frmcreategroup.gstin.value = "";
+		    document.frmcreategroup.gstin.focus();
+		    return(false);
+		}
+	    }
+	    ////// Input validation ends here. If we have come thus far, the input is good enough!
+	    postdata = "groupname=" + groupname + "&groupdescription=" + groupdescription + "&grouptopic=" + grouptopic + "&maxmemberscount=" + maxmemberscount + "&tagline=" + tagline + "&grouptype=" + grouptype;
+	    if(ispaid.checked == true){
+		postdata += "&ispaid=1&bankname=" + bankname + "&branchname=" + branchname + "&ifsccode=" + ifsccode + "&acctownername=" + acctownername + "&acctnumber=" + acctnumber + "&entryfee=" + entryfee + "&currency=" + currency + "&subscriptionfee=" + subscriptionfee + "&subscriptionperiod=" + subscriptionperiod + "&gstin=" + gstin + "&payscheme=" + payschemeval;
+	    }
+	    else{
+		postdata += "&ispaid=0";
+	    }
+	    if(isactive.checked == true){
+		postdata += "&isactive=1";
+	    }
+	    if(allowentry.checked == true){
+		postdata += "&allowentry=1";
+	    }
+	    if(require_owner_perms.checked == true){
+	    	postdata += "&require_owner_perms=1";
+	    }
+	    postdata += "&csrfmiddlewaretoken=" + csrftoken;
+	    postdata = encodeURI(postdata);
+	    //alert(postdata);
+	    waiter = document.getElementById('waitspan');
+	    waiter.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    senddataasync(postdata, "POST", '{{ creategroupurl }}');
+	    
+	}
+
+
+	function closecreategroupscreen(){
+	    tscreen = document.getElementById('transscreens');
+	    tscreen.style.display = "none";
+	    tscreen.innerHTML = "";
+	    return (false);
+	}
+
+
+	function checknameavailability(){
+	    grpname = document.frmcreategroup.groupname.value.trim();
+	    availspan = document.getElementById('checkavailability');
+	    if(grpname == ""){
+		availspan.style.display = "";
+		availspan.innerHTML = "<font color='#AA0000' size=-2>Invalid group name</font>";
+	        return(0);
+	    }
+	    postdata = encodeURI("groupname=" + grpname + "&csrfmiddlewaretoken=" + document.frmcreategroup.csrfmiddlewaretoken.value);
+	    availspan.style.display = "";
+	    availspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Display the response in the parent screen if everything went well.
+		    availspan.innerHTML = xmlhttp.responseText;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ checkgrpnameavailabilityurl }}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function displaycreategroupscreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action=''>";
+	    html += "{% csrf_token %}";
+	    html += "<table border=0 cellspacing=2 cellpadding=3>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();' class='glowing-border'><span id='checkavailability' style='' nowrap></span></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic' class='glowing-border'>";
+	    {% for topic in alltopics %}
+		html += "<option value='{{ topic }}'>{{ topic }}</option>";
+	    {% endfor %}
+	    html += "</select></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Permissions</font></td><td nowrap>&nbsp;<font color='#0000AA' size=-1>Is Paid:&nbsp;</font><input type='checkbox' name='ispaid' id='ispaid' value='1' onChange='javascript:showpaymentoption();' class='glowing-border'><br><div id='paymentdiv' style=''></div><font color='#0000AA' size=-1>Group Type:&nbsp;</font><select name='grouptype' class='glowing-border'>";
+	    {% for grptype, grptypename in grouptypes.iteritems %}
+	        html += "<option value='{{ grptype }}'>{{ grptypename }}</option>";
+	    {% endfor %}
+	    html += "</select><br>";
+	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked class='glowing-border'><br>";
+	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked class='glowing-border'><br>";
+   	    html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1' class='glowing-border'><br>";
+	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5 class='glowing-border'><br>";
+	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'><span id='waitspan'></span></td></tr>";
+	    html += "</table>";
+	    html += "</form>";
+	    screendiv.display = "";
+	    screendiv.innerHTML = html;
+	}
+
+
+	function searchforgroup(){
+	    grpkeyword = document.getElementById('grpkeyword').value.trim();
+	    postdata = "grpkeyword=" + grpkeyword + "&csrfmiddlewaretoken=" + document.joinagroup.csrfmiddlewaretoken.value;
+	    topic = document.getElementById('topic');
+	    for(var i=0; i < topic.options.length; i++){
+		if(topic.options[i].selected){
+		    topicname = topic.options[i].value;
+		    topicname = topicname.replace("_", " ");
+		    postdata = postdata + "&topic=" + topicname;
+		}
+	    }
+	    uriencodeddata = encodeURI(postdata);
+   	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //document.write(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    searchresultarea = document.getElementById('searchresultdiv');
+		    searchresultarea.style.display = "";
+		    jsonresult = JSON.parse(xmlhttp.responseText);
+		    if(jsonresult.length == 0){
+			searchresultarea.innerHTML = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
+			return(0);
+		    }
+		    html = "<table border=0 cellspacing=2 cellpadding=5 width='95%' class='tbl-fixed-width'>";
+		    for(var j=0; j < jsonresult.length; j++){
+			if(j % 2 == 0){
+			    html += "<tr bgcolor='#66CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			}
+			else{
+			    html += "<tr bgcolor='#99CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</font></a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			}
+		    }
+		    html += "</table>";
+		    searchresultarea.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ searchgroupurl }}', true);
+	    xmlhttp.send(uriencodeddata);
+	}
+
+
+	function displayjoinagroupscreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "<center><h3><font color='#0000AA'>Search for a group based on the following parameters:</font></h3>";
+	    html += "<form name='joinagroup' id='joinagroup' method='POST' action=''>";
+	    html += "{% csrf_token %}";
+	    html += "<table border='0' cellspacing='3' cellpadding='3'>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Select Topic(s):</font></td><td align='center'><select name='topic' id='topic' multiple size=4 class='glowing-border'>";
+	    {% for topicunderscored, topicname in topics.iteritems %}
+		html += "<option value='{{ topicunderscored }}'>{{ topicname }}</option>";
+	    {% endfor %}
+	    html += "</select></td></tr>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Enter Keyword:</font></td><td align='center'><input type='text' name='grpkeyword' id='grpkeyword' value='' class='glowing-border'></td></tr>";
+	    html += "<tr><td nowrap align='center' colspan='2'><input type='button' name='btnsearchgroups' id='btnsearchgroups' value='Search' onClick='searchforgroup();'>&nbsp;&nbsp;<input type='button' name='btncancelsearch' id='btncancelsearch' value='Close' onClick='closecreategroupscreen();'></td></tr>";
+	    html += "</table>";
+	    html += "</form><br><br><div id='searchresultdiv' style=''></div></center>";
+            screendiv.innerHTML = html;
+	}
+
+
+ 	function addcontact(userid, ctr){
+   	    postdata = "userid=" + userid + "&";
+	    postdata += "csrfmiddlewaretoken=" + document.frmSearchUser.csrfmiddlewaretoken.value;
+	    userwaiterspan = "userwaiter_" + ctr;
+	    waiterspan = document.getElementById(userwaiterspan);
+	    
+	    waiterspan.innerHTML = "<img src='static/images/loading_small.gif'><font size=-2>Sending request...</font>";
+   	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waiterspan.innerHTML = "";
+		    alert(xmlhttp.responseText);
+	        }
+	    };
+ 	    xmlhttp.open('POST', '{{ sendconnectionurl }}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+        function showuserprofile(dispname){
+	    // Simply call 'showconnpublicprofile' with dispname (displayname of user) as argument.
+	    showconnpublicprofile(dispname);
+	}
+
+
+	function searchUser(){
+	    waiterspan = document.getElementById('searchwaiter');
+	    waiterspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    	    postdata = "emailid=" + document.frmSearchUser.emailid.value + "&";
+ 	    postdata += "targetusername=" + document.frmSearchUser.targetusername.value + "&";
+	    postdata += "teststaken=" + document.frmSearchUser.teststaken.value + "&";
+	    postdata += "csrfmiddlewaretoken=" + document.frmSearchUser.csrfmiddlewaretoken.value;
+	    //alert(postdata);
+	    uriencodeddata = encodeURI(postdata);
+            searchdiv = document.getElementById('usersearchdiv');
+   	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    jsonresult = JSON.parse(xmlhttp.responseText);
+		    searchdiv.innerHTML = "";
+		    alldispnames = Object.keys(jsonresult);
+		    html = "<center><table border=0 cellspacing=3 cellpadding=4 width='80%'>";
+		    if(alldispnames.length == 0){
+			html = "<tr><td colspan=4 align='center'><i><b><font color='#AA0000'>No record were found</font></b></i></td></tr>";
+		    }
+		    else{
+			ctr = 0;
+		        for (dispname in alldispnames){
+			    //alert(alldispnames[dispname]);
+			    d = jsonresult[alldispnames[dispname]]
+          		    if(!d){
+				continue;
+			    }
+			    name = d['name'];
+			    profilepic = d['profileimage'];
+			    userid = d['uid'];
+			    html += "<tr><td nowrap align='right'><a href='#/' onClick=showuserprofile('" + alldispnames[dispname] + "'); title='public profile'><font color='#0000AA'>" + alldispnames[dispname] + "</font></a></td><td nowrap><font color='#0000AA'>" + name + "</font></td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");'><span id='userwaiter_" + ctr + "'></span></td></tr>";
+			    ctr++;
+		        }
+		    }
+		    html += "</table></center>";
+		    waiterspan.innerHTML = "";
+		    searchdiv.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ searchuserurl }}', true);
+	    xmlhttp.send(uriencodeddata);
+	}
+
+
+	function displayaddcontactscreen(){
+            screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "<center><font color='#0000AA' style='font-weight:bold'>Search User using one or more of the following parameters</font></center>";
+	    html += "<form name='frmSearchUser' id='frmSearchUser' method='POST' action=''>";
+	    html += "<center><table border=0 cellspacing='3' cellpadding='4'>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Email Id:</font></td><td><input type='text' name='emailid' id='emailid' value='' size=30 maxlength='100' class='glowing-border'></td></tr>";
+            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>User's Name:</font></td><td><input type='text' name='targetusername' id='targetusername' value='' size=30 maxlength='100' class='glowing-border'></td></tr>";
+            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Name of Tests taken by the User (separated by commas):</font></td><td><input type='text' name='teststaken' id='teststaken' value='' size=30 maxlength='200' class='glowing-border'></td></tr>";
+	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnSearch' id='btnSearch' value='Search' onClick='javascript:searchUser();'><span id='searchwaiter'></span>&nbsp;&nbsp;<input type='button' name='btnClose' id='btnClose' value='Close' onClick='javascript:closecreategroupscreen();'></td></tr>";
+	    html += "</table></center>{% csrf_token %}</form>";
+	    html += "<br><br><div id='usersearchdiv' style=''></div>";
+	    screendiv.innerHTML = html;
+	}
+
+	// Save data pertaining to group settings.
+	// TODO: Add input validation
+	function savesettings(){
+	    settingselements = document.frmsettings.elements;
+	    postdata = "";
+	    for(var i=0; i < settingselements.length; i++){
+		if(settingselements[i].name == "adminremarks" || settingselements[i].name == "bankname" || settingselements[i].name == "bankbranch" || settingselements[i].name == "acctname"){
+		    postdata += settingselements[i].name + "=" + encodeURI(settingselements[i].value) + "&";
+		}
+		else{
+		    if(settingselements[i].name == "allowentry" || settingselements[i].name == "ispaid" || settingselements[i].name == "require_owner_perms"){
+			if(settingselements[i].checked == true){
+		    	    postdata += settingselements[i].name + "=" + settingselements[i].value + "&";
+			}
+		    }
+		    else{
+			postdata += settingselements[i].name + "=" + settingselements[i].value + "&";
+		    }
+		}
+	    }
+	    //alert(postdata);
+	    targetUrl = '{{savegrpdataurl}}';
+	    senddataasync(postdata, 'POST', targetUrl);
+	}
+
+
+	function closescreen(scrno=''){
+	    screendiv = document.getElementById('transscreens' + scrno);
+	    screendiv.innerHTML = "";
+	    screendiv.style.display = "none";
+	}
+
+
+	function closescreen2(){
+	    screendiv = document.getElementById('transscreens2');
+	    screendiv.innerHTML = "";
+	    screendiv.style.display = "none";
+	}
+
+
+	function changefinancialcontrolstate(ctrl){
+	    if(ctrl.checked == false){
+		document.frmsettings.entryfee.disabled = true;
+	 	document.frmsettings.subscriptionfee.disabled = true;
+		document.frmsettings.bankname.disabled = true;
+		document.frmsettings.bankbranch.disabled = true;
+		document.frmsettings.acctname.disabled = true;
+		document.frmsettings.acctnum.disabled = true;
+		document.frmsettings.ifsccode.disabled = true;
+		document.frmsettings.payscheme.disabled = true;
+	    }
+            else{
+		document.frmsettings.entryfee.disabled = false;
+		document.frmsettings.subscriptionfee.disabled = true;
+		document.frmsettings.bankname.disabled = false;
+		document.frmsettings.bankbranch.disabled = false;
+		document.frmsettings.acctname.disabled = false;
+		document.frmsettings.acctnum.disabled = false;
+		document.frmsettings.ifsccode.disabled = false;
+		document.frmsettings.payscheme.disabled = false;
+	    }
+	}
+
+        
+	function changepaidstatus(){
+	    if(document.frmsettings.require_owner_perms.checked == false){
+	        document.frmsettings.ispaid.disabled=false;
+		document.frmsettings.ispaid.checked=true;
+	    }
+	    else{
+		document.frmsettings.ispaid.disabled=true;
+		document.frmsettings.ispaid.checked=false;
+	    }
+	}
+
+	function handlepayschemes(){
+	    payscheme = document.frmsettings.payscheme.options[document.frmsettings.payscheme.options.selectedIndex].value;
+	    if(payscheme == "entryfeebased"){
+		document.frmsettings.subscriptionfee.disabled=true;
+		document.frmsettings.entryfee.disabled=false;
+		document.frmsettings.subscriptionfee.value = "";
+	    }
+	    else{
+		document.frmsettings.entryfee.disabled=true;
+		document.frmsettings.subscriptionfee.disabled=false;
+		document.frmsettings.entryfee.value = "";
+	    }
+	}
+
+
+	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, subscriptionfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency, require_owner_perms, gstin, subscriptionperiod){
+	    openclosediv = document.getElementById('openclose');
+	    paramspaneldiv = document.getElementById('paramspanel');
+	    openpattern = new RegExp("Open");
+	    openclosecontent = openclosediv.innerHTML;
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+ 	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
+		if(!grpimgfile){
+		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
+		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='static/images/nopic.png' height='{{image_height}}' width='{{image_width}}' alt='Group Image' id='groupimage'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
+		}
+		else{
+		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
+		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='media/{{displayname}}/groups/" + grpname + "/" + grpimgfile + "' height='{{image_height}}' width='{{image_width}}'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Change/Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
+		}
+		{% for topic in alltopics %}
+		    topickey = "{{topic}}".replace(" ", "_");
+		    if("{{topic}}" == basedontopic){
+			html += "<option value='" + topickey + "' selected>{{topic}}</option>";
+		    }
+		    else{
+			html += "<option value='" + topickey + "'>{{topic}}</option>";
+		    }
+		{% endfor %}
+                html += "</select></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Members Count</font>:</td><td nowrap> <font size=-1 color='#0000AA' style='font-weight: bold'>" + memberscount + "</font></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Max Members Limit</font>:</td><td nowrap> <input type='text' name='maxmemberslimit' id='maxmemberslimit' value='" + maxmemberslimit + "'></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Type</font>:</td><td nowrap> <select name='grouptypes'>";
+		{% for grpkey, grpval in grouptypes.iteritems %}
+		    if("{{grpkey}}" == grouptype){
+			html += "<option value='{{grpkey}}' selected>{{grpval}}</option>";
+		    }
+		    else{
+			html += "<option value='{{grpkey}}'>{{grpval}}</option>";
+		    }
+		{% endfor %}
+		html += "</select></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Allow Entry</font>:</td>";
+		if(allowentry == 'True'){
+		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1' checked>";
+		}
+		else{
+		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1'>";
+		}
+		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Paid</font>: </td>";
+		if(ispaid == 'True'){
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' checked onChange='javascript:changefinancialcontrolstate(this);'>";
+		}
+		else{
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'  onChange='javascript:changefinancialcontrolstate(this);'>";
+		}
+		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Review user before admitting into the group:&nbsp;</font></td>";
+		if(require_owner_perms == "True"){
+		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' checked onchange='javascript:changepaidstatus();'>";
+		}
+		else{
+		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' onchange='javascript:changepaidstatus();'>";
+		}
+		if(ispaid == 'True'){
+		    if(entryfee > 0){
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		    }
+		    else{
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();'><option value='entryfeebased'>Entry Fee Based</option><option value='subscriptionbased' selected>Subscription Based</option></select></td></tr>";
+		    }
+		    if(entryfee > 0){
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Period (in days)</font>: </td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "' disabled=true></td></tr>";
+		    	//html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
+		    }
+		    else{
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "'></td></tr>";
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Period (in days)</font>: </td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "'></td></tr>";
+		    	//html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
+		    }
+		    //html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
+		    //{% for curr in allcurrencies %}
+		    //  if(currency == '{{curr}}'){
+		    //	    html += "<option value='{{curr}}' selected>{{curr}}</option>";
+		    //	}
+		    //	else{
+		    //	    html += "<option value='{{curr}}'>{{curr}}</option>";
+		    //	}
+		    //{%  endfor %}
+		    //html += "</select></td></tr>";
+		    html += "<tr><td nowrap width='50%' colspan='2'><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
+    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>GSTIN </font></td><td nowrap><input type='text' name='gstin' id='gstin' value='" + gstin + "'></td></tr>";
+		}
+		else{
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' disabled=true><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "' disabled=true></td></tr>";
+		    //html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
+		    //html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked'>";
+		    //{% for curr in allcurrencies %}
+		    //	if(currency == '{{curr}}'){
+		    //	    html += "<option value='{{curr}}' selected>{{curr}}</option>";
+		    //	}
+		    //	else{
+		    //	    html += "<option value='{{curr}}'>{{curr}}</option>";
+		    //	}
+		    //{%  endfor %}
+		    //html += "</select></td></tr>";
+		    html += "<tr><td nowrap width='50%' colspan='2'><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
+    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>GSTIN </font>: </td><td nowrap><input type='text' name='gstin' id='gstin' value='" + gstin + "'></td></tr>";
+		}
+		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick='javascript:managegroupmembers(\"" + grpname + "\");'><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
+		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
+		paramspaneldiv.style.display = "";
+	 	paramspaneldiv.innerHTML = html;
+	    }
+	    else{
+		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee +  '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
+		paramspaneldiv.innerHTML = "";
+		paramspaneldiv.style.display = "none";
+	    }
+	}
+
+
+    	function managegroupmembers(groupname, from, to){
+	    from = from || 0;
+	    to = to || 100;
+	    grpmemberspopup = window.open("", "grpmemberswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=yes, status=no");
+	    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value + "&fromctr=0&toctr=100";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    grpmemberspopup.document.write(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open('POST', '{{managemembersurl}}', true);
+	    xmlhttp.send(postdata)
+	}
+
+
+	function joinpopupcontent(grpname, joinrequestsinfo_strb64, state){
+	    joinrequestsinfo_str = Base64.decode(joinrequestsinfo_strb64);
+	    joinrequestsinfo = JSON.parse(joinrequestsinfo_str);
+	    showhidediv = document.getElementById("showhidejoinrequests");
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    html = "";
+	    html += "<center><font color='#0000AA' style='font-weight:bold' size='+1'>Join Requests to Group '" + grpname + "'</font></center><br><br><br>";
+	    if(state == 'open' || state == '' || !state){
+		html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open' selected>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
+	    }
+	    else if(state == 'close'){
+		html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open'>Open</option><option value='close' selected>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
+	    }
+	    else if(state == 'refuse'){
+		 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse' selected>Refused</option><option value='accept'>Accepted</option></select></center>";
+	    }
+	    else if(state == 'accept'){
+		 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept' selected>Accepted</option></select></center>";
+	    }
+	    html += "<br><span style='block:left;clear:both;width:600px;padding-left:50px;word-wrap:break-all;overflow-wrap:break-word;'><font color='#550000' style='font-weight:bold'><i>Note: A 'blocked' user would not be able to post messages in the group, but would remain visible to other members. 'Blocked' users<br> would also be able to view other's posts to the group. A 'removed' user would neither be able to post messages to the group, nor would she/he be able to view messages posted by other members in the group. Also, other members would not be able to see a 'removed' user. </i></font></span><br /><br />";
+	    html += "{% csrf_token %}";
+	    html += "<center><table border='0' cellspacing='3' cellpadding='4'>";
+	    html += "<tr><td align='center' colspan='5'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();'></td></tr>";
+	    if(state == "open"){
+		reqslist = joinrequestsinfo['open'];
+		if(reqslist.length > 0){
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		}
+		else{
+		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
+		}
+		i=0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
+		    imglink = request[3];
+		    displayname = request[0];
+		    fullname = request[1];
+		    requestdate = request[2];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open' selected='selected'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    indx++;
+		    i++;
+		}
+	    }
+            else if(state == "close"){
+		reqslist = joinrequestsinfo['close'];
+		if(reqslist.length > 0){
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		}
+		else{
+		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
+		}
+    		i = 0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
+		    imglink = request[3];
+		    displayname = request[0];
+		    fullname = request[1];
+		    requestdate = request[2];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close' selected='selected'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    i++;
+		    indx++;
+		}
+	    }
+	    else if(state == "refuse"){
+		reqslist = joinrequestsinfo['refuse'];
+		if(reqslist.length > 0){
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		}
+		else{
+		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
+		}
+		i = 0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
+		    imglink = request[3];
+		    displayname = request[0];
+		    fullname = request[1];
+		    requestdate = request[2];
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse' selected='selected'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    indx++;
+		    i++;
+		}
+	    }
+	    else if(state == "accept"){
+		reqslist = joinrequestsinfo['accept'];
+		if(reqslist.length > 0){
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		}
+		else{
+		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
+		}
+		i = 0;
+		for (indx in reqslist){
+		    request = reqslist[indx];
+		    imglink = request[3];
+		    displayname = request[0];
+		    fullname = request[1];
+		    requestdate = request[2];
+		    removed = request[4]
+   	 	    blocked = request[5]
+		    if(blocked == true && removed == false){
+	                html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' checked><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed'><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    }
+		    else if(blocked == true && removed == true){
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' checked><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' checked><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    }
+		    else if(blocked == false && removed == true){
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked'><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' checked><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    }
+		    else if(blocked == false && removed == false){
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked'><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed'><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    }
+		    else if(blocked == -1 || removed == -1){
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' disabled title='You cannot block the owner of the group'><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' disabled title='You cannot remove the owner of the group'><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+		    }
+		    indx++;
+		    i++;
+		}
+	    }
+	    html += "<tr><td align='center' colspan='5'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();'></td></tr>";
+	    html += "</table></center>";
+	    return (html);
+	}
+
+
+	function closejoinreqpopup(joinreqspopup){
+	    childisborn = 0;
+	    joinreqspopup.close();
+	}
+
+	// We will be getting base64 encoded data for the 2nd param.
+	function popupjoinrequests(grpname, joinrequestsinfo_strb64, state){
+	    childisborn = 0;
+	    html = "<html><head><title>Join Requests to '" + grpname + "'</title>";
+	    html += "</head><body bgcolor='#669999'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
+	    html += "<div><font color='#550000' style='font-weight:bold'><i><center>Note: Reloading the parent window will automatically close this window. <br>You are strongly suggested to save your changes on this window before attempting to reload the parent window.<br>You may save  all your changes on this window by clicking on the 'Save Changes' button.</center></i></font></div><br><br>";
+	    html += "<div id='contentspace' style=''>";
+  	    html += joinpopupcontent(grpname, joinrequestsinfo_strb64, state);
+	    html += "</div></form>"; // end of 'contentspace' div
+	    html += "</body></html>";
+	    if(childisborn == 0){
+	        joinreqspopup = window.open("", "joinreqswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		joinreqspopup.close();
+		joinreqspopup = window.open("", "joinreqswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	        if(joinreqspopup){
+		    childisborn = 1;
+	        }
+	    }
+	    else{ // child window already exists, so just bring it to the foreground.
+		joinreqspopup.focus();
+		// Also, add an 'onunload' attribute to the body tag and set it to 'joinreqspopup.close()'
+		bodytag = document.getElementsByTagName('body')[0];
+		var attr = document.createAttribute("onunload");
+		attr.value = "javascript:closejoinreqpopup(joinreqspopup);";
+		bodytag.setAttributeNode(attr);
+		return;
+	    }
+	    // Do the same as above for this action as well.
+	    bodytag = document.getElementsByTagName('body')[0];
+	    var attr = document.createAttribute("onunload");
+	    attr.value = "javascript:closejoinreqpopup(joinreqspopup);";
+	    bodytag.setAttributeNode(attr);
+	    //alert(html);
+	    joinreqspopup.document.write(html);
+	    // Inject the function that will enable user to select a state of the request.
+	    script = joinreqspopup.document.createElement("script");
+	    script.setAttribute('src', 'static/javascript/network.js');
+	    script.setAttribute('type', 'text/javascript');
+	    joinreqspopup.document.getElementsByTagName('head')[0].appendChild(script);
+	}
+
+	
+	function humanreadabledate(datestr){
+	    datesplit = datestr.split("+");
+	    dateparts = datesplit[0].split(" ");
+	    datecomponents = dateparts[0].split("-");
+	    year = datecomponents[0];
+	    mon = datecomponents[1];
+	    day = datecomponents[2];
+	    timecomponents = dateparts[1].split(":");
+	    //alert(dateparts[0]);
+	    hour = timecomponents[0];
+	    min = timecomponents[1];
+	    sec = timecomponents[2];
+	    if(day.length == 1){
+		day = '0' + day;
+	    }
+	    if(mon.length == 1){
+		mon = '0' + mon;
+	    }
+	    monthsdict = {};
+	    monthsdict['01'] = 'Jan';
+	    monthsdict['02'] = 'Feb';
+	    monthsdict['03'] = 'Mar';
+	    monthsdict['04'] = 'Apr';
+	    monthsdict['05'] = 'May';
+ 	    monthsdict['06'] = 'Jun';
+	    monthsdict['07'] = 'Jul';
+	    monthsdict['08'] = 'Aug';
+	    monthsdict['09'] = 'Sep';
+	    monthsdict['10'] = 'Oct';
+	    monthsdict['11'] = 'Nov';
+	    monthsdict['12'] = 'Dec';
+	    readabledate = monthsdict[mon] + " " + day + ", " + year + ", " + dateparts[1] + " HRS.";
+	    return(readabledate);
+	}
+
+
+	function discardreply(postid){
+	    r = confirm("This action will discard your message. Do you want to continue?");
+	    if(r){
+		replydivid = "replydiv" + postid.toString();
+	    	replydivcontrol = document.getElementById(replydivid);
+	    	replydivcontrol.innerHTML = "";
+	    	//replydivcontrol.style = "display:none;";
+	    }
+	    else{
+		return (false);
+ 	    }
+	}
+
+	function postreply(postid){
+	    var postdata = new FormData(document.forms.namedItem("frmreplymsg"));
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    replydivid = "replydiv" + postid.toString();
+	    	    replydivcontrol = document.getElementById(replydivid);
+	    	    replydivcontrol.innerHTML = "";
+		    window.location.href = window.location.href;
+	        }
+		else if(xmlhttp.readyState == 4 && xmlhttp.status==413){ // Image or file size was too big for upload
+		    alert("The request entity was too large to be uploaded. Please select a file of size less than 1 MB to upload.");
+		}
+	    };
+	    xmlhttp.open('POST', '{{postreplyurl}}', true);
+	    xmlhttp.send(postdata)
+	}
+
+	// Function to open a collapsible editable interface for replying
+	// to a message posted in a group.
+	function showreplyscreen(postid){
+	    replydivid = "replydiv" + postid.toString();
+	    replydivcontrol = document.getElementById(replydivid);
+	    html = "<form name='frmreplymsg' method='POST' action='' enctype='multipart/form-data'>";
+	    html += "<table border=0 cellspacing='3' cellpadding='3'>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>*Reply Message:</font></td><td nowrap><textarea name='replycontent' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>Add Attachment:</font></td><td nowrap><input type='file' name='replyattachment' id='replyattachment' value='' class='glowing-border'></td></tr>";
+	    html += "<tr><td nowrap align='center' valign='middle' colspan='2'><input type='button' name='btnreplymsg' id='btnreplymsg' value='Send Reply' onClick='javascript:postreply(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancelreply' id='btncancelreply' value='Discard Reply' onClick='javascript:discardreply(" + postid + ");'></td></tr>";
+	    html += "{% csrf_token %}</table><input type='hidden' name='postid' value='" + postid + "'></form>";
+	    //alert(html);
+	    replydivcontrol.innerHTML = html;
+	    replydivcontrol.style = "";
+	    return(0);
+	}
+
+
+	function collapsiblegroupposts(grpname, postslistenc, lastelem){
+	    postslist_str = Base64.decode(postslistenc);
+	    postslist = JSON.parse(postslist_str);
+	    posts = "<br><br><font color='#0000AA' size=-1>";
+	    imgpattern = new RegExp("\\.(jpe?g|png|tiff?|bmp|gif|svg)$");
+	    postslength = postslist.length;
+	    if(postslength > {{postsperpage}}){
+		postslength = {{postsperpage}};
+	    }
+	    for(var i=0; i < postslength; i++){
+		post = postslist[i];
+		attachedfile = post[2];
+		profilepic = post[5];
+        	subposts = post[10];
+		//alert(subposts);
+		imgtag = "<table border=0><tr><td width='80%' colspan='2'><img src='" + profilepic + "' width='60px' height='60px'>";
+		posts += imgtag + "<br>" + post[1] + "<br></td>";
+		if(post[6] != "" && post[6] != 'None'){
+		    readabledate = humanreadabledate(post[6].toString());
+		    posts += "<td align='right' valign='top' width='30%' nowrap><i>Posted on </i>" + readabledate + "</td>";
+		}
+		else{
+		    posts += "<td align='right' valign='top' width='30%'>&nbsp;</td>";
+		}
+		posts += "</tr></table>";
+
+		var xmlhttp;
+		if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		}
+		else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		}
+		xmlhttp.open('GET', attachedfile, false);
+	    	xmlhttp.send();
+		if(xmlhttp.status==404){
+		    posts += "<br><center>No Images</center>";
+		}
+		else if(imgpattern.test(attachedfile)){
+		    posts += "<br><center><img src='" + attachedfile + "' width='200px' height='150px'></center>";
+	    	}
+	    	else{
+		    attachedfileparts = attachedfile.split("/");
+		    posts += "<br><center><a href='" + attachedfile + "'><font color='#0000AA'><i>" + attachedfileparts[attachedfileparts.length - 1] + "</i></font></a></center>";
+	    	}
+		posts += "<br>" + post[0] + "<br>";
+		// Handle replies to this post here.
+	  	posts += Array(50).join("--");
+		for(var j=0;j < subposts.length;j++){
+		    subpostrecord = subposts[j];
+		    subprofpic = subpostrecord[5];
+		    subattachment = subpostrecord[2];
+		    subimgtag = Array(10).join(" ") + "<table border=0><tr><td width='5%'>&nbsp;</td><td width='80%'><img src='" + subprofpic + "' width='60px' height='60px'>";
+		    posts += subimgtag + "<br>" + subpostrecord[1] + "<br></td>";
+		    if(subpostrecord[6] != "" && subpostrecord[6] != 'None'){
+			subreadabledate = humanreadabledate(subpostrecord[6].toString());
+		        posts += "<td align='right' valign='top' width='30%' nowrap><i>Posted on </i>" + subreadabledate + "</td>";
+		    }
+		    else{
+			posts += "<td align='right' valign='top' width='30%'>&nbsp;</td>";
+		    }
+		    posts += "</tr>";
+		    if(imgpattern.test(subattachment)){
+		    	posts += "<br><center><img src='" + subattachment + "' width='200px' height='150px'></center>";
+	    	    }
+	    	    else{
+		    	subattachedfileparts = subattachment.split("/");
+		    	posts += "<tr><td width='5%'>&nbsp;</td><td width='75%'><center><a href='" + attachedfile + "'><font color='#0000AA'><i>" + subattachedfileparts[subattachedfileparts.length - 1] + "</i></font></a></center></td></tr>";
+	    	    }
+		    posts += "<tr><td width='5%'>&nbsp;</td><td width='70%'>" + subpostrecord[0] + "</td><tr></table>";
+		    posts += Array(50).join("--");
+		}
+		posts += "<br><br>";
+                posts += "<a href='#/' id='replyanchor" + post[7] + "' onClick='javascript:showreplyscreen(" + post[7] + ");'><i><font color='#0000AA' style='font-weight:bold;'>Join the Discussion</font></i></a>";
+		posts += "<br><div id='replydiv" + post[7] + "' style=''></div>";
+		posts += "<hr><br><br>";
+	    }
+	    posts += "</font>";
+	    dispmorecontent = "";
+            if(postslist.length > 10){
+	    	dispmorecontent = "<br><center><a href='#/' onClick=javascript:displaymore('" + grpname + "','" + lastelem.toString() + "');>Display More</a></center>";
+	    }
+	    showdiv = document.getElementById("grouppostspanel");
+	    existingcontent = showdiv.innerHTML;
+	    showdiv.innerHTML = existingcontent + posts;
+	    dispmorediv = document.getElementById('displaymorediv');
+	    dispmorediv.innerHTML = dispmorecontent;
+	    anchor = document.getElementById('postsanchor');
+	    anchor.innerHTML = " [Hide]";
+	    anchor.setAttribute('onclick', 'hidegroupposts("' + grpname + '", "' + postslistenc + '", "' + lastelem + '");');
+	}
+
+	// Function to display more message from the list of message posted to a group.
+	// Takes the name of the group as argument.
+	function displaymore(groupname, lastelem){
+	    nextfirst = parseInt(lastelem) + 1;
+	    nextlast = nextfirst + parseInt({{postsperpage}});
+    	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    showdiv = document.getElementById("grouppostspanel");
+	    postdata = "groupname=" + groupname + "&nextfirst=" + nextfirst.toString() + "&nextlast=" + nextlast.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+	    //alert(postdata);
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    postslistenc = xmlhttp.responseText;
+		    collapsiblegroupposts(groupname, postslistenc, nextlast);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{nextpostcontenturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function hidegroupposts(grpname, postslistenc, lastelem){
+	    postsdiv = document.getElementById('grouppostspanel');
+	    postsdiv.innerHTML = "";
+	    anchor = document.getElementById('postsanchor');
+	    anchor.innerHTML = " Show";
+	    anchor.setAttribute('onclick', 'collapsiblegroupposts("' + grpname + '", "' + postslistenc + '", ' + lastelem + ');');
+	}
+
+
+	function displaypostamessagescreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "<form name='frmpostamessage' id='frmpostamessage' method='POST' action='' enctype='multipart/form-data'>";
+	    html += "{% csrf_token %}";
+	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center>";
+	    html += "<table border=0 cellspacing=2 cellpadding=3>";
+	    
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' class='glowing-border' multiple><option value=''>Groups List - None</option>";
+	    {% for k,v in groupsdict.iteritems %}
+	    html += "<option value='{{k}}'>{{v}}</option>";
+	    {% endfor %}
+            html += "</select>";
+	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
+	    html += "<select name='targetconnections' id='targetconnections' size='3' class='glowing-border' multiple><option value=''>Connections List - None</option>";
+	    {% for k,v in contactsdict.iteritems %}
+	    html += "<option value='{{k}}'>{{v}}</option>";
+	    {% endfor %}
+	    html += "</select>";
+	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
+	    html += "<select name='testtakers' id='testtakers' size='3' class='glowing-border' multiple><option value=''>Takers of Tests - None</option>";
+	    {% for k,v in testtakersdict.iteritems %}
+	    html += "<option value='{{k}}'>{{v}}</option>";
+	    {% endfor %}
+	    html += "</select></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment' class='glowing-border'>";
+	    html += "<tr><td width='70%' nowrap colspan=2 align='center'><input type='button' name='postmessage' id='postmessage' value='Post Message' onClick='javascript:postmessagetotarget();'>&nbsp;&nbsp;<input type='button' name='closepostscreen' id='closepostscreen' value='Close Screen' onClick='javascript:closescreen();'></td></tr>";
+	    html += "</table></form>";
+	    screendiv.innerHTML = html;
+	}
+
+
+	function postmessagetotarget(){
+	    targetgroups = "";
+	    targetconnections = "";
+ 	    targettests = "";
+            targettypes = 0
+	    for(var i=1; i < document.frmpostamessage.targetgroups.options.length; i++){
+		if(document.frmpostamessage.targetgroups.options[i].selected == true){
+		    targetgroups += document.frmpostamessage.targetgroups.options[i].value + "##";
+		}
+	    }
+            if(targetgroups.length > 0){
+		targettypes++;
+	    }
+	    for(var i=1; i < document.frmpostamessage.targetconnections.options.length; i++){
+		if(document.frmpostamessage.targetconnections.options[i].selected == true){
+		    targetconnections += document.frmpostamessage.targetconnections.options[i].value + "##";
+		}
+	    }
+	    if(targetconnections.length > 0){
+		targettypes++;
+	    }
+   	    for(var i=1; i < document.frmpostamessage.testtakers.options.length; i++){
+		if(document.frmpostamessage.testtakers.options[i].selected == true){
+		    targettests += document.frmpostamessage.testtakers.options[i].value + "##";
+		}
+	    }
+	    if(targettests.length > 0){
+		targettypes++;
+	    }
+	    if(targettypes > 1){
+		alert("You may not post to more than one type of targets at a time. Please select users OR groups OR tests.");
+		return(false);
+	    }
+	    msgtag = document.frmpostamessage.msgtag.value;
+	    if(msgtag.trim() == ""){
+		alert("Message Tag cannot be empty");
+		document.frmpostamessage.msgtag.focus();
+		return(false);
+	    }
+ 	    postcontent = document.frmpostamessage.postcontent.value;
+	    if(postcontent.trim() == ""){
+		alert("Post Message cannot be empty!");
+		document.frmpostamessage.postcontent.focus();
+		return(false);
+	    }
+	    var postdata = new FormData(document.forms.namedItem("frmpostamessage"));
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    closescreen();
+	        }
+	    };
+	    xmlhttp.open('POST', '{{postcontenturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function handleinvitation(invid, senderdispname, csrftoken){
+	    selinvitestatus = document.getElementById('selinvaction').value;
+	    postdata = "inviteid=" + invid + "&sendername=" + senderdispname + "&csrfmiddlewaretoken=" + csrftoken + "&invitationstatus=" + selinvitestatus;
+	    connwaiterspan = document.getElementById('connwaiterspan');
+	    connwaiterspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+            var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    closescreen2();
+                    location.reload();
+	        }
+	    };
+	    xmlhttp.open('POST', '{{handleconnectinviteurl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function openinvite(conninvid, senderdispname){
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    screendiv = document.getElementById('transscreens2');
+	    screendiv.style.display = "";
+	    html = "<center><table border=0 cellspacing='1' cellpadding='3'>";
+	    html += "<tr bgcolor='#99CCFF'><td align='right' width='30%' nowrap><font color='#00AA00' style='font-weight:bold;'>You have a invitation to connect from '" + senderdispname + "'. Please select an action: </td><td width='50%' nowrap><select name='selinvaction' id='selinvaction'><option value='accept'>Accept</option><option value='refuse'>Refuse</option><option value='close'>Close</option></select>&nbsp;&nbsp;<input type='button' name='btninviteaction' id='btninviteaction' value='Submit' onClick=\"javascript:handleinvitation('" + conninvid + "', '" + senderdispname + "', '" + csrftoken + "');\"><span id='connwaiterspan'></span>&nbsp;&nbsp;<input type='button' name='btncloseinvdiv' id='btncloseinvdiv' value='Decide Later' onClick='javascript:closescreen2();'></td></tr>";
+	    html += "</table></center>";
+	    screendiv.innerHTML = html;
+	}
+
+
+	function showconnectionsprofile(connid){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.style.display = "";
+	    html = "";
+	    postdata = "connid=" + connid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    html += xmlhttp.responseText;
+		    //alert(html);
+		    screendiv.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{getconnectioninfourl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function manageconnection(connid){
+	}
+
+	function closemessagescreen(){
+	    screendiv = document.getElementById('transscreens');
+	    screendiv.innerHTML = "";
+	    screendiv.style.display = 'none';
+	}
+
+
+	// Method initiator to search messages
+	function messagesearch(){
+	    searchphrase = document.getElementById('msgsearch').value;
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    postdata = "searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    showmessages(xmlhttp.responseText);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{messagesearchurl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+	// Display all messages to the user - Inbox in the right panel.
+	function showmessages(messagesdictenc){
+	    messagesdictstr = Base64.decode(messagesdictenc);
+	    messagesdict = JSON.parse(messagesdictstr);
+	    screendiv = document.getElementById("transscreens");
+	    screendiv.style.display = "";
+	    screendiv.style = "height:400%;width:100%;";
+	    html = "<center><font color='#0000FF' style='font-weight:bold;' size=+1>Message Inbox &nbsp;&nbsp;</font><a href='#/' onClick='javascript:closemessagescreen();'><font color='#0000FF' style='font-weight:bold;' size=-1>[close]<img src='static/images/redcross.png' height='18px' width='18px'></font></a>&nbsp;&nbsp;&nbsp;&nbsp;<span width='35%' align='right' id='searchspan'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value=''>&nbsp;<input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();'></span></center><br><br>";
+	    html += "<center><table border='0' cellspacing='6' cellpadding='6' width='90%'>";
+	    idlist = Array();
+	    for (id in messagesdict){
+		idlist.push(id);
+	    }
+      	    idlist.sort(function(a, b){return b-a});
+	    searchphrasepattern = new RegExp("searchphrase=(.*)");
+	    for (j=0;j < idlist.length;j++){
+		id = idlist[j];
+		if(messagesdict.hasOwnProperty(id)){
+		    messagedata = messagesdict[id];
+		    //alert(messagedata);
+		    messageparts = messagedata[0].split("##");
+		    if(messageparts[0] == 'new'){
+			if(searchphrasepattern.test(messageparts[6])){
+			    messagepartvalues = messageparts[6].split("=");
+			    document.getElementById("msgsearch").value = messagepartvalues[1];
+		    	}
+			shortmessage = messageparts[5].substring(0, 40) + " ...";
+			msgtag = messageparts[4];
+			attachment = messageparts[3];
+			if(!messageparts[2] || messageparts[2] == 'None'){
+			    messageparts[2] = "";
+			}
+			msgparts2parts = messageparts[2].split("+");
+			messageparts[2] = msgparts2parts[0];
+			msgcontentenc = Base64.encode(messageparts[5]);
+			if(msgtag){
+	    	            html += "<tr><td nowrap width='20%' align='center'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[1] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[2] + "</font></td><td width='60%'><span id='newimagespan" + id + "'><img src='static/images/new.png' height='30px' width='30px'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 1);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + " (" + msgtag + ")</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000FF' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+			}
+			else{
+			    html += "<tr><td nowrap width='20%' align='center'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[1] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[2] + "</font></td><td width='70%'><span id='newimagespan" + id + "'><img src='static/images/new.png' height='30px' width='30px'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 1);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + "</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000FF' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+			}
+		    }
+		    else{
+			shortmessage = messageparts[4].substring(0, 40) + " ...";
+			if(searchphrasepattern.test(messageparts[5])){
+			    messagepartvalues = messageparts[5].split("=");
+			    //alert(messagepartvalues[1]);
+			    document.getElementById("msgsearch").value = messagepartvalues[1];
+		    	}
+			msgtag = messageparts[3];
+			attachment = messageparts[2];
+			if(!messageparts[1] || messageparts[1] == 'None'){
+			    messageparts[1] = "";
+			}
+			msgparts1parts = messageparts[1].split("+");
+			messageparts[1] = msgparts1parts[0];
+			msgcontentenc = Base64.encode(messageparts[4]);
+			if(msgtag){
+			    html += "<tr><td nowrap width='20%' align='center'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[0] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[1] + "</font></td><td width='70%'><span id='newimagespan" + id + "'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 0);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + " (" + msgtag + ")</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000FF' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+			}
+			else{
+			    html += "<tr><td nowrap width='20%' align='center'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + messageparts[0] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + messageparts[1] + "</font></td><td width='70%'><span id='newimagespan" + id + "'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 0);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + "</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000FF' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+			}
+		    }
+		    if(messagedata.length == 2){
+			subpostslist = messagedata[1];
+			//alert(subpostslist);
+			for(var i=0; i < subpostslist.length; i++){
+			    subpost = subpostslist[i];
+			    subpostparts = subpost.split("##");
+			    if(subpostparts[0] == "new"){
+				id = subpostparts[1];
+				shortmessage = subpostparts[6].substring(0, 40) + " ...";
+				msgtag = subpostparts[5];
+				attachment = subpostparts[4];
+				if(!subpostparts[3] || subpostparts[3] == 'None'){
+				    subpostparts[3] = "";
+				}
+				subpost2parts = subpostparts[3].split("+");
+				subpostparts[3] = subpost2parts[0];
+				msgcontentenc = Base64.encode(subpostparts[6]);
+				if(msgtag){
+	    	            	    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + subpostparts[2] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + subpostparts[3] + "</font></td><td width='70%'><span id='newimagespan" + id + "'><img src='static/images/new.png' height='30px' width='30px'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 1);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + " (" + msgtag + ")</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000FF' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+				}
+				else{
+			    	    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + subpostparts[2] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + subpostparts[3] + "</font></td><td width='70%'><span id='newimagespan" + id + "'><img src='static/images/new.png' height='30px' width='30px'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 1);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + "</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000FF' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+				}
+			    }
+			    else{
+				id = subpostparts[0];
+				shortmessage = subpostparts[5].substring(0, 40) + " ...";
+				msgtag = subpostparts[4]
+				attachment = subpostparts[3];
+				if(!subpostparts[2] || subpostparts[2] == 'None'){
+				    subpostparts[2] = "";
+				}
+				subpost2parts = subpostparts[2].split("+");
+				subpostparts[2] = subpost2parts[0];
+				msgcontentenc = Base64.encode(subpostparts[5]);
+				if(msgtag){
+	    	            	    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + subpostparts[1] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + subpostparts[2] + "</font></td><td width='70%'><span id='newimagespan" + id + "'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 1);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + " (" + msgtag + ")</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000AA' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+				}
+				else{
+			    	    html += "<tr><td nowrap width='20%' align='right'><font color='#0000FF' style='font-weight:bold;' size=-1>From " + subpostparts[1] + " - </td><td width='10%' nowrap><font color='#0000FF' style='font-weight:bold;' size=-1>" + subpostparts[2] + "</font></td><td width='70%'><span id='newimagespan" + id + "'></span><a href='#/' onClick='javascript:displaymessage(" + id + ", \"" + msgcontentenc + "\", 1);'><font color='#0000AA' style='font-weight:bold;' size=-1>" + shortmessage + "</font></a><span id='hidespan" + id + "' style='display:none;'></span><div id='msgdisp" + id + "' style='display:none;'></div></td><td width='10%'><font color='#0000AA' style='font-weight:bold;' size=-1>" + attachment + "</font></td><tr>";
+				}
+			    }
+			}
+		    }
+		}
+	    }
+	    html += "</table></center>";
+	    //html += "<br><center><div id='getmorediv'><font color='#0000AA' size = -1 style='font-weight:bold;'><a href='#/' onClick=javascript:showmoreposts(messagesdict['start1'], messagesdict['start2']);>Show More</a></font></div></center>";
+    	    screendiv.innerHTML = html;
+	}
+
+	// Display message content at the bottom of the entry in listing.
+	// The third parameter is a flag variable specifying if the message
+	// being displayed is a new one (1) or not (0).
+	function displaymessage(postid, msgcontentenc, newflag){
+	    msgcontent = Base64.decode(msgcontentenc);
+	    msgcontent = msgcontent.replace("\n", "<br>");
+	    //alert(msgcontent);
+	    displaydivid = "msgdisp" + postid;
+	    displaydiv = document.getElementById(displaydivid);
+	    displaydiv.style.display = "";
+	    hidespantag = document.getElementById('hidespan' + postid);
+	    hidespantag.style.display = "";
+	    hidespantag.innerHTML = "<a href='#/' onClick='javascript:hidemessage(" + postid + ");'><font color='#AA0000' size=-1 style='font-weight:bold;'> [hide]</font></a>";
+	    divhtml = "<br><span width='80%'><font color='#0000AA' size=-1>" + msgcontent + "</font></span>";
+	    divhtml += "<br><br><a href='#/' onClick='javascript:showresponseform(" + postid + ");'><font color='#0000FF' style='font-weight:bold;' size=-1>Reply</font></a><br><div id='respdiv" + postid + "'></div>";
+	    displaydiv.innerHTML = divhtml;
+	    // If this is a new message, send a request to tell the backend that the message has been displayed
+	    if(newflag == 1){
+		var xmlhttp;
+		postdata = "postid=" + postid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value; // using searchform's csrf.
+		if (window.XMLHttpRequest){
+	            xmlhttp=new XMLHttpRequest();
+	    	}
+	     	else{
+	            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    	}
+	    	xmlhttp.onreadystatechange = function(){
+                    //alert(xmlhttp.responseText);
+	            if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    	// do nothing... just supposed to be silent. Only remove the "new" image from the email link.
+			imgspan = document.getElementById("newimagespan" + postid);
+			imgspan.innerHTML = "";
+			imgspan.style.display = "none;";
+	            }
+	        };
+	        xmlhttp.open('POST', '{{newmessagereadurl}}', true);
+	    	xmlhttp.send(postdata);
+	    }
+	}
+
+
+	function hidemessage(postid){
+	    displaydivid = "msgdisp" + postid;
+	    displaydiv = document.getElementById(displaydivid);
+	    displaydiv.innerHTML = "";
+	    displaydiv.style = "display:none;";
+	    hidespantag = document.getElementById('hidespan' + postid);
+	    hidespantag.style = "display:none;";
+	    hidespantag.innerHTML = "";
+	}
+
+        function cleartextarea(postid){
+	    txtarea = document.getElementById('txtresponse' + postid);
+	    txtarea.innerHTML = "";
+	}
+
+
+	// Function to display the response form for the message displayed by the above 2 functions 
+	// (named 'displaymessage' and 'showmessages').
+	function showresponseform(postid){
+	    responsediv = document.getElementById('respdiv' + postid);
+	    responsediv.style.display = "";
+	    html = "<form name='frmresponse" + postid + "' id='frmresponse" + postid + "' method='POST' action='{{ sendmessageresponseurl }}'>";
+	    html += "<input type='file' name='responsemsgfile" + postid + "' id='responsemsgfile" + postid + "' value=''>";
+	    html += "<br><textarea name='txtresponse" + postid + "' id='txtresponse" + postid + "' rows='10' cols='40' onClick='javascript:cleartextarea(" + postid + ");'>Add your reply here.</textarea>";
+	    html += "<br><input type='button' name='btnresponse' value='Post Response' onClick='javascript:sendmessageresponse(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancel' value='Discard Response' onClick='javascript:discardresponse(" + postid + ");'>";
+	    html += "</form>";
+	    responsediv.innerHTML = html;
+	}
+
+
+	function sendmessageresponse(postid){
+	    formname = "frmresponse" + postid;
+	    postdata = new FormData(document.forms.namedItem(formname));
+	    postdata.append("csrfmiddlewaretoken", document.searchform.csrfmiddlewaretoken.value);
+	    postdata.append("postid", postid);
+	    actionurl = document.getElementById(formname).action;
+	    httpmethod = document.getElementById(formname).method;
+ 	    var xmlhttp;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert("Your message has been posted successfully");
+		    responsediv = document.getElementById('respdiv' + postid);
+	    	    responsediv.style.display = "none";
+	    	    responsediv.innerHTML = "";
+		}
+	    };
+	    xmlhttp.open(httpmethod, actionurl, true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function discardresponse(postid){
+	    ynresp = confirm("Discarding this message will close this edit area and remove the message you have written. Do you want to continue?")
+	    if(!ynresp){
+		return(0);
+	    }
+	    responsediv = document.getElementById('respdiv' + postid);
+	    responsediv.style.display = "none";
+	    responsediv.innerHTML = "";
+	}
+
+
+	function sendtesttogroups(){
+	    testid = document.frmtesttogroups.test.options[document.frmtesttogroups.test.options.selectedIndex].value;
+	    var postdata = "testid=" + testid;
+	    var groupidlist = "";
+	    for(i=0;i < document.frmtesttogroups.groups.length; i++){
+		if(document.frmtesttogroups.groups[i].selected == true){
+		    groupidlist = groupidlist + document.frmtesttogroups.groups[i].value + "##";
+		}
+	    }
+	    // Chip out the last 2 '##' chars ...
+	    glen = groupidlist.length;
+	    groupidlist = groupidlist.slice(0, glen - 2);
+	    // ... with those gone, form the postdata string
+	    postdata += "&groups=" + groupidlist;
+	    if(document.frmtesttogroups.chkforcefreshurl.checked == true){
+		postdata += "&forcefreshurl=1";
+	    }
+	    else{
+		postdata += "&forcefreshurl=0";
+	    }
+	    postdata += "&csrfmiddlewaretoken=" + document.frmtesttogroups.csrfmiddlewaretoken.value;
+	    actionurl = document.frmtesttogroups.action;
+	    var xmlhttp;
+   	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    closescreen2();
+		}
+	    };
+	    xmlhttp.open('POST', actionurl, true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function givetesttogroups(){
+	    transdiv = document.getElementById('transscreens2');
+	    transdiv.style.display = "";
+	    var xmlhttp;
+	    var fmt = "json";
+	    postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    html = "<center><form name='frmtesttogroups' id='frmtesttogroups' method='POST' action='{{testtogroupsurl}}'><table border=0 width='70%'>";
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    responsedict = JSON.parse(xmlhttp.responseText);
+		    testsdict = responsedict.tests
+		    groupsdict = responsedict.groups
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test' class='glowing-border'>";
+		    for (testname in testsdict){
+			testid = testsdict[testname];
+			html += "<option value='" + testid + "'>" + testname + "</option>";
+		    }
+	    	    html += "</select></td></tr>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' class='glowing-border' multiple>";
+		    for (groupname in groupsdict){
+			groupid = groupsdict[groupname];
+			html += "<option value='" + groupid + "'>" + groupname + "</option>";
+		    }
+		    html += "</select></td></tr>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Force Create New Test URL:</font></td><td align='left'><input type='checkbox' name='chkforcefreshurl' id='chkforcefreshurl' value='1'></td></tr>";
+		    html += "<tr><td colspan='2' align='center'><input type='button' name='btngive' value='Send Test' onClick='javascript:sendtesttogroups();'>&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Screen' onClick='javascript:closescreen2();'></td></tr>";
+	    	    html += "</table>{% csrf_token %}</form></center>";
+		    transdiv.innerHTML = html;
+		}
+	    };
+	    xmlhttp.open('POST', '{{gettestgroupsurl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+	//////// userprofile.html javascript ////////
+	function entermessage(useremail){
+	    emailspantag = document.getElementById('emailspan');
+	    html = "<br /><form name='frmemail' id='frmemail' method='POST' action=''>";
+	    html += "<table border='0' cellspacing='2' cellpadding='2'>";
+	    html += "<tr><td>&nbsp;</td><td nowrap align='left'><font color='#0000AA' style='font-weight:bold;' size=-1>To: " + useremail + "</font><br /></td></tr>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold;' size=-1>Enter Message Content</font></td><td align='left'><textarea name='txtemailcontent' id='txtemailcontent' value='' numrows='5' numcols='25' style='height:100px;width:400px;'></textarea></td></tr>";
+	    html += "<tr><td colspan='2' align='center'><input type='button' name='btnsendmessage' id='btnsendmessage' value='Send Message' onClick='javascript:submitmessage();'><span id='waitspan' style='display:'></span>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Discard Message' onClick='javascript:discardmessage();'></td></tr></table>";
+	    html += "{% csrf_token %}<input type='hidden' name='targetuser' id='targetuser' value='" + useremail + "'></form>";
+	    emailspantag.innerHTML = html;
+	    emailspantag.style.display = "";
+	}
+
+
+	function discardmessage(){
+	    yesno = confirm("Discard all changes made to the email?");
+	    if(!yesno){
+		return(0);
+	    }
+	    emailspantag = document.getElementById('emailspan');	
+	    emailspantag.innerHTML = "";
+	    emailspantag.style.display = "";
+	    return(0);
+	}
+
+
+	function submitmessage(){
+	    var xmlhttp;
+	    postdata = "messagecontent=" + document.frmemail.txtemailcontent.value + "&csrfmiddlewaretoken=" + document.frmemail.csrfmiddlewaretoken.value + "&targetuser=" + document.frmemail.targetuser.value;
+	    waitspantag = document.getElementById('waitspan');
+	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    emailspantag = document.getElementById('emailspan');	
+	    	    emailspantag.innerHTML = "";
+	    	    emailspantag.style.display = "";
+		    waitspantag.innerHTML = "";
+		    waitspantag.style.display = "none";
+		}
+	    };
+	    xmlhttp.open('POST', '{{sendmessageurl}}', true);
+	    encodeddata = encodeURI(postdata);
+	    //alert(encodeddata);
+	    xmlhttp.send(encodeddata);
+	    waitspantag.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    waitspantag.style.display = "";
+	}
+
+
+	function blockuser(){
+	    yesno = confirm("Continuing with this action will block the user from your profile. You may unblock the user later on. Do you want to continue?");
+   	    if(!yesno){
+		return(false);
+	    }
+	    displayname = document.ctrlfrm.targetusername.value;
+	    csrftoken = document.ctrlfrm.csrfmiddlewaretoken.value;
+	    postdata = "targetuser=" + displayname + "&csrfmiddlewaretoken=" + csrftoken + "&blocked=1"; // blocked=1 means block user
+  	    //alert(postdata);
+	    senddataasync(postdata, 'POST', '{{blockuserurl}}');
+	    var curloc = window.location.href;
+	    window.location.href=curloc;
+	}
+
+
+	function unblock(contactid){
+	    yesno = confirm("You are about to unblock this user. Do you want to continue?");
+	    if(!yesno){
+		return(false);
+	    }
+	    postdata = "contactid=" + contactid.toString() + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value + "&blocked=0";
+	    //alert(postdata);
+	    senddataasync(postdata, 'POST', '{{unblockuserurl}}');
+	    var curloc = window.location.href; // Bug: since data is posted asynchronously, sometimes the page refreshes earlier than the
+	    // alert displaying the result of the action performed. So, in such cases the alert message for the result of the operation
+	    // does not appear.
+	    //window.location.href=curloc;
+	    setTimeout(function () {
+        	window.location.reload()
+    	    }, 60);
+	}
+
+
+	function removeconn(){
+	    yesno = confirm("Continuing with this action will remove the user from your profile. A connection, once removed, cannot be restored back. The only way to add the user in your connection list is by re-inviting her/him to connect with you. Do you want to continue?");
+   	    if(!yesno){
+		return(false);
+	    }
+	    displayname = document.ctrlfrm.targetusername.value;
+	    csrftoken = document.ctrlfrm.csrfmiddlewaretoken.value;
+	    postdata = "targetuser=" + displayname + "&csrfmiddlewaretoken=" + csrftoken + "&removed=1"; // blocked=1 means block user
+  	    //alert(postdata);
+	    senddataasync(postdata, 'POST', '{{removeuserurl}}');
+	    var curloc = window.location.href;
+	    window.location.href=curloc;
+	}
+
+
+	function expandownedgroups(connectedtoid){
+	    var xmlhttp;
+	    postdata = "connectedtoid=" + connectedtoid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    groupsownedjson = xmlhttp.responseText;
+		    groupsownedinfo = JSON.parse(groupsownedjson);
+		    html = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideownedgroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
+		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
+		    for (ownedgroupname in groupsownedinfo){
+			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><!-- <a href='#/' onClick=\"showgroupprofile('" + ownedgroupname + "', '" + groupsownedinfo[ownedgroupname][5] + "', '" + groupsownedinfo[ownedgroupname][4] + "');\"> --><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font><!-- </a> --></span></td></tr>";
+		    }
+		    html += "</table>";
+		    owneddivtag = document.getElementById('owneddiv');
+		    owneddivtag.innerHTML = html;
+		    owneddivtag.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{getgroupowneddicturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function hideownedgroups(connectedtoid){
+	    owneddivtag = document.getElementById('owneddiv');
+	    owneddivtag.innerHTML = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandownedgroups('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
+	}
+
+
+	function expandmembergroups(connectedtoid){
+	    var xmlhttp;
+	    postdata = "connectedtoid=" + connectedtoid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    groupsmemberjson = xmlhttp.responseText;
+		    groupsmemberinfo = JSON.parse(groupsmemberjson);
+		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hidemembergroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
+		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
+		    for (membergroupname in groupsmemberinfo){
+			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><!-- <a href='#/' onClick=\"showgroupprofile('" + membergroupname + "', '" + groupsmemberinfo[membergroupname][4] + "', '');\"> --><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font><!-- </a> --></span></td></tr>";
+		    }
+		    html += "</table>";
+		    memberdivtag = document.getElementById('memberdiv');
+		    memberdivtag.innerHTML = html;
+		    memberdivtag.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{getgroupmemberdicturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+        function hidemembergroups(connectedtoid){
+	    memberdivtag = document.getElementById('memberdiv');
+	    memberdivtag.innerHTML = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandmembergroups('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
+	}
+
+
+        function expandconnections(connectedtoid){
+	    var xmlhttp;
+	    postdata = "connectedtoid=" + connectedtoid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    connectionsjson = xmlhttp.responseText;
+		    connectionsinfo = JSON.parse(connectionsjson);
+		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>All Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideconnections('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
+		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
+		    for (conn in connectionsinfo){
+			html += "<tr><td nowrap><span title='" + connectionsinfo[conn][1] + "'><a href='#/' onClick=showconnpublicprofile('" + conn + "');><font color='#0000AA'>" + conn + " - " + connectionsinfo[conn][0] + "</font></a></span></td></tr>";
+		    }
+		    html += "</table>";
+		    conndivtag = document.getElementById('connectiondiv');
+		    conndivtag.innerHTML = html;
+		    conndivtag.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{getconnectionsdicturl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+  	function hideconnections(connectedtoid){
+	    connectiondiv = document.getElementById('connectiondiv');
+	    connectiondiv.innerHTML = "<font color='#0000AA' style='font-weight: bold' size=-1>Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:expandconnections('" + connectedtoid + "');><img src='static/images/plussign.png' style='height:15px;width:15px;'>View All</a></font>";
+	}
+
+	// Function to display the group's profile page. This will serve only public values of the group unless this group is 
+	// also subscribed by the user for whom we are serving data (focususer).
+	function showgroupprofile(groupname, userdisplayname, currency){
+	    if(currency == ''){
+		currency = 'INR';
+	    }
+	    postdata = "membername=" + userdisplayname + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency;
+	    encodedpostdata = encodeURI(postdata);
+	    var xmlhttp;
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    closemessagescreen();
+		    screendiv = document.getElementById('transscreens');
+		    groupdatahtml = xmlhttp.responseText;
+		    //alert(groupdatahtml);
+		    screendiv.innerHTML = groupdatahtml;
+		    screendiv.style.display = "";
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
+
+	// Function to display user profile of users who are connections of the 'connectedto' user.
+	// This will only serve public data unless this user is also a connection of the user as whom
+	// we are logged in.
+	function showconnpublicprofile(connection){
+            var postdata = "conndisplayname=" + connection + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;        
+	    transdiv = document.getElementById('transscreens');
+            transdiv.style.display = "";
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    closemessagescreen();
+                    transdiv.innerHTML = xmlhttp.responseText;
+		    transdiv.style.display = "";
+                }
+            };
+            xmlhttp.open('POST', '{{getconnectioninfourl}}', true);
+            xmlhttp.send(postdata);
+        }
+
+	
+	function manageownedgrpsscreen(searchquery){
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&searchquery=" + searchquery;
+	    transdiv = document.getElementById('transscreens');
+            transdiv.style.display = "";
+ 	    waitdiv = document.getElementById('managewait');
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    closemessagescreen();
+                    transdiv.innerHTML = xmlhttp.responseText;
+		    transdiv.style.display = "";
+		    waitdiv.innerHTML = "";
+		    //alert(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open('POST', '{{manageownedgrpsurl}}', true);
+            xmlhttp.send(postdata);
+	    waitdiv.style.display = "";
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function closepaymentdetails(grpid){
+	    paiddetailsdiv = document.getElementById("paiddetails_" + grpid);
+	    paiddetailsdiv.style.display = "none";
+	    paiddetailsdiv.innerHTML = "";
+	}
+
+
+	function editpaidmetrics(grpid, currency, entryfee, bankname, bankbranch, accountnumber, ifscode, acctownername){
+	    paiddetailsdiv = document.getElementById("paiddetails_" + grpid);
+	    paiddetailsdiv.style.display = "";
+            checkboxelem = document.getElementById("paid_" + grpid);
+	    if(checkboxelem.checked != true){
+		alert("Please mark the ispaid check box as checked to set up the payment parameters");
+		//return (true);
+	    }
+	    else{
+	    	html = "<table border='0'><tr><td>Entry Fee: &nbsp;&nbsp;<input type='text' name='entryfee_" + grpid + "' id='entryfee_" + grpid + "' value='"+ entryfee + "'></td><td>Currency:&nbsp;&nbsp;<select name='currency_" + grpid + "' id='currency_" + grpid + "'>{% for curr in allcurrencies %} <option value='{{curr}}'>{{curr}}</option>{% endfor %}</select></td></tr><tr><td>Bank Name: &nbsp;&nbsp;<input type='text' name='bankname_" + grpid + "' id='bankname_" + grpid + "' value='" + bankname + "'></td><td>Branch Name: &nbsp;&nbsp;<input type='text' name='branchname_" + grpid + "' id='branchname_" + grpid + "' value='" + bankbranch + "'></td></tr><tr><td>Account Number: &nbsp;&nbsp;<input type='text' name='acctnumber_" + grpid + "' id='acctnumber_" + grpid + "' value='" + accountnumber + "'></td><td>IFSCode: &nbsp;&nbsp;<input type='text' name='ifsc_" + grpid + "' id='ifsc_" + grpid + "' value='" + ifscode + "'></td></tr><tr><td>Account Owner's Name:&nbsp;&nbsp;<input type='text' name='acctownername_" + grpid + "' id='acctownername_" + grpid + "' value='" + acctownername + "'></td><td> &nbsp;&nbsp;<input type='button' name='paiddetclose' value='Close Payment Details' onClick='javascript:closepaymentdetails(\"" + grpid + "\");'></td></tr><tr><td colspan='2'><font size=-1>*To save your changes, keep this annexure open and click on the 'Save Info' button at the end of the row.</font></td></tr></table>";
+	    	paiddetailsdiv.innerHTML = html;
+	    }
+	}
+
+
+	function savegroupinfo(gid){
+	    target = "{{grpinfosaveurl}}";
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&groupid=" + gid;
+	    grptopicid = "grptopic_" + gid;
+ 	    grptypeid = "grptype_" + gid;
+	    postdata += "&grouptopic=" + document.getElementById(grptopicid).value;
+	    postdata += "&grouptype=" + document.getElementById(grptypeid).value;
+  	    paidid = "paid_" + gid;
+	    paidelem = document.getElementById(paidid);
+ 	    entryfeeelem = "";
+	    currencyelem = "";
+	    banknameelem = "";
+	    branchnameelem = "";
+ 	    acctnumberelem = "";
+ 	    if(paidelem.checked == true || paidelem.checked == "checked"){
+		entryfeeelem = document.getElementById('entryfee_' + gid);
+		currencyelem = document.getElementById('currency_' + gid);
+		banknameelem = document.getElementById('bankname_' + gid);
+		branchnameelem = document.getElementById('branchname_' + gid);
+		acctnumberelem = document.getElementById('acctnumber_' + gid);
+		ifscelem = document.getElementById('ifsc_' + gid);
+		acctownerelem = document.getElementById('acctownername_' + gid);
+		postdata += "&paid=" + paidelem.value;
+		if(entryfeeelem){
+		    postdata += "&entryfee=" + entryfeeelem.value;
+		}
+		if(currencyelem){
+		    postdata += "&currency=" + currencyelem.value;
+		}
+		if(banknameelem){
+		    postdata += "&bankname=" + banknameelem.value;
+		}
+		if(branchnameelem){
+		    postdata += "&branchname=" + branchnameelem.value;
+		}
+		if(acctnumberelem){
+		    postdata += "&acctnumber=" + acctnumberelem.value;
+		}
+		if(ifscelem){
+		    postdata += "&ifscode=" + ifscelem.value;
+		}
+		if(acctownerelem){
+		    postdata += "&acctownername=" + acctownerelem.value;
+		}
+	    }
+	    taglinevalue = document.getElementById('tagline_' + gid).value;
+	    descriptionvalue = document.getElementById('description_' + gid).value;
+	    descriptionvalue = Base64.encode(descriptionvalue);
+	    maxuserlimitvalue = document.getElementById('maxuserslimit_' + gid).value;
+	    postdata += "&tagline=" + taglinevalue + "&description=" + descriptionvalue + "&maxuserslimit=" + maxuserlimitvalue;
+	    statusid = document.getElementById('status_' + gid);
+	    if(statusid.checked == true){
+		postdata += "&status=" + statusid.value;
+	    }
+	    ownerpermelement = document.getElementById('ownerpermreqd_' + gid);
+	    if(ownerpermelement.checked == true){
+		postdata += "&ownerpermreqd=" + ownerpermelement.value;
+	    }
+ 	    waitdiv = document.getElementById('managepostwait_' + gid);
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waitdiv.innerHTML = "";
+		    alert(xmlhttp.responseText);
+                }
+            };
+	    //alert(postdata);
+            xmlhttp.open('POST', target, true);
+            xmlhttp.send(postdata);
+	    waitdiv.style.display = "";
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function manageposts(gid, managepostsurl){
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&groupid=" + gid;
+ 	    waitdiv = document.getElementById('managepostwait_' + gid);
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waitdiv.innerHTML = "";
+		    //alert(xmlhttp.responseText);
+		    postswin = window.open("postswin", "", "width=800, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    postswin.document.write(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open('POST', managepostsurl, true);
+            xmlhttp.send(postdata);
+	    waitdiv.style.display = "";
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+	}
+
+
+	function withdrawfunds(){ // Open up a window (popup) showing the amount of funds the user has and the withdrawal options.
+	    var xmlhttp;
+	    wdiv = document.getElementById('withdrawdiv');
+	    postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    withdrawwin = window.open("withdrawwin", "", "width=800, height=400, location=yes, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    withdrawwin.document.write(xmlhttp.responseText);
+		    wdiv.innerHTML = "";
+                }
+            };
+            xmlhttp.open('POST', "skillstest/subscription/withdrawscreen/", true);
+            xmlhttp.send(postdata);
+	    wdiv.innerHTML = "<img src='static/images/loading_small.gif'>Please wait while we prepare the interface for this activity.";
+	}
+
+
+	function searchgroups(){
+	    var searchquery = document.frmsearchownedgrps.searchgrpname.value;
+	    manageownedgrpsscreen(searchquery);
+	}
+
+
+	function changeimg(grpid){
+	    chgimgdiv = document.getElementById('imgchange_' + grpid);
+	    chgimgdiv.style.display = "";
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><input type='file' name='grouppic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage(\"" + grpid + "\");'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
+	}
+
+
+	function closegroupsscreen(){
+	    transdiv = document.getElementById('transscreens');
+            transdiv.style.display = "none";
+	    transdiv.innerHTML = "";
+	}
+
+
+	function uploadgrpimage(grpid){
+	  var targeturl = document.grpimageuploadform.action;
+	  var postdata = new FormData(document.forms.namedItem("grpimageuploadform"));
+	  var xmlhttp;
+	  if (window.XMLHttpRequest){
+	    xmlhttp=new XMLHttpRequest();
+	  }
+	  else{
+	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	  // Register the handler
+	  xmlhttp.onreadystatechange = function(){
+	  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    if(xmlhttp.responseText == 'success'){
+	      alert("Image was uploaded successfully. Please reopen the screen (by clicking on 'Manage owned groups') to view the uploaded image.");
+	      window.location.href = window.location.href; // refresh the window.
+	    }
+	    else{
+	      alert("Error uploading image: " + xmlhttp.responseText);
+	    }
+	    document.getElementById('imgchange_' + grpid).style.display = 'none';
+	    document.getElementById('imgchange_' + grpid).innerHTML = '';
+	  }
+	  };
+	  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
+	  xmlhttp.send(postdata);
+	  // Display the rotating activity small icon
+	  document.getElementById('imgchange_' + grpid).style.display = '';
+	  document.getElementById('imgchange_' + grpid).innerHTML += "<br /><img src='static/images/loading_small.gif'>";
+	}
+
+
+        function showmessagearea(useremail){
+	    waitspanelem = document.getElementById('waitspan');
+	    waitspanelem.style.display = "";
+	    waitspanelem.innerHTML = "<textarea id='msgcontent' rows='4' cols='40'>Enter message here</textarea>&nbsp;&nbsp;<input type='button' name='sendamsg' id='sendamsg' value='Send' onClick='javascript:sendamessage(\"" + useremail + "\");'>";
+            textmsg = document.getElementById('msgcontent');
+	    textmsg.focus();
+	}
+
+
+        function sendamessage(useremail){
+            var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    postdata += "&useremail=" + useremail;
+	    textmsg = document.getElementById('msgcontent');
+	    alert(textmsg + "   1  ");
+	    msgvalue = textmsg.value;
+	    postdata += "&message=" + msgvalue;
+ 	    waitspanelem = document.getElementById('waitspan');
+            var xmlhttp;
+            if (window.XMLHttpRequest){
+                xmlhttp=new XMLHttpRequest();
+            }
+            else{
+                xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+            }
+	    alert(textmsg + "   2  ");
+            xmlhttp.onreadystatechange = function(){
+                if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    waitspanelem.innerHTML = xmlhttp.responseText;
+		    //alert(xmlhttp.responseText);
+                }
+            };
+            xmlhttp.open('POST', "{{sendamessageurl}}", true);
+            xmlhttp.send(postdata);
+	    waitspanelem.style.display = "";
+	    waitspanelem.innerHTML = "<img src='static/images/loading_small.gif'>";
+        }
+
+
+	function showreceivedmsgs(useremail){
+	}
+
+
+	</script>
+		
+		{% include "inc/mission_statement.html" %}
+
+		<!-- ### Post Entry Begin ###  -->
+
+		<div class="post">
+			<span class="meta">
+			<h3>Welcome {{ displayname }}</h3>
+
+			<div class="entry">
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaycreategroupscreen();'>Create a group</a></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayjoinagroupscreen();'>Join a group</a></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();'>Add a contact</a></h3>
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();'>Post a message</a></h3><br />
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage owned groups</a></h3><div id='managewait'></div>
+			<!-- <h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard&copy; will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br /> -->
+
+			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();'>Give a test to one or more groups</a></h3><br />
+			</div>
+			<div style='display:none;' id="transscreens" class="semitrans"></div>
+			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
+			</span>
+		</div>
+
+
+		<!-- ### Post Entry End ### -->
+
+		{% include "network/right_panel.html" %}
+		
+		{% include "inc/html_foot.html" %}

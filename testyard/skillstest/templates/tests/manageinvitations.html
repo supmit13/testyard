@@ -1,0 +1,104 @@
+<p><form name='manageinvites' id='manageinvites' method='POST' action=''><h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
+{% if usertest.LENGTH > 0 %}
+<br /><br />
+<div id='utinfo' style=''>
+<font color='#0508E3' style='font-weight:bold;'>Invitations to Existing Users</font><font color='#0508E3' size=-1 style='font-weight:bold;'><i>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
+<table border='1' cellspacing='4' cellpadding='4'>
+<tr>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till (UTC)</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test URL</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Username</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Email ID</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test Status</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test Outcome</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Score</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Started At - Ended At</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>IP Address</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>SessionID</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Actions</font></td>
+</tr>
+{% for utkey, utvalue in usertest.items %}
+    {% if utkey != 'LENGTH' %}
+    <tr>
+        <td nowrap align='center'><font color='#0000CC' size=-1>{{ utvalue.0 }} - {{ utvalue.1 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.2 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.4 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.3 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.5 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.6 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.7 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.8 }} - {{ utvalue.9 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.10 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.11 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.12 }}</font></td>
+	{% if utvalue.14 == 1 %}
+	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
+        {% else %}
+	{%if utvalue.13 == 1 %}
+        <td nowrap align='center'><font color='#0508E3' size=-1>Active<a href='#/' onClick='javascript:deactivateinvitation("{{ utvalue.2 }}", "usertest", {{ utvalue.15 }});'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utvalue.2 }}", "usertest", {{ utvalue.15 }})'>Cancel invitation</a></font></td>
+        {% else %}
+        <td nowrap align='center'><font color='#0508E3' size=-1>Inactive<a href='#/' onClick='javascript:activateinvitation("{{ utvalue.2 }}", "usertest", {{ utvalue.15 }});'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ utvalue.2 }}", "usertest", {{ utvalue.15 }})'>Cancel invitation</a></font></td>
+        {% endif %}
+	{% endif %}
+    </tr>
+    {% endif %}
+{% endfor %}
+</table>
+{% endif %}
+<font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
+</div>
+
+{% if wouldbeusers.LENGTH > 0 %}
+<br /><br />
+<div id='wbuinfo' style=''>
+<font color='#0508E3' style='font-weight:bold;'>Invitations to Users Not Registered on TestYard</font>  <font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
+<table border=1 cellspacing='4' cellpadding='4'>
+<tr>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till (UTC)</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test URL</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Email ID</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test Status</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test Outcome</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Score</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Started At - Ended At</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>IP Address</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Action</font></td>
+</tr>
+{% for wbukey, wbuvalue in wouldbeusers.items %}
+    {% if wbukey != 'LENGTH' %}
+    <tr>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.0 }} - {{ wbuvalue.1 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.2 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.3 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.4 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.5 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.6 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.7 }} - {{ wbuvalue.8 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.9 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.10 }}</font></td>
+	{% if wbuvalue.12 == 1 %}
+	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
+	{%else %}
+        {% if wbuvalue.11 == 1 %}
+        <td nowrap align='center'><font color='#0508E3' size=-1>Active <a href='#/' onClick='javascript:deactivateinvitation("{{ wbuvalue.2 }}", "wouldbeusers", {{ wbuvalue.13 }});'>Deactivate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers", {{ wbuvalue.13 }})'>Cancel Invitation</a></font></td>
+        {% else %}
+        <td nowrap align='center'><font color='#0508E3' size=-1>Inactive <a href='#/' onClick='javascript:activateinvitation("{{ wbuvalue.2 }}", "wouldbeusers", {{ wbuvalue.13 }});'>Activate this</a>|<a href='#/' onClick='javascript:cancelinvitation("{{ wbuvalue.2 }}", "wouldbeusers")', {{ wbuvalue.13 }}>Cancel Invitation</a></font></td>
+        {% endif %}
+	{% endif %}
+    </tr>
+    {% endif %}
+{% endfor %}
+</table>
+{% endif %}
+<font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
+</div>
+{% csrf_token %}
+<table border=0 cellspacing=4 cellpadding=4>
+<tr>
+<!-- <td nowrap><input type='button' name='btnclose' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";enableLink("manageexistinginvitations");'></td> -->
+<td nowrap><input type='button' name='btnclose' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></td>
+</tr>
+</table>
+</form></p>

@@ -1,0 +1,208 @@
+1. Image upload should function correctly. [Done]
+2. Create space in profile page for image. [Done]
+3. Messages are not being printed properly in HTML. Fix it. [Done]
+4. Complete the first cut versions of the lesser pages (help, careers, aboutus, etc).
+5. Email address validation link is inappropriate in yahoo mail inbox.
+6. The profile image tag and profile image upload div is not printed correctly in the email validation page. The HTML source of the block gets printed.
+7. Create installation package for the project using distutils.
+8. Create a branch containing the login, registration, image change, and other user authentication related features in app's skeletal code. Name the branch 'commoncode'.
+9. On changing profile image, the whole page is refreshed at present. This should be replaced with the functionality to refresh the uploaded image on the page only.
+10. Need to add condition to check user's 'plan' to show the 'Create New Test' link in skillstest.Test.views.get_user_tests().
+11. ========================================================================================
+
+24-12-2015 (Thursday)
+---------------------
+
+1. Implement ElasticSearch on 'Search' page. It should look up challenges from all tests that have been published. However, none of the
+challenges will be traced back to a test. This way, the integrity of the tests will remain intact as well as the user would be able to 
+see the challenges and their responses (by the creator as well as other test takers), again, not displaying the user's identity.
+
+2. Tag all tests and their questions for use with elasticsearch. This will be done by the creator of the test by selecting one of the
+ choices from the 'Topic of Test' dropdown on the "Enter Test Metadata" page.
+
+3. Collect saplings for landlotus (sthalapadma) and gandharaj and take them to Kolkata for planting them there.
+
+4. Start testing all the implemented features one by one. This should be a comprehensive test activity that should find out each and every
+ bug. Add the bug report on Bugzilla.
+
+5. Continue reading ElasticSearch documentation thoroughly.
+
+6. Add static content to the following pages: 1) About Us, 2) Help, 3) Careers. [Done]
+
+7. Upload the application to the docker on Amazon. Send a note to pratik about this, and ask him to help with decrypting the 3DES encrypted test content.
+
+8. Decide content on 'Dashboard' page. This should also be implemented during the holidays. [Scraped for now, may be it will come in later].
+
+9. Decide about the content on the 'Analytics' page. Start implementing them after all the above points have been taken care of. This might
+ be started after the holidays.
+
+10. The profile view of the connections of every user must contain some data from the 'Profile' page. Currently it just displays the tests
+ information. This info will be kepts as is, but the info from the Profile page should be displayed above them.
+
+=====================================================================================================
+
+04-01-2016
+----------
+
+1. While creating an interview object, create a folder with the name of the interview under the user's upload directory - 
+ userdata/<username>/interviews/<interview name>. The interview name should be stripped off all whitespace characters and replaced by
+ underscore characters. [Done]
+
+2. Modify the "Recorder.setupDownload = function(blob, filename){...}" code to send the blob to the server and saved by the name of "intro" or <question number counter> as appropriate under the directory created in the above step. [Done]
+
+3. If, for some reason, the interview object creation failed, the system should return an error message and not display the intro 
+ addition screen. This should also apply to a failure in creating the interview directory. [Done]
+
+======================================================================================================
+
+12-01-2016
+----------
+
+1. On creating an interview (by adding a record in the Tests_interview table), the system should provide the user with a means to add an intro to it by opening up a new window containing a button to record the intro. [Done]
+
+2. Once the user records the intro, the same screen should present a button to the user to record the questions for that interview one by one. Each question should be stored on the hard disk as a wav file, and an entry for it should be added in the Tests_interviewquestions table. 
+
+3. If the user specified a figure for the number of questions allowed (while creating the interview in the first step), the system should stop showing the question recording screen  after that many questions have been recorded. If the user did not specify a value for the number of questions that the interview will contain, then each question screen should have a button that, when clicked, will indicate to the system that the user wants to end entering questions for the interview. (The user may later on add more questions to the interview while editing it from another screen that is yet to be created).
+
+4. If the interview has the 'realtime' flag set, then the system will wait for a period for the response from the user and record the response. The response recording for each question will stop when the interviewer clicks on a button that sets the recorder off and saves the question as well as the response to it in the appropriate tables.
+
+5. If the interview doesn't have the 'realtime' flag set, then the responses to the interview questions will be recorded and stored whenever any interviewee attends the interview.
+
+6. In order to attend an interview, the interviewee need not have an account at testyard. The responses to an interview will be stored in the "<MEDIA_ROOT>/<interviewer_username>/interviews/<interview_title>/<interviewee_email_id>/" directory. Each response will be stored with the interview question in the begining, so when it is played, the question will be played first and then the response to it. They will be stored as a single file, so the evaluator will not need to put in any effort to correlate a response to its question. Each response will be in a file of its own.
+
+7. The responses to the interview questions will be stored in Tests_interviewresponses table. Another table, Tests_interviewsessions will have a record for each interview session with a specific user. This table will have a status field which will be set to false as long as the interview for that specific user has not concluded. Once the interview is over for a specific user, the status field will be set to True for that user in the Tests_interviewsessions table.
+
+8. Once an interviewee has answered all the questions in the interview, she/he may stop the session by clicking on a button, which will set the status field in the Tests_interviewsessions to True.
+
+9. An evaluator may evaluate an interview only when the status field in the Tests_interviewsessions table is set to True. For now, the only evaluator allowed in an interview would be the interviewer herself/himself.
+
+10.An interview may be edited as long as it has not been taken by any candidate. Thereafter, trying to edit an interview will create a new interview with the same name and a number annexed to it. This name may be changed by the interviewer (or creator) as long as it has not been taken by any candidate.
+
+======================================================================================================
+
+12-12-2018
+----------
+
+Note: Priority range: 1 - 5.
+Highest Priority: 1
+Lowest Priority: 5
+** Note ** - All references below are associated with user "supmit".
+
+Bug Fixes and Feature Implementations:
+--------------------------------------
+
+1. During a test session with the candidate, the mathematical answers (responses containing mathematical signs and symbols) are not "remembered" once the candidate tries to get back to the question from another question. Needs to be fixed. (Priority 1). [Done]
+
+2. Mathematical responses by candidates are not displayed appropriately in the evaluation screen. It displays the latex expression, not the equivalent math expression. Sometimes they are not displayed at all. Needs to be rectified. (Priority 1).
+
+3. Responses to multiple choice type questions are displayed in the evaluation screen with the separation characters between the selected options ('#||#' appears between 2 or more selected options. Refer to the test named "New Perl Test 01", candidate identified by 'sss@sss.sss', test Id 240, test URL "http://bit.ly/2oaQCKM", question "What data structures are supported by perl natively (i.e., without using any external modules)?", candidate's response ", array of scalars#||#hashes#||#scalars"). This should be corrected. (Prioriy 2).
+
+4. Integrate math symbols keyboard with The following pages: 
+	a) Test question addition screen (for test creator) (Priority 1), 
+	b) Test response screen for candidates (Priority 1),
+	c) Test evaluation screen for evaluators (on demand - there will be icons on the page for each question/answer, which when clicked, will open the keyboard as a separate widget, and pressing the keys will enter the characters in the "Comment/Feedback" section of the question/answer associated with the clicked icon) (Priority 2)
+
+5. The symbols/characters in the math keyboard need to be grouped and placed in such a way so that users find it convenient to find a symbol whenever they need it. It should be intuitive. This should be done with the help of a designer who can give valuable insights into how to club related keys together. (Priority 2)
+
+6. ElasticSearch integration with search feature. (Priority 4)
+
+7. Pagination needs to be implemented in the following display screens:
+	a) "Tests as Creator" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	b) "Tests as Evaluator" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	c) "Tests as Candidate" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	d) "Interviews Conducted" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	e) "Interviews Attended" - page URL: https://127.0.0.1/skillstest/tests/#/ (Priority 1)
+	f) "Manage owned groups" - page URL: https://127.0.0.1/skillstest/network/ (Priority 1)
+	g) Results of "Search Tests" and "Search Users" - page URL: https://127.0.0.1/skillstest/tests/search/ (Priority 3)
+These should have an user confgurable number of entries, in the form of a dropdown list with 10, 20, 50, 100 and 'all' as options of the dropdown. At the end of the configured quota of entries, there will be a link called "Show More", and clicking on it will display the next set of entries. For reference, look at the group posts of the group named "New_Group_Today", page URL - "https://127.0.0.1/skillstest/tests/search/", under the head "Groups Subscribed by You".
+	h) "Inbox" listings - page URL: https://127.0.0.1/skillstest/tests/search/ (Priority 3)
+
+8. Allow multiple participants (evaluators) simultaneously during interview sessions, with a maximum limit which should be globally configurble from skills_settings.py. A co-ordination framework should be developed so that a single user may take control of the speech functionality at one time. This should be decided by a single member of the group, who may be considered to be the co-ordinator, and this would be the individual who created/scheduled the interview in the first place. Other evaluators may "raise their hands", if they have any questions to ask. The candidate may speak at any time, even if an interviewer is speaking.
+
+9. Interview sessions may be conducted automatically at a preset time. The questions will be asked one by one (no evaluators/creators present during the session), and the candidate will be given a configurable amount to time to answer the question. If the candidate doesn't know the answer to a certain question, she/he may verbally say "Don't know" or "pass" as the first words after the question has been asked completely by the machine. (Priority 3)
+
+10. Resolve security certificate issue in order for WebRTC sessions to work (Interviews and all). (Priority 1).
+
+11. Iris direction detection to make sure that the candidate is not cheating during an interview. The candidate may move her/his iris +/- 15 degrees on either side of the screen (the angle will be configurable in skills_settings.py). If such an incident occurs, the candidate will be warned twice, and if it happens a third time, the interview will be terminated if it is an automated interview (refer to point #9), and in case of a manual interview, the decision to continue with the interview or not will rest upon the interviewer(s). In either case, a editable area will be given to the candidate to explain her/his behaviour, and if the explanation satisfies the interview creator/owner, then she/he may create a new interview session for the candidate. 
+** Remember to provide allowance to squints in this matter **. (Priority 2).
+
+12. The above point should be implemented for tests too. (Priority  2).
+
+13. Make Bugzilla work and add all points mentioned in this file in Bugzilla. URL: http://localhost:8001/html/bugzilla/. Create an account (needs an internet connection), add project (TestYard), and we are ready to go. (Priority 3).
+
+14. Port the below mentioned unnecessary columns from the following screens. Replace them with columns mentioned:
+	a) Screen: "Tests as Creator", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/".
+	Column Group to be Removed: "Test Topic", "Total Score", "Publish Date", "Pass Score", "Negative Score Allowed", "Standard", "Repeat Allowed", "Test Takers Count", "Count of Pass", "Count of Fail", "Count of Disqualifications", "Visibility", "Post on LinkedIn".
+	Replace Above Columns with: "Test Details" (hyperlink)
+	Click effect on "Test Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	b) Screen: "Tests as Evaluators", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",
+	Column Group to be Removed: "Test Topic", "Total Score", "Publish Date", "Pass Score", "Negative Score Allowed", "Standard", "Repeat Allowed", "Test Takers Count", "Count of Pass", "Count of Failed", "Count of Disqualifications", "Post on LinkedIn".
+	Replace Above Columns with: "Test Details" (hyperlink)
+	Click effect on "Test Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	c) Screen: "Tests as Candidate", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",
+	Column Group to be Removed: "Test Topic", "Negative Score Allowed", "Standard", "Test Rules", "Next Test Date", "Post on LinkedIn"
+	Replace Above Columns with: "Test Details" (hyperlink)
+	Click effect on "Test Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	d) Screen: "Interviews Created", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",
+	Column Group to be Removed: "Interview Topic", "Language", "Create Date", "Publish Date", "Post on LinkedIn"
+	Replace Above Columns with: "Interview Details" (hyperlink), "Interview Conduction Date" (may be null if it is scheduled in some future date)
+	Click effect on "Interview Details": Display a semi-transparent overlay screen with information of columns removed above.
+
+	e) Screen: "Interviews Attended", Tab: "Tests & Interviews", URL: "https://127.0.0.1/skillstest/tests/#/",	
+(Priority 1)	
+
+15. In "Tests & Interviews" tab, under the "invite candidates" column, the date/times should be inserted with the use of a date time calendar widget. Currently, one has to enter it manually using the given format. This needs to be changed. (Priority 2).
+
+16. In the 'Network' tab, clicking on one of the users listed in the list of connections displays an overlay with the test details of that user. This is fine and works the way as desired. However, clicking on "Send a Message" at the top of the overlay doesn't work and throws a javascript error. Needs to be fixed. (Priority 2).
+
+======================================================================================================
+
+04-02-2019
+----------
+
+1. Integrate new math keyboard with TestYard in the test challenges entry interface and in the test taking interface. [Needs to be done on priority #1]
+
+2. In the evaluation screen, mathjax expressions are not being rendered at all. The LaTeX expressions are being displayed raw. [This is a show stopper. So this is priority #1 fix].
+
+3. Certificate errors - WebRTC and some other features are not working for this. [This is a show stopper. So this is priority #1 fix].
+
+4. While copying special characters in Math Keyboard, the integral and double integral limits loose their appropriate positions. This will possibly be fixed once the Math Keyboard is integrated with the screens mentioned in point #1.
+
+5. Code (programming code) tend to have their newline characters removed when they appear in evaluation screen. So the whole block of code appears in a single line thus making the response useless. [Needs to be fixed on priority #2].
+
+6. Contents of the "Tests" tab should be paginated in some manner - may be by placing a "More" link at the end of the chunk that is displayed at a time. [Needs to be fixed on priority #2].
+
+7. Pagination of "Managed owned groups" in the "Network" tab should be implemented (if not implemented already. Needs to be checked). [Priority #2]. [Done - Implemented already. Example: user codexaddict, Group name "New_Group_Today", click on "show" link beside "Group Posts"]
+
+8. Pagination of "Inbox" listings should be paginated. Placing a "More" link will be a good idea, as that is the standard way we are using in this application to implement pagination. [Needs to be fixed on priority #2]
+
+9. In MathJax library, expressing square root of a product of 2 or more variables needs to be implemented. For example, at present if we write O { \rho \sigma \delta \star \sqrt \Phi \Omega \Lambda } , then the square root symbol covers "\Phi" only. However, there should be a way to cover "\Omega \Lambda" under the same square root sign. There should be a way to distinguish the characters that need to be covered under the square root sign. [Needs to be fixed on priority #2, even though this is quite important. This is so because I already have quite a few priority #1 fixes to make.]
+
+10. While using the MathJax keyboard, the user needs to be made aware if the LaTeX expression has an error in it. This should be done prior to rendering the LaTeX expression. [Needs to be fixed on priority #2].
+
+11. After clicking on "Pay" for group entry or subscription, the "Pay" button should be disabled. Also, the "No I won't join now" button should also be disabled. [Done for PayU payment screen, not necessary for RazorPay payment screen]
+
+12. Users who have made a payment for a group, either as entry fee or subscription fee, the payment screen should show the status of this payment. In case of subscription fee, status of only the last payment for the current period should be shown. [Done]
+
+13. When a payout is made (using either RazorPay or Stripe), a Transaction record should be created with the platform as the user making the payment to the group's owner.
+
+Feature To Dos:
+---------------
+
+1. Implement or set up STUN/TURN servers locally and test its functionality on Digital Ocean (DO) droplet. (First, salvage DO setup by paying pending dues - INR 800.00).
+
+2. Optimize all interactions with DB through Django models (ORM calls).
+
+3. Test RazorPay 'Fund Accounts' end to end. This is to test RazorPay's model of automatic payouts after make_payout is run (requires GSTIN).
+
+4. Audit a transaction cycle - Create a paid group, user joins a group (by paying entry fee or subscription fee), platform makes a payout for the user's payment. Should be done for both, Stripe and RazorPay. Also, implement point #13 above.
+
+5. Test entire testing process - create test (set up rules), invite users to take the test (check whether rules are enforced), make assessments, commit assessments. Should be done for interview process also.
+
+6. Implement test automation for the entire platform.
+
+
+

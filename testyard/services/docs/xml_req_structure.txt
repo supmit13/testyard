@@ -1,0 +1,8 @@
+<?xml version = "1.0"?>
+<challenge>
+    <user_id>[User Id as int]</user_id>
+    <test_id>[Test Id as int]</test_id>
+    <challenge_id>[Challenge Id as int]</challenge_id>
+    <code>[Code in base64 encoding]</code>
+    <proglang>[Programming language]</proglang>
+</challenge>

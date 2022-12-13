@@ -1,0 +1,71 @@
+{% load extratemptags %}
+&nbsp;&nbsp;<a href='#/' onClick='javascript:closescreen();'><font color='#0000AA'>Back to Main Screen</font></a>
+<br /><br />
+<p style="font-weight:bold;color:#0000AA">Tests Conducted</p>
+<table border='1' cellspacing='3' cellpadding='3'>
+<tr>
+<td style="font-weight:bold;color:#0000AA">Test Name</td><td style="font-weight:bold;color:#0000AA">Test Topic</td><td style="font-weight:bold;color:#0000AA">Test Type</td><td style="font-weight:bold;color:#0000AA">Standard</td><td style="font-weight:bold;color:#0000AA">Test Rules</td><td style="font-weight:bold;color:#0000AA">Total Score</td><td style="font-weight:bold;color:#0000AA">Pass Score</td><td style="font-weight:bold;color:#0000AA">Negative Marking</td>
+</tr>
+{% for testid in testscreated %}
+<tr>
+<td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:0}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:1}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:2}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:3}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:7}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:5}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:6}}</td><td style='color:#0000AA;' nowrap>{{testscreated|dictlookup:testid|getval:4}}</td>
+</tr>
+{% endfor %}
+</table>
+<br />
+
+<p style="font-weight:bold;color:#0000AA">Tests Evaluated</p>
+<table border='1' cellspacing='3' cellpadding='3'>
+<tr>
+<td style="font-weight:bold;color:#0000AA">Test Name</td><td style="font-weight:bold;color:#0000AA">Test Topic</td><td style="font-weight:bold;color:#0000AA">Test Type</td><td style="font-weight:bold;color:#0000AA">Standard</td><td style="font-weight:bold;color:#0000AA">Test Rules</td><td style="font-weight:bold;color:#0000AA">Total Score</td><td style="font-weight:bold;color:#0000AA">Pass Score</td><td style="font-weight:bold;color:#0000AA">Negative Marking</td>
+</tr>
+{% for testid in testsevaluated %}
+<tr>
+<td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:0}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:1}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:2}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:3}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:7}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:5}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:6}}</td><td style='color:#0000AA;' nowrap>{{testsevaluated|dictlookup:testid|getval:4}}</td>
+</tr>
+{% endfor %}
+</table>
+<br />
+
+<p style="font-weight:bold;color:#0000AA">Tests Taken</p>
+<table border='1' cellspacing='3' cellpadding='3'>
+<tr>
+<td style="font-weight:bold;color:#0000AA">Test Name</td><td style="font-weight:bold;color:#0000AA">Test Topic</td><td style="font-weight:bold;color:#0000AA">Test Type</td><td style="font-weight:bold;color:#0000AA">Standard</td><td style="font-weight:bold;color:#0000AA">Test Rules</td><td style="font-weight:bold;color:#0000AA">Total Score</td><td style="font-weight:bold;color:#0000AA">Pass Score</td><td style="font-weight:bold;color:#0000AA">Obtained Score</td><td style="font-weight:bold;color:#0000AA">Negative Marking</td>
+</tr>
+{% for testid in teststaken %}
+<tr>
+<td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:0}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:1}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:2}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:3}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:7}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:5}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:6}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:8}}</td><td style='color:#0000AA;' nowrap>{{teststaken|dictlookup:testid|getval:4}}</td>
+</tr>
+{% endfor %}
+</table>
+<br />
+
+<p style="font-weight:bold;color:#0000AA">Interviews Conducted</p>
+<table border='1' cellspacing='3' cellpadding='3'>
+<tr>
+<td style="font-weight:bold;color:#0000AA">Interview Title</td><td style="font-weight:bold;color:#0000AA">Interview Topic</td><td style="font-weight:bold;color:#0000AA">Standard</td><td style="font-weight:bold;color:#0000AA">Total Score</td><td style="font-weight:bold;color:#0000AA">Duration</td><td style="font-weight:bold;color:#0000AA">Candidate Email</td>
+</tr>
+{% for intid in interviewsconducted %}
+<tr>
+<td style='color:#0000AA;' nowrap>{{interviewsconducted|dictlookup:intid|getval:0}}</td><td style='color:#0000AA;' nowrap>{{interviewsconducted|dictlookup:intid|getval:1}}</td><td style='color:#0000AA;' nowrap>{{interviewsconducted|dictlookup:intid|getval:4}}</td><td style='color:#0000AA;' nowrap>{{interviewsconducted|dictlookup:intid|getval:2}}</td><td style='color:#0000AA;' nowrap>{{interviewsconducted|dictlookup:intid|getval:3}}</td><td style='color:#0000AA;' nowrap>{{interviewsconducted|dictlookup:intid|getval:5}}</td>
+</tr>
+{% endfor %}
+</table>
+<br />
+
+<p style="font-weight:bold;color:#0000AA">Interviews Attended</p>
+<table border='1' cellspacing='3' cellpadding='3'>
+<tr>
+<td style="font-weight:bold;color:#0000AA">Interview Title</td><td style="font-weight:bold;color:#0000AA">Interview Topic</td><td style="font-weight:bold;color:#0000AA">Interviewer</td>
+</tr>
+{% for intid in interviewsattended %}
+<tr>
+<td style='color:#0000AA;' nowrap>{{interviewsattended|dictlookup:intid|getval:0}}</td><td style='color:#0000AA;' nowrap>{{interviewsattended|dictlookup:intid|getval:2}}</td><td style='color:#0000AA;' nowrap>{{interviewsattended|dictlookup:intid|getval:1}}</td>
+</tr>
+{% endfor %}
+</table>
+<br />
+
+
+<br />
+&nbsp;&nbsp;<a href='#/' onClick='javascript:closescreen();'><font color='#0000AA'>Back to Main Screen</font></a>

@@ -1,0 +1,276 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script type='text/javascript'>
+  function joingroup(grpid){
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+    //alert(encodedpostdata);
+    waitspan = document.getElementById('waitspan');
+    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    waitspan.style = "";
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	    waitspan.style = "display:none";
+    	    waitspan.innerHTML = "The request has been successfully sent";
+	    document.grouppagefrm.btnjoin.disabled = true;
+        }
+    };
+    xmlhttp.open('POST', '{{ joinrequesturl }}', true);
+    xmlhttp.send(encodedpostdata);
+  }
+
+  function showpaymentgwform(grpid, entryfee){
+    if(entryfee == 0){
+	return (false); // Write code to allow users to join directly.
+    }
+    document.grouppagefrm.btnjoin.disabled = true;
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    postdata = "groupid=" + grpid + "&entryfee=" + entryfee.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+	    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+	    payinfowin.document.write(xmlhttp.responseText);
+        }
+    };
+    xmlhttp.open('POST', '{{ getpaymentgwurl }}', true);
+    xmlhttp.send(postdata);
+  }
+
+  function showpaymentgwsubscriptionform(grpid, subscriptionfee){
+    ///alert(subscriptionfee);
+    document.grouppagefrm.btnjoin.disabled = true;
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    postdata = "groupid=" + grpid + "&subscriptionfee=" + subscriptionfee.toString() + "&csrfmiddlewaretoken=" + csrftoken;
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+	    payinfowin = window.open("", "testinfowindow", "width=700, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	    payinfowin.document.getElementsByTagName('body')[0].innerHTML = "";// Clean up any existing window.
+	    payinfowin.document.write(xmlhttp.responseText);
+        }
+    };
+    xmlhttp.open('POST', '{{ getsubscriptiongwurl }}', true);
+    xmlhttp.send(postdata);
+  }
+
+  function exitgroup(grpid){
+    yesno = confirm("Are you sure you want to exit from this group?");
+    if(yesno == false){
+	return(0);
+    }
+    //alert(grpid);
+    //Send a post request to {{exitgroupurl}} with appropriate params - groupId and csrfmiddlewaretoken should be enough.
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+    //alert(encodedpostdata);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	    waitspan.style = "display:none";
+    	    waitspan.innerHTML = "";
+        }
+    };
+    xmlhttp.open('POST', '{{exitgroupurl}}', true);
+    xmlhttp.send(encodedpostdata);
+    // Show progress circle to user...
+    waitspan = document.getElementById('waitspan');
+    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    waitspan.style = "";
+  }
+
+  function sendgentlereminder(grpid){
+    csrftoken = document.grouppagefrm.csrfmiddlewaretoken.value;
+    encodedpostdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + csrftoken;
+    if(testid && testid != null){
+	encodedpostdata += "&testid=" + testid;
+    }
+    waitspan = document.getElementById('waitspan');
+    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+    waitspan.style = "";
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	    waitspan.style = "display:none";
+    	    waitspan.innerHTML = "";
+	    closegroupdivscreen(ctr);
+        }
+    };
+    xmlhttp.open('POST', '{{ gentlereminderurl }}', true);
+    xmlhttp.send(encodedpostdata);
+  }
+</script>
+<link href="static/css/font_awesome_min.css" rel="stylesheet">
+</head>
+<body>
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p> 
+
+	</div>
+	
+	<!-- Here we go with the group profile template -->
+
+	<div class="row">
+		<div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+    	 <div class="well profile">
+            <div class="col-sm-12">
+                <div class="col-xs-12 col-sm-8">
+                    <h2>{{grpname}}</h2>
+                    <p><strong>Owned By: </strong> {{grpowner}} </p>
+                    <p>{{grptagline}} </p>
+                    <p><strong>Topic: </strong>
+                        <span class="tags">{{grptopic}}</span> 
+			<br />
+		        <strong>Group Type: </strong>
+                        <span class="tags">{{grptype}}</span>
+                        
+                    </p>
+                </div>             
+                <div class="col-xs-12 col-sm-4 text-center">
+                    <figure>
+                        <img src="{{grpimagefile}}" alt="" class="img-circle img-responsive" width='400' height='400'>
+                        <figcaption class="ratings">
+                            <p><strong>Members Count</strong>
+                               <span class="fa fa-star">{{grpmemberscount}}</span>
+			    </p>
+                            <p><strong>Created On</strong>
+                                <span class="fa fa-star">{{grpcreationdate}}</span>
+                            </p>
+                            <p><strong>Stars</strong>
+                                <span class="fa fa-star">{{grpstars}}</span>
+                            </p>
+                            <p><strong>Is Paid</strong>
+                                <span class="fa fa-star">{{grppaid}}</span>
+                            </p>
+			    {% if grppaid %}
+                            <p><strong>Entry Fee</strong>
+                                 <span class="fa fa-star-o">{{grpcurrency}}&nbsp;&nbsp;{{grpentryfee}}</span>
+                            </p>
+			    <p><strong>Subscription Fee</strong>
+                                 <span class="fa fa-star-o">{{grpcurrency}}&nbsp;&nbsp;{{grpsubscriptionfee}}</span>
+                            </p>  
+			    {% endif %}
+                        </figcaption>
+                    </figure>
+                </div>
+            </div>            
+            <div class="col-xs-12 divider text-center">
+                <div class="col-xs-12 col-sm-4 emphasis">
+                    <p><strong>Description:</strong>{{grpdescription}}</p>
+		    <!--
+		    <p><strong>Posts</strong>
+		    <hr>
+		    {{posts}}
+	    	    {% for post in posts %}
+	            <p><font style="color:0000AA">aaaaaaaaaaaAAAAA{{post.content}}</font></p>
+		    <br />
+		    <p><i><font style="color:0000AA">bbbbbbbbbbbBBBBBBBBBB{{ post.poster }}</font></i></p>
+		    <br /><br /><br />
+	    	    {% endfor %}
+		    -->
+		    <form name='grouppagefrm'>
+		    {% if joinstatus == 0 %}
+			{% if grpentryfee > 0 %}
+			    <input type='button' name='btnjoin' value='Join Group' onClick='javascript:showpaymentgwform({{grpid}}, "{{grpentryfee}}");'>
+			{% elif grpsubscriptionfee > 0 %}
+			    <input type='button' name='btnjoin' value='Join Group' onClick='javascript:showpaymentgwsubscriptionform({{grpid}}, "{{grpsubscriptionfee}}");'>
+			{% else %}
+		    	    <input type='button' name='btnjoin' value='Join Group' onClick='javascript:joingroup({{grpid}});'>
+			{% endif %}
+		    {% elif joinstatus == 1 %}
+		    <input type='button' name='btnexit' value='Exit Group' onClick='javascript:exitgroup({{grpid}});'>
+		    {% elif joinstatus == 2 %}
+		    <input type='button' name='btnreminder' value='Send Gentle Reminder' onClick='javascript:sendgentlereminder({{grpid}});'>
+	    	    {% endif %}
+		    <span id='waitspan'></span>
+		    <input type='button' name='btnclose' value='Close Window' onClick='javascript:window.close();'>
+                    <!-- <button class="btn btn-success btn-block"><span class="fa fa-plus-circle"></span> Follow </button> -->
+		    {% csrf_token %}
+		    </form>
+                </div>
+		
+	        <p>...</p>
+		<!--
+                <div class="col-xs-12 col-sm-4 emphasis">
+                    <h2><strong>245</strong></h2>                    
+                    <p><small>Following</small></p>
+                    <button class="btn btn-info btn-block"><span class="fa fa-user"></span> View Profile </button>
+                </div>
+                <div class="col-xs-12 col-sm-4 emphasis">
+                    <h2><strong>43</strong></h2>                    
+                    <p><small>Snippets</small></p>
+                    <div class="btn-group dropup btn-block">
+                      <button type="button" class="btn btn-primary"><span class="fa fa-gear"></span> Options </button>
+                      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <ul class="dropdown-menu text-left" role="menu">
+                        <li><a href="#"><span class="fa fa-envelope pull-right"></span> Send an email </a></li>
+                        <li><a href="#"><span class="fa fa-list pull-right"></span> Add or remove from a list  </a></li>
+                        <li class="divider"></li>
+                        <li><a href="#"><span class="fa fa-warning pull-right"></span>Report this user for spam</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#" class="btn disabled" role="button"> Unfollow </a></li>
+                      </ul>
+                    </div>
+                </div>
+		-->
+	    
+        </div>
+    	</div>                 
+    </div>
+    </div>
+	<!-- group profile template ends here -->
+</div>
+</body>
+</html>

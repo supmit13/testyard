@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>TestYard Canvas - Draw your picture here </title>
+    <style type="text/css">
+      #container { position: relative; }
+      #imageView { border: 1px solid #000; }
+      #imageTemp { position: absolute; top: 1px; left: 1px; }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    
+    <script type='text/javascript'>
+    var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+
+    function removecanvas(){
+  	var yesno = confirm("Closing this window will destroy unsaved changes in the canvas. Proceed?");
+	if(yesno){
+	    window.close();
+	}
+    }
+
+
+    function savedrawing(){
+	var actionurl = '{{savedrawingurl}}';
+	var canvas = document.getElementById('imageView');
+	dataUrl = canvas.toDataURL("image/png", 0.6);
+	dataUrl = Base64.encode(dataUrl);
+	postdata = "canvasdata=" + dataUrl + "&csrfmiddlewaretoken=" + document.frmdrawing.csrfmiddlewaretoken.value + "&testid=" + document.frmdrawing.testid.value + "&challengeid=" + document.frmdrawing.challengeid.value;
+   	var xmlhttp;
+    	if (window.XMLHttpRequest){
+            xmlhttp=new XMLHttpRequest();
+    	}
+    	else{
+            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    	}
+    	xmlhttp.onreadystatechange = function(){
+    	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    	saveresp = xmlhttp.responseText;
+		pngpattern = new RegExp(".png$");
+		if(saveresp == ""){
+		    saveresp = "The image was successfully saved in the context of the test and challenge being edited.";
+		}
+		else if(pngpattern.test(saveresp)){
+		    alert("You can create and upload an image using the given canvas only after you have created and saved the challenge. You should try this only while editing an already existing challenge. Sorry for this inconvenience.");
+	    	    window.close();
+		}
+	    	alert(saveresp);
+	    	window.close();
+    	    }
+    	};
+    	xmlhttp.open("POST", '{{ savedrawingurl }}', true);
+    	xmlhttp.send(postdata);
+    }
+
+    function handleaction(){
+	textspan = document.getElementById('textctrlspan');
+	if(document.frmdrawing.dtool.options[document.frmdrawing.dtool.options.selectedIndex].value == 'text'){
+	    textspan.style = "";
+	    textspan.innerHTML = "<br /><font color='#0000AA' style='font-weight:bold;' size=-1>Enter text: </font><input type='text' name='canvastext' id='canvastext' value=''>";
+	}
+	else{ // Hide the text control if it is visible.
+	    textspan.innerHTML = "";
+	    textspan.style.display = "none;";
+	}
+    }
+
+    </script>
+  </head> 
+  <body bgcolor='#669999'>
+    <center><font color='#0000AA' style='font-weight:bold;'>Double-click on the bounded area below to start drawing</font></center><br />
+    <form name='frmdrawing' id='frmdrawing' method='POST' action='{{savedrawingurl}}'>
+    <center><font color='#AA0000' style='font-weight:bold;' size=-1><i>You can create and upload an image using the given canvas only after you have created and saved a  challenge. You should try this only while editing an already existing challenge. Please ignore this message if you are actually doing so.</i></font></center>
+    <span width='70%'>
+    <p><font color='#0000AA' style='font-weight:bold;' size=-1>Drawing tool:</font>
+    <select id="dtool" name='dtool' onchange='javascript:handleaction();'>
+        <option value="line">Line</option>
+        <option value="rect">Rectangle</option>
+        <option value="pencil">Pencil</option>
+	<option value="circle">Oval/Circle</option>
+	<option value="roundedrect">Rounded Rectangle</option>
+	<option value="curveconcave">Concave Curved Line</option>
+	<option value="curveconvex">Convex Curved Line</option>
+	<option value="text">Text</option>
+	<option value="eraser">Eraser</option>
+	<option value="arrow">Arrow</option>
+    </select>&nbsp;&nbsp;
+    <!-- <font color='#0000AA' style='font-weight:bold;' size=-1>Enter Color Code:</font>
+    <input type='text' name='colorcode' id='colorcode' value='#000000'>&nbsp;&nbsp;
+    <font color='#0000AA' style='font-weight:bold;' size=-1>Select Line Width: </font>
+    <select name='linewidth' id='linewidth'>
+        <option value='1' selected> -- 1 -- </option>
+	<option value='2'> -- 2 -- </option>
+	<option value='3'> -- 3 -- </option>
+    </select> -->
+    </span>
+    <span width='30%' id='textctrlspan'></span>
+    </p>
+    <div id="container">
+      <canvas id="imageView" width="800" height="600" style="border:2px solid #0000AA;">
+        <p>Unfortunately, your browser is currently unsupported by our web
+        application.  We are sorry for the inconvenience. Please use one of the
+        supported browsers listed below, or draw the image you want using an
+        offline tool.</p>
+        <p>Supported browsers: <a href="http://www.opera.com">Opera</a>, <a
+          href="http://www.mozilla.com">Firefox</a>, <a
+          href="http://www.apple.com/safari">Safari</a>, and <a
+          href="http://www.konqueror.org">Konqueror</a>.
+        </p>
+      </canvas>
+    </div>
+    <center><input type='button' name='btnsavedrwg' id='btnsavedrwg' value='Save Drawing' onClick='javascript:savedrawing();'>&nbsp;&nbsp;<input type='button' name='btnclosecanvas' id='btnclosecanvas' value='Quit Window' onClick='javascript:removecanvas();'></center>
+<input type='hidden' name='testid' id='testid' value='{{ testid }}'>
+<input type='hidden' name='challengeid' id='challengeid' value='{{ challengeid }}'>
+{% csrf_token %}
+</form>
+    <script type="text/javascript" src="skillstest/static/javascript/drawing.js"></script>
+  </body>
+</html>
+

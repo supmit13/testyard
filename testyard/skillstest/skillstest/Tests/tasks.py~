@@ -1,0 +1,203 @@
+from django.conf import settings
+import skillstest.utils as skillutils
+from skillstest import settings as mysettings
+from skillstest.Tests.models import Test, UserTest, WouldbeUsers, Challenge, UserResponse
+
+import os, sys, datetime, re
+from django.core.mail import send_mail
+import glob, base64
+import simplejson as json
+import urllib,urllib2
+from BeautifulSoup import BeautifulSoup
+import shutil
+
+"""
+This scans all tests and activates the ones whose publish and 
+activate dates are in the past. It also sets the 'status' flag
+to 1 if the test is complete with all questions set and scores
+equalling the 'fullmarks' of the test.
+"""
+def scan_and_activate():
+    logpath = mysettings.LOG_PATH
+    logobj = skillutils.Logger(logpath + os.path.sep + "tests_tasks.log")
+    # Fetch all tests with activation date equals to or less than current datetime
+    currentdatetime = datetime.datetime.now()
+    currentdatetimeparts = str(currentdatetime).split(" ")
+    currentdate = currentdatetimeparts[0]
+    testobjects = Test.objects.filter(activationdate__lt=currentdate).filter(status=0)
+    for testobj in testobjects:
+        challenges = Challenge.objects.filter(test=testobj)
+        fullscore = float(testobj.maxscore)
+        totalchallengescore = 0
+        for challenge in challenges:
+            totalchallengescore += float(challenge.challengescore)
+        if totalchallengescore < fullscore:
+            logobj.logmessage("Test with name '%s' is incomplete. It contains questions/challenges worth %s out of a predefined total of %s\n"%(testobj.testname, totalchallengescore, fullscore))
+            # Shoot an email to the owner of the test and request her/him to take necessary action.
+            email = testobj.creator.emailid
+            emailsubject = "Your test named '%s' is incomplete and hence it cannot be published and/or activated today."%testobj.testname
+            emailmessage = """
+            Dear %s,
+
+            Your test titled '%s' is not going to be published or activated today as it failed the test
+            for completion. Any test with a total score greater than the cumulative scores of all its
+            challenges is considered incomplete and hence neither published nor activated even if its
+            designated publication date or activation date occurs.
+
+            To remedy the situation, we request you to either add challenges to your test and place suffi-
+            cient weightage on them so that the cumulative scores of all the challenges match the total
+            score of the test, or diminish the total score of the test to match the cumulative scores of
+            all the challenges in it, or perform a combination of the above actions. Alternatively, you may
+            also set the publication and/or activation dates to a time in the future to avoid taking any of
+            the above decisions right now.
+
+            If you feel that the test is no longer required, you may also choose to delete it, which will
+            automatically stop these emails regarding the test to be sent to you. However, please note that
+            once a test is deleted, there is absolutely no way of retrieving it or the challenges in it.
+
+            We look forward to partner with you in your skills testing requirements.
+
+            Best Regards,
+
+            The TestYard Team.
+            """%(testobj.creator.displayname, testobj.testname)
+            fromaddr = "testyardteam@testyard.com"
+            retval = 0
+            try:
+                retval = send_mail(emailsubject, emailmessage, fromaddr, [email,], False)
+                logobj.logmessage("Email for test '%s' sent to '%s'\n"%(testobj.testname, testobj.creator.emailid))
+            except:
+                logobj.logmessage("%s : %s"%(testobj.testname, sys.exc_info()[1].__str__()))
+        else:
+            testobj.status = 1 # activated
+            logobj.logmessage("Test with name '%s' is activated\n"%(testobj.testname))
+            testobj.save()
+
+
+"""
+Just the opposite of the above function.
+"""
+def scan_and_deactivate():
+    pass
+
+
+"""
+Reads the dumped answer scripts (in json) from 
+the mysettings.ANSWER_SCRIPT_DUMP_PATH and populates
+the userresponse table with the data from the scripts.
+Updates the usertest and the wouldbeuser tables too.
+"""
+def process_answer_scripts():
+    targetreaddir = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH
+    targetwritedir = mysettings.MEDIA_ROOT + os.path.sep + mysettings.ANSWER_SCRIPT_DUMP_PATH + os.path.sep + mysettings.PROCESSED_SCRIPT_DUMP
+    jsonfiles = glob.glob(targetreaddir + os.path.sep + "*_*" + os.path.sep + "*.json")
+    for jsonfile in jsonfiles:
+        print jsonfile
+        fp = open(jsonfile, "rb")
+        jsonstrdata = fp.read()
+        fp.close()
+        jsondata = json.loads(jsonstrdata)
+        starttime, endtime, tabid, tabref, useremail, testid, testpagesenc, clientIP, useragent = "", "", "", "", "", "", "", "", ""
+        for dk in jsondata.keys():
+            if dk == 'starttime':
+                starttime = jsondata[dk]
+            elif dk == 'endtime':
+                endtime = jsondata[dk]
+            elif dk == 'useremail':
+                useremail = jsondata[dk]
+            elif dk == 'tabid':
+                tabid = jsondata[dk]
+            elif dk == 'tabref':
+                tabref = jsondata[dk]
+            elif dk == 'testid':
+                testid = jsondata[dk]
+            elif dk == 'clientIP':
+                clientIP = jsondata[dk]
+            elif dk == 'useragent':
+                useragent = jsondata[dk]
+            elif dk == 'testpages':
+                testpagesenc = jsondata[dk]
+            else:
+                pass
+        #print testpagesenc
+        missing_padding = 4 - len(testpagesenc) % 4
+        padding = "=" * missing_padding
+        testpagesstr = (base64.b64decode(testpagesenc + padding)).decode('iso-8859-1')
+        for hexkey in skillutils.hextoascii.keys():
+            testpagesstr = testpagesstr.replace(hexkey, skillutils.hextoascii[hexkey])
+        #print testpagesstr
+        testpages = json.loads(testpagesstr, strict=False)
+        testendmessage = testpages.pop() # The last entity contains the test end message
+        #print testpages
+        for challengeresp in testpages:
+            testobj = Test.objects.get(id=testid)
+            # First, create an UserResponse object
+            userrespobj = UserResponse()
+            userrespobj.test = testobj
+            userrespobj.tabref = tabref
+            userrespobj.tabid = int(tabid)
+            userrespobj.responsedatetime = starttime
+            userrespobj.emailaddr = useremail
+            resp = challengeresp[0]
+            timereqd = challengeresp[1]
+            challengestatement = challengeresp[2]
+            try:
+                challengeobj = Challenge.objects.filter(test=testobj).filter(statement=challengestatement)[0]
+            except:
+                print "Could not find the challenge '%s'"%challengestatement
+                continue 
+            userrespobj.challenge = challengeobj
+            inputdatatag, inputdata = None, ""
+            # Now parse the resp variable to find the user's response
+            soup = BeautifulSoup(resp)
+            challengetypetag = soup.find('input', {'name' : 'challengetype'})
+            challengetype = challengetypetag['value']
+            #print challengestatement + " ====>> " + challengetype
+            if challengetype == 'SUBJ' or challengetype == 'ALGO' or challengetype == 'CODN':
+                inputdatatag = soup.find("textarea")
+                inputdata = inputdatatag.renderContents()
+            elif challengetype == 'FILB':
+                inputdatatag = soup.find("input", {'type' : 'text'})
+                inputdata = inputdatatag['value']
+            elif challengetype == 'MULT':
+                inputdatatag = soup.findAll("input", {'type' : 'checkbox', 'checked' : True})
+                if inputdatatag.__len__() == 0:
+                    inputdatatag = soup.findAll("input", {'type' : 'radio', 'checked' : True})
+                for j in range(0, inputdatatag.__len__()):
+                    inputdata = inputdata + "#||#" + inputdatatag[j]['value']
+            else:
+                print "Unhandled challenge type"
+                continue
+            #print "#### " + inputdata
+            userrespobj.answer = inputdata
+            userrespobj.attachments = None
+            userrespobj.save()
+        # Now edit the usertest or wouldbeusers table
+        if tabref == 'usertest':
+            utqset = UserTest.objects.filter(id=tabid)
+        else:
+            utqset = WouldbeUsers.objects.filter(id=tabid)
+        if utqset.__len__() == 0:
+            print "Could not find the usertest record related to this session"
+            continue
+        utobj = utqset[0]
+        utobj.status = 2 # Test has been taken
+        # Need to store ipaddress and client software too.
+        utobj.ipaddress = clientIP
+        utobj.clientsware = useragent
+        # Save the modified UserTest/WouldbeUsers object.
+        utobj.save()
+        # Now, move the json dump files to another location...
+        jsonfilecomponents = jsonfile.split(os.path.sep)
+        jsonfilecomponents.pop()
+        jsondir = os.path.sep.join(jsonfilecomponents)
+        shutil.move(jsondir, targetwritedir)
+        #print jsondir
+    # Thats it, we are done. 
+    print "Added challenge responses into UserResponse and updated UserTest/WouldbeUsers successfully. Exiting...\n"
+        
+
+
+
+
+

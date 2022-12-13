@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<title>TestYard {{ pagetitle }} - Taking Care of Your Workforce's Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+
+<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+
+<script language='JavaScript' type="text/javascript" src='static/javascript/tripledes.js'></script>
+<!-- <script type='text/javascript' src='static/tinymce/tinymce.min.js'></script> -->
+
+<style>
+#uploadbox {
+	z-index: 10000;
+	filter: alpha(opacity=60);
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+	-moz-opacity: .60; 
+	-khtml-opacity: 0.6;
+	opacity: 0.6;
+	background-color:#669999;
+	position:fixed; top:100px; left:0px; width:40%; height:30%; text-align:center; vertical-align:middle;
+}
+#createtestdiv {
+	z-index: 10000;
+	filter: alpha(opacity=90);
+	filter:progid:DXImageTransform.Microsoft.Alpha(opacity=90);
+	-moz-opacity: .90; 
+	-khtml-opacity: 0.9;
+	opacity: 0.9;
+	background-color:#669999;
+	color:#FFFFFF;
+	position:absolute; top:250px; left:0px; width:90%; height:250%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+}
+</style>
+
+</head>
+<body>
+<script language='JavaScript'>
+checkbrowser();
+</script>
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+	<!--	<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Committed to identifying the best professionals for your business...</p> -->
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p> 
+
+		<!-- ### Top Menu ### -->
+
+		<div id="topmenu">
+		<ul>
+			<li><a href="{{ profile_url }}"{{ select_profile }}>Profile</a></li>	
+			<!-- <li><a href="{{ dashboard_url }}"{{ select_dashboard }}>Dashboard</a></li>	-->
+			<!-- <li><a href="{{ subscription_url }}"{{ select_subscription }}>Subscriptions</a></li> -->	
+			<li><a href="{{ tests_url }}"{{ select_tests }}>Tests &  Interviews</a></li>	
+			<li><a href="{{ search_url }}"{{ select_search }}>Search</a></li>
+			<li><a href="{{ network_url }}"{{ select_socnet }}>Network</a></li>
+			<li><a href="{{ analytics_url }}"{{ select_analytics }}>Analytics</a></li>
+			<li><a href="{{ aboutus_url }}"{{ select_aboutus }}>About Us</a></li>
+			<li><a href="{{ helpndoc_url }}"{{ select_helpndoc }}>Help</a></li>
+			<li><a href="{{ careers_url }}"{{ select_careers }}>Careers</a></li>
+		</ul>	
+		</div>
+
+	</div>
+
+
+

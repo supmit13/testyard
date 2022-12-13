@@ -1,0 +1,142 @@
+<html>
+<head>
+<title>List of group members</title>
+<script language='JavaScript'>
+// Should handle pagination
+function saverecord(membername, groupname){
+    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" + document.frmgroupmembers.csrfmiddlewaretoken.value;
+    blockstatus = "";
+    if(document.getElementById('chkblocked_' + membername + "_" + groupname).checked==true){
+        blockstatus = document.getElementById('chkblocked_' + membername + "_" + groupname).value;
+    }
+    removedstatus = "";
+    if(document.getElementById('chkremoved_' + membername + "_" + groupname).checked==true){
+        removedstatus = document.getElementById('chkremoved_' + membername + "_" + groupname).value;
+    }
+    status = "";
+    if(document.getElementById('chkstatus_' + membername + "_" + groupname).checked==true){
+        status = document.getElementById('chkstatus_' + membername + "_" + groupname).value;
+    }
+    postdata += "&blockstatus=" + blockstatus + "&removedstatus=" + removedstatus + "&status=" + status;
+    //alert(postdata);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	}
+    };
+    xmlhttp.open('POST', '{{savemembersurl}}', true);
+    xmlhttp.send(postdata)
+}
+
+function managemoremembers(groupname){
+    from = document.frmgroupmembers.fromctr.value;
+    to = document.frmgroupmembers.toctr.value;
+    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + document.frmgroupmembers.csrfmiddlewaretoken.value;
+    postdata += "&fromctr=" + from + "&toctr=" + to;
+    divmembers = document.getElementById('memberrows');
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+	    divmemberscontent = divmembers.innerHTML;
+	    divmemberscontent = divmemberscontent.replace(/<input\s+type=[\"\']hidden[\"\']\s+name=[\"\']fromctr[\"\']\s+[^>]+><input\s+type=[\"\']hidden[\"\']\s+name=[\"\']toctr[\"\']\s+[^>]+>/ig, '');
+	    divmemberscontentmore = divmemberscontent + xmlhttp.responseText;
+	    divmembers.innerHTML = divmemberscontentmore;
+	}
+    };
+    xmlhttp.open('POST', '{{managemembersurl}}', true);
+    xmlhttp.send(postdata);
+}
+
+
+function searchmember(){
+    displayname = document.frmmembersearch.txtsearchusername.value;
+    firstname = document.frmmembersearch.txtsearchfirstname.value;
+    lastname = document.frmmembersearch.txtsearchlastname.value;
+    csrftoken = document.frmmembersearch.csrfmiddlewaretoken.value;
+    groupname = document.frmmembersearch.groupname.value;
+    var postdata = "displayname=" + displayname + "&firstname=" + firstname + "&lastname=" + lastname + "&csrfmiddlewaretoken=" + csrftoken + "&groupname=" + groupname;
+    var xmlhttp;
+    divmembers = document.getElementById('memberrows');
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    divmembers.innerHTML = "";
+	    divmemberscontentmore = xmlhttp.responseText;
+	    divmembers.innerHTML = divmemberscontentmore;
+	}
+    };
+    xmlhttp.open('POST', '{{membersearchurl}}', true);
+    xmlhttp.send(postdata)
+}
+
+</script>
+</head>
+<body bgcolor='#669999'>
+<div id='groupnamediv'>
+<span><center><font color='#0000AA' style='font-weight:bold;font-face:garmond'>{{groupname}}</font></center></span><br /><br /><span width='30%'><form name='frmmembersearch' method='POST' action=''><font color='#0000AA' style='font-weight:bold;'>Enter username:</font><input type='text' name='txtsearchusername' id='txtsearchusername' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;<font color='#0000AA' style='font-weight:bold;'>Enter Firstname:</font><input type='text' name='txtsearchfirstname' id='txtsearchfirstname' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;<font color='#0000AA' style='font-weight:bold;'>Enter Lastname:</font><input type='text' name='txtsearchlastname' id='txtsearchlastname' value='' maxlength='50' size='12'> &nbsp;&nbsp;&nbsp;&nbsp;{%csrf_token%}<input type='hidden' name='groupname' value='{{groupname}}'><input type='button' name='btnsearchmember' id='btnsearchmember' value='Search' onClick='javascript:searchmember();'></form></span>
+</div>
+<hr>
+<div id='members'>
+<form name='frmgroupmembers' id='frmgroupmembers' method='POST' action=''>
+<table cellspacing='2' cellpadding='2' border=0 width='100%'>
+<tr>
+<td nowrap><font color='#0000AA' style='font-weight:bold'>Member Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Member Fullname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Blocked</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Removed</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Status</font></td><td nowrap><font color='#0000AA' style='font-weight:bold'>Removal Agent</font><td><font color='#0000AA' style='font-weight:bold'>Save this Record</font></td></td>
+</tr></table>
+<div id='memberrows'>
+<table cellspacing='2' cellpadding='2' border=0 width='100%'>
+{% for member, paramslist in groupmembersdict.iteritems %}
+	<tr>
+	<td nowrap><font color='#0000AA'>{{member}}</font></td><td nowrap><font color='#0000AA'>{{paramslist.0}}</font></td>
+	{% if paramslist.1 %}	
+	<td nowrap><input type='checkbox' name='chkblocked_{{member}}_{{groupname}}' id='chkblocked_{{member}}_{{groupname}}' value=1 checked=checked></td>
+	{% else %}
+	<td nowrap><input type='checkbox' name='chkblocked_{{member}}_{{groupname}}' id='chkblocked_{{member}}_{{groupname}}' value=1></td>
+	{% endif %}
+	{% if paramslist.2 %}	
+	<td nowrap><input type='checkbox' name='chkremoved_{{member}}_{{groupname}}' id='chkremoved_{{member}}_{{groupname}}' value=1 checked=checked></td>
+	{% else %}
+	<td nowrap><input type='checkbox' name='chkremoved_{{member}}_{{groupname}}' id='chkremoved_{{member}}_{{groupname}}' value=1></td>
+	{% endif %}
+	{% if paramslist.3 %}	
+	<td nowrap><input type='checkbox' name='chkstatus_{{member}}_{{groupname}}' id='chkstatus_{{member}}_{{groupname}}' value=1 checked=checked></td>
+	{% else %}
+	<td nowrap><input type='checkbox' name='chkstatus_{{member}}_{{groupname}}' id='chkstatus_{{member}}_{{groupname}}' value=1></td>
+	{% endif %}
+	<td nowrap><font color='#0000AA'>{{paramslist.4}}</font></td><td><input type='hidden' name='fromctr' value='{{fromctr}}'><input type='hidden' name='toctr' value='{{toctr}}'><input type='button' name='savebutton' value='Save' onClick="javascript:saverecord('{{member}}', '{{groupname}}');"></td>
+	</tr>
+{% endfor %}
+</table>
+</div>
+<table cellspacing='2' cellpadding='2' border=0 width='100%'>
+{% if grpmemberscount >= 1 %}
+<tr>
+<td colspan=6 nowrap><a href='javascript:void(0);' id='moremembersanchor' onClick="javascript:managemoremembers('{{groupname}}');"><font color='#0000AA' size=-1>Display More</font></a></td>
+</tr>
+{% endif %}
+</table>
+{% csrf_token %}
+<center><input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='window.close();'></center>
+</form>
+</div>
+</body>
+</html>
+

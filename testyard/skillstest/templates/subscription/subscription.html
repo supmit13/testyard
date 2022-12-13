@@ -1,0 +1,183 @@
+{% include "inc/html_head.html" %}
+
+<style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#4D94FF;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:100px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+	.semitrans2 {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#4D94FF;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:100px; width:80%; height:40%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+	.tbl-fixed-width{
+    	  table-layout:fixed;
+    	  width: 100%;
+	  word-wrap: break-word;
+	}
+
+	.smallish-text{
+	   font-family: Verdana, Verdana,Courier";
+	   size: -1;
+	   color: #0000AA;
+	}
+</style>
+
+<style type="text/css">
+	.subtable{
+		width:100%; 
+		border:0; 
+	}
+	.subtable td{ 
+		padding:7px; width:100%;
+	}
+	.subtable tr{
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.subtable tr:nth-child(odd){ 
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.subtable tr:nth-child(even){
+		background: #a7eaf2;
+	}
+</style>
+
+<script>
+
+	function subscribe(planid){
+	    var xmlhttp;
+	    postdata = "planid=" + planid + "&csrfmiddlewaretoken=" + document.frmsubscription.csrfmiddlewaretoken.value;
+	    //alert(postdata);
+ 	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    targetdiv = document.getElementById('transscreens2');
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    responseMsg = xmlhttp.responseText;
+		    targetdiv.innerHTML = responseMsg;
+		    targetdiv.style.display = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{paymentgwoptionsurl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function subscribepayu(planid){
+	    postdata = "planid=" + planid + "&csrfmiddlewaretoken=" + document.frmsubscription.csrfmiddlewaretoken.value;
+    	    couponcode = document.frmgwchoices.couponcode.value;
+	    postdata += "&couponcode=" + couponcode;
+	    waitspan = document.getElementById('waitwidgetpayu');
+	    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    payu_url = xmlhttp.responseText;
+		    payuwin = window.open(payu_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+		    waitspan.innerHTML = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{plansubscribeurl}}', true);
+	    xmlhttp.send(postdata);
+	}
+
+
+	function subscribepaypal(planid){
+	    postdata = "planid=" + planid + "&csrfmiddlewaretoken=" + document.frmsubscription.csrfmiddlewaretoken.value;
+    	    couponcode = document.frmgwchoices.couponcode.value;
+	    postdata += "&couponcode=" + couponcode;
+	    waitspan = document.getElementById('waitwidgetpaypal');
+	    waitspan.innerHTML = "<img src='static/images/loading_small.gif'>";
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+		xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    //paypal_url = xmlhttp.responseText;
+		    //paypalwin = window.open(paypal_url, "_blank", "width=800,height=600,toolbar=no,scrollbars=yes,resizable=yes");
+		    waitspan.innerHTML = "";
+		}
+	    };
+	    xmlhttp.open('POST', '{{plansubscribepaypalurl}}', true);
+	    xmlhttp.send(postdata);
+ 	}
+
+
+	function closegwoptions(){
+	    targetdiv = document.getElementById('transscreens2');
+	    targetdiv.innerHTML = "";
+	    targetdiv.style.display = 'none';
+	}
+
+</script>
+{% include "inc/mission_statement.html" %}
+{% load extratemptags %}
+<!-- ### Post Entry Begin ###  -->
+
+<div>
+	<span class="meta">
+	<h3>Welcome {{ displayname }}</h3>
+	{{ msg }}
+	<div style="color:#0000AA">You have the following subscription options:</div>
+	<div class="entry">
+	<form name='frmsubscription' id='frmsubscription' method='POST' action=''>
+	<table class="subtable" width='90%' style="position: absolute; left: 50; right: 50;">
+		{% for planname in plansseq %}
+		<tr><td style='color:#0000AA'><input type='checkbox' name='chksubscribe' value='{{planname}}' disabled=true style='outline:1px solid #0000AA' {% if plans|dictlookup:planname|getval:10 %} checked='checked' {% endif %}>&nbsp;<b>{{planname}}</b><br /><br />{{ plans|dictlookup:planname|getval:1 }}<br /><br /><b>Number of Tests:</b>&nbsp;{{ plans|dictlookup:planname|getval:2 }}<br /><br /><b>Number of Interviews:</b>&nbsp;{{ plans|dictlookup:planname|getval:3 }}<br /><br /><b>Candidates per Test:</b>&nbsp;{{ plans|dictlookup:planname|getval:4 }}<br /><br /><b>Candidates per Interview:</b>&nbsp;1<br /><br /><b>Price: </b>&nbsp; USD&nbsp;{{ plans|dictlookup:planname|getval:5 }}<br /><br /><a href='#' onClick='javascript:subscribe("{{ plans|dictlookup:planname|getval:6 }}");'><b>Subscribe</b></a></td></tr>
+		{% endfor %}
+	</table>
+	{% csrf_token %}
+	</form>
+	</div>
+	</span>
+</div>
+<div style='display:none;' id="transscreens" class="semitrans"></div>
+<div style='display:none;' id="transscreens2" class="semitrans2"></div>
+<!-- ### Post Entry End ### -->
+
+{% include "inc/right_panel.html" %}
+
+<div id="content2">
+	<p>Copyright &copy; 2010 YourSite.com 
+
+	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
+	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
+
+</div>
+</div>
+
+</body>
+</html>
+

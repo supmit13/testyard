@@ -1,0 +1,140 @@
+	{% include "inc/html_head.html" %}
+
+	<script type='text/javascript'>
+	function saveoptionalinfo(uid){
+	    var xmlhttp;
+	    postdata = "";
+	    for(var i=0; i < document.forms[0].elements.length; i++){
+		postdata += document.forms[0].elements[i].name + "=" + encodeURI(document.forms[0].elements[i].value) + "&";
+	    }
+	    postdatalen = postdata.length;
+	    postdata = postdata.substring(0, postdatalen - 1);
+	    //alert(postdata);
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		    return (true);
+  		}
+  	    };
+	    xmlhttp.open("POST", '{{ saveoptionalinfourl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+	</script>
+	{% include "inc/mission_statement.html" %}
+		<!-- ### Post Entry Begin ###  -->
+
+		<div class="post">
+			<span class="meta">
+			<h3 class="blue">Welcome {{ displayname }}</h3>
+			{{ msg }} {{ newuser }}
+			<div class="entry">
+			<!-- Profile HTML goes here. -->
+			<form name='optionalinfoform' id='optionalinfoform' method='POST' action=''>
+			<p><font color='#0000AA' style='font-weight:bold;' size=-1>Note: The information below is optional and you may choose to fill it up or leave it. If you furnish us with the information, we will use it for statistical purposes only. We will not disclose this information to any third party. This information will help us provide you with more accurate test information in the future.</font></p>
+			<table border=0 cellspacing=3 cellpadding=2>
+			<tr>
+				<td valign='middle' class="blue">House No. and Street Address:</td><td valign='bottom'> <textarea name='houseno_and_street_address' rows='9' cols='35' class="glowing-border glob-input input-height-60">{{ houseno_and_street_address }}</textarea></td>
+			</tr>
+			<tr>
+				<td valign='middle' class="blue">City:</td><td valign='bottom'> <input type='text' name='city' id='city' value='{{ city }}' class="glowing-border glob-input"></td>
+			</tr>
+			<tr>
+				<td valign='middle' class="blue">Pin or Zip Code:</td><td valign='bottom'> <input type='text' name='pin_or_zip_code' id='pin_or_zip_code' value='{{ pin_or_zip_code }}' class="glowing-border glob-input"></td>
+			</tr>
+			<tr>
+				<td valign='middle' class="blue">Country:</td><td valign='bottom'> <input type='text' name='country' id='country' value='{{ country }}' class="glowing-border glob-input"></td>
+			</tr>
+			<tr>
+					<td valign='middle' class="blue">Profession:</td><td valign='bottom'> <select name='profession' class="glowing-border glob-input">
+			{% if profession == 'student' %}
+			    <option value='student' selected>Student</option>
+			{% else %}
+			    <option value='student'>Student</option>
+			{% endif %}
+			{% if profession == 'teacher' %}
+			    <option value='teacher' selected>Teacher</option>
+			{% else %}
+			    <option value='teacher'>Teacher</option>
+			{% endif %}
+			{% if profession == 'professional' %}
+			    <option value='professional' selected>Professional</option>
+			{% else %}
+			    <option value='professional'>Professional</option>
+			{% endif %}
+			{% if profession == 'administrator' %}
+			    <option value='administrator' selected>Administrator</option>
+			{% else %}
+			    <option value='administrator'>Administrator</option>
+			{% endif %}
+			{% if profession == 'govtservice' %}
+			    <option value='govtservice' selected>Government Service</option>
+			{% else %}
+			    <option value='govtservice'>Government Service</option>
+			{% endif %}
+			{% if profession == 'business' %}
+			    <option value='business' selected>Business</option>
+			{% else %}
+			    <option value='business'>Business</option>
+			{% endif %}
+			{% if profession == 'other' %}
+			    <option value='other' selected>Other</option>
+			{% else %}
+			    <option value='other'>Other</option>
+			{% endif %}
+			</select></td></tr>
+			<tr><td valign='middle' class="blue">Age (in years):</td><td valign='bottom'> <input type='text' name='age' id='age' value='{{ age }}' class="glowing-border glob-input"></td></tr>
+			<tr><td valign='middle' class="blue">Reason for Use:</td><td valign='bottom'> <textarea name='reasonforuse' rows='5' cols='35' class="glowing-border glob-input">{{ reasonforuse }}</textarea></td></tr>
+			<tr><td valign='middle' class="blue">Self Description:</td><td valign='bottom'> <textarea name='selfdescription' rows='5' cols='35' class="glowing-border glob-input input-height-60">{{ selfdescription }}</textarea></td></tr>
+			<tr><td valign='middle' class="blue">Highest Qualification:</td><td valign='bottom'> <select name='highestqualification' class="glowing-border glob-input">
+			{% if highestqualification == 'graduate' %}
+			    <option value='graduate' selected>Graduate</option>
+			{% else %}
+			    <option value='graduate'>Graduate</option>
+			{% endif %}
+			{% if highestqualification == 'diploma' %}
+			    <option value='diploma' selected>Diploma</option>
+			{% else %}
+			    <option value='diploma'>Diploma</option>
+			{% endif %}
+			{% if highestqualification == 'masters' %}
+			    <option value='masters' selected>Masters</option>
+			{% else %}
+			    <option value='masters'>Masters</option>
+			{% endif %}
+			{% if highestqualification == 'doctorate' %}
+			    <option value='doctorate' selected>Doctorate</option>
+			{% else %}
+			    <option value='doctorate'>Doctorate</option>
+			{% endif %}
+			{% if highestqualification == 'postdoctorate' %}
+			    <option value='postdoctorate' selected>Post-Doctorate</option>
+			{% else %}
+			    <option value='postdoctorate'>Post-Doctorate</option>
+			{% endif %}
+			{% if highestqualification == 'none' %}
+			    <option value='none' selected>None</option>
+			{% else %}
+			    <option value='none'>None</option>
+			{% endif %}
+			</select></td></tr>
+			<tr><td valign='middle' class="blue">Field of Study:</td><td valign='bottom'> <input type='text' name='fieldofstudy' id='fieldofstudy' value='{{ fieldofstudy }}' class="glowing-border glob-input"></td></tr>
+			<tr><td valign='middle' class="blue">Present Employer or Institution:</td><td valign='bottom'> <input type='text' name='presentemployer_or_institution' id='presentemployer_or_institution' value='{{ presentemployer_or_institution }}' class="glowing-border glob-input"></td></tr>
+			<tr><td valign='middle' colspan=2><input type='button' name='btnsaveoptionalinfo' class="btn-gbl btn-suc" value='Save Info' onClick='javascript:saveoptionalinfo("{{ user_id }}");'>&nbsp;&nbsp;<!-- <input type='reset' name='resetbutton' value='Clear All'> --></td></tr>
+			</table>
+			{% csrf_token %}
+			</form>
+			</div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+
+	{% include "inc/right_panel.html" %}
+		
+	{% include "inc/html_foot.html" %}

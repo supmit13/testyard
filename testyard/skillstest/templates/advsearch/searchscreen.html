@@ -1,0 +1,212 @@
+{% include "inc/html_head.html" %}
+	
+	{% include "inc/mission_statement.html" %}
+		<style>
+		.glowing-border {
+		    border: 2px solid #000088;
+		    border-radius: 4px;
+		}
+
+		.glowing-border:focus { 
+		    outline: none;
+		    border-color: #9ecaed;
+		    box-shadow: 0 0 10px #9ecaed;
+		}
+		</style>
+		<!-- ### Post Entry Begin ###  -->
+		<script type='text/javascript'>
+		function conductsearchtest(){
+		    testname = document.frmadvsearch.testname.value;
+		    searchphrase = document.frmadvsearch.searchphrase.value;
+		    testcreator = document.frmadvsearch.testcreator.value;
+		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
+		    postdata = "testname=" + testname + "&searchphrase=" + searchphrase + "&testcreator=" + testcreator + "&csrfmiddlewaretoken=" + csrftoken;
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+		    	xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            divres = document.getElementById('searchresults');
+			    divres.style.display = "";
+			    responsedata = xmlhttp.responseText;
+			    divres.innerHTML = responsedata;
+  		        }
+  		    };
+		    //alert(postdata);
+  		    xmlhttp.open("POST", '{{ testschallengesearchurl }}', true); // Not an ajax call since we want to ensure that the  action has been successfully completed before taking any further steps.
+  		    xmlhttp.send(postdata);
+		}
+
+		function conductsearchuser(){
+		    usrname = document.frmadvsearch.username.value;
+		    searchphrase = document.frmadvsearch.usr_searchphrase.value;
+		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
+		    postdata = "user=" + usrname + "&searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken;
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+		    	xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            divres = document.getElementById('searchresults');
+			    divres.innerHTML = "";
+			    divres.style.display = "";
+			    responsedata = xmlhttp.responseText;
+			    divres.innerHTML = responsedata;
+  		        }
+  		    };
+		    //alert(postdata);
+		    xmlhttp.open("POST", '{{ usersearchurl }}', true);
+		    xmlhttp.send(postdata);
+		}
+
+		function copytest(testid){
+		    // Displays the interface which allows the logged in user to request an invitation from the creator of the test.
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmadvsearch.csrfmiddlewaretoken.value + "&initiate=1";
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			  alert(xmlhttp.responseText);
+			  return (true);
+		      }
+		    };
+		    xmlhttp.open("POST", '{{ copytesturl }}', true);
+		    xmlhttp.send(postdata);
+		}
+
+
+		function displaytestsdata(displayname){
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "displayname=" + displayname + "&csrfmiddlewaretoken=" + document.frmadvsearch.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			  divscr = document.getElementById('transscreens2');
+			  divscr.style.display = "";
+			  //alert(xmlhttp.responseText);
+			  divscr.innerHTML = xmlhttp.responseText;
+		      }
+		    };
+		    xmlhttp.open("POST", '{{ searchtestinfourl }}', true);
+		    xmlhttp.send(postdata);
+		}
+
+		function closescreen(){
+		    divscr = document.getElementById('transscreens2');
+		    divscr.style.display = "none";
+		    divscr.innerHTML = "";
+		}
+
+		function showchallenges(testid, copyable){
+		    if(!copyable || copyable == 'False'){
+			alert("You may not view the challenges contained in this test. This is because the test is either NOT in public scope of its creator or it may have already been scheduled for some candidate in the future.");
+			return (false);
+		    }
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmadvsearch.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			  divscr = document.getElementById('transscreens2');
+			  divscr.style.display = "";
+			  //alert(xmlhttp.responseText);
+			  divscr.innerHTML = xmlhttp.responseText + "<br /><a href='#/' onClick='javascript:closescreen();' style='color:#0000AA;'>Close Screen</a>";
+		      }
+		    };
+		    xmlhttp.open("POST", '{{ displaytestchallenges }}', true);
+		    xmlhttp.send(postdata);
+		}
+
+		</script>
+		<style>
+		.box {
+		    width:300px;
+		    height:300px;
+		    background-color:#d9d9d9;
+		    background-repeat: no-repeat;
+        	    background-position: center center; 
+		    position:fixed;
+		    margin-left:-150px; /* half of width */
+		    left:50%;
+		}
+		</style>
+		<style>
+		.semitrans2 {
+		  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+		  filter: alpha(opacity=90);
+		  opacity: 0.9;
+		  -moz-opacity: .90; 
+		  -khtml-opacity: 0.9;
+		  background-color:#669999;
+		  color:#FFFFFF;
+		  position:absolute; top:250px; left:0px; width:125%; height:250%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+		}
+		</style>
+		<div class="post">
+			<span width='40%'>
+			<span nowrap style="color:#0000AA;font-style:italic;">Logged in as {{ displayname }}:&nbsp;&nbsp;<a href="{{ logout_url }}"><b>Logout</b></a></span>
+			</span>
+			<span class="meta">
+			<h3>Welcome {{ displayname }}</h3>
+			{{ msg }} {{ newuser }}
+			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
+			<div class="entry">
+			<form name='frmadvsearch' id='frmadvsearch' method='POST' action='/search/advsearch/'>
+			<center>
+			<table border=0 cellspacing=3 cellpadding=3 width='80%'>
+			<tr><td align='center' colspan=3 nowrap><font color='#0000AA' style='font-weight:bold'>Search tests, challenges, users and groups</font></td></tr>
+			<tr><td colspan=3><hr></td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Tests</font></td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Test Name:</font></td><td><input type='text' name='testname' value='' id='testname' class="glowing-border"></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='searchphrase' value='' id='searchphrase' class="glowing-border"></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Test Creator:</font></td><td><input type='text' name='testcreator' value='' id='testcreator' class="glowing-border"></td><td>&nbsp;</td></tr>
+			<tr><td align='center' colspan=3><input type='button' name='searchtest' id='searchtest' onClick='javascript:conductsearchtest();' value='Search Tests/Challenges'></td></tr>
+
+			<tr><td colspan=3><hr></td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Users</font></td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Username:</font></td><td><input type='text' name='username' value='' id='username' class="glowing-border"></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase' class="glowing-border"></td><td>&nbsp;</td></tr>
+			<tr><td align='center' colspan=3><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'></td></tr>
+			</table>
+			</center>
+			{% csrf_token %}
+			</form>
+			
+			<div id='searchresults'></div>
+			</div>
+			
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+
+	
+		
+	{% include "inc/html_foot.html" %}
+

@@ -1,0 +1,61 @@
+
+Screens and Actions:
+--------------------
+
+Screen Name: Registration screen (Applicable only for recruiters. Candidates need not have a registered account)
+Fields: Username (type=text), Password (type=password), Confirm Password (type=password), Email Id (type=text), Technologies (select), Captcha (type=text), Membership Plan (type=radio), Payment Gateway Integration, Register (button), Clear (button).
+
+Screen Name: Login screen
+Fields: Username (type=text), Password (type=password), Keep me logged in (type=checkbox), Login (type=button), Reset Password (link URL).
+
+Screen Name: Dashboard (landing page after logging in)
+	Displayed Information: Username, Email Id, Change Password link, Links to the list of tests created by the recruiter (enclosed in anchor tags), Number of candidates appeared for each of them (enclosed in anchor tag), Number of candidates passed (enclosed in anchor tag), Number of candidates failed (enclosed in anchor tag), Topics/subjects of the test, Type of test (multiple choice/fill up the blanks/subjective/coding/algorithm/composite), Scope of the test (private or public), a multi-select dropdown listing all recruiters who are connected to the logged  in user, a "Share" link (enclosed in anchor tag) for privately scoped tests and "Invite Candidates" link to invite candidates to take the test. Clicking on this "Share" link will share the test with the selected recruiters in the multi-select dropdown. Clicking on the "Invite Candidates" link will open a simple textarea control where the recruiter would be able to add email Ids as a comma separated list. Next to the textarea there will be a "Send" button, and clicking on it will email the test link to all the email Ids specified in the textarea. (The links sent to the email Ids will be different for each email Id. The link to the test will have a fixed part that specifies the test and a dynamic part that specifies the candidate).
+	Corollary: A recruiter can share a privately scoped test created by her/him only with recruiters connected to her/him.
+	Actions: a) Clicking the mouse on any of the test links will open the test in a new window. Recruiter would be able to edit the test here. b) Placing the tooltip on the <Number of candidates appeared> will display a layer with the names/email ids of all candidates and their respective scores. c) Placing the tooltip on the <Number of candidates passed> will display a layer with the names/email ids of candidates who passed the test and their respective scores. d) Placing the tooltip on the <Number of candidates failed> will display a layer with the names/email ids of candidates who failed and their respective scores.
+
+Screen Name: Search Tests
+Fields: Available Test Topics (select dropdown), Test Subtopic/Subcategory (type=text), Test Type (select dropdown), Scope of the Tests to Search (select dropdown - "Public Tests Only"/"Only Tests Accessible by the Recruiter"/"Private Tests Only"/"All Tests"). Default is "Only Tests Accessible by the Recruiter", Test Keywords (type=text), Search (type=button).
+	Actions: a) If a match is found, then link(s) to the test(s) (alongwith the link to the profile of the recruiter member who created the test) will be displayed as search results. However, if the scope of such a test is private (and hence inaccessible to the recruiter), then clicking on the link will display a message informing the user about it.). b) Search with selecting "Only Tests Accessible by the Recruiter" will be performed on all publicly scoped tests of all users, all privately scoped tests of the logged in users, and all privately scoped tests of connected users that have been shared explicitly with the logged in user.
+
+Screen Name: Left Panel
+	Displayed Choices: Various links - Search Tests, Create Test Plan, Create Test, Logout, Change Password, List Connections, Add Technologies.
+
+Screen Name: Create Test
+Fields: Test Name/Tag (type=text), Test Topic/Category (select dropdown), Test Subtopic/Subcategory (type=text), Test Type (select dropdown), Scope of the Test (select dropdown), Number of Questions (type=text), Total Points (type=text), Add Questions (type=button).
+	Actions: a) Clicking on the "Add Questions" will add the necessary number of text fields to write the questions in (number of questions is the value of "Number of Questions" field). b) Based on the "Test Type" value, an appropriate control is set up for answers. For multiple choice type questions, the recruiter will be asked to enter the option values (type=text) to be displayed to the user for that question one at a time. (This will be implemented as a button (lets call it "Add Option") and every time the recruiter clicks on the button, a new text field is added for the recruuiter to enter an option. The options will be marked using alphabets, so 4 such options will be 'a', 'b', 'c' and 'd'.) Beside each such text field, there will be a "Delete" link to destroy that option. If the recruiter needs to add more choices, he/she can simply click on "Add Option" button to create space for more options. Beside the delete link, there will be a checkbox, and the recruiter needs to check it to register it as one of the correct answers. c) Similarly, for "Fill up the Blanks" type questions the recruiter writes down the question in the text box with the missing text between <u> and </u> tags. Thus, the text(s) between <u> and </u> tags are registered as answers to the question. d) For "composite" type tests, each question will have a "Question Type" field with the values of "Test Type" as the available choices. (Other test types also contain a Question Type (hidden) field, whose value is always the same as the "Test Type" value for that test).
+
+Screen Name: Profile Page
+Fields: User's full name, user's  display name, sex, email Id, phone number (if any), subscription plan chosen by the user, user since when (registration date), profile photo, whether user's status is active or not, user's network information.
+
+OAuth Details to use with TestYard:
+-----------------------------------
+
+    Company: XpressTech Pvt Ltd
+    Application Name: TestYard
+    API Key: 78wxi7pqmstzbg
+    Secret Key: fNRod3yXxOllBwJD
+    OAuth User Token: 9f88127b-21fb-46fb-8235-e3fe8ca05e5b
+    OAuth User Secret: 042a5b7c-2261-4979-b0c1-36ddfaec19b2
+
+
+================================================================================================================================
+
+TestYard Mobile Screens:
+========================
+
+The first screen after the splash screen displays the search test/interview widget, a create test widget, a conduct interview widget and a schedule a test widget. 
+The search test/interview widget results in a page that displays all scheduled tests and interviews pertaining to the user. 
+
+
+=================================================================================================================================
+
+How to handle recorded interview sessions:
+------------------------------------------
+
+1. During the interview, the system will record the output of both the local and the remote video elements. These will be stored in separate files on the client. Once the interview is over (either the user clicks on 'Stop Recording' or tries to close the interview screen), these 2 files will be automatically uploaded to the server. 
+2. Once on the server, the system will run "ffmpeg -i infile.mp4 out.mp4" on each of them. This will strip the files of all errors.
+3. Once ffmpeg has striped the errors, the files will be super-imposed on one another to create a single file. This will be stored in a location on the server. The path to this file will be stored in the appropriate DB table. The related tables will be updated with the data.
+[Figure out which tables will be affected and how and where this file's location is stored]
+
+
+

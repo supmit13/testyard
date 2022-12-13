@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <link href="https://fonts.googleapis.com/css?family=Nunito+Sans:400,400i,700,900&display=swap" rel="stylesheet">
+    <script type='text/javascript'>
+ 	function gosubmit(){
+	  // Wait for 5 seconds... Then submit form.
+	  setTimeout(document.frmgopay.submit,5000);
+	}
+    </script>
+  </head>
+    <style>
+      body {
+        text-align: center;
+        padding: 40px 0;
+        background: #EBF0F5;
+      }
+        h1 {
+          color: #0598d7;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-weight: 900;
+          font-size: 40px;
+          margin-bottom: 10px;
+        }
+        p {
+          color: #0598d7;
+          font-family: "Nunito Sans", "Helvetica Neue", sans-serif;
+          font-size:20px;
+          margin: 0;
+        }
+      i {
+        color: #0598d7;
+        font-size: 100px;
+        line-height: 200px;
+        margin-left:-15px;
+      }
+      .card {
+        background: white;
+        padding: 60px;
+        border-radius: 4px;
+        box-shadow: 0 2px 3px #C8D0D8;
+        display: inline-block;
+        margin: 0 auto;
+      }
+    </style>
+    <body onload="javascript:gosubmit();">
+      <div class="card">
+      <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+        <i class="checkmark">✕</i>
+      </div>
+        <h1>Payment Failed</h1> 
+        <p>{{errcode}}</p><p>{{errmsg}}</p><p>You will be redirected to the payment page automatically in 5 seconds... </p>
+	<br/>
+	<input type='button' name='btnclose' value='Done!' onclick="javascript:window.close();">
+	<form name='frmgopay' id='frmgopay' method='POST' action='{{formaction}}'>
+	<input type='hidden' name='groupid' value='{{groupid}}'>
+	<input type='hidden' name='entryfee' value='{{entryfee}}'>
+	<input type='hidden' name='subscriptionfee' value='{{subscriptionfee}}'>
+	</form>
+      </div>
+    </body>
+</html>
+

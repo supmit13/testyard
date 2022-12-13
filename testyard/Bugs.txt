@@ -1,0 +1,60 @@
+1. In Tests => Schedule Test functionality, the date entered from the date and time widget is in the format yyyy-mm-dd hh:mm. It should also have the seconds component, and currently we are entering it manually. This needs to be fixed.
+2. In android app, the splash screen doesn't appear anymore. It used to work till I manipulated the user login process to handle the erroneous inputs.
+3. In android, if the user enters an erroneous username and/or password, the app needs to be closed and reopened now to enter the correct password. This needs to be fixed.
+4. If you post a comment to an ongoing discussion with an attached file (in the Network tab), the attached file download link appears incorrect when the post is submitted and it appears as part of the discussion thread. Needs to be fixed.
+5. When you are trying to give a test to all members of a specified group, the response doesn't show the status of the operation when the members have been sent the email. There should be more clarity for the users in this aspect.
+6. While creating a test or an interview, a check is made on the name to find if a test or interview with the same name exists in the db. This should be modified to check if same name exists for just the user's tests and interviews, not all tests and interviews in the DB.
+7. While creating an interview, it is possible to set the "Publish Date" in the past. This should not be allowed.
+8. When displaying a test to the candidate, the start page of the test says "The duration of the test is 1.5 hours and 30 minutes". This needs to be fixed.
+9. While activating a test or interview, the "Activate Test Now" doesn't change even after the display of the activation message until the page is refreshed. This needs to be changed such that the "Activate Test Now" caption becomes "Deactivate Test Now" and the underlying link changes accordingly, and is displayed immediately after the activation message is displayed. [Done]
+10. While inviting candidates to take a test using the "invite" link, the "Valid Till" field computes the date after a 3 month period from the current date incorrectly. The month part becomes '13' if the "Valid From" field has a month value of 10, and so on. Needs to be fixed.
+11. If a test has already been taken by a candidate and the candidate clicks on the test link again, the message displayed erroneously says the "test is not active as yet". This needs to be rectified to display a message saying the test has already been taken the candidate.
+12. When a test is created, the publish date and the activation date are not exactly the same as entered by the user. The time of the day differs from what is entered. This needs to be fixed on priority.
+13. While taking the "FSharp Test", the answer to the question "Explain Djikstra's algorithm and implement a solution in C to compute smallest path between start and end points in the following graph." is not saved. The response input area is a simple textarea, and it becomes empty if the user navigates to some other question. This is a very important bug and needs to be fixed asap.
+14. While taking the "FSharp Test", if the test taker writes a chunk of code in the code window associated with a particular challenge/question and then if she/he navigates to another challenge/question and finally returns back to the challenge/question for which she/he wrote the code, the code multiplies and displays all instances of itself in the code window one after the other. This is a very important bug and needs to be fixed asap.
+ 15. In case of questions/challenges whose response is descriptive, if there is any character that is recognized as HTML entity character, then all instances of that character is changed automatically to its corresponding HTML entity. Example: character '>' is converted to '&gt;', and '&' is converted to '&amp;'. This should not happen in any circumstance. This needs to be fixed on priority.
+Note for Bug #15:
+This has been fixed for tests with type 'CODN'. This needs to be fixed for tests with types 'ALGO' and 'SUBJ'.
+16. During answering questions in a test, the '>' symbol in the answer causes havoc with the input area. It doesn't allow responses to other questions to be entered. Basically it breaks the page. Needs to be fixed urgently. Refer to line numbers 927 and 930 in test_wrapper.html file. The above issue occurs in case of CODN, ALGO and SUBJ type of questions.
+17. The textboxes and the code input boxes on the answering screens do not handle HTML text and certain special characters correctly. They  basically break the page and the user cannot navigate to any other question through that screen. Needs fixing ugently.
+18. It seems that one of the tests "Testing Math Symbols" shows only 4 answer scripts when there should be 5 of them. This needs to be checked and rectified. One way to replicate the error is to schedule the test, take the test, and then go display the lists of tests taken in the "Tests as Evaluator" tab. [Needs to be looked into with greater precedence than other bugs]. [Done]
+19. The start time and end time in the evaluation screens are not showing the values. Needs to be fixed. [Done]
+20. In the evaluation screen the latex expressions are not rendered at all. This needs to be fixed.
+21. In the test evaluation screen, the evaluator may assign more marks to candidate than the max score for that challenge. Needs to be fixed.
+22. If a candidate starts taking a test and stops it in the middle of it (either by closing the window or by some other means), she/he should not be allowed to take the test anymore. This doesn't happen now. This needs to be fixed. However, it may be fixed after all other bugs have been fixed as it allows the developer to use the same test to replicate and test the changes in the code.
+
+===================================================================
+Bugs pertaining to the exec_server execution of user entered code:
+===================================================================
+
+1. Sometimes the task queue doesn't get cleared after a successful execution of one of the submitted code. [Done]
+2. Currently, the encoded code is not getting decoded by the C based base64 decoding function. Needs to be looked into. [Done]
+3. Need to look at how to hook up the VMware machine instance with the code received from the user. This is actually a "todo".
+4. In case of Multiple Choice Questions (MCP), modifying the response by deselecting one of the options doesn't work. The option remains selected no matter how many times you deselect it. In case of selecting another option, the effect is as desired - that is the new selection is shown in subsequent views of the response to the question. However, the old selections remain as they are.
+5.In case of "Free Pascal Compiler"installation, all user prompts should be made automatic with preferable values.
+
+====================================================================
+Bugs in Evaluation Screen:
+====================================================================
+1. Go to "Test As Evaluator" tab as user 'supmit' and then click on 'Evaluate Responses'  corresponding to link 'http://bit.ly/2SPjA1B'. A popup appears, and you need to scroll to the question "Question number 2 is here...". Under "Candidate's Response:", click on the link 'Convert to math expression, if applicable'. All whitespace characters are wiped out, and this needs to be fixed on high priority. Target Date: April 10, 2019. [Done]
+2. All newlines are stripped from the answers. This causes difficulty in reading text, code, etc. This needs to be fixed.[Done]
+3. All space characters in answers are removed. So programming answers like code in python loose their formatting which is a problem. Needs to be fixed. [Done]
+4. No mathematical expressions in challenge statements (questions) are converted to the equivalent symbols. This needs to be fixed.
+5. For mathematical expressions in answers, a ']' or '\]' string needs to be appended to the user's response to render the math expression correctly. This needs to happen automatically without the user's (evaluator's) help.
+
+====================================================================
+Bugs in Challenge Addition screen:
+====================================================================
+1. Existing question content vanishes if the user (test creator) tries to record (using microphone) additional content to the same question. Needs to be fixed on priority. [Won't fix now as this involves tinkering with 3rd party code.]
+2. Recording a question using microphone and then adding mathematical equation from LaTeX keyboard cannot be done at the same time. The user needs to first save the recorded part and then come back to the question to add the content from the LaTeX keyboard. Needs to be fixed on priority.
+3. Drawing in the question paper behaves in a quirky way. This needs to be fixed.
+4. Adding challenges using microphone doesn't work on Opera. Needs to be investigated. [Can't be done as Opera and Firefox do not support this feature as yet]
+5. In the evaluation screen, the math expressions are not rendered appropriately.
+6. When creating an interview, the page should be refreshed automatically before the interview creation interface opens. Alternatively, the user should be shown a message to refresh the screen before creating an interview. 	
+
+===================================================================
+Bugs in Challenge Display Screen while taking Test (test_wrapper.html)
+===================================================================
+1. The correct coding editor is not displayed if the programming environment is 'multi'. Reason: in test_wrapper.html, line 1399, {{progenv}} sets up variable 'progenv'.	So, if {{progenv}} is 'multi', then static/codemirror/mode/" + progenv + "/" + progenv + ".js" is called, and codemirror has no handler for multi/multi.js. [Not a show stopper, but should be handled in a later version].
+
+

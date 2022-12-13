@@ -1,0 +1,73 @@
+	
+	<div class="postpagesnav">
+		
+		</div>
+		
+		</div>
+		
+		<!-- ### Sidebar Begin ### -->
+
+		
+		<div id="sidebar">
+			<span nowrap style="color:#0000AA;font-style:italic;">Logged in as {{ displayname }}:&nbsp;&nbsp;<a href="{{ logout_url }}"><b>Logout</b></a></span>
+		<ul>
+
+		<li><!-- <h2>Search</h2> -->
+		<form id="searchform" name="searchform" method="post" action="#">
+			<div>
+			<span style='color:#0000AA;font-weight:bold;'>Advertise with us Here<br />Call 9711998537</span>
+			<!-- <input type="text" value="" name="s" id="searchfield" />
+			<input type="button" id="searchsubmit" value="Search" /> -->
+			{% csrf_token %}
+			</div>
+
+		</form>
+		</li>
+
+		<li><h2>Groups Subscribed by You</h2>
+		{% if groups|length == 0 %}
+		  <font color='#0000AA' size=-1>You do not own any group yet.</font>
+		{% endif %}
+		<ul>
+		{% for grp in groups %}
+			<li>{{ grp }}</li>
+		{% endfor %}
+		</ul>
+		</li>
+		
+		<li><h2><a href='#/' onClick="javascript:showmessages('{{messagesdictenc}}');">Inbox</a></h2>
+		{% if messagesdict|length == 0 %}
+		  <font color='#0000AA' size=-1>You do not have any messages.</font>
+		{% endif %}
+		</li>
+		<!-- <li><h2><a href='#/' onClick="javascript:showsentmessages('{{messagesdictenc}}');">Sent Messages</a></h2> -->
+		<li class="linkcat"><h2>Invitations Received</h2>
+		{% if connectinvitesdict|length == 0 %}
+		  <font color='#0000AA' size=-1>You do not have any invitations pending.</font>
+		{% endif %}
+		<ul>
+		{% for invid, invdetailslist in connectinvitesdict.iteritems %}
+			<li><a href='#/' onClick="javascript:openinvite('{{invid}}', '{{invdetailslist.1}}');">{{ invdetailslist.1 }} - {{ invdetailslist.3 }}({{invdetailslist.2}})</a></li>
+		{% endfor %}
+		</ul>
+		</li>
+
+	  	<li class="linkcat"><h2>Your Connections</h2>
+		{% if connections|length == 0 %}
+		  <font color='#0000AA' size=-1>You have not made any connections yet.</font>
+		{% endif %}
+		<ul>
+		{% for conn in connections %}
+			<li>{{ conn }}</li>
+		{% endfor %}
+		</ul>
+		</li>
+
+
+		</ul>	
+
+		</div>
+
+		<!-- ### Sidebar End ### -->
+
+	</div>

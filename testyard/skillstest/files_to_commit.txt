@@ -1,0 +1,4237 @@
+Wed, 17 Dec 2014, 17:27 HRS (IST).
+----------------------------
+1. skillstest/skills_settings.py
+2. skillstest/Auth/models.py
+3. skillstest/Auth/views.py
+4. skillstest/settings.py
+===============================
+
+Wed, 17 Dec 2014, 22:51 HRS (IST).
+----------------------------
+1. skillstest/Auth/models.py
+2. skillstest/urls.py
+3. db.sql
+4. skillstest/Auth/views.py
+5. skillstest/skills_settings.py
+6. skillstest/settings.py
+================================
+
+Wed, 18 Dec 2014, 1:58 HRS (IST).
+----------------------------
+1. skillstest/urls.py
+2. skillstest/Auth/views.py
+3. skillstest/skills_settings.py
+4. skillstest/settings.py
+5. templates
+6. skillstest/views.py
+
+Thu, 18 Dec 2014, 15:24 HRS (IST).
+----------------------------
+1. requirements.txt
+2. screens_and_flow.txt
+3. skillstest/templates/authentication/login.html
+
+=================================
+
+Fri, 19 Dec 2014, 00:05 HRS (IST).
+---------------------------
+1. skillstest/errors.py
+2. skillstest/Auth/views.py
+3. skillstest/urls.py
+4. skillstest/skills_settings.py
+5. templates/authentication/login.html
+6. templates/comments.html
+7. static/images
+8. static/css/style.css
+9. static/javascript/pageutils.js
+10.files_to_commit.txt
+
+==================================
+
+Sat, 20 Dec 2014, 00:19 HRS (IST).
+---------------------------
+1. skillstest/settings.py
+2. templates/authentication/login.html
+3. static/css/style.css
+4. static/javascript/pageutils.js
+5. skillstest/urls.py
+6. skillstest/settings.py
+7. skillstest/skills_settings.py
+8. files_to_commit.txt
+
+==================================
+
+Sat, 20 Dec 2014, 17:32 HRS (IST).
+--------------------------
+1. templates/authentication/login.html
+2. skillstest/Auth/views.py
+3. skillstest/errors.py
+4. skillstest/urls.py
+5. skillstest/skills_settings.py
+6. skillstest/Auth/models.py
+7. static/javascript/pageutils.js
+8. files_to_commit.txt
+
+===================================
+
+Sun, 21 Dec 2014, 06:41 HRS (IST).
+--------------------------
+1. templates/authentication/login.html
+2. skillstest/Auth/views.py
+3. skillstest/errors.py
+4. files_to_commit.txt
+5. skillstest/skills_settings.py
+6. db.sql
+7. skillstest/urls.py
+8. skillstest/settings.py
+9. skillstest/errors.py
+10.skillstest/Auth/models.py
+
+====================================
+
+Thu, 25 Dec 2014, 05:23 HRS (IST).
+--------------------------
+1. skillstest/utils.py
+2. skillstest/Auth/views.py
+3. skillstest/views.py
+4. skillstest/urls.py
+5. static/javascript/pageutils.js
+6. templates/authentication/newuser.html
+7. skillstest/errors.py
+8. skillstest/skills_settings.py
+9. templates/user/dashboard.html
+10.templates/authentication/login.html
+
+====================================
+
+Thu, 25 Dec 2014, 13:00 HRS (IST).
+---------------------------------
+1. skillstest/Auth/views.py
+2. skillstest/utils.py
+3. templates/authentication/newuser.html
+4. templates/authentication/login.html
+5. skillstest/errors.py
+6. skillstest/skills_settings.py
+7. files_to_commit.txt
+
+====================================
+
+Thu, 25 Dec 2014, 20:18 HRS (IST).
+----------------------------------
+1. db.sql
+2. static/javascript/pageutils.js
+3. skillstest/utils.py
+4. skillstest/skills_settings.py
+5. skillstest/Auth/views.py
+6. templates/authentication/newuser.html
+7. skillstest/errors.py
+8. templates/authentication/newuser.html
+9. templates/authentication/login.html
+10.files_to_commit.txt
+
+====================================
+
+Sat, 27 Dec 2014, 03:01 HRS (IST).
+-----------------------------------
+1. static/javascript/pageutils.js
+2. templates/authentication/login.html
+3. skillstest/utils.py
+4. skillstest/Auth/views.py
+5. skillstest/errors.py
+6. skillstest/Tests/models.py
+7. skillstest/skills_settings.py
+8. skillstest/Auth/models.py
+
+====================================
+
+Sun, 28 Dec 2014, 00:06 HRS (IST).
+-----------------------------------
+1. skillstest/Tests/models.py
+2. skillstest/settings.py
+3. skillstest/errors.py
+4. skillstest/skills_settings.py
+5. db.sql
+6. skillstest/utils.py
+7. files_to_commit.txt
+
+====================================
+
+Sun, 28 Dec 2014, 20:39 HRS (IST).
+-----------------------------------
+1. ../requirements.txt
+2. skillstest/Auth/views.py
+3. skillstest/Subscription/models.py
+4. skillstest/Tests/models.py
+5. skillstest/Auth/models.py
+6. skillstest/Tests/views.py
+7. skillstest/Subscription/views.py
+8. templates/authentication/newuser.html
+9. db.sql
+10.templates/user/dashboard.html
+11.static/javascript/pageutils.js
+12.files_to_commit.txt
+
+====================================
+
+Sun, 28 Dec 2014, 20:39 HRS (IST).
+-----------------------------------
+1. skillstest/Subscription/models.py
+2. skillstest/errors.py
+3. skillstest/Auth/views.py
+4. skillstest/utils.py
+5. skillstest/views.py
+6. skillstest/Tests/models.py
+7. skillstest/Auth/models.py
+8. templates/authentication/newuser.html
+9. templates/user/dashboard.html
+10.static/javascript/pageutils.js
+11.skillstest/settings.py
+12.skillstest/skills_settings.py
+13.skillstest/Subscription/views.py
+14.skillstest/urls.py
+15.files_to_commit.txt
+
+====================================
+
+Mon, 29 Dec 2014, 02:20 HRS (IST).
+------------------------------------
+1. skillstest/views.py
+2. skillstest/errors.py
+3. skillstest/utils.py
+4. screens_and_flows.txt
+5. skillstest/urls.py
+6. templates/user/dashboard.html
+7. skillstest/skills_settings.py
+8. skillstest/settings.py
+9.templates/user/profile.html
+10.skillstest/Subscription/models.py
+11.templates/inc/html_head.html
+12.templates/inc/mission_statement.html
+13.templates/inc/html_foot.html
+14.templates/inc/right_panel.html
+
+====================================
+
+Wed, 31 Dec 2014, 02:03 HRS (IST).
+----------------------------------
+1. templates/user/dashboard.html
+2. templates/inc/html_head.html
+3. templates/user/profile.html
+4. templates/authentication/login.html
+5. templates/authentication/newuser.html
+6. skillstest/Auth/views.py
+7. skillstest/views.py
+8. skillstest/utils.py
+9. db.sql
+10.skillstest/skills_settings.py
+11.templates/user/subscription.html
+12.files_to_commit.txt
+
+====================================
+
+Wed, 31 Dec 2014, 23:14 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. skillstest/skills_settings.py
+3. templates/inc/html_head.html
+4. templates/authentication/login.html
+5. templates/authentication/newuser.html
+6. skillstest/urls.py
+7. templates/inc/right_panel.html
+8. skillstest/views.py
+9. skillstest/errors.py
+10.templates/user/dashboard.html
+11.db.sql
+12.skillstest/Auth/models.py
+13.skillstest/Subscription/views.py
+14.skillstest/Subscription/models.py
+15.skillstest/Tests/models.py
+16.templates/user/profile.html
+17.templates/user/subscription.html
+18.templates/tests/tests.html
+19.templates/tests/search.html
+20.templates/user/network.html
+21.templates/tests/analytics.html
+22.templates/aboutus.html
+23.templates/help.html
+24.templates/careers.html
+25.skillstest/Tests/views.py
+
+====================================
+
+Thu, 01 Jan 2015, 23:40 HRS (IST).
+----------------------------------
+1. skillstest/views.py
+2. skillstest/Tests/views.py
+3. skillstest/urls.py
+4. files_to_commit.txt
+
+====================================
+
+Mon, 05 Jan 2015, 01:40 HRS (IST).
+-----------------------------------
+1. skillstest/views.py
+2. templates/authentication/newuser.html
+3. skillstest/Auth/views.py
+4. static/javascript/pageutils.js
+5. skillstest/skills_settings.py
+6. skillstest/utils.py
+7. skillstest/urls.py
+8. files_to_commit.txt
+
+=====================================
+
+Mon, 05 Jan 2015, 20:55 HRS (IST).
+-------------------------------------
+1. skillstest/views.py
+2. skillstest/Auth/views.py
+3. skillstest/utils.py
+4. templates/authentication/newuser.html
+5. skillstest/urls.py
+6. static/javascript/pageutils.js
+7. files_to_commit.txt
+
+====================================
+
+Fri, 09 Jan 2015, 02:45 HRS (IST). 
+-----------------------------------
+1. skillstest/Auth/views.py
+2. skillstest/utils.py
+3. skillstest/urls.py
+4. skillstest/skills_settings.py
+5. db.sql
+6. skillstest/Auth/models.py
+7. templates/inc/right_panel.html
+8. templates/authentication/activation.html
+9. files_to_commit.txt
+
+====================================
+
+Sat, 10 Jan 2015, 01:10 HRS (IST). 
+-----------------------------------
+1. skillstest/errors.py
+2. templates/authentication/newuser.html
+3. skillstest/Auth/views.py
+4. skillstest/utils.py
+5. templates/authentication/activation.html
+6. todo.txt
+7. skillstest/views.py
+8. files_to_commit.txt
+
+===================================
+
+Thu, 15 Jan 2015, 00:00 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. templates/inc/mission_statement.html
+3. skillstest/urls.py
+4. files_to_commit.txt
+
+=====================================
+
+Fri, 16 Jan 2015, 03:30 HRS (IST).
+----------------------------
+1. skillstest/Auth/views.py
+2. skillstest/utils.py
+3. skillstest/skills_settings.py
+4. templates/authentication/newuser.html
+5. templates/inc/mission_statement.html
+6. skillstest/views.py
+7. skillstest/Tests/views.py
+8. skillstest/Subscription/views.py
+9. files_to_commit.txt
+
+=====================================
+
+Sat, 17 Jan 2015, 04:00 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. templates/inc/html_head.html
+3. static/javascript/pageutils.js
+4. skillstest/urls.py
+5. skillstest/skills_settings.py
+6. skillstest/views.py
+7. skillstest/errors.py
+8. files_to_commit.txt
+
+=====================================
+
+Sat, 17 Jan 2015, 23:50 HRS (IST).
+----------------------------------
+1. static/javascript/pageutils.js
+2. skillstest/utils.py
+3. skillstest/urls.py
+4. skillstest/views.py
+5. templates/authentication/newuser.html
+6. skillstest/skills_settings.py
+7. static/images/*
+8. skillstest/Auth/views.py
+9. skillstest/Subscription/views.py
+10.skillstest/Tests/views.py
+11.files_to_commit.txt
+
+======================================
+
+Thu, 22 Jan 2015, 20:23 HRS (IST).
+----------------------------------
+1. static/javascript/pageutils.js
+2. skillstest/views.py
+3. skillstest/utils.py
+4. static/images/*
+5. files_to_commit.txt
+
+=====================================
+
+Sun, 01 Feb 2015, 01:52 HRS (IST).
+---------------------------------
+1. todo.txt
+2. skillstest/utils.py
+3. skillstest/Subscription/views.py
+4. skillstest/skills_settings.py
+5. skillstest/Tests/views.py
+6. templates/tests/tests.html
+7. templates/inc/html_head.html
+8. templates/tests/create_test_form.html
+9. static/javascript/pageutils.js
+10.static/datepick/jsDatePick.min.1.3.js
+11.static/datepick/images/*
+12.static/javascript/*
+13.static/css/*
+14.skillstest/Tests/models.py
+15.static/datepick/jsDatePick_ltr.min.css
+16.db.sql
+17.files_to_commit.txt
+
+=====================================
+
+Thu, 05 Feb 2015, 23:50 HRS (IST).
+----------------------------------
+1. templates/tests/create_test_form.html
+2. templates/tests/tests.html
+3. skillstest/Tests/views.py
+4. skillstest/skills_settings.py
+5. static/javascript/pageutils.js
+6. templates/tests/edit_challenge.html
+7. static/images/greendot2.jpg
+8. skillstest/Tests/models.py
+9. db.sql
+10.db_02_02_2015.sql
+11.skillstest/utils.py
+12.skillstest/errors.py
+13.skillstest/urls.py
+14.templates/tests/left_panel.html
+15.templates/tests/test_summary.html
+16.templates/tests/challenge_user_view.html
+17.files_to_commit.txt																																										
+							
+=====================================
+
+Thu, 03 Mar 2015, 02:15 HRS (IST).
+----------------------------------
+1. templates/tests/challenge_user_view.html
+2. skillstest/Tests/views.py
+3. files_to_commit.txt	
+
+=====================================
+
+Thu, 05 Mar 2015, 10:48 HRS (IST).
+----------------------------------
+1. templates/tests/challenge_user_view.html
+2. templates/tests/edit_challenge.html
+3. skillstest/Tests/models.py
+4. templates/tests/tests.html
+5. skillstest/Tests/views.py
+6. skillstest/skills_settings.py
+7. skillstest/urls.py
+8. templates/tests/left_panel.html
+9. templates/tests/test_summary.html
+10.templates/tests/create_test_form.html
+11.db.sql
+12.db_02_02_2015.sql
+13.skillstest/utils.py
+14.skillstest/errors.py
+15.files_to_commit.txt
+
+=====================================
+
+Sat, 14 Mar 2015, 05:30 HRS (IST).
+----------------------------------
+1. skillstest/Tests/models.py
+2. templates/tests/tests.html
+3. skillstest/Tests/views.py
+4. skillstest/skills_settings.py
+5. skillstest/utils.py
+6. skillstest/errors.py
+7. skillstest/urls.py
+8. files_to_commit.txt
+
+=====================================
+
+Thu, 19 Mar 2015, 02:15 HRS (IST).
+----------------------------------
+1. skillstest/Tests/models.py
+2. templates/tests/tests.html
+3. skillstest/Tests/views.py
+4. skillstest/skills_settings.py
+5. skillstest/utils.py
+6. skillstest/errors.py
+7. skillstest/urls.py
+8. templates/tests/invitecandidatesform.html
+9. db.sql
+10.db_02_02_2015.sql
+11.files_to_commit.txt
+
+
+=====================================
+
+Thu, 24 Mar 2015, 02:15 HRS (IST).
+----------------------------------
+1. skillstest/Tests/models.py
+2. templates/tests/tests.html
+3. skillstest/Tests/views.py
+4. skillstest/skills_settings.py
+5. skillstest/utils.py
+6. skillstest/errors.py
+7. skillstest/urls.py
+8. templates/tests/invitecandidatesform.html
+9. templates/tests/manageinvitations.html
+10.db.sql
+11.db_02_02_2015.sql
+12.files_to_commit.txt
+
+=====================================
+
+Mon, 30 Mar 2015, 07:25 HRS (IST).
+----------------------------------
+1. templates/tests/tests.html
+2. skillstest/Tests/views.py
+3. skillstest/skills_settings.py
+4. skillstest/urls.py
+5. templates/tests/manageinvitations.html
+6. files_to_commit.txt
+
+=====================================
+
+Tue, 31 Mar 2015, 02:17 HRS (IST).
+----------------------------------
+1. skillstest/utils.py
+2. skillstest/Tests/tasks.py
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. skillstest/Tests/models.py
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/management/__init__.py
+9. skillstest/Tests/management/commands/__init__.py
+10.files_to_commit.txt
+=====================================
+
+Wed, 08 Apr 2015, 01:18 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. static/javascript/scrollclock.js
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. static/javascript/tripledes.js
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/management/__init__.py
+9. skillstest/Tests/management/commands/__init__.py
+10.skillstest/utils.py
+11.skillstest/errors.py
+12.skillstest/urls.py
+13.skillstest/skills_settings.py
+14.files_to_commit.txt
+=====================================
+
+Fri, 10 Apr 2015, 02:03 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.files_to_commit.txt
+=====================================
+
+Fri, 10 Apr 2015, 02:03 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/skillstest/views.py
+14.files_to_commit.txt
+=====================================
+
+Thu, 24 Apr 2015, 02:46 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/skillstest/views.py
+14.static/css/panedwindow/panes.css
+15.static/css/panedwindow/tablet.css
+16.files_to_commit.txt
+=====================================
+
+Thu, 30 Apr 2015, 01:46 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/skillstest/views.py
+14.static/javascript/nicEdit.js
+15.static/javascript/jquery-2.1.3.min.js
+16.skillstest/Tests/tasks.py
+17.files_to_commit.txt
+==================================
+
+
+Thu, 30 Apr 2015, 01:46 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/skillstest/views.py
+14.static/javascript/nicEdit.js
+15.static/javascript/jquery-2.1.3.min.js
+16.skillstest/Tests/tasks.py
+17.files_to_commit.txt
+==================================
+
+Fri, 15 May 2015, 02:46 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/views.py
+14.static/javascript/pageutils.js
+15.templates/tests/upload_test_form.html
+16.skillstest/Tests/tasks.py
+17.static/datatemplates/uploadtest.tmpl
+18.static/datatemplates/uploadtesthelp.doc
+19.static/datatemplates/Sample.xls
+20.static/datatemplates/Sample.xlsx
+21.static/datatemplates/Sample.csv
+22.static/datatemplates/Sample.xml
+23.files_to_commit.txt
+==================================
+
+Tue, 02 Jun 2015, 01:12 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. templates/tests/manageinvitations.html
+7. skillstest/Tests/management/commands/scan_for_publishable_tests.py
+8. skillstest/Tests/models.py
+9. skillstest/errors.py
+10.skillstest/utils.py
+11.skillstest/urls.py
+12.skillstest/skills_settings.py
+13.skillstest/views.py
+14.static/javascript/pageutils.js
+15.templates/tests/upload_test_form.html
+16.skillstest/Tests/tasks.py
+17.static/datatemplates/uploadtest.tmpl
+18.static/datatemplates/uploadtesthelp.doc
+19.static/datatemplates/Sample.xls
+20.static/datatemplates/Sample.xlsx
+21.static/datatemplates/Sample.csv
+22.static/datatemplates/Sample.xml
+23.skillstest/Network/models.py
+24.skillstest/Network/views.py
+25.files_to_commit.txt
+==================================
+
+Sun, 07 Jun 2015, 14:35 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.files_to_commit.txt
+==================================
+
+Sun, 14 Jun 2015, 21:35 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.files_to_commit.txt
+==================================
+
+Mon, 22 Jun 2015, 15:05 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.files_to_commit.txt
+==================================
+
+Mon, 22 Jun 2015, 15:05 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.files_to_commit.txt
+==================================
+
+Sun, 29 Jun 2015, 21:01 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.files_to_commit.txt
+====================================
+
+Wed, 01 Jul 2015, 10:54 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+23.files_to_commit.txt
+====================================
+
+Tue, 07 Jul 2015, 01:45 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+23.files_to_commit.txt
+====================================
+
+Wed, 08 Jul 2015, 02:55 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+23.files_to_commit.txt
+=========================================
+
+Wed, 14 Jul 2015, 02:38 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+23.files_to_commit.txt
+=========================================
+
+Wed, 15 Jul 2015, 01:56 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.static/javascript/network.js
+25.files_to_commit.txt
+=========================================
+
+Thu, 23 Jul 2015, 22:58 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
+=========================================
+
+Thu, 28 Jul 2015, 03:23 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
+=========================================
+
+Wed, 29 Jul 2015, 22:32 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
+=========================================
+
+Tue, 04 Aug 2015, 00:34 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
+=========================================
+
+Wed, 05 Aug 2015, 02:31 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
+=========================================
+
+Tue, 11 Aug 2015, 13:11 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.files_to_commit.txt
+=========================================
+
+Mon, 17 Aug 2015, 01:59 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.skillstest/Tests/templatetags/extratemptags.py
+15.static/javascript/pageutils.js
+16.templates/network/payu_payment.html
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.templates/tests/zwibbler_widget.html
+25.templates/tests/virtual_keyboard.html
+26.templates/tests/edit_challenge.html
+27.templates/tests/tests.html
+28.templates/inc/html_head.html
+29.static/tinymce/*
+30.static/typeit/*
+31.files_to_commit.txt
+=========================================
+
+Tue, 18 Aug 2015, 02:38 HRS (IST).
+----------------------------------
+1. static/javascript/drawing.js
+2. templates/tests/tests.html
+3. files_to_commit.txt
+=========================================
+
+Mon, 24 Aug 2015, 12:51 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.templates/tests/canvas.html
+15.static/javascript/pageutils.js
+16.static/javascript/drawing.js
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.templates/tests/zwibbler_widget.html
+25.templates/tests/virtual_keyboard.html
+26.templates/tests/edit_challenge.html
+27.templates/inc/html_head.html
+28.static/tinymce/*
+29.static/typeit/*
+30.files_to_commit.txt
+=========================================
+
+
+Thu, 27 Aug 2015, 1:13 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/right_panel.html
+14.templates/tests/canvas.html
+15.static/javascript/pageutils.js
+16.static/javascript/drawing.js
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.templates/tests/zwibbler_widget.html
+25.templates/tests/virtual_keyboard.html
+26.templates/tests/edit_challenge.html
+27.templates/inc/html_head.html
+28.static/tinymce/*
+29.static/typeit/*
+30.files_to_commit.txt
+=========================================
+
+Tue, 01 Sep 2015, 2:53 HRS (IST).
+----------------------------------
+1. static/javascript/network.js
+2. db_02_02_2015.sql
+3. skillstest/Tests/views.py
+4. templates/tests/tests.html
+5. db.sql
+6. skillstest/errors.py
+7. skillstest/utils.py
+8. skillstest/urls.py
+9. skillstest/skills_settings.py
+10.skillstest/Network/models.py
+11.skillstest/Network/views.py
+12.templates/network/network.html
+13.templates/network/userprofile.html
+14.templates/tests/canvas.html
+15.static/javascript/pageutils.js
+16.static/javascript/drawing.js
+17.skillstest/Tests/models.py
+18.templates/network/managegroups.html
+19.skillstest/Network/management/commands/__init__.py
+20.skillstest/Network/management/__init__.py
+21.skillstest/Network/management/commands/get_exchange_rates.py
+22.skillstest/Network/tasks.py
+23.skillstest/Subscription/models.py
+24.templates/tests/zwibbler_widget.html
+25.templates/tests/virtual_keyboard.html
+26.templates/tests/edit_challenge.html
+27.templates/inc/html_head.html
+28.static/tinymce/*
+29.static/typeit/*
+30.files_to_commit.txt
+=========================================
+
+Tue, 01 Sep 2015, 2:53 HRS (IST).
+----------------------------------
+1. static/stopwatch/stopwatch.html
+2. static/stopwatch/js/stopwatch.min.js
+3. static/stopwatch/js/stopwatch.js
+4. static/stopwatch/js/main.js
+5. static/stopwatch/js/circle.min.js
+6. static/stopwatch/css/style.css
+7. templates/tests/test_wrapper.html
+8. templates/tests/tests.html
+9. templates/tests/canvas.html
+10.skillstest/errors.py
+11.skillstest/utils.py
+12.skillstest/urls.py
+13.skillstest/skills_settings.py
+14.files_to_commit.txt
+=========================================
+
+Tue, 08 Sep 2015, 14:03 HRS (IST).
+----------------------------------
+1. static/stopwatch/stopwatch.html
+2. static/stopwatch/js/stopwatch.min.js
+3. static/stopwatch/js/stopwatch.js
+4. static/stopwatch/js/main.js
+5. static/stopwatch/js/circle.min.js
+6. static/stopwatch/css/style.css
+7. templates/tests/test_wrapper.html
+8. templates/tests/tests.html
+9. templates/tests/canvas.html
+10.skillstest/errors.py
+11.skillstest/utils.py
+12.skillstest/urls.py
+13.skillstest/skills_settings.py
+14.skillstest/Network/models.py
+15.skillstest/Network/views.py
+16.skillstest/Tests/views.py
+17.skillstest/Tests/models.py
+18.templates/network/network.html
+19.templates/network/groupmembers.html
+20.uwsgi_params
+21.skillstest_nginx.conf
+22.files_to_commit.txt
+=======================================
+
+Sat, 12 Sep 2015, 09:19 HRS (IST).
+----------------------------------
+1. templates/tests/test_wrapper.html
+2. templates/tests/tests.html
+3. templates/tests/canvas.html
+4. skillstest/errors.py
+5. skillstest/utils.py
+6. skillstest/urls.py
+7. skillstest/skills_settings.py
+8. skillstest/Network/models.py
+9. skillstest/Network/views.py
+10.skillstest/Tests/views.py
+11.skillstest/Tests/models.py
+12.templates/network/network.html
+13.templates/network/groupmembers.html
+14.uwsgi_params
+15.skillstest_nginx.conf
+16.templates/network/groupmemberrows.html
+17.files_to_commit.txt
+=======================================
+
+Mon, 14 Sep 2015, 03:14 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. files_to_commit.txt
+=======================================
+
+Tue, 15 Sep 2015, 07:16 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.js
+6. files_to_commit.txt
+=======================================
+
+Wed, 16 Sep 2015, 07:16 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. files_to_commit.txt
+=======================================
+
+Sat, 19 Sep 2015, 07:58 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+6. files_to_commit.txt
+=======================================
+
+Sat, 22 Sep 2015, 04:45 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+6. files_to_commit.txt
+=======================================
+
+Sat, 22 Sep 2015, 04:45 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. files_to_commit.txt
+=======================================
+
+Sun, 27 Sep 2015, 02:41 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. files_to_commit.txt
+=======================================
+
+Sun, 27 Sep 2015, 04:18 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. files_to_commit.txt
+=======================================
+
+Sun, 27 Sep 2015, 04:18 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. files_to_commit.txt
+=======================================
+
+Tue, 29 Sep 2015, 08:07 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.files_to_commit.txt
+=======================================
+
+Tue, 29 Sep 2015, 09:53 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.files_to_commit.txt
+=======================================
+
+Tue, 29 Sep 2015, 14:35 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.files_to_commit.txt
+=======================================
+
+Thu, 01 Oct 2015, 09:40 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.files_to_commit.txt
+=======================================
+
+Sun, 04 Oct 2015, 02:21 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
+=======================================
+
+Sun, 04 Oct 2015, 16:21 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
+=======================================
+
+Tue, 06 Oct 2015, 05:39 HRS (IST).
+----------------------------------
+1. templates/tests/create_test_form.html
+2. skillstest/Tests/views.py
+3. files_to_commit.txt
+=======================================
+
+Sun, 04 Oct 2015, 16:21 HRS (IST).
+----------------------------------
+1. templates/network/groupmembers.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
+=======================================
+
+Sat, 10 Oct 2015, 13:23 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
+=======================================
+
+Tue, 13 Oct 2015, 2:09 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.files_to_commit.txt
+=======================================
+
+Tue, 13 Oct 2015, 2:09 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.static/datetimepicker/*
+19.files_to_commit.txt
+=======================================
+
+Tue, 13 Oct 2015, 2:09 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.static/datetimepicker/*
+19.skillstest/settings.py
+20.files_to_commit.txt
+=======================================
+
+Tue, 20 Oct 2015, 14:06 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.static/datetimepicker/*
+19.skillstest/settings.py
+20.files_to_commit.txt
+=======================================
+
+Thu, 05 Nov 2015, 14:10 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.static/datetimepicker/*
+19.skillstest/settings.py
+20.files_to_commit.txt
+=======================================
+
+Tue, 10 Nov 2015, 12:59 HRS (IST).
+----------------------------------
+1. templates/tests/getscheduleinfo.html
+2. skillstest/Network/views.py
+3. templates/network/network.html
+4. skillstest/Tests/views.py								
+5. templates/tests/test_wrapper.html
+6. templates/tests/tests.html
+7. skillstest/errors.py
+8. skillstest/utils.py
+9. skillstest/urls.py
+10.skillstest/skills_settings.py
+11.skillstest/Tests/models.py
+12.db_02_02_2015.sql
+13.db.sql
+14.skillstest/Auth/models.py
+15.skillstest/views.py
+16.templates/user/profile.html
+17.skillstest/Auth/views.py
+18.static/datetimepicker/*
+19.skillstest/settings.py
+20.files_to_commit.txt
+=======================================
+
+Tue, 10 Nov 2015, 14:18 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================
+
+Tue, 17 Nov 2015, 14:05 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================					
+
+Thu, 19 Nov 2015, 14:25 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================
+
+Tue, 01 Dec 2015, 15:00 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================
+
+Wed, 02 Dec 2015, 15:00 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================
+
+Sat, 05 Dec 2015, 08:26 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================	
+
+Sat, 05 Dec 2015, 13:52 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. files_to_commit.txt
+=======================================	
+
+Sat, 05 Dec 2015, 16:40 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. files_to_commit.txt
+=======================================
+
+Thu, 10 Dec 2015, 10:10 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. skillstest/Tests/management/commands/populate_db_answer_scripts.py
+6. skillstest/utils.py
+7. files_to_commit.txt
+=======================================
+
+Thu, 10 Dec 2015, 12:20 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. skillstest/Tests/management/commands/populate_db_answer_scripts.py
+6. skillstest/utils.py
+7. files_to_commit.txt
+=======================================
+
+Thu, 10 Dec 2015, 12:20 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. skillstest/Tests/management/commands/populate_db_answer_scripts.py
+6. skillstest/utils.py
+7. skillstest/AdvSearch/views.py
+8. skillstest/AdvSearch/models.py
+9. skillstest/AdvSearch/tests.py
+10.skillstest/AdvSearch/__init__.py
+11.templates/advsearch/searchscreen.html
+12.templates/advsearch/testrecords.html
+13.skillstest/urls.py
+14.files_to_commit.txt
+=======================================
+
+Mon, 28 Dec 2015, 21:50 HRS (IST).
+----------------------------------
+1. skillstest/Tests/views.py
+2. templates/tests/test_wrapper.html
+3. skillstest/skills_settings.py
+4. skillstest/Tests/tasks.py
+5. skillstest/Tests/management/commands/populate_db_answer_scripts.py
+6. skillstest/utils.py
+7. skillstest/AdvSearch/views.py
+8. skillstest/AdvSearch/models.py
+9. skillstest/AdvSearch/tests.py
+10.skillstest/AdvSearch/__init__.py
+11.templates/advsearch/searchscreen.html
+12.templates/advsearch/testrecords.html
+13.skillstest/urls.py
+14.skillstest/views.py
+15.templates/aboutus.html
+16.skillstest/errors.py
+17.templates/tests/tests.html
+18.todo.txt
+19.files_to_commit.txt
+=======================================
+
+Tue, 29 Dec 2015, 02:40 HRS (IST).
+----------------------------------
+1. skillstest/models.py
+2. templates/careers.html
+3. skillstest/views.py
+4. db.sql
+5. db_02_02_2015.sql
+6. templates/aboutus.html
+7. files_to_commit.txt
+=======================================
+
+Tue, 29 Dec 2015, 23:33 HRS (IST).
+----------------------------------
+1. templates/tests/tests.html
+2. skillstest/views.py
+3. templates/help.html
+4. skillstest/skills_settings.py
+5. skillstest/urls.py
+6. templates/helpndocs/profilehelp.html
+7. templates/helpndocs/dashboardhelp.html
+8. templates/helpndocs/subscriptionhelp.html
+9. templates/helpndocs/testhelp.html
+10.templates/helpndocs/networkhelp.html
+11.templates/helpndocs/searchhelp.html
+12.templates/helpndocs/analyticshelp.html
+13.files_to_commit.txt
+=======================================
+
+Mon, 04 Jan 2016, 03:06 HRS (IST).
+----------------------------------
+1. templates/help.html
+2. templates/inc/html_head.html
+3. templates/tests/create_interview_form.html
+4. skillstest/Tests/views.py
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. files_to_commit.txt
+=======================================
+
+Tue, 05 Jan 2016, 12:43 HRS (IST);
+----------------------------------
+1. templates/help.html
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.todo.txt
+15.files_to_commit.txt
+=======================================
+
+Tue, 12 Jan 2016, 06:09 HRS (IST);
+----------------------------------
+1. templates/help.html
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.todo.txt
+15.files_to_commit.txt
+=======================================
+
+Sat, 16 Jan 2016, 04:58 HRS (IST);
+----------------------------------
+1. templates/help.html
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.files_to_commit.txt
+=======================================
+
+Fri, 29 Jan 2016, 04:50 HRS (IST);
+----------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.files_to_commit.txt
+==========================================
+
+Tue, 16 Feb 2016, 12:03 HRS (IST);
+----------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.files_to_commit.txt
+==========================================
+
+Tue, 16 Feb 2016, 12:03 HRS (IST);
+----------------------------------
+testyard repo:
+
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.static/images/*
+22.files_to_commit.txt
+------------------------------------------------
+
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+==========================================
+
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+==========================================
+
+Tue, 03 May, 2016, 05:09 am.
+----------------------------
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+testyard repo:
+
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.static/images/*
+22.files_to_commit.txt 
+==========================================
+
+Tue, 03 May, 2016, 05:09 am.
+----------------------------
+testyardandroid repo:
+
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+testyard repo:
+
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.templates/tests/tests.html
+15.templates/tests/create_interview_form.html
+16.todo.txt
+17.uwsgi_params
+18.uwsgi.ini
+19.skillstest_nginx.conf
+20.skillstest/wsgi.py
+21.static/images/*
+22.files_to_commit.txt 
+==============================
+
+Wed, June 01, 2016, 14:30 HRS.
+-------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.todo.txt
+19.uwsgi_params
+20.uwsgi.ini
+21.skillstest_nginx.conf
+22.skillstest/wsgi.py
+23.static/images/*
+24.files_to_commit.txt 
+
+testyardandroid repo:
+----------------------
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+========================
+
+Fri, June 10, 2016, 13:00 HRS.
+-------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.todo.txt
+19.uwsgi_params
+20.uwsgi.ini
+21.skillstest_nginx.conf
+22.skillstest/wsgi.py
+23.static/images/*
+24.files_to_commit.txt 
+
+testyardandroid repo:
+----------------------
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+========================
+
+Sun, June 26, 2016, 02:45 HRS.
+-------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.todo.txt
+19.uwsgi_params
+20.uwsgi.ini
+21.skillstest_nginx.conf
+22.skillstest/wsgi.py
+23.static/images/*
+24.files_to_commit.txt 
+
+testyardandroid repo:
+----------------------
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+===============================
+
+testyardandroid repo:
+----------------------
+1. app/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+
+==============================
+
+Path to nginx index.html:
+ /usr/share/nginx/html/index.html
+
+Sun, June 26, 2016, 02:45 HRS.
+-------------------------------
+1. skillstest/utils.py
+2. templates/tests/audiovisual.html
+3. skillstest/Tests/views.py
+4. static/webaudiovisual/main.js
+5. skillstest/Tests/models.py
+6. db.sql
+7. db_02_02_2015.sql
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.todo.txt
+19.uwsgi_params
+20.uwsgi.ini
+21.skillstest_nginx.conf
+22.skillstest/wsgi.py
+23.static/images/*
+24./usr/share/nginx/html/index.html
+25.templates/tests/getscheduleinfo.html
+26.templates/tests/interview_candidate_screen.html
+27.node_modules/*
+28.files_to_commit.txt 
+
+testyardandroid repo:
+----------------------
+1. app/src/main/java/xpresstech/testyard/*
+2. build/*
+3. build.gradle
+4. gradle/*
+5. .gradle/*
+6. gradle.properties
+7. gradlew
+8. gradlew.bat
+9. .idea/*
+10.local.properties
+11.settings.gradle
+12.testyardandroid.iml
+13.app/src/main/res/*
+
+==================================
+Mon, July 26, 2016, 15:10 HRS.
+-------------------------------
+
+1. skillstest/utils.py
+2. skillstest/views.py
+3. templates/authentication/login.html
+4. templates/tests/audiovisual.html
+5. skillstest/Tests/views.py
+6. static/webaudiovisual/main.js
+7. skillstest/Tests/models.py
+8. static/webaudiovisual/audiodisplay.js
+9. static/webaudiovisual/recorder.js
+10.static/webaudiovisual/recorderWorker.js
+11.skillstest/skills_settings.py
+12.skillstest/urls.py
+13.skillstest/errors.py
+14.skillstest/utils.py
+15.skillstest/views.py
+16.templates/tests/tests.html
+17.templates/tests/create_interview_form.html
+18.templates/tests/getscheduleinfo.html
+19.templates/tests/interview_candidate_screen.html
+20.templates/authentication/newuser.html
+20.node_modules/*
+21.skillstest/settings.py
+22.files_to_commit.txt 
+
+==================================
+Tue, Jan 03, 2017, 02:30 HRS.
+-------------------------------
+
+1. git add skillstest/utils.py
+2. git add skillstest/views.py
+3. git add templates/authentication/login.html
+4. git add templates/tests/audiovisual.html
+5. git add skillstest/Tests/views.py
+6. git add static/webaudiovisual/main.js
+7. git add skillstest/Tests/models.py
+8. git add static/webaudiovisual/audiodisplay.js
+9. git add static/webaudiovisual/recorder.js
+10.git add static/webaudiovisual/recorderWorker.js
+11.git add skillstest/skills_settings.py
+12.git add skillstest/urls.py
+13.git add skillstest/errors.py
+14.git add templates/inc/html_head.html
+15.git add templates/tests/tests.html
+16.git add templates/tests/create_interview_form.html
+17.git add templates/tests/getscheduleinfo.html
+18.git add templates/tests/interview_candidate_screen.html
+19.git add templates/authentication/newuser.html
+20.git add node_modules/*
+21.git add skillstest/settings.py
+22.git add templates/tests/test_summary.html
+23.git add templates/tests/test_wrapper.html
+24.git add templates/tests/create_test_form.html
+25.git add templates/tests/getscheduleinfo.html
+26.git add templates/tests/waitscreen.html
+27.git add skillstest/Tests/tasks.py
+28.git add ../services/exec_server.c
+29.git add uwsgi.ini
+30.git add static/codemirror/*
+31.git add templates/tests/upload_test_form.html
+32.git add templates/tests/challenge_user_view.html
+33.git add templates/tests/manageinvitations.html
+34.git add templates/tests/invitecandidatesform.html
+35.git add templates/tests/challenge_user_view.html
+36.git add templates/tests/edit_challenge.html
+37.git add templates/network/network.html
+38.git add skillstest_nginx.conf
+39.git add ../services/vmcreate.sh
+40.git add files_to_commit.txt
+
+==================================
+Thu, Jan 26,2017, 14:37 HRS.
+----------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add ../services/exec_server.c
+3. git add skillstest/skills_settings.py
+4. git add services/poweron.c
+5. git add services/runvms.py
+6. git add scripts/prepare_env.sh
+7. git add skillstest/skillstest/utils.py
+8. git add skillstest/skillstest/errors.py
+9. git add skillstest/skillstest/urls.py
+10.git add skillstest/skillstest/Tests/*.py
+11.git add skillstest/templates/tests/*.html
+12.git add files_to_commit.txt
+
+=========================================
+Tue, Jan 31, 2017, 11:55 HRS.
+----------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add ../services/exec_server.c
+3. git add skillstest/skills_settings.py
+4. git add ../services/poweron.c
+5. git add ../services/runvms.py
+6. git add ../scripts/prepare_env.sh
+7. git add skillstest/utils.py
+8. git add skillstest/errors.py
+9. git add skillstest/urls.py
+10.git add skillstest/Tests/*.py
+11.git add templates/tests/*.html
+12.git add ../services/setIP.c
+13.git add files_to_commit.txt
+
+=========================================
+Mon, Jun 19, 2017, 03:55 HRS.
+-----------------------------------------
+1. git add templates/inc/mission_statement2.html
+2. git add static/images/open_link.png
+3. git add skillstest/Analytics/views.py
+4. git add templates/inc/html_head.html
+5. git add skillstest/AdvSearch/views.py
+6. git add skillstest/skills_settings.py
+7. git add templates/inc/html_foot.html
+8. git add templates/advsearch/searchscreen.html
+9. git add templates/analytics/analytics.html
+10.git add templates/subscription/subscription.html
+11.git add templates/network/right_panel.html
+12.git add templates/inc/right_panel.html
+13.git add templates/user/profile.html
+14.git add templates/tests/create_test_form.html
+15.git add templates/tests/tests.html
+16.git add templates/inc/mission_statement.html
+17.git add templates/network/network.html
+18.git add skillstest/Network/views.py
+19.git add skillstest/Network/models.py
+20.git add skillstest/urls.py
+21.git add files_to_commit.txt
+22.git add db.sql
+23.git add db_02_02_2015.sql
+24.git add skillstest/utils.py
+25.git add templates/network/postslist.htmlA
+
+=========================================
+Wed, Jun 21, 2017, 10:40 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/models.py
+2. git add templates/advsearch/usertestinfo.html
+3. git add templates/inc/html_head.html
+4. git add templates/user/profile.html
+5. git add templates/advsearch/searchscreen.html
+6. git add templates/network/network.html
+7. git add templates/advsearch/userrecords.html
+8. git add templates/tests/tests.html
+9. git add skillstest/AdvSearch/views.py
+10.git add skillstest/utils.py
+11.git add skillstest/urls.py
+12.git add skillstest/skills_settings.py
+13.git add skillstest/errors.py
+14.git add files_to_commit.txt
+
+=========================================
+Sat, Jun 24, 2017, 00:35 HRS.
+-----------------------------------------
+1. git add skillstest/errors.py
+2. git add skillstest/urls.py
+3. git add skillstest/utils.py
+4. git add skillstest/AdvSearch/views.py
+5. git add skillstest/skills_settings.py
+6. git add templates/advsearch/testrecords.html
+7. git add templates/advsearch/challengeslist.html
+8. git add templates/advsearch/usertestinfo.html
+9. git add templates/user/profile.html
+10.git add skillstest/Tests/models.py
+11.git add templates/advsearch/searchscreen.html
+12.git add templates/tests/tests.html
+13.git add templates/analytics/analytics.html
+14.git add skillstest/Analytics/views.py
+15.git add templates/tests/create_test_form.html
+16.git add templates/tests/create_interview_form.html
+17.git add templates/network/network.html
+18.git add templates/tests/invitecandidatesform.html
+19.git add templates/tests/edit_challenge.html
+20.git add templates/tests/test_summary.html
+21.git add templates/help.html
+22.git add templates/network/ownedgrps.html
+23.git add skillstest/Tests/views.py
+24.git add files_to_commit.txt
+
+=========================================
+Sat, Jun 24, 2017, 00:35 HRS.
+-----------------------------------------
+1. git add static/images/redcross.png
+2. git add skillstest/AdvSearch/views.py
+3. git add skillstest/Tests/models.py
+4. git add templates/advsearch/challengeslist.html
+5. git add templates/advsearch/searchscreen.html
+6. git add templates/advsearch/testrecords.html
+7. git add skillstest/errors.py
+8. git add skillstest/skills_settings.py
+9. git add skillstest/urls.py
+10.git add skillstest/utils.py
+11.git add skillstest/Tests/views.py
+12.git add files_to_commit.txt
+
+=========================================
+Sat, Jul 12, 2017, 21:19 HRS.
+-----------------------------------------
+1. git add skillstest/AdvSearch/views.py
+2. git add skillstest/Network/models.py
+3. git add skillstest/Network/views.py
+4. git add skillstest/errors.py
+5. git add skillstest/skills_settings.py
+6. git add skillstest/urls.py
+7. git add skillstest/utils.py
+8. git add templates/advsearch/challengeslist.html
+9. git add templates/advsearch/searchscreen.html
+10.git add templates/advsearch/testrecords.html
+11.git add templates/advsearch/usertestinfo.html
+12.git add templates/authentication/login.html
+13.git add skillstest/Tests/models.py
+14.git add templates/network/network.html
+15.git add static/javascript/pageutils.js
+16.git add files_to_commit.txt
+
+=========================================
+Sat, Jul 13, 2017, 21:14 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add templates/network/network.html
+3. git add templates/network/managegroups.html
+4. git add skillstest/Tests/views.py
+
+=========================================
+Mon, Jul 17, 2017, 21:21 HRS.
+-----------------------------------------
+1. git add templates/advsearch/challengeslist.html
+2. git add skillstest/AdvSearch/views.py
+3. git add templates/network/managegroups.html
+4. git add skillstest/Network/views.py
+5. git add templates/network/network.html
+6. git add templates/network/userprofile.html
+7. git add static/javascript/pageutils.js
+8. git add files_to_commit.txt
+
+=========================================
+Tue, Jul 18, 2017, 12:36 HRS.
+-----------------------------------------
+1. git add static/images/attachment.png
+2. git add skillstest/Network/views.py
+3. git add files_to_commit.txt
+
+=========================================
+Tue, Jul 18, 2017, 12:59 HRS.
+-----------------------------------------
+1. git add static/images/grp_background.png
+2. git add static/images/nopic.png
+3. git add static/css/*
+4. git add files_to_commit.txt
+
+=========================================
+Tue, Aug 08, 2017, 11:09 HRS.
+-----------------------------------------
+1. git add templates/authentication/login.html
+2. git add templates/authentication/newuser.html
+3. git add files_to_commit.txt
+
+=========================================
+Sat, Dec 02, 2017, 03:20 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/Network/views.py
+4. git add skillstest/urls.py
+5. git add skillstest/skills_settings.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add skillstest/utils.py
+9. git add skillstest/Tests/models.py
+10.git add errors.py
+11.git add files_to_commit.txt
+
+=========================================
+Tue, September 25, 2018, 01:30 HRS.
+-----------------------------------------
+1. git add templates/tests/left_panel.html
+2. git add templates/tests/edit_challenge.html
+3. git add static/css/speech2text/styles.css
+4. git add static/speech2text/speech2text_script.js
+5. git add templates/tests/tests.html
+5. git add files_to_commit.txt
+
+=========================================
+Fri, September 28, 2018, 02:19 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add static/speech2text/speech2text_script.js
+3. git add skillstest/skills_settings.py
+4. git add skillstest/urls.py
+
+=========================================
+Sunday, September 30, 2018, 01:00 HRS.
+-----------------------------------------
+1. git add static/speech2text/speech2text_script.js
+2. git add templates/tests/create_test_form.html
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, October 13, 2018, 06:00 HRS.
+-----------------------------------------
+1. git add node_modules/signal_server.js
+2. git add templates/tests/audiovisual.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, October 16, 2018, 02:55 HRS.
+-----------------------------------------
+1. git add templates/tests/create_interview_form.html
+2. git add templates/tests/tests.html
+3. git add static/speech2text/speech2text_script.js
+4. git add skillstest/Tests/views.py
+5. git add skillstest/Tests/models.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
+
+=========================================
+Wednesday, October 17, 2018, 23:30 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/settings.py
+3. git add skillstest/Tests/models.py
+4. git add static/speech2text/speech2text_script.js
+5. git add templates/tests/tests.html
+6. git add files_to_commit.txt
+
+=========================================
+Sunday, October 28, 2018, 02:04 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+
+=========================================
+Wednesday, October 31, 2018, 02:20 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+Wednesday, October 31, 2018, 03:22 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/settings.py
+2. git add files_to_commit.txt
+
+=========================================
+Tuesday, November 06, 2018, 05:33 HRS.
+-----------------------------------------
+1. git add templates/tests/edit_challenge.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/challenge_user_view.html
+5. git add templates/tests/test_wrapper.html
+6. git add files_to_commit.txt
+
+=========================================
+Saturday, November 10, 2018, 22:23 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/test_summary.html
+4. git add files_to_commit.txt
+
+=========================================
+Saturday, November 10, 2018, 22:23 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/tasks.py
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+
+=========================================
+Wednesday, November 14, 2018, 14:03 HRS.
+-----------------------------------------
+1. git add templates/tests/getscheduleinfo.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+5. git add templates/
+6. git add urls.py
+
+=========================================
+Thursday, November 29, 2018, 16:41 HRS.
+-----------------------------------------
+1. git add templates/tests/getscheduleinfo.html
+2. git add templates/tests/tests.html
+3. git add static/javascript/mathjaxjs.js
+4. git add skillstest/Tests/views.py
+5. git add skillstest/Tests/models.py
+6. git add files_to_commit.txt
+
+=========================================
+
+=========================================
+Monday, December 10, 2018, 05:18 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/mathlib/math.min.js
+3. git add static/MathJax/MathJax.js
+4. git add files_to_commit.txt
+
+=========================================
+Saturday, December 15, 2018, 03:13 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+
+=========================================
+Monday, December 17, 2018, 22:55 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/javascript/mathjaxjs.js
+3. git add files_to_commit.txt
+
+=========================================
+Monday, December 31, 2018, 21:31 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/tasks.py
+2. git add files_to_commit.txt
+
+=========================================
+Tuesday, January 01, 2019, 00:21 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, January 01, 2019, 00:21 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+Friday, January 04, 2019, 21:24 HRS.
+-----------------------------------------
+1. git add static/javascript/mathjaxjs.js
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+
+=========================================
+
+=========================================
+Monday, February 04, 2019, 23:35 HRS.
+-----------------------------------------
+1. git add static/MathJax/MathJax.js
+2. git add templates/tests/tests.html
+3. git add static/mathlib/math.min.js
+4. git add static/javascript/mathjaxjs.js
+5. git add todo.txt
+6. git add files_to_commit.txt
+
+=========================================
+Monday, February 25, 2019, 19:49 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/javascript/mathjaxjs.js
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, March 10, 2019, 02:47 HRS.
+-----------------------------------------
+1. git rm static/javascript/mathjaxjs.js
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, March 12, 2019, 20:48 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/evaluate_responses.html
+3. git add skillstest/Tests/templatetags/extratemptags.py
+4. git add files_to_commit.txt
+
+=========================================
+Sunday, March 17, 2019, 00:27 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/evaluate_responses.html
+3. git add skillstest/Tests/templatetags/extratemptags.py
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+
+=========================================
+Tuesday, March 19, 2019, 21:24 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/evaluate_responses.html
+3. git add skillstest/Tests/templatetags/extratemptags.py
+4. git add skillstest/Tests/views.py
+5. git add skillstest/urls.py
+6. git add skillstest/skills_settings.py
+7. git add files_to_commit.txt
+
+=========================================
+Monday, April 01, 2019, 06:20 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/evaluate_responses.html
+3. git add skillstest/Tests/templatetags/extratemptags.py
+4. git add skillstest/Tests/views.py
+5. git add skillstest/urls.py
+6. git add skillstest/skills_settings.py
+7. git add static/math_translator.html
+8. git add files_to_commit.txt
+
+=========================================
+Monday, April 01, 2019, 21:16 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add static/math_translator.html
+3. git add static/mathkbd.html
+4. git add files_to_commit.txt
+
+=========================================
+Tuesday, April 02, 2019, 19:46 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add files_to_commit.txt
+
+=========================================
+Tuesday, April 02, 2019, 22:07 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add files_to_commit.txt
+
+=========================================
+Monday, April 22, 2019, 18:34 HRS.
+-----------------------------------------
+
+1. git add templates/network/userprofile.html
+2. git add templates/network/network.html
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, April 27, 2019, 02:47 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/audiovisual.html
+4. git add static/mathkbd.html
+5. git add files_to_commit.txt
+
+=========================================
+Saturday, April 27, 2019, 14:28 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/audiovisual.html
+4. git add static/mathkbd.html
+5. git add node_modules/signal_server.js
+6. git add files_to_commit.txt
+
+Note: Add the same certificate files (.crt), certificate signing request (.csr) and the key files (.key)
+in the following places: /etc/ssl/certs/, /etc/pki/nginx/ . Otherwise the WebRTC part will not work as
+expected.
+
+=========================================
+Monday, April 29, 2019, 14:32 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/audiovisual.html
+4. git add static/mathkbd.html
+5. git add node_modules/signal_server.js
+6. git add files_to_commit.txt
+
+=========================================
+Tuesday, April 30, 2019, 09:49 HRS.
+-----------------------------------------
+
+1. git add templates/tests/audiovisual.html
+2. git add node_modules/signal_server.js
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, April 30, 2019, 16:48 HRS.
+-----------------------------------------
+
+1. git add templates/tests/audiovisual.html
+2. git add node_modules/signal_server.js
+3. git add static/mathkbd.html
+4. git add files_to_commit.txt
+
+=========================================
+Thursday, May 02, 2019, 16:01 HRS.
+-----------------------------------------
+
+1. git add static/mathkbd.html
+2. git add templates/tests/audiovisual.html
+3. git add node_modules/signal_server.js
+4. git add files_to_commit.txt
+
+=========================================
+Friday, May 03, 2019, 02:57 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add templates/tests/test_wrapper.html
+4. git add templates/tests/create_test_form.html
+5. git add skillstest/Tests/views.py
+6. git add templates/tests/evaluate_responses.html
+7. git add skillstest/Tests/tasks.py
+8. git add skillstest/skills_settings.py
+9. git add templates/tests/tests.html
+10. git add static/mathkbd_response.html
+11. git add files_to_commit.txt
+
+=========================================
+Friday, May 03, 2019, 13:27 HRS.
+-----------------------------------------
+1. git add static/math_translator.html
+2. git add templates/tests/evaluate_responses.html
+3. git add files_to_commit.txt
+
+=========================================
+Sunday, May 05, 2019, 01:37 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/tasks.py
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+
+=========================================
+Sunday, May 05, 2019, 12:44 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/Tests/tasks.py
+3. git add templates/tests/test_wrapper.html
+4. git add templates/tests/tests.html
+5. git add files_to_commit.txt
+
+=========================================
+Sunday, May 05, 2019, 17:59 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/tasks.py
+2. git add templates/tests/test_wrapper.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, May 07, 2019, 00:56 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, May 07, 2019, 03:39 HRS.
+-----------------------------------------
+1. git add templates/tests/create_interview_form.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+=========================================
+Tuesday, May 07, 2019, 04:46 HRS.
+-----------------------------------------
+1. git add templates/tests/create_interview_form.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+=========================================
+Tuesday, May 07, 2019, 04:46 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+Sunday, May 12, 2019, 03:23 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add skillstest/skills_settings.py
+4. git add db.sql
+5. git add db_02_02_2015.sql
+6. git add skillstest/Tests/models.py
+7. git add templates/tests/create_interview_form.html
+8. git add files_to_commit.txt
+
+=========================================
+Sunday, May 12, 2019, 04:34 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/create_interview_form.html
+4. git add files_to_commit.txt
+
+=========================================
+Sunday, May 12, 2019, 09:04 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/create_interview_form.html
+4. git add skillstest/Tests/models.py
+5. git add db.sql
+6. git add db_02_02_2015.sql 
+7. git add files_to_commit.txt
+
+=========================================
+Sunday, May 12, 2019, 09:43 HRS.
+-----------------------------------------
+1. git add skillstest/skills_settings.py
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add templates/tests/create_interview_form.html
+5. git add skillstest/Tests/models.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
+
+=========================================
+Monday, May 13, 2019, 16:25 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
+
+=========================================
+Monday, May 13, 2019, 20:51 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, May 14, 2019, 00:46 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
+
+=========================================
+Wednesday, May 15, 2019, 15:10 HRS.
+-----------------------------------------
+1. git add static/mathkbd.html
+2. git add static/mathkbd_response.html
+3. git add files_to_commit.txt
+
+=========================================
+Friday, May 17, 2019, 21:01 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add skillstest/skills_settings.py
+5. git add files_to_commit.txt
+
+=========================================
+Friday, May 17, 2019, 23:35 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+=========================================
+Saturday, May 18, 2019, 03:05 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, May 18, 2019, 04:36 HRS.
+-----------------------------------------
+1. git add templates/tests/create_test_form.html
+2. git add files_to_commit.txt
+
+=========================================
+Saturday, May 18, 2019, 10:01 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+
+=========================================
+Saturday, May 18, 2019, 13:19 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/evaluate_responses.html
+5. git add files_to_commit.txt
+
+=========================================
+Saturday, May 18, 2019, 15:23 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+Friday, May 31, 2019. 13:01 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add ../services/lib/baseini/liteini.c
+3. git add ../services/lib/baseini/liteini.h
+4. git add ../services/lib/baseini/README.md
+5. git add ../services/lib/baseini/examples/test.ini
+6. git add ../services/docs/commands.txt
+7. git add ../services/docs/links.txt
+8. git add ../services/docs/run_code_logic.txt
+9. git add ../services/docs/xml_req_structure.txt
+10. git add ../services/pocs/libxml4.c
+11. git add ../services/pocs/testxml.c
+12. git add files_to_commit.txt
+
+=========================================
+Friday, May 31, 2019, 13:51 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add files_to_commit.txt
+
+=========================================
+Friday, May 31, 2019, 23:45 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add files_to_commit.txt
+
+=========================================
+Saturday, June 01, 2019, 00:11 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add ../services/lib/baseini/liteini.h
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, June 04, 2019, 02:19 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add ../services/lib/baseini/liteini.h
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, June 04, 2019, 02:54 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add ../services/lib/baseini/liteini.h
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, June 04, 2019, 11:36 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add ../services/lib/baseini/liteini.h
+3. git add files_to_commit.txt
+
+=========================================
+Wednesday, June 05, 2019, 00:22 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add ../services/lib/baseini/liteini.h
+3. git add files_to_commit.txt
+
+=========================================
+Thursday, June 06, 2019, 01:14 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add ../services/lib/baseini/liteini.h
+3. git add ../services/lib/baseini/examples/test.ini
+4. git add ../services/lib/baseini/samples/main.c
+5. git add files_to_commit.txt
+
+=========================================
+Thursday, June 06, 2019, 03:17 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add ../services/conf/listener.ini
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, June 08, 2019, 14:37 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/skills_settings.py
+4. git add skillstest/urls.py
+5. git add ../services/listener.c
+6. git add ../services/conf/listener.ini
+7. git add files_to_commit.txt
+
+=========================================
+Saturday, June 08, 2019, 15:35 HRS.
+-----------------------------------------
+1. git add templates/tests/create_test_form.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/models.py
+5. git add skillstest/Tests/views.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
+
+=========================================
+Saturday, June 08, 2019, 23:37 HRS.
+-----------------------------------------
+1. git add templates/tests/create_test_form.html
+2. git add templates/tests/edit_challenge.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/models.py
+5. git add skillstest/Tests/views.py
+6. git add templates/tests/challenge_user_view.html
+7. git add templates/tests/test_wrapper.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add files_to_commit.txt
+
+=========================================
+Sunday, June 09, 2019, 00:30 HRS.
+-----------------------------------------
+1. git add ../services/lib/baseini/liteini.c
+2. git add files_to_commit.txt
+
+=========================================
+Monday, June 11, 2019, 01:23 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add ../services/conf/listener.ini
+3. git add ../services/lib/baseini/liteini.c
+4. git add ../services/lib/baseini/liteini.h
+5. git add files_to_commit.txt
+
+=========================================
+Monday, June 11, 2019, 02:53 HRS.
+-----------------------------------------
+1. git add ../services/listener.c
+2. git add files_to_commit.txt
+
+=========================================
+Tuesday, June 25, 2019, 02:31 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/test_wrapper.html
+3. git add files_to_commit.txt
+
+=========================================
+Tuesday, June 25, 2019, 03:35 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+Tuesday, June 25, 2019, 03:35 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/errors.py
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, June 29, 2019, 03:37 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+=========================================
+Monday, July 01, 2019, 03:06 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+Thursday, July 04, 2019, 02:30 HRS.
+-----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/Tests/models.py
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add files_to_commit.txt
+
+=========================================
+Thursday, July 11, 2019, 03:40 HRS.
+-----------------------------------------
+1. git add static/mathkbd_response.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Network/views.py
+4. git add skillstest/Network/models.py
+5. git add templates/network/network.html
+6. git add templates/network/managegroups.html
+7. git add files_to_commit.txt
+
+=========================================
+Thursday, July 11, 2019, 20:29 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/invitecandidatesform.html
+4. git add files_to_commit.txt
+
+=========================================
+Thursday, July 11, 2019, 20:47 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+Friday, July 12, 2019, 14:09 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/invitecandidatesform.html
+4. git add files_to_commit.txt
+
+=========================================
+Saturday, July 13, 2019, 01:12 HRS
+-----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add templates/tests/manageinvitations.html
+4. git add files_to_commit.txt
+
+=========================================
+Saturday, July 13, 2019, 13:51 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, July 13, 2019, 15:27 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/create_test_form.html
+4. git add files_to_commit.txt
+
+=========================================
+Monday, July 15, 2019, 03:08 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+Wednesday, July 17, 2019, 08:56 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add static/math_translator.html
+3. git add files_to_commit.txt
+
+=========================================
+Wednesday, July 17, 2019, 15:01 HRS.
+-----------------------------------------
+1. git add skillstest/urls.py
+2. git add skillstest/skills_settings.py
+3. git add skillstest/Network/views.py
+4. git add templates/network/network.html
+5. git add templates/network/groupprofilepage.html
+6. git add files_to_commit.txt
+
+=========================================
+Friday, July 19, 2019, 19:40 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add templates/network/network.html
+3. git add skillstest/urls.py
+4. git add skillstest/skills_settings.py
+5. git add templates/network/groupprofilepage.html
+6. git add files_to_commit.txt
+
+=========================================
+Friday, July 19, 2019, 19:40 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add templates/network/postslist.html
+3. git add files_to_commit.txt
+
+=========================================
+Saturday, July 20, 2019, 01:35 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/Network/views.py
+3. git add templates/network/ownedgrps.html
+4. git add templates/network/manageownedgroups.html
+5. git add files_to_commit.txt
+
+=========================================
+Monday, July 22, 2019, 22:35 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/urls.py
+3. git add skillstest/skills_settings.py
+4. git add skillstest/Network/views.py
+5. git add skillstest/Network/models.py
+6. git add templates/subscription/withdrawalscreen.html
+7. git add templates/network/payu_payment.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add skillstest/Network/tasks.py
+11.git add skillstest/Network/management/commands/get_exchange_rates.py
+12.git add files_to_commit.txt
+
+=========================================
+Thursday, August 01, 2019, 02:01 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/Network/views.py
+3. git add skillstest/Subscription/views.py
+4. git add templates/subscription/withdrawalscreen.html
+5. git add skillstest/skills_settings.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add skillstest/Network/models.py
+9. git add templates/network/wepayauthorize.html
+10.git add templates/network/payu_payment.html
+11.git add skillstest/urls.py
+12.git add files_to_commit.txt
+
+=========================================
+Monday, August 05, 2019, 01:50 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add skillstest/Network/models.py
+3. git add skillstest/Subscription/views.py
+4. git add skillstest/Subscription/models.py
+5. git add templates/network/network.html
+6. git remove templates/network/wepayauthorize.html
+7. git add templates/subscription/withdrawalscreen.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add skillstest/skills_settings.py
+11.git add skillstest/urls.py
+12.git add files_to_commit.txt
+
+=========================================
+Thursday, August 08, 2019, 06:23 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add skillstest/Network/models.py
+3. git add skillstest/Subscription/views.py
+4. git add skillstest/Subscription/models.py
+5. git add templates/network/network.html
+6. git add templates/network/wepayauthorize.html
+7. git add templates/subscription/withdrawalscreen.html
+8. git add db.sql
+9. git add db_02_02_2015.sql
+10.git add skillstest/skills_settings.py
+11.git add skillstest/urls.py
+12.git add files_to_commit.txt
+
+=========================================
+Sunday, September 01, 2019, 22:59 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/Tests/models.py
+3. git add templates/tests/tests.html
+4. git add templates/network/wepayauthorize.html
+5. git add skillstest/skills_settings.py
+6. git add skillstest/urls.py
+7. git add db.sql
+8. git add db_02_02_2015.sql
+9. git add skillstest/Network/views.py
+10.git add skillstest/Network/models.py
+11.git add skillstest/utils.py
+12.git add files_to_commit.txt
+
+=========================================
+Friday, April 10, 2020, 10:45 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add files_to_commit.txt
+
+=========================================
+Sunday, April 12, 2020, 17:15 HRS.
+-----------------------------------------
+=========================================
+Friday, April 10, 2020, 10:45 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/skills_settings.py
+3. git add skillstest/urls.py
+4. git add files_to_commit.txt
+
+=========================================
+Friday, April 24, 2020, 23:42 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add files_to_commit.txt
+
+=========================================
+
+Sunday, June 21, 2020, 06:03 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+
+Tuesday, June 23, 2020, 20:28 HRS.
+-----------------------------------------
+1. git add templates/network/managegroups.html
+2. git add templates/network/network.html
+3. git add skillstest/Network/views.py
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add skillstest/Network/models.py
+9. git add files_to_commit.txt
+
+=========================================
+
+Tuesday, June 23, 2020, 21:10 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add skillstest/Network/views.py
+3. git add templates/network/stripe_payment.html
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add static/css/main.css
+7. git add files_to_commit.txt
+
+=========================================
+
+Friday, June 26, 2020, 17:49 HRS.
+-----------------------------------------
+1. git add templates/network/manageownedgroups.html
+2. git add skillstest/Network/views.py
+3. git add templates/network/stripe_payment.html
+4. git add templates/network/network.html
+5. git add skillstest/utils.py
+5. git add files_to_commit.txt
+
+=========================================
+
+Friday, June 26, 2020, 21:35 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add templates/network/stripe_payment.html
+3. git add templates/network/network.html
+4. git add skillstest/skills_settings.py
+5. git add skillstest/urls.py
+6. git add db.sql
+7. git add db_02_02_2015.sql
+8. git add templates/network/managegroups.html
+9. git add files_to_commit.txt
+
+=========================================
+
+Tuesday, June 30, 2020, 06:10 HRS.
+-----------------------------------------
+1. git add templates/network/network.html
+2. git add templates/network/stripe_payment.html
+3. git add db.sql
+4. git add db_02_02_2015.sql
+5. git add skillstest/Network/views.py
+6. git add skillstest/Network/models.py
+7. git add skillstest/Subscription/models.py
+8. git add templates/network/groupprofilepage.html
+9. git add skillstest/skills_settings.py
+10.git add files_to_commit.txt
+
+=========================================
+
+Tuesday, June 30, 2020, 09:58 HRS.
+-----------------------------------------
+1. git add skillstest/Network/views.py
+2. git add skillstest/Network/models.py
+3. git add db.sql
+4. git add db_02_02_2015.sql
+5. git add templates/network/network.html
+6. git add templates/subscription/withdrawalscreen.html
+7. git add templates/network/stripe_payment.html
+
+=========================================
+
+Thursday, September 09, 2020, 09:33 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add files_to_commit.txt
+
+=========================================
+
+Wednesday, September 23, 2020, 03:41 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/tasks.py
+4. git add files_to_commit.txt
+
+=========================================
+
+Wednesday, September 23, 2020, 03:41 HRS.
+-----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+
+=========================================
+
+Wednesday, September 23, 2020, 21:45 HRS.
+-----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+========================================
+
+Thursday, September 24, 2020, 03:21 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+========================================
+
+Thursday, September 24, 2020, 3:24 HRS.
+----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+
+========================================
+
+Friday, September 25, 2020, 00:56 HRS.
+----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+
+========================================
+
+Saturday, September 26, 2020, 20:29 HRS.
+----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/challenge_user_view.html
+5. git add files_to_commit.txt
+
+========================================
+
+Monday, September 28, 2020, 17:38 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+
+========================================
+
+Thursday, October 08, 2020, 01:47 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/create_interview_form.html
+4. git add files_to_commit.txt
+
+========================================
+
+Thursday, October 08, 2020, 19:57 HRS.
+---------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/create_interview_form.html
+4. git add files_to_commit.txt
+
+========================================
+
+Saturday, October 10, 2020, 02:11 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/create_interview_form.html
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+
+========================================
+
+Sunday, October 11, 2020, 19:30 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/create_interview_form.html
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+
+========================================
+
+Sunday, October 11, 2020, 19:30 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/create_interview_form.html
+3. git add templates/tests/tests.html
+4. git add templates/tests/audiovisual.html
+5. git add templates/tests/invitecandidatesform.html
+6. git add files_to_commit.txt
+
+========================================
+
+Tuesday, October 13, 2020, 00:21 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/audiovisual.html
+3. git add templates/tests/create_interview_form.html
+4. git add templates/tests/tests.html
+5. git add files_to_commit.txt
+========================================
+
+Tuesday, October 13, 2020, 17:46 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+========================================
+
+Wednesday, October 14, 2020, 18:01 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+========================================
+
+Sunday, October 18, 2020, 02:07 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add templates/tests/create_test_form.html
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+========================================
+
+Monday, October 19, 2020, 00:33 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+========================================
+
+Monday, October 19, 2020, 12:47 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+========================================
+
+Tuesday, October 20, 2020, 02:24 HRS.
+----------------------------------------
+1. git add templates/tests/getscheduleinfo.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+========================================
+
+Friday, October 30, 2020, 00:47 HRS.
+----------------------------------------
+1. git add skillstest/Tests/views.py
+2. git add skillstest/Analytics/views.py
+3. git add ../internet_code_sources.txt
+4. git add ../Steps_to_install_mysql_5.5.txt
+5. git add files_to_commit.txt
+========================================
+
+Friday, October 30, 2020, 00:47 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+========================================
+
+Friday, October 30, 2020, 22:40 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/tests.html
+3. git add skillstest/skills_settings.py
+4. git add files_to_commit.txt
+========================================
+
+Sunday, November 01, 2020, 01:41 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/test_wrapper.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+========================================
+
+Wednesday, November 04, 2020, 06:23 HRS.
+----------------------------------------
+1. git add templates/tests/invitecandidatesform.html
+2. git add templates/tests/test_wrapper.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+========================================
+
+Monday, November 09, 2020, 16:01 HRS.
+----------------------------------------
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/test_wrapper.html
+4. git add files_to_commit.txt
+========================================
+
+Tuesday, November 10, 2020, 14:04 HRS.
+----------------------------------------
+1. git add static/css/jquery.datetimepicker.css
+2. git add static/css/font_awesome_min.css
+3. git add static/webaudiovisual/jquery-ui.min.js
+4. git add static/webaudiovisual/jquery.min.js
+5. git add static/MathJax/*
+6. git add ../Notes_for_DO_install.txt
+7. git add skillstest/Tests/views.py
+8. git add files_to_commit.txt
+========================================
+
+Friday, November 13, 2020, 00:20 HRS.
+----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+========================================
+
+Friday, November 13, 2020, 17:14 HRS.
+----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+========================================
+
+Monday, November 16, 2020, 23:24 HRS.
+----------------------------------------
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+========================================
+
+Tuesday, November 17, 2020, 03:59 HRS.
+----------------------------------------
+
+1. git add templates/tests/edit_challenge.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add skillstest/skills_settings.py
+5. git add files_to_commit.txt
+========================================
+Friday, November 27, 2020, 20:48 HRS.
+----------------------------------------
+
+1. git add templates/tests/edit_challenge.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add skillstest/skills_settings.py
+5. git add files_to_commit.txt
+========================================
+Friday, November 27, 2020, 23:18 HRS.
+----------------------------------------
+
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/invitecandidatesform.html
+3. git add templates/tests/tests.html
+4. git add templates/tests/create_test_form.html
+5. git add files_to_commit.txt
+========================================
+Saturday, November 28, 2020, 11:27 HRS.
+----------------------------------------
+
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/test_wrapper.html
+4. git add files_to_commit.txt
+========================================
+Tuesday, December 01, 2020, 20:00 HRS.
+----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+========================================
+Friday, December 04, 2020, 23:25 HRS.
+----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/skills_settings.py
+4. git add files_to_commit.txt
+========================================
+Saturday, December 05, 2020, 03:04 HRS.
+----------------------------------------
+
+1. git add skillstest/Tests/views.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/invitecandidatesform.html
+4. git add skillstest/skills_settings.py
+5. git add templates/tests/test_wrapper.html
+6. git add node_modules/basic_video_call.html
+7. git add skillstest/skills_settings.py
+8. git add node_modules/signal_server.js
+9. git add templates/tests/audiovisual.html
+10.git add skillstest/tests/tests.html
+11.git add templates/tests/audiovisual_multi.html
+6. git add files_to_commit.txt
+========================================
+Saturday, December 05, 2020, 07:14 HRS.
+----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add node_modules/signal_server.js
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/tests.html
+5. git add files_to_commit.txt
+=========================================
+Wednesday, December 09, 2020, 15:00 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/Tests/tasks.py
+4. git add templates/tests/test_wrapper.html
+5. git add files_to_commit.txt
+=========================================
+Saturday, December 12, 2020, 11:54 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/Tests/tasks.py
+4. git add templates/tests/test_wrapper.html
+5. git add files_to_commit.txt
+=========================================
+Sunday, December 13, 2020, 23:59 HRS.
+-----------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add skillstest/Tests/views.py
+3. git add skillstest/Tests/tasks.py
+4. git add templates/tests/test_wrapper.html
+5. git add files_to_commit.txt
+=========================================
+Thursday, December 17, 2020, 03:03 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/tasks.py
+5. git add files_to_commit.txt
+==========================================
+Friday, December 18, 2020, 04:41 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/tasks.py
+3. git add files_to_commit.txt
+==========================================
+Saturday, December 19, 2020, 23:56 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/tasks.py
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+==========================================
+Sunday, December 20, 2020, 02:43 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+==========================================
+Sunday, December 20, 2020, 04:04 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+==========================================
+Sunday, December 20, 2020, 14:30 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/tests.html
+3. git add files_to_commit.txt
+==========================================
+Monday, December 24, 2020, 04:00 HRS.
+-----------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add templates/tests/evaluate_responses.html
+3. git add templates/tests/tests.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+==========================================
+Wednesday, December 30, 2020, 01:19 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+==========================================
+Wednesday, December 30, 2020, 23:07 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+==========================================
+Thursday, December 31, 2020, 00:56 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+==========================================
+Sunday, January 03, 2021, 03:00 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add files_to_commit.txt
+==========================================
+Tuesday, January 05, 2021, 21:41 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add templates/tests/tests.html
+4. git add skillstest/urls.py
+5. git add files_to_commit.txt
+==========================================
+Wednesday, January 06, 2021, 21:17 HRS.
+------------------------------------------
+
+1. git add templates/tests/tests.html
+2. git add templates/tests/test_wrapper.html
+3. git add skillstest/Tests/views.py
+4. git add skillstest/skills_settings.py
+5. git add files_to_commit.txt
+==========================================
+Tuesday, January 12, 2021, 22:59 HRS.
+------------------------------------------
+
+1. git add templates/user/profile.html
+2. git add templates/tests/tests.html
+3. git add skillstest/Tests/views.py
+4. git add templates/tests/test_wrapper.html
+5. git add files_to_commit.txt
+==========================================
+Tuesday, January 19, 2021, 22:15 HRS.
+------------------------------------------
+
+1. git add skillstest/errors.py
+2. git add templates/tests/tests.html
+3. git add templates/tests/test_wrapper.html
+4. git add skillstest/Tests/views.py
+5. git add files_to_commit.txt
+==========================================
+Wednesday, January 27, 2021, 23:31 HRS. - Improved UI Changes.
+------------------------------------------
+
+1. git add static/images/bg2.jpg
+2. git add static/images/meeting.png
+3. git add static/images/upload.png
+4. git add static/images/newTest.png
+5. git add static/css/styles.css
+6. git add templates/inc/html_head.html
+7. git add templates/authentication/login.html
+8. git add templates/authentication/newuser.html
+9. git add templates/inc/mission_statement.html
+10.git add templates/inc/right_panel.html
+11.git add templates/user/profile.html
+12.git add templates/tests/invitecandidatesform.html
+13.git add templates/tests/tests.html
+14.git add files_to_commit.txt
+==========================================
+Thursday, January 28, 2021, 00:15 HRS.
+------------------------------------------
+
+1. git add templates/authentication/login.html
+2. git add templates/authentication/newuser.html
+3. git add files_to_commit.txt
+==========================================
+Thursday, January 28, 2021, 11:35 HRS.
+------------------------------------------
+
+1. git add static/css/style.css
+2. git add templates/inc/html_head.html
+3. git add templates/authentication/login.html
+4. git add templates/authentication/newuser.html
+5. git add files_to_commit.txt
+==========================================
+Saturday, February 13, 2021, 00:49 HRS.
+------------------------------------------
+
+git remote add testyard https://github.com/supmit13/testyard.git
+git push --set-upstream testyard master
+
+1. git add static/images/profile.png
+2. git add skillstest/utils.py
+3. git add skillstest/Tests/views.py
+4. git add files_to_commit.txt
+==========================================
+Friday, February 19, 2021, 00:58 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+==========================================
+Monday, March 01, 2021, 23:23 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+==========================================
+Monday, March 01, 2021, 23:47 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+==========================================
+Tuesday, March 02, 2021, 00:54 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Tests/views.py
+3. git add files_to_commit.txt
+==========================================
+Thursday, March 04, 2021, 23:10 HRS.
+------------------------------------------
+
+1. git add templates/analytics/analytics.html
+2. git add skillstest/Analytics/views.py
+3. git add skillstest/views.py
+4. git add files_to_commit.txt
+==========================================
+Friday, March 05, 2021, 01:09 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+==========================================
+Saturday, March 06, 2021, 23:36 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+==========================================
+Sunday, March 07, 2021, 00:11 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add files_to_commit.txt
+==========================================
+Tuesday, March 09, 2021, 02:26 HRS.
+------------------------------------------
+
+1. git add templates/tests/test_wrapper.html
+2. git add skillstest/Network/views.py
+3. git add templates/subscription/withdrawalscreen.html
+4. git add static/images/networkgroup_32.png
+5. git add files_to_commit.txt
+==========================================
+Tuesday, March 09, 2021, 02:26 HRS.
+------------------------------------------
+
+1. git add skillstest/utils.py
+2. git add skillstest/Network/views.py
+3. git add templates/subscription/withdrawalscreen.html
+4. git add files_to_commit.txt
+==========================================
+Monday, March 15, 2021, 01:00 HRS.
+------------------------------------------
+
+1. git add skillstest/utils.py
+2. git add skillstest/Network/views.py
+3. git add templates/subscription/withdrawalscreen.html
+4. git add files_to_commit.txt
+==========================================
+Wednesday, March 17, 2021, 22:33 HRS.
+------------------------------------------
+
+1. git add skillstest/Network/views.py
+2. git add files_to_commit.txt
+==========================================
+Wednesday, March 17, 2021, 22:40 HRS.
+------------------------------------------
+
+1. git add skillstest/Network/views.py
+2. git add files_to_commit.txt
+==========================================
+Monday, March 27, 2021, 13:26 HRS.
+------------------------------------------
+
+1. git add templates/subscription/withdrawalscreen.html
+2. git add files_to_commit.txt
+==========================================
+
+

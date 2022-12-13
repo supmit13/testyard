@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script type="text/javascript" src="mathlib/math.min.js"></script>
+<script type="text/javascript" async src="MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+MathJax.Hub.Config({
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX","output/HTML-CSS"],
+    tex2jax: {inlineMath: [["\\[", "\\]"], ["\[", "\]"]]}
+});
+</script>
+
+<script>
+
+function saveContents(){
+    mathexprdiv = document.getElementById('mathexpr');
+    mathcontents = mathexprdiv.innerHTML;
+    testdivelem = document.getElementById('testdiv');
+    testdivelem.innerHTML = mathcontents;
+    //alert(mathcontents);
+}
+
+
+function displayMathExpr(){
+    start_square_bracket_pattern = new RegExp("^\\[");
+    end_square_bracket_pattern = new RegExp("\\]$");
+    txtContents = document.frm_translator.txtexpression.value;
+    //if(!start_square_bracket_pattern.test(txtContents)){
+    //    txtContents = "\\[" + txtContents;
+    //}
+    //if(!end_square_bracket_pattern.test(txtContents)){
+    //    txtContents = txtContents + "\\]";
+    //}
+    //alert(txtContents);
+    mathexprdiv = document.getElementById('mathexpr');
+    mathexprdiv.innerHTML = txtContents; 
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprdiv]);
+    //alert(mathexprdiv.innerHTML);
+}
+
+// Extracting the value of cctr from the query string. 
+// Then loading the contents of the response div into
+// the textarea on this page.
+function loadMatExprAnswer(){
+    var cctr = window.location.search; // Get query string
+    
+    cctrparts = cctr.split("=");
+    if(cctrparts.length > 1){ // We are interested in the second element only.
+        cctr = cctrparts[1];
+        var parentdivtag = window.opener.document.getElementById('mathexprcdusvwcndtresp_' + cctr.toString());
+        var responsecontent = parentdivtag.innerHTML;
+        //alert(responsecontent);
+        // Remove square brackets from the ends of the LaTeX expressions.
+        //openingBrackets = new RegExp('^\s*\\[');
+        //closingBrackets = new RegExp('\\]\s*$')
+        //responsecontent = responsecontent.replace(openingBrackets, "");
+        //responsecontent = responsecontent.replace(closingBrackets, "");
+        document.frm_translator.txtexpression.value = responsecontent;
+        displayMathExpr(); // Works fine. ++supriyo
+    }
+}
+
+</script>
+
+
+</head>
+
+<body onload='javascript:loadMatExprAnswer();'>
+<form name='frm_translator' action='' method='POST'>
+<p>
+<font color='#0000AA' style="font-weight:bold">Enter LaTex Expression Here:<br /> </font>
+<textarea name='txtexpression' rows='8' cols='20'></textarea>
+<br />
+
+<br />
+<input type='button' name='btnconvertstrtomath' value='Convert to Math Expression' onClick='javascript:displayMathExpr();'>
+</p>
+
+<span id='mathexpr'>
+</span> 
+
+</body>
+</html>
+

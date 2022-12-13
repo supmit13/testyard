@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="utf-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width">
+<title>Countdown</title>
+
+<link rel="stylesheet" type="text/css" href="css/style.css">
+
+<script src="js/circle.min.js"></script>
+<script src="js/stopwatch.min.js"></script>
+
+<script src="js/main.js"></script>
+
+</head>
+<body>
+
+<svg class="defs" style="display:none;">
+<defs>
+
+<path id="pause-button-shape"  d="M12,0 C5.35,0,0,5.35,0,12 s5.35,12,12,12s12-5.35,12-12S1.75,0,12,0z M10.5,16.5.032c0,1.101-.88,2-1.8,2
+
+s-1.85-.95-1.75-2V7.8c0-1.5,.85-2,1.75-2s1.75,.9,1.75,2V16.5z M17.25,16.35c0,1.1-.85,2-1.75,2
+		
+s-1.75-.85-1.75-2V7.9c0-1.85,.85-2,1.75-2s1.75,.90,1.75,2V16.5z"/>
+
+
+<path id="play-button-shape"  d="M24,0C10.745,0,0,10.745,0,24s10.745,24,24,24s24-10.745,24-24S37.255,0,24,0z M31.672,26.828l-9.344,9.344
+C20.771,37.729,19.5,37.2,19.5,35V13c0-2.2,1.271-2.729,2.828-1.172l9.344,9.344C33.229,22.729,33.229,25.271,31.672,26.828z"/>
+
+
+<path id="stop-button-shape" d="M0 499.968q0 -207.018 146.475 -353.493t353.493 -146.475 353.493 146.475 146.475 353.493 -146.475 353.493 -353.493 146.475 -353.493 -146.475 -146.475 -353.493zm249.984 249.984l499.968 0l0 -499.968l-499.968 0l0 499.968z"/>
+
+</defs>
+</svg>
+
+<div class="watch-wrapper">
+<div class="watch" id="mywatch">
+
+</div>
+</div>
+
+<div class="controls" style="">
+<div>
+<a href='#/' onClick="javascript:startWatch();">Start</a>&nbsp;&nbsp;<a href='#/' onClick="javascript:pauseWatch();">Pause</a>&nbsp;&nbsp;<a href='#/' onClick="javascript:resetWatch();">Stop</a>
+</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>Test Id: {{testid}}</title>
+
+	{% load extratemptags %}
+
+	<script type='text/javascript'>
+	function displayMathExprEvalRespView(countresp){
+	    for(i=1; i < countresp; i++){
+		mathexprcndtrespdiv = document.getElementById("mathexprcdusvwcndtresp_" + i.toString());
+		mathexprcndtrespdiv.visibility = "hidden";
+		mathrespcontent = mathexprcndtrespdiv.innerHTML;
+		mathexprcndtrespdiv.innerHTML = mathrespcontent;
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub, mathexprcndtrespdiv]);
+		mathexprcndtchlngdiv = document.getElementById("mathexprcdusvwcndtch_" + i.toString());
+		mathexprcndtchlngdiv.visibility = "hidden";
+		mathexprcontent = mathexprcndtchlngdiv.innerHTML;
+		mathexprcndtchlngdiv.innerHTML = mathexprcontent;
+		MathJax.Hub.Queue(["Typeset", MathJax.Hub, mathexprcndtchlngdiv]);
+	    }
+	}
+	</script>
+
+</head>
+
+<body bgcolor="#669999"><h3>User's Responses</h3><br /><br /><form name="frmevalresp" method="POST" onmousemove="javascript:displayMathExprEvalRespView({{maxctr}});">
+<input type='hidden' name='testid' id='testid' value='{{testid}}'>
+<input type='hidden' name='emailid' id='emailid' value='{{emailid}}'>
+<input type='hidden' name='tabref' id='tabref' value='{{responsedata.tabref}}'>
+<input type='hidden' name='tabid' id='tabid' value='{{responsedata.tabid}}'>
+{% csrf_token %}
+		    
+		    {% cctr = 1 %}
+		    {% screen_deviation_count = 0  %}
+		    for (challenge in candidateresponse){
+		        <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}</div></pre></b></div>
+		        <input type='hidden' name='challengestatement_hidden' id='challengestatement_hidden' value='{{challenge}}'>
+			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
+			candidateresp = candidateresponse[challenge].answer;
+			<!-- <script type='text/javascript'>
+			var separatorPattern = new RegExp("#||#");
+			if(separatorPattern.test(candidateresp)){
+			    candidateresp = candidateresp.replace("#||#", ", ");
+			}
+			candidaterespdecoded = decodeURIComponent(candidateresp);
+			-->
+			<br /><br /><b>Candidate's Response: </b><pre><div id="mathexprcdusvwcndtresp_{{cctr}}">{{candidateresp}}</div></pre>
+			
+			<br /><br /><b>Max Score: </b>{{candidateresponse[challenge].maxscore}}
+
+			<br /><br /><b>Negative Score: </b>{{candidateresponse[challenge].negativescore}}
+			<input type='hidden' name='maxscore_{{cctr}}' id='maxscore_{{cctr}}' value='{{candidateresponse[challenge].maxscore }}'>
+			<input type='hidden' name='negativescore_{{cctr}}' id='negativescore_{{cctr}}' value='{{candidateresponse[challenge].negativescore}}'>
+			<!-- correctanswer = decodeURIComponent(candidateresponse[challenge].correctanswer); -->
+			{% correctanswer = candidateresponse[challenge].correctanswer %}
+			{% if !correctanswer
+			    correctanswer = 'Not Available';
+			endif  %}
+			<!-- correctanswer = correctanswer.replace("#||#", ", "); -->
+			<br /><br /><b>Correct Answer: </b>{{correctanswer}}
+			{% if evalcommitstate == false %}
+			    <br /><br /><b>Assessment: </b><input type='text' name='assessment_{{cctr}}' id='assessment_{{cctr}}' value='{{candidateresponse[challenge].evaluation}}'>
+			    <!-- <br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_{{cctr}}' id='evalcomment_{{cctr}}' rows=10 cols=40>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>"; -->
+			    <br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_{{cctr}}' id='evalcomment_{{cctr}}' rows=10 cols=40>{{candidateresponse[challenge].evaluatorremarks}}</textarea>
+			{% else %}
+			    <br /><br /><b>Assessment: </b><input type='text' name='assessment_{{cctr}}' id='assessment_{{cctr}}' value='{{candidateresponse[challenge].evaluation}}' disabled>
+			    <!-- <br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_{{cctr}}' id='evalcomment_{{cctr}}' rows=10 cols=40 disabled>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>"; -->
+			    <br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_{{cctr}}' id='evalcomment_{{cctr}}' rows=10 cols=40 disabled>{{candidateresponse[challenge].evaluatorremarks}}</textarea>
+			{% endif %}
+			<input type='hidden' name='challengeid_{{cctr}}' id='challengeid_{{cctr}}' value='{{candidateresponse[challenge].challengeid}}'>
+			<br /><br /><hr>
+			{%screen_deviation_count = candidateresponse[challenge].windowchangeattempts %}
+			{% cctr = cctr + 1 %}
+		    }
+		    <div style="font-color:'#0000CC';font-style:italic;">Candidate has deviated from the test screen {{screen_deviation_count}} times</div>
+		    <input type='hidden' name='maxcctr' id='maxcctr' value='{{cctr}}'>
+		    <!-- <textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />"; -->
+		    <textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>{{responsedata.evaltestcomment}}</textarea><br /><br />
+		    {% if evalcommitstate == false %}
+		        <b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1'><br /><br />
+		    {% else %}
+			<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />
+		    {% endif %}
+		    {% if evalcommitstate == false %}
+		        <input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>
+		    {% endif %}
+		    <input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>
+		    </form>
+                    
+		    </body></html>
+    
+
+
+

@@ -1,0 +1,250 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<!-- <link rel="stylesheet" type="text/css" href="static/css/style.css" /> -->
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+
+
+<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+<script language='JavaScript'>
+
+function checkavailability(){
+    var username = document.registerform.username.value.trim();
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    // Register the handler
+    xmlhttp.onreadystatechange = function(){
+    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+       if(xmlhttp.responseText == '0'){
+	//alert("The chosen username is not available");
+	document.getElementById('checkuser').innerHTML = "<font color='#DD0000' size=-2>This username is already taken. Please choose another one.</font>";
+	document.registerform.username.focus();
+	document.registerform.username.selected = true;
+       }
+       else{
+	//alert("The chosen username is available");
+	document.getElementById('checkuser').innerHTML = "<font color='#0000DD' size=-2>Available for use.</font>";
+       }
+    }
+    };
+    var availabilityURL = "{{hosturl}}/{{ availabilityURL }}?username=" + username;
+    xmlhttp.open("GET",availabilityURL,true); // Make it an ajax call.
+    xmlhttp.send();
+}
+
+function validate_regdata(){
+  if(document.registerform.username.value.trim() == ""){
+    alert("Username cannot be empty.");
+    document.registerform.username.focus();
+    return false;
+  }
+  if(document.registerform.password.value.trim() == "" || document.registerform.password2.value.trim() == ""){
+    alert("Password fields cannot be empty.");
+    document.registerform.password.focus();
+    return false;
+  }
+  if(document.registerform.password.value.trim() != document.registerform.password2.value.trim()){
+    alert("Mismatch in the 2 password fields.");
+    document.registerform.password2.focus();
+    return false;
+  }
+  if(document.registerform.email.value.trim() == ""){
+    alert("Email cannot be empty.");
+    document.registerform.email.focus();
+    return false;
+  }
+  if(!validate_email(document.registerform.email.value.trim())){
+    alert("Please enter a valid email Id.");
+    document.registerform.email.focus();
+    return false;
+  }
+  if(document.registerform.firstname.value.trim() != "" && !check_name(document.registerform.firstname.value.trim())){
+    alert("Names may contain alphabets only. Numbers and special characters not allowed.");
+    document.registerform.firstname.focus();
+    return false;
+  }
+  if(document.registerform.lastname.value.trim() != "" && !check_name(document.registerform.lastname.value.trim())){
+    alert("Names may contain alphabets only. Numbers and special characters not allowed.");
+    document.registerform.lastname.focus();
+    return false;
+  }
+  if(document.registerform.middlename.value.trim() != "" && !check_name(document.registerform.middlename.value.trim())){
+    alert("Names may contain alphabets only. Numbers and special characters not allowed.");
+    document.registerform.middlename.focus();
+    return false;
+  }
+  if(document.registerform.mobilenum.value.trim() != "" && !validate_phonenum(document.registerform.mobilenum.value.trim())){
+    alert("Mobile number may contain digits only.");
+    document.registerform.mobilenum.focus();
+    return false;
+  }
+  return true;
+}
+
+function process_register(){
+  var val = validate_regdata();
+  if(!val){
+    return false;
+  }
+  document.registerform.username.value = document.registerform.username.value.trim();
+  document.registerform.password.value = document.registerform.password.value.trim();
+  document.registerform.password2.value = document.registerform.password2.value.trim();
+  document.registerform.email.value = document.registerform.email.value.trim();
+  document.registerform.firstname.value = document.registerform.firstname.value.trim();
+  document.registerform.lastname.value = document.registerform.lastname.value.trim();
+  document.registerform.middlename.value = document.registerform.middlename.value.trim();
+  document.registerform.mobilenum.value = document.registerform.mobilenum.value.trim();
+  if(check_passwd_strength(document.registerform.password.value) < {{ min_passwd_strength }}){
+    return false;
+  }
+  document.registerform.submit();
+  return true; // will never come to this line.
+}
+
+function clear_all(){
+    document.registerform.username.value = "";
+    document.registerform.password.value = "";
+    document.registerform.password2.value = "";
+    document.registerform.email.value = "";
+    document.registerform.firstname.value = "";
+    document.registerform.lastname.value = "";
+    document.registerform.middlename.value = "";
+    document.registerform.mobilenum.value = "";
+    return true;
+}
+</script>
+</head>
+<body>
+
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p>
+
+		<!-- ### Top Menu ### -->
+
+		<div id="topmenu">
+		<ul>
+			<li><a href="{{ profile_url }}"{{ select_profile }}>Profile</a></li>	
+			<!-- <li><a href="{{ dashboard_url }}"{{ select_dashboard }}>Dashboard</a></li>	 -->
+			<!-- <li><a href="{{ subscription_url }}"{{ select_subscription }}>Subscriptions</a></li> -->	
+			<li><a href="{{ tests_url }}"{{ select_tests }}>Tests</a></li>	
+			<li><a href="{{ search_url }}"{{ select_search }}>Search</a></li>
+			<li><a href="{{ network_url }}"{{ select_socnet }}>Network</a></li>
+			<li><a href="{{ analytics_url }}"{{ select_analytics }}>Analytics</a></li>
+			<li><a href="{{ aboutus_url }}"{{ select_aboutus }}>About Us</a></li>
+			<li><a href="{{ helpndoc_url }}"{{ select_helpndoc }}>Help</a></li>
+			<li><a href="{{ careers_url }}"{{ select_careers }}>Careers</a></li>	
+		</ul>	
+		</div>
+
+	</div>
+	
+	<div id="contentcontainer">
+	
+		<div id="content">
+
+		<!-- ### Post Entry Begin ###  -->
+		
+		<div class="post">
+			
+			<h2>Welcome to TestYard - </h2><h3> {{ curdate }}
+			
+			
+			<div class="entry">
+			
+			<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
+			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>
+			<blockquote><p>Check our Android&#8482; and iOS&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
+			<p></p>
+			
+			</div>
+		
+		</div>
+
+		<!-- ### Post Entry End ### -->
+
+		<!-- ### Post Entry Begin ###  -->
+
+		<div class="post">
+			<span class="meta">
+			<h3>Register below&nbsp;&nbsp; |&nbsp;&nbsp; <font>Already a user?&nbsp;&nbsp;</font> <a href='{{ login_url }}'>Sign in here</a></h3>
+			{{ msg }}
+			<div class="entry">
+
+			<form name='registerform' method='POST' action="{{ register_url }}" enctype='multipart/form-data'>
+			<b>*Username or Display Name: </b><input type='text' name='username' id='username' value='{{ username }}' onblur='javascript:checkavailability();'  class='glowing-border glob-input'><span id='checkuser'></span><br />
+			<b>*Password: </b><input type='password' name='password' value='{{ password }}'  class='glowing-border glob-input'><br />
+			<b>*Confirm Password: </b><input type='password' name='password2' value='{{ password2 }}' class='glowing-border glob-input'><br />
+			<b>*Email: </b><input type='text' name='email' value='{{ email }}' class='glowing-border glob-input'><i>This will be verified before activating your account.</i><br />
+			<b>Firstname: </b>
+			<input type='text' name='firstname' value='{{ firstname }}' class='glowing-border glob-input'>
+			<b>Middlename: </b>
+			<input type='text' name='middlename' value='{{ middlename }}' max_length=10 class='glowing-border glob-input'>
+			<b>Lastname: </b>
+			<input type='text' name='lastname' value='{{ lastname }}' class='glowing-border glob-input'><br />
+			<b>*Sex: </b><select name='sex' class='glowing-border glob-input'><option value='m'>Male</option><option value='f'>Female</option><option value='u' selected>Undisclosed</option></select>&nbsp;&nbsp;<b>*User Type:</b> <select name='usertype' class='glowing-border glob-input'><option value='CORP'>Corporate</option><option value='CONS' selected>Consultant</option><option value='ACAD'>Academic</option><option value='CERT'>Certification</option></select><br />
+			<b>Mobile Number: </b><input type='text' name='mobilenum' value='{{ mobilenum }}' class='glowing-border glob-input'><br />
+			<!-- <b>Privilege:</b><select name='userprivilege'>{% for pn, pd in privileges.iteritems %}{% if pn == 'admin' %}<option value='{{ pn }}' selected>{{ pn }}</option>{% else %}<option value='{{ pn }}'>{{ pn }}</option>{% endif %}{% endfor %}</select> -->&nbsp;&nbsp;&nbsp;&nbsp;<b>Upload Profile Photo: </b><input type='file' name='profpic' value='' class='glowing-border glob-input'>(will be resized to {{ profpicheight }}x{{ profpicwidth }} pixels.)<br />
+			{% csrf_token %}
+			<input type='button' name='register' value='Register' onClick='javascript:process_register();' class='glowing-border btn-gbl btn-suc'>
+			<input type='button' name='cancel' value='Cancel' onClick='javascript:clear_all();' class='glowing-border btn-gbl btn-suc'>
+			</form>
+			</div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+		
+		
+
+		<div class="postpagesnav">
+		
+		</div>
+		
+		</div>
+		
+		<!-- ### Sidebar Begin ### -->
+
+		
+		<div id="sidebar">
+			
+		<ul>
+
+		<li><h2>Search</h2>
+		<form id="searchform" method="get" action="#">
+			<div>
+			<input type="text" value="" name="s" id="searchfield" />
+			<input type="hidden" id="searchsubmit" value="Search" />
+			</div>
+
+		</form>
+		</li>
+
+		</ul>	
+		
+		</div>
+
+		<!-- ### Sidebar End ### -->
+
+	</div>
+
+<div id="content2">
+	<p>Copyright &copy; 2010 YourSite.com 
+
+	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
+	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
+
+</div>
+
+</div>
+</body>
+</html>

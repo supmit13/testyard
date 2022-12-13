@@ -1,0 +1,2730 @@
+	<!-- Code pertaining to drag and drop functionality of evaluator groups --> 	
+	
+	<script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script>
+	<script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script> 
+	<!-- <script src='http://jquery-ui.googlecode.com/svn/tags/latest/external/jquery.bgiframe-2.1.2.js' type='text/javascript'></script> 
+	<script src='http://jquery-ui.googlecode.com/svn/tags/latest/ui/minified/i18n/jquery-ui-i18n.min.js' type='text/javascript'></script> -->
+	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
+	<style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#669999;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:0px; width:275%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+	</style>
+
+	<style>
+	  .container { position: relative; }
+	  .imageView { border: 1px solid #0000AA; }
+	</style>
+
+	<script language='javascript'>
+
+	{{ assocevalgrps }}
+	var draggableevalgrps = function () {
+            $('#grpnames li').draggable({ 
+                appendTo: 'body', 
+                helper: 'clone', 
+                cursor: 'select', 
+                revert: 'invalid' 
+            }); 
+            initDroppable($('evaluators')); 
+            function initDroppable($elements) { 
+                $elements.droppable({ 
+                    hoverClass: 'textarea', 
+                    accept: ':not(.ui-sortable-helper)', 
+                    drop: function(event, ui) { 
+                        var $this = $(this); 
+                        var tempid = ui.draggable.text(); 
+                        var dropText; 
+                        dropText = ',' + tempid; 
+                        var droparea = document.getElementById('evaluators'); 
+                        var val = droparea.value; 
+			droparea.value = val + dropText;
+                    } 
+                }); 
+            } 
+        }
+	</script> 
+	<style>
+	.textarea{background: #fff;}
+	.dragitems{width: 20%; float: left; background: #f1f1f1;color:#000000; padding-left:10px;} 
+        .dropitems{width: 25%;float: left;background: #f1f1f1;margin-left: 20px;padding:5px 5px 5px 5px;} 
+        .dragitems ul{list-style-type: none;padding-left: 5px;display: block;} 
+        #content{height: 400px;width: 650px;}
+
+        
+
+	</style> 
+	<!-- Code pertaining to drag/drop evaluator group names ends here -->
+	
+	{% include "inc/html_head.html" %}	
+
+	{% include "inc/mission_statement.html" %}
+
+	{% load extratemptags %}
+		
+		<link rel="stylesheet" type="text/css" media="all" href="static/datepick/jsDatePick_ltr.min.css" />
+		<script type="text/javascript" src="static/datepick/jsDatePick.min.1.3.js"></script>
+		<script type='text/javascript'>
+
+		var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
+
+		function loaddatepicker(){
+		  new JsDatePick({
+		    useMode:2,
+		    target:"publishdate",
+		    dateFormat:"%d-%M-%Y", 
+		    limitToToday : false
+		  });
+		  new JsDatePick({
+		    useMode:2,
+		    target:"activedate",
+		    dateFormat:"%d-%M-%Y",
+		    limitToToday : false
+		  });
+		  new JsDatePick({
+		    useMode:2,
+		    target:"scheduledatetime",
+		    dateFormat:"%d-%M-%Y",
+		    limitToToday : false
+		  });
+		}
+
+		// Javascript todo's:
+		// 1. evaluator groups drag and drop
+		// 2. evaluator groups expansion (containing email ids) in textarea
+		// 3. if a group with the same name already exists for the user, show an alert and ask user to rename it. Do this same check during input validation before submitting the form. 
+		// 4. submit data when user clicks on 'Continue' button and pass value of 'testlinkid' to the next screen.
+		// 5. Both 'activedate' and 'publishdate' should be in 'dd-Mon-yyyy' format. Validate this.
+
+		function validate(){
+		  // Need to validate input - 
+		  // 1. publishdate < activedate.
+		  // 2. Publishdate and activedate cannot be set as past date.
+		  var months = {'JAN':'01', 'FEB': '02', 'MAR':'03', 'APR':'04', 'MAY':'05', 'JUN':'06', 'JUL':'07', 'AUG':'08', 'SEP': '09', 'OCT':'10', 'NOV':'11', 'DEC':'12'};
+		  alphanumericpattern = new RegExp("^([\\w\\d]+)$");
+		  publishdate = document.createtestform.publishdate.value;
+		  if(publishdate.trim() == ''){
+		    alert("Publish date cannot be empty. Please enter a date in dd-Mon-yyyy format");
+		    document.createtestform.publishdate.focus();
+		    return false;
+		  }
+		  activedate = document.createtestform.activedate.value;
+		  if(activedate.trim() == ''){
+		    alert("Activation date cannot be left empty. Please enter a date after the publish date in 'dd-MON-yyyy' format");
+		    document.createtestform.activedate.focus();
+		    return false;
+		  }
+		  //alert(activedate);
+		  publishdateparts = publishdate.split("-");
+		  pubdd = publishdateparts[0];
+		  pubmm = months[publishdateparts[1]];
+		  pubyyyy = publishdateparts[2];
+		  pubdateobj = Date.parse(pubyyyy + "-" + pubmm + "-" + pubdd);
+		  activedateparts = activedate.split("-");
+		  activedd = activedateparts[0];
+		  activemm = months[activedateparts[1]];
+		  activeyyyy = activedateparts[2];
+		  activedateobj = Date.parse(activeyyyy + "-" + activemm + "-" + activedd);
+		  today = new Date();
+		  if(pubdateobj < today || activedateobj < today){
+		    alert("Publish date and activation date cannot be historical");
+		    return(false);
+		  }
+		  if(pubdateobj > activedateobj){
+		    alert("Publish date must be before activation date");
+		    document.createtestform.publishdate.focus();
+		    return (false);
+		  }
+		  // 3. Number of evaluators cannot be greater than 11 (incl. creator).
+		  // 4. Check if any evaluator emails have been repeated.
+		  // 5. Evaluators field ('evaluators') should contain email ids only, separated by commas'. Evaluator group names should be expanded on drop using 'expandevaluatorgroup()' function.
+		  // 6. Enforce limit on email id length (75 characters as set in DB).
+		  // 7. Check email id sanity (shd contain @.)
+		  evaluators = document.createtestform.evaluators.value;
+		  evaluatoremails = evaluators.split(",");
+		  if(evaluatoremails.length > 11){
+		    alert("You may enter a maximum of 11 evaluators - (10 evaluators + 1 creator)");
+		    document.createtestform.evaluators.focus();
+		    return(false);
+		  }
+		  var emailpattern = new RegExp("[@\.]+");
+		  var uniqevals = {};
+		  for(var i=0;i < evaluatoremails.length;i++){
+		    email = evaluatoremails[i].trim();
+		    //alert(email);
+		    if(email == ""){ // Ignore empty emails.
+		      continue;
+		    }
+		    if(!emailpattern.test(email)){
+		      alert("Only email ids are permitted in evaluators field.");
+		      document.createtestform.evaluators.focus();
+		      return(false);
+		    }
+		    if(email in uniqevals){
+		      alert("Email id '" + email + "' has been repeated. Please remove duplicated emails before submitting.");
+		      return(false);
+		    }
+		    else{
+		      uniqevals[email] = '1';
+		    }
+		    if(email.length > 75){
+		      alert("Max length of an email Id can be 75 characters.");
+		      document.createtestform.evaluators.focus();
+		      return(false);
+		    }
+		  }
+		  // 8. Ensure that test duration >= challenge duration.
+		  // 9. If each challenge has same score, then number of challenges x per challenge score = total score.
+		  testdur = document.createtestform.testduration.value;
+		  durunit = document.getElementById('testdurationunit').value;
+		  testdur_sec = testdur;
+		  if(durunit == 'h'){
+		    testdur_sec = testdur * 3600;
+		  }
+		  else if(durunit == 'm'){
+		    testdur_sec = testdur * 60;
+		  }
+		  challdur = document.createtestform.challengeduration.value;
+		  durunit = document.getElementById('challengedurationunit').value;
+		  if(challdur.trim() == ''){
+		    challdur = 0
+		  }
+		  challdur_sec = challdur;
+		  if(durunit == 'h'){
+		    challdur_sec = challdur * 3600;
+		  }
+		  else if(durunit == 'm'){
+		    challdur_sec = challdur * 60;
+		  }
+		  if(challdur_sec != 0 && challdur_sec > testdur_sec){
+		    alert("Time taken to solve a single challenge cannot be greater than the duration of the entire test.");
+		    document.createtestform.testduration.focus();
+		    return(false);
+		  }
+		  // 10.Check if all required fields have sane values. List of required fields and their data constraints are as follows:
+		  // testname (alphanumeric)
+		  // testrules (check not necessary as items are selected from dropdown)
+		  // testtopic (check not necessary as items are selected from dropdown)
+		  // totalscore (should be numeric)
+		  // testduration (should be numeric).
+		  // That should be all. Rest are checked in various field specific tests.
+		  alphanumericspacepattern = new RegExp("^[\\w\\d\\s]+$");
+		  numericpattern = new RegExp("^[\\d\.]*$");
+		  if(!alphanumericspacepattern.test(document.createtestform.testname.value)){
+		    alert("Test name may contain alphanumeric characters and white space.");
+		    document.createtestform.testname.focus();
+		    return(false);
+		  }
+		  if(document.createtestform.totalscore.value.trim() == ""){
+		    alert("Total score field cannot be left empty.");
+		    document.createtestform.totalscore.focus();
+		    return false;
+		  }
+		  if(!numericpattern.test(document.createtestform.totalscore.value.trim())){
+		    alert("Total score should be numeric");
+		    document.createtestform.totalscore.focus();
+		    return(false);
+		  }
+		  if(document.createtestform.testduration.value.trim() == ""){
+		    alert("Total Duration field cannot be left empty");
+		    document.createtestform.testduration.focus();
+		    return (false);
+		  }
+		  if(document.createtestform.challengeduration.value.trim() == ""){
+		    alert("Challenge Duration field cannot be left empty");
+		    document.createtestform.challengeduration.focus();
+		    return (false);
+		  }
+		  if(!numericpattern.test(document.createtestform.testduration.value.trim())){
+		    alert("Test duration should be numeric");
+		    document.createtestform.testduration.focus();
+		    return(false);
+		  }
+		  // 11.Group names ('grpname') should be single word strings containing alphanumeric characters only.
+		  grpname = document.createtestform.grpname.value.trim();
+		  // alert(grpname);
+		  if(!alphanumericpattern.test(grpname)){
+		    alert("Evaluator group names may contain alphanumeric characters only.");
+		    document.createtestform.grpname.focus();
+		    return(false);
+		  }
+		  // 12.'passscore' should be numeric and should be less than 'totalscore'.
+		  if(document.createtestform.passscore.value.trim() != '' && (!numericpattern.test(document.createtestform.passscore.value.trim()) || parseInt(document.createtestform.passscore.value.trim()) > parseInt(document.createtestform.totalscore.value.trim()))){
+		    alert("Pass score should be numeric and less than total score");
+		    document.createtestform.passscore.value = '';
+		    document.createtestform.passscore.focus();
+		    return(false);
+		  }
+		  return(true);
+		}
+
+		function createtest(usrid, createtesturl, editflag){
+		  editflag = editflag || 0;
+		  if(!editflag && !validate()){
+		    return false;
+		  }
+		  // We make an ajax call to the correct view and after we are
+		  // done, we replace the div showing the create test form
+		  // with the form for adding a challenge/question.
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  //alert(document.forms[1].exist_test_id.value);
+		  postdata = "";
+		  for(var i=0; i < document.forms[1].elements.length; i++){
+		    elementname = document.forms[1].elements[i].name;
+                    //alert(elementname);
+		    elementvalue = document.forms[1].elements[i].value;
+		    if(document.forms[1].elements[i].type == 'radio'){
+		      if(document.forms[1].elements[i].checked == true){
+			postdata += elementname + "=" + elementvalue + "&";
+                        //alert(postdata);
+			continue;
+		      }
+		    }
+		    else if(document.forms[1].elements[i].type == 'checkbox'){
+		      if(document.forms[1].elements[i].checked == true){
+			postdata += elementname + "=" + elementvalue + "&";
+			continue;
+		      }
+		    }
+		    else if(document.forms[1].elements[i].type == 'select-multiple'){
+		      postdata += elementname + "="
+		      for(var j=0; j < document.forms[1].elements[i].options.length; j++){
+			if(document.forms[1].elements[i].options[j].selected == true){
+			  postdata += document.forms[1].elements[i].options[j].value + '#||#';
+			}
+		      }
+		      postdata += "&";
+		    }
+		    else{
+		      postdata += elementname + "=" + elementvalue + "&";
+		    }
+		  }
+                  postdata += "&csrfmiddlewaretoken=" + document.createtestform.csrfmiddlewaretoken.value;
+		  // Remove quote marks from values
+		  postdata = postdata.replace(/\"/g,'');
+		  alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+		    //alert(xmlhttp.responseText);
+		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      // Data has been posted successfully, so show the first or next challenge insertion form.
+		      var errormsgpattern = new RegExp("[eE]rror");
+		      if(errormsgpattern.test(xmlhttp.responseText)){
+			opresdiv = document.getElementById('opres');
+			if(opresdiv){
+			  opresdiv.style = "";
+			  opresdiv.innerHTML = "<font color='#FF0000'>" + xmlhttp.responseText  + "</font>";
+			  return (false);
+			}
+		      }
+		      var thediv=document.getElementById('createtestdiv');
+		      thediv.style.display = "";
+		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      return(false);
+		    }
+		  };
+		  alert(postdata);
+		  xmlhttp.open('POST',createtesturl, true);
+		  xmlhttp.send(postdata);
+		  showworking();
+		}
+
+		function getresponseoptionswithcheckboxes(){
+		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		  if(document.challengeform.choice1.value.trim() != ""){
+		    html += "<i>Option #a: <input type='checkbox' name='responsekey[]' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice2.value.trim() != ""){
+		    html += "<i>Option #b: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice3.value.trim() != ""){
+		    html += "<i>Option #c: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice4.value.trim() != ""){
+		    html += "<i>Option #d: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice5.value.trim() != ""){
+		    html += "<i>Option #e: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice6.value.trim() != ""){
+		    html += "<i>Option #f: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice7.value.trim() != ""){
+		    html += "<i>Option #g: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice8.value.trim() != ""){
+		    html += "<i>Option #h: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
+		  }
+		  return(html);
+		}
+
+
+		function getresponseoptionswithradios(){
+		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		  if(document.challengeform.choice1.value.trim() != ""){
+		    html += "<i>Option #a: <input type='radio' name='responsekey' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice2.value.trim() != ""){
+		    html += "<i>Option #b: <input type='radio' name='responsekey' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice3.value.trim() != ""){
+		    html += "<i>Option #c: <input type='radio' name='responsekey' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice4.value.trim() != ""){
+		    html += "<i>Option #d: <input type='radio' name='responsekey' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice5.value.trim() != ""){
+		    html += "<i>Option #e: <input type='radio' name='responsekey' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice6.value.trim() != ""){
+		    html += "<i>Option #f: <input type='radio' name='responsekey' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice7.value.trim() != ""){
+		    html += "<i>Option #g: <input type='radio' name='responsekey' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
+		  }
+		  if(document.challengeform.choice8.value.trim() != ""){
+		    html += "<i>Option #h: <input type='radio' name='responsekey' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
+		  }
+		  return(html);
+		}
+
+
+		function displayoptions(){
+		  var ansoptsdiv=document.getElementById('ansopts');
+		  var responsekeydiv = document.getElementById('responsekeydiv'); 
+		  // alert(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value);
+		  if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'MULT'){
+		    ansoptsdiv.style.display = "";
+		    ansoptsdiv.innerHTML = "<div id='ansopts' style=''><p><b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();'>No<br><b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();'><br><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p></div>";
+		    responsekeydiv.style.display = "";
+		    responsekeydiv.innerHTML = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		    // check if 'oneormore' is 'yes' or 'no', and accordingly display the checkboxes or radio buttons.
+		    for (var i=0; i < document.getElementsByName('oneormore').length; i++){
+		      if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'yes'){
+		        responsekeydiv.innerHTML += getresponseoptionswithcheckboxes();
+		      }
+		      else if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'no'){
+		      responsekeydiv.innerHTML += getresponseoptionswithradios();
+		      }
+		    }
+		  }
+		  else{
+		    ansoptsdiv.style.display = "";
+		    ansoptsdiv.innerHTML = "<input type='hidden' name='oneormore' value='no'>";
+		    if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN' || document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'ALGO'){
+		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p></div>";
+		      responsekeydiv.style.display = "none";
+		      responsekeydiv.innerHTML = "";
+		    }
+		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'SUBJ'){
+		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> words</b>(leave empty for no limit)</p></div>";
+		      responsekeydiv.style.display = "none";
+		      responsekeydiv.innerHTML = "";
+		    }
+		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'FILB'){
+		      responsekeydiv.style.display = "";
+		      responsekeydiv.innerHTML = "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='' size='10' maxlength='250'></br>";
+		    }
+		  }
+		}
+
+		// Display the help text for the rationale behind entering the correct response(s).
+		function showwhyresponsekey(atag){
+		  var txtmsg = "p<>This feature allows you to create a test that can be automatically assessed by the system after a candidate has taken it. In order to make the test automatically assessable, you will need to enter the correct response keys for each of the challenges/questions in the test. Failing to specify the response key for even a single challenge will stop the system from automatically assessing the answer scripts of candidates. </p><p><i>Also, please note that this feature is available for 'Multiple Choice' type tests, 'Fill up the Blanks' type tests, and 'Composite' type tests that contain only 'Multiple Choice' or 'Fill up the Blanks' type challenges. Other types of tests/challenges  do not lend themselves to this feature.</i></p><p>Please also note that the existence of this feature does not constrain the evaluators from manually assessing the answer scripts of candidates.</p>";
+		  // Create a floating 'wiki' type window and print this message in it in blue text (#0000DD).
+		  atag.helptext = txtmsg;
+		}
+
+		// This function will be called on the 'blur' event of
+		// 'choice<uint>' (where uint ranges from 1 to 8 at present)
+		// 'text' input fields (shown in case of multiple choice tests)
+		// and the 'change' event of 'oneormore' radio buttons.
+		function displayresponsekeycontrols(){
+		  var responsekeydiv = document.getElementById('responsekeydiv');
+		  // check if 'oneormore' is 'yes' or 'no', and accordingly display the checkboxes or radio buttons.
+		  responsekeydiv.style.display = "";
+		  for (var i=0; i < document.getElementsByName('oneormore').length; i++){
+		    if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'yes'){
+		      responsekeydiv.innerHTML = getresponseoptionswithcheckboxes();
+		    }
+		    else if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'no'){
+		      responsekeydiv.innerHTML = getresponseoptionswithradios();
+		    }
+		  }
+		}
+
+		// Javascript to update challenges
+		function editchallenge(testid, challengeid){
+		  addchallenges(testid, challengeid);
+		}
+
+
+		function showuserview(challengeid, testid, testlinkid){
+		  var xmlhttp;
+		  var themaindiv;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  try{
+		    postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  }
+		  catch(err){
+		    try{
+		      postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.createtestform.csrfmiddlewaretoken.value;
+		    }
+		    catch(err1){
+		      try{
+			postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value;
+		      }
+		      catch(err2){
+			try{
+			  postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=" + document.challengeform.csrfmiddlewaretoken.value;
+			}
+			catch(err3){
+			  postata = postdata = "challengeid=" + challengeid + "&testid=" + testid + "&testlinkid=" + testlinkid + "&csrfmiddlewaretoken=";
+			}
+		      }
+		    }
+		  }
+		  //alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      //alert(xmlhttp.responseText);
+		      try{
+		        themaindiv = document.getElementById('maincontainer');
+		      }
+		      catch(err1){
+			try{
+			  themaindiv = document.getElementById('createtestdiv');
+			}
+			catch(err2){ 
+			// Write an error message to inform the user that the page hasn't loaded entirely.
+			}
+		      }
+		      themaindiv.style = "";
+    		      themaindiv.innerHTML = xmlhttp.responseText;
+		      return (true);
+  		    }
+  		  };
+  		  xmlhttp.open("POST", '{{ showuserviewurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Function to delete a challenge from the challenges 
+		// list screen
+		function deletechallenge(challengeid, challengestatement, test_id){
+		  challengestatement = challengestatement.replace(/%27/g, "'").replace(/%22/g, '"').replace(/%20/g, " ").replace(/%23/g, "#").replace(/%24/g, "$").replace(/%2A/g, "*").replace(/%2B/g, "+").replace(/%28/g, "(").replace(/%29/g,")");
+		  var resp = confirm("This action will permanently delete the challenge '" + challengestatement + "'. Do you want to continue?");
+		  if(!resp){
+		    return false;
+		  }
+		  else{ // Make an xmlhttp call to the appropriate view.
+		    var xmlhttp; 
+		    if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "challengeid=" + challengeid + "&numchallenges=1&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value; // Need to send challenge Id as POST param
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        alert(xmlhttp.responseText);
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ deletechallengesurl }}', true); // Not an ajax call since we want to ensure that the  action has been successfully completed before taking any further steps.
+  		    xmlhttp.send(postdata);
+		    // IMPORTANT NOTE:
+		    // Here we need to create a mechanism to wait for a fixed
+		    // interval of time and if the POST request doesn't fetch
+		    // us any results from the server within that time, we
+		    // will need to tell the user that the action wasn't
+		    // successfully performed.
+		  }
+		  showtestsummary(test_id);
+		  return true;
+		}
+
+		//Function to delete multiple selected challenges at one stroke.
+		//This is available from the challenges list screen.
+		function deleteselected(test_id){
+		  var resp = confirm("This action will permanently delete the selected challenges. Do you want to continue?");
+		  if(!resp){
+		    return false;
+		  }
+		  else{ // Make an ajax call to the appropriate view.
+		    var xmlhttp;
+		    var numchallenges = 0;
+		    var chkchallengepattern = new RegExp("^chk_(\\d+)$");
+		    var challengeids = "";
+		    delworkstat = document.getElementById('delworkstatus');
+		    delworkstat.style = "";
+		    delworkstat.innerHTML = "<img src='static/images/loading_small.gif'>";
+		    for(var ctr=0; ctr < document.frmedittest.elements.length; ctr++){
+		      frmelement = document.frmedittest.elements[ctr];
+		      if(!chkchallengepattern.test(frmelement.name)){ // not a checkbox
+		        continue;
+		      }
+		      else{ // if it is a checkbox, check its state...
+			if(frmelement.checked == true){ // if checked, annex to 'challengeids'.
+			  challengeids += frmelement.value + "#||#";
+			  numchallenges++;
+			}
+		      }
+		    }
+		    if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    // Multiple challenge ids should be separatd by '#||#'
+		    postdata = "challengeid=" + challengeids + "&numchallenges=" + numchallenges + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value; // Need to send challenge Ids as POST param
+		    // alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        alert(xmlhttp.responseText);
+			delworkstat.style = "display:none";
+		        delworkstat.innerHTML = "";
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ deletechallengesurl }}', true);
+  		    xmlhttp.send(postdata); // There! data POSTed.
+		  }
+		  showtestsummary(test_id);
+		  return true;
+		}
+
+		// Function to save changes to score and timeframe of 
+		// multiple challenges of a test. Available from a button
+		// ("Save Changes") on challenges list screen.
+		function savechanges(){
+		  var postdata = "";
+		  savworkstat = document.getElementById('savworkstatus');
+		  savworkstat.style = "";
+		  savworkstat.innerHTML = "<img src='static/images/loading_small.gif'>";
+		  challengescorepattern = new RegExp("^challengescore_(\\d+)$");
+		  challengedurationpattern = new RegExp("^challengeduration_(\\d+)$");
+		  for(var ctr=0; ctr < document.frmedittest.elements.length; ctr++){
+		      frmelement = document.frmedittest.elements[ctr];
+		      if(!challengescorepattern.test(frmelement.name) && !challengedurationpattern.test(frmelement.name)){
+		        continue;
+		      }
+		      if(challengescorepattern.test(frmelement.name) && frmelement.value.trim() == ""){
+			alert("Challenge score fields may not be empty. Please add a numeric score to the challenge before proceeding.");
+			frmelement.focus();
+			return (false);
+		      }
+		    postdata = postdata + frmelement.name + "=" +  frmelement.value + "&";
+		  } // for loop ends here
+		  postdata = postdata + "csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      opresdiv = document.getElementById('opres');
+		      opresdiv.style.display = "";
+		      opresdiv.innerHTML = "<font color='#0000BB' size=-1>" + xmlhttp.responseText + "</font>";
+		      savworkstat.style = "display:none";
+		      savworkstat.innerHTML = "";
+		      //showtestsummary(test_id);
+  		    }
+  		  };
+  		  xmlhttp.open("POST", '{{ savechangesurl }}', true);
+  		  xmlhttp.send(postdata);
+		  return true;
+		}
+
+		// Function to initiate addition of challenge from the
+		// challenges list screen.
+		function addchallenges(testid, challengeid){
+		  // Create a POST request with the testId as the only param and send it to 'addmoreurl'.
+		  challengeid = challengeid || null;
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+		    xmlhttp=new XMLHttpRequest();
+		  }
+		  else{
+		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		  }
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      var publishedregex = new RegExp("published");
+		      if(publishedregex.test(xmlhttp.responseText)){
+		        opresdiv = document.getElementById('opres');
+		        opresdiv.style.display = "";
+		        opresdiv.innerHTML = xmlhttp.responseText;
+		        return (false);
+		      }
+		      var thediv=document.getElementById('createtestdiv');
+		      thediv.style.display = "";
+		      thediv.innerHTML = xmlhttp.responseText;
+		      //stripandexecutescript(thediv.innerHTML); // Execute the javascript code in script tags.
+		      return(false);
+  		    }
+  		  };
+		  postdata = '';
+		  try{
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  }
+		  catch(err1){
+		    try{
+		      postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value;
+		    }
+		    catch(err2){
+		      alert("Operation failed: Probably the page did not load correctly.");
+		      return (false);
+		    }
+		  }
+		  if(challengeid){
+		    postdata += "&challengeid=" + challengeid;
+		    xmlhttp.open("POST", '{{ editchallengeurl }}', true);
+  		    xmlhttp.send(postdata);
+		  }
+		  else{
+		    xmlhttp.open("POST", '{{ addmoreurl }}', true);
+  		    xmlhttp.send(postdata);
+		  }
+		}
+
+		// Validate the data entered by the user in the challenge
+		// creation form.
+		function validatechallengedata(){
+		  numericpattern = new RegExp("^[\\d\.]*$");
+		  // Challenge statement can't be empty.
+		  if(document.challengeform.statement.value.trim() == ""){
+		    alert("Challenge statement can't be empty.");
+		    document.challengeform.statement.value = "";
+		    document.challengeform.statement.focus();
+		    return false;
+		  }
+		  if(document.challengeform.challengescore.type == 'text' && document.challengeform.evendistribution.value != 1){
+		    if(!numericpattern.test(document.challengeform.challengescore.value.trim())){
+		      alert("Since the total is not evenly distributed over all the challenges, you must enter a valid score for this challenge");
+		      document.challengeform.challengescore.value = "";
+		      document.challengeform.challengescore.focus();
+		      return false;
+		    }
+		    if(document.challengeform.challengescore.value == ""){
+		      alert("Challenge score cannot  be empty. Please put in a numeric value. You will be able to change it later if you wish.");
+		      document.challengeform.challengescore.focus();
+		      return (false);
+		    }
+		    // Just check sanity of the score field.
+		    if(parseInt(document.challengeform.challengescore.value.trim()) > parseInt(document.challengeform.totalscore.value)){
+		      alert("Challenge score can't be greater than test score.");
+		      document.challengeform.challengescore.value = "";
+		      document.challengeform.challengescore.focus();
+		      return false;
+		    }
+		  }
+		  // 'maxsizewords' and 'maxsizelines' should contain either
+		  // positive integral values or they should be empty.
+		  if(document.challengeform.maxsizewords && document.challengeform.maxsizewords.value.trim() != "" && !numericpattern.test(document.challengeform.maxsizewords.value.trim())){
+		    alert("Max words count should either be a positive integer or it should be empty");
+		    document.challengeform.maxsizewords.value = "";
+		    document.challengeform.maxsizewords.focus();
+		    return false;
+		  }
+		  if(document.challengeform.maxsizelines && document.challengeform.maxsizelines.value.trim() != "" && !numericpattern.test(document.challengeform.maxsizelines.value.trim())){
+		    alert("Max lines count should either be a positive integer or it should be empty");
+		    document.challengeform.maxsizelines.value = "";
+		    document.challengeform.maxsizelines.focus();
+		    return false;
+		  }
+		  // If 'challengedurationseconds' doesn't contain any numeric
+		  // entity, then put 0 in it. Saves some trouble...
+		  if(document.challengeform.challengedurationseconds.value.trim() == ""){
+		    document.challengeform.challengedurationseconds.value = "0";
+		  }
+		  // Max time limit for a challenge should have a value less
+		  // than max time available for the entire test. Skipping
+		  // implementation now. Will be done after whole test creation
+		  // process starts running smoothly.
+		  return true;
+		}
+
+		function savechallenge(usrid){
+		  var postdata = new FormData(document.forms.namedItem("challengeform"));
+		  var xmlhttp;
+  		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+  		  // Register the handler
+  		  xmlhttp.onreadystatechange = function(){
+  		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		    var thediv=document.getElementById('createtestdiv');
+		    thediv.style.display = "";
+		    thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+  		  }
+  		  };
+  		  xmlhttp.open("POST", '{{ addeditchallengeurl }}', true);
+  		xmlhttp.send(postdata);
+  		// document.getElementById('uploadbox').style.display = '';
+  		// document.getElementById('uploadbox').innerHTML += "<br><img src='static/images/loading_small.gif'>";
+		return true;
+		}
+
+		function saveandcontinue(usrid){
+		  if(!validatechallengedata()){
+		    return false;
+		  }
+		  savechallenge(usrid);
+		}
+
+		function saveandclose(usrid){
+		  if(!validatechallengedata()){
+		    return false;
+		  }
+		  savechallenge(usrid);
+		  closediv();
+		  return true;
+		}
+
+		function expandevaluatorgroup(){
+		  {{ assocevalgrps  }}
+		}
+
+		function autosuggestgrpname(){
+		  // Suggest a name for the group only if the group name is empty.
+		  // That would mean the  user has not yet decided upon a name, so a suggestion is in order.
+		  if(document.createtestform.grpname.value == ""){
+		    evalemail1 = document.createtestform.evaluators.value;
+		    emailparts = evalemail1.split("@");
+		    // check if the group name assigned in emailparts[0] already exists in 'evalgrpsdict'. If so, add a digit to it to make it unique.
+		    digit = 1;
+		    if(!(emailparts[0] in evalgrpsdict)){
+		      document.createtestform.grpname.value = emailparts[0];
+		    }
+		    else{
+		      tmpgrpname = emailparts[0] + digit.toString();
+		      while(tmpgrpname in evalgrpsdict){
+			digit = digit + 1;
+			tmpgrpname = emailparts[0] + digit.toString();
+		      }
+		      document.createtestform.grpname.value = tmpgrpname;
+		    }
+		  }
+		}
+
+
+		function othertopicfield(){
+		  if(document.getElementById('testtopic').value=='&quot;Other&quot;'){ // this is ugly, needs to be sanitized.
+		    othertopicdiv = document.getElementById('othertopic')
+		    othertopicdiv.style.display = "";
+		    othertopicdiv.innerHTML = "<input type='text' name='othertopicname' value='if other, please specify here' onfocus=this.value='';>"
+		  }
+		  else{
+		    othertopicdiv = document.getElementById('othertopic')
+		    othertopicdiv.style.display = "none";
+		    othertopicdiv.innerHTML = ""
+		  }
+		}
+
+		function checktestnameavailability(value){
+		  var existingtestnames = Array({{ existingtestnames }});
+		  warnspan = document.getElementById('testnamewarning');
+		  for(var i=0;i<existingtestnames.length;i++){
+		    if(value == existingtestnames[i]){
+		      warnspan.style.display = "";
+		      warnspan.innerHTML = "<font color='#AA0000'>You already have a test with the same name. Please enter a different name.</font>";
+		      return true; // Doesn't matter what you return.
+		    }
+		  }
+		  if(value.trim() != ""){
+		    warnspan.style.display = "";
+		    warnspan.innerHTML = "<img src='static/images/greendot2.jpg' height='20' width='20' style='dislay:none;'><font color='#00AA00'>Available</font>";
+		    return true;
+		  }
+		  else{
+		    warnspan.style.display = "none";
+		    warnspan.innerHTML = "";
+		    return true;
+		  }
+		}
+
+		function displayattemptparams(){
+		  var attemptparamsdiv=document.getElementById('attemptparams');
+		  if(document.createtestform.multipleattemptsallowed.checked == true){
+		    attemptparamsdiv.style.display = "";
+		    attemptparamsdiv.innerHTML = "<b>Maximum attempts allowed: </b><input type='text' name='maxattemptscount' value='10' maxlength='4' size='4' onblur='javascript:checknumeric(this);' title='Enter -1 if unlimited'><br /><b>Interval between 2 consecutive attempts: </b><input type='text' name='attemptsinterval' value='1' maxlength='4' size='4' onblur='javascript:checknumeric(this);'><select name='attemptsintervalunit'><option value='m'>Minutes</option><option value='h'>Hours</option><option value='d' selected>Days</option><option value='M'>Months</option><option value='y'>Years</option></select><br />";
+		  }
+		  else{
+		    attemptparamsdiv.style.display = "none";
+		    attemptparamsdiv.innerHTML = "";
+		  }
+		}
+
+		function closediv(){
+		  var thediv=document.getElementById('createtestdiv');
+		  if(!thediv){
+		    thediv=document.getElementById('maincontainer');
+		  }
+		  thediv.style.display = "none";
+		  thediv.innerHTML = '';
+		}
+
+		function showcreatetestform(uid){
+		  // Populate the div (id='createtestdiv') with the form
+		  var thediv=document.getElementById('createtestdiv');
+		  if(thediv.style.display == "none"){
+		    thediv.style.display = "";
+		    thediv.innerHTML = "{% include 'tests/create_test_form.html' %}";
+		  }
+		  else{
+		    thediv.style.display = "none";
+		    thediv.innerHTML = '';
+		  }
+		  return false;
+		}
+
+		function showcreateinterviewform(uid){
+		  // Populate the div (id='createtestdiv') with the form
+		  var thediv=document.getElementById('createtestdiv');
+		  if(thediv.style.display == "none"){
+		    thediv.style.display = "";
+		    thediv.innerHTML = "{% include 'tests/create_interview_form.html' %}";
+		  }
+		  else{
+		    thediv.style.display = "none";
+		    thediv.innerHTML = '';
+		  }
+		  return false;
+		}
+
+		// Function to display test upload interface. This will enable user to create a 
+		// test in  CSV or XLS(X) format and upload them in a single action.
+		function showuploadtestform(uid){
+		    // Populate the div (id='createtestdiv') with the form
+		    var thediv=document.getElementById('createtestdiv');
+		    if(thediv.style.display == "none"){
+		        thediv.style.display = "";
+			//thediv.class = "semitrans";
+		        thediv.innerHTML = "{% include 'tests/upload_test_form.html' %}";
+		    }
+		    else{
+		        thediv.style.display = "none";
+		        thediv.innerHTML = '';
+		    }
+		    return false;
+		}
+
+
+		// Function to perform the upload of test csv/xls/xml.
+		function uploadtests(){
+		    var postdata = new FormData(document.forms.namedItem("frmuploadtest"));
+		    //alert(postdata);
+		    var xmlhttp;
+  		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+  		    // Register the handler
+  		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            var thediv=document.getElementById('createtestdiv');
+		            thediv.style.display = "";
+                            // thediv.align = 'center';
+                            if(xmlhttp.responseText == '1'){
+		                thediv.innerHTML = "<font color='#0000DD'>The test and its challenges were successfully added</font>";
+                            }
+                            else{
+                                thediv.innerHTML = "<font color='#DD0000'>" + xmlhttp.responseText + "</font>";
+                            }
+			    document.getElementById('uploadbox2').style.display = 'none';
+			    document.getElementById('uploadbox2').innerHTML = "";
+  		        }
+  		    };
+  		    xmlhttp.open("POST", '{{ testbulkuploadurl }}', true);
+  		    xmlhttp.send(postdata);
+  		    document.getElementById('uploadbox2').style.display = '';
+  		    document.getElementById('uploadbox2').innerHTML += "<br><img src='static/images/loading_small.gif'>";
+		    return true;
+		}
+
+
+		// Function to close test upload div
+		function closeuploadsview(){
+		    closediv();
+		}
+
+
+		// Function to download template file.
+		function downloadtemplatefile(){
+		    document.location = "static/datatemplates/uploadtest.tmpl";
+		}
+
+		// Function to download template help file
+		function downloadhelpfile(){
+		    document.location = "static/datatemplates/uploadtesthelp.doc";
+		}
+
+		// Function to download sample csv file
+		function downloadsamplefile(fmt){
+		    if(fmt.toLowerCase() == "csv"){
+		    	document.location = "static/datatemplates/Sample.csv";
+		    }
+		    else if(fmt.toLowerCase() == "xls" || fmt.toLowerCase() == "xlsx"){
+			document.location = "static/datatemplates/Sample.xls";
+		    }
+		    else if(fmt.toLowerCase() == "xml"){
+			document.location = "static/datatemplates/Sample.xml";
+		    }
+		    else{
+			msg = "Unsupported file type";
+		    }
+		}
+
+
+		// Function to show test summary from where one can manipulate challenge scores, add/delete challenges, etc. (ah! here we go again!).
+		function showtestsummary(testid){
+		  // Send a xmlhttp GET request with the test id. Take the response and mount it on 'createtestdiv'.
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+  		  // Register the handler
+  		  xmlhttp.onreadystatechange = function(){
+		  // alert(xmlhttp.responseText);
+  		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		    var thediv=document.getElementById('createtestdiv');
+		    thediv.style.display = "";
+		    thediv.innerHTML = xmlhttp.responseText;
+  		  }
+  		  };
+		  //alert('{{hosturl}}/{{ testsummaryurl }}?test_id=' + testid);
+		  xmlhttp.open("GET", '{{hosturl}}/{{ testsummaryurl }}?test_id=' + testid, true);
+  		  xmlhttp.send();
+		  return true;
+		}
+
+		// Opens the test metadata edit screen for the test whose ID
+		// is passed  in as argument.
+		function edittest(testid, userid){
+		  var xmlhttp;
+		  postdata = '';
+		  try{
+		    postdata = 'testid=' + testid + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		  }
+		  catch(err1){
+		    try{
+		      postdata = 'testid=' + testid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value;
+		    }
+		    catch(err2){
+		      alert("The correct form could not be found");
+		      return(false);
+		    }
+		  }
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+  		  // Register the handler
+  		  xmlhttp.onreadystatechange = function(){
+		  //alert(xmlhttp.responseText);
+  		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    var publishedregex = new RegExp("published");
+		    if(publishedregex.test(xmlhttp.responseText)){
+		      opresdiv = document.getElementById('opres');
+		      opresdiv.style.display = "";
+		      opresdiv.innerHTML = xmlhttp.responseText;
+		      return (false);
+		    }
+		    else{
+		      var thediv=document.getElementById('maincontainer');
+		      thediv.style.display = "";
+		      uid = userid;
+		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      return (false);
+		    }
+  		  }
+  		  };
+		  xmlhttp.open("POST", '{{ edittesturl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		function showeffectsprompt(firingelement){
+		  var exist_test_id = document.createtestform.exist_test_id.value;
+		  var csrfmiddlewaretoken = document.createtestform.csrfmiddlewaretoken.value;
+		  if(!exist_test_id || exist_test_id.trim() == ""){ // This is the test creation process, not test editing.
+		    return(false);
+		  }
+		  firedvalue = firingelement.value;
+		  if(firedvalue == '0'){ // checked on 'No'
+		    resp = confirm("You are trying to drop negative scoring from this test. This will automatically update the negative scores alloted to the challenges/questions (if any) of this test to 0. Are you sure you would like to continue?");
+		    if(!resp){
+		      firingelement.checked = false;
+		      negscoreradios = document.getElementsByName('negativescoring');
+		      for(var i=0;i < negscoreradios.length; i++){
+			if(negscoreradios[i].value == '1'){
+			  negscoreradios[i].checked = true;
+			}
+		      }
+		      return (false);
+		    }
+		    else{
+		      var xmlhttp;
+		      if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		      }
+  		      else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		      }
+		      postdata = "exist_test_id=" + exist_test_id + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+		      //alert(postdata);
+		      xmlhttp.onreadystatechange = function(){
+		        //alert(xmlhttp.responseText);
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		          alert(xmlhttp.responseText);
+			  return (true);
+  		        }
+  		      };
+		      xmlhttp.open("POST", '{{ clearnegativescoreurl }}', true);
+  		      xmlhttp.send(postdata);
+		    }
+		  }
+		}
+
+		// I am freakin' mad to allow users to do this.
+		function deletetest(test_id){
+		  resp = confirm("You are about to delete the entire test. This will remove the test along with all the challenges in it from our records permanently. You will not be able to access this test or its challenges in future. Do you want to continue?");
+		  if(resp){
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		      xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+		    postdata = "test_id=" + test_id + "&csrfmiddlewaretoken=" + document.frmedittest.csrfmiddlewaretoken.value;
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			resdiv = document.getElementById('createtestdiv');
+			resdiv.style = "";
+			resdiv.innerHTML = xmlhttp.responseText;
+			return (true);
+  		      }
+  		      };
+		      xmlhttp.open("POST", '{{ deletetesturl }}', true);
+  		      xmlhttp.send(postdata);
+		  }
+		  else{
+		    return (false);
+		  }
+		}
+		
+		// Save changes mae to a challenge
+		function savechallengechanges(userid){
+		  savechallenge(userid);
+		}
+
+		// Function to display the previous challenge on the 'user view'
+		// screen. The sequence in which the challenges are inserted
+		// determine the sequence in which they are shown.
+		function showpreviouschallenge(testid, challengeid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid + "&challengeid=" + challengeid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value + "&trav=prev&testlinkid=" + document.frmuserview.testlinkid.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      resdiv = document.getElementById('maincontainer');
+		      resdiv.style = "";
+		      resdiv.innerHTML = xmlhttp.responseText;
+		      return (true);
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ showuserviewurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Function to display the next challenge on the 'user view'
+		// screen. The sequence in which the challenges are inserted
+		// determine the sequence in which they are shown.
+		function shownextchallenge(testid, challengeid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid + "&challengeid=" + challengeid + "&csrfmiddlewaretoken=" + document.frmuserview.csrfmiddlewaretoken.value + "&trav=next&testlinkid=" + document.frmuserview.testlinkid.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      resdiv = document.getElementById('maincontainer');
+		      resdiv.style = "";
+		      resdiv.innerHTML = xmlhttp.responseText;
+		      return (true);
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ showuserviewurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Function to initiate the process of copying a test. The
+		// actual process happens in the backend by a python function.
+		// This function just makes a XMLHTTP POST request to initiate
+		// the process. The response received by this function is
+		// the newly created test (copied) and it is populated in a
+		// div.
+		function copytest(testid){
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+		    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value + "&initiate=1";
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		          alert(xmlhttp.responseText);
+		          return (true);
+  		      }
+  		    };
+		    xmlhttp.open("POST", '{{ copytesturl }}', true);
+  		    xmlhttp.send(postdata);
+		}
+
+
+		// Decrypt a string encrypted with triple DES
+		function tripledesdecrypt(encstr){
+		 decstr = CryptoJS.TripleDES.decrypt(encstr, '{{ secret_key }}');
+		 return(decstr);
+		}
+
+		// Show the test to the user as it would appear to the candidate.
+		function showtestcandidatemode(testid){
+		  var thediv = document.getElementById('createtestdiv');
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      thediv.style = "";
+		      // xmlhttp.responseText is an encrypted test.
+		      // We need to decrypt it and provide the user with
+		      // the challenges appropriately. The decoded 
+		      // content will be json.
+		      var testencjson = xmlhttp.responseText;
+		      // alert(testencjson);
+		      var testplainjson = tripledesdecrypt(testencjson);
+		      alert(testplainjson);
+		      thediv.innerHTML = testplainjson;
+		      return (true);
+  		    }
+  		  };
+		  // Avoiding ajax call on purpose as the decryption function may take some time to render the result.
+		  xmlhttp.open("POST", '{{ showtestcandidatemode }}', false);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		function invitecandidates(testid){ // Only test creator can invite candidates. So the user will be the user object.
+		  // Form to be open in 'createtestdiv'
+		  var thediv = document.getElementById('invitationdiv' + testid);
+		  thediv.style.display = "";
+		  var divinnerhtml = "{% include 'tests/invitecandidatesform.html' %}";
+		  divinnerhtml = divinnerhtml.replace(/####TESTID####/g, testid);
+		  //alert(divinnerhtml);
+		  thediv.innerHTML = divinnerhtml;
+		}
+
+
+		function disableLink(linkname){
+        	  var mylinks = document.getElementsByName(linkname);
+		  for(var i =0; i < mylinks.length; i++){
+		    mylinks[i].disabled=true;
+		    mylinks[i].removeAttribute('href');
+		    mylinks[i].style.textDecoration = 'none';
+		    mylinks[i].style.cursor = 'default';
+		  }
+        	}
+
+
+		function enableLink(linkname){
+		  var mylinks = document.getElementsByName(linkname);
+		  for(var i=0; i < mylinks.length; i++){
+		    mylinks[i].disabled=false;
+		    mylinks[i].href = '#/';
+		    mylinks[i].style.textDecoration = "underline";
+		    mylinks[i].style.cursor = "hand";
+		  }  
+        	}
+		
+
+		// Display and enable the user to manage existing
+		// invitations to the test.
+		function existinginvitations(testid){
+		  //disableLink('manageexistinginvitations');
+		  var thediv = document.getElementById('existinginvitationdiv' + testid.toString());
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  var postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      thediv.style.display = "";
+		      thediv.style='height:800px;width:500px;';
+		      thediv.innerHTML = xmlhttp.responseText;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ manageinvitationsurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+		// Called from manageinvitations. Deactivation is
+  		// a temporary state and it can be revoked using 
+		// activateinvitation.
+		function activateinvitation(inviteid, tabref, tabid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  var postdata = "inviteid=" + inviteid +  "&table=" + tabref + "&csrfmiddlewaretoken=";
+		  if(document.manageinvites){
+		    postdata = postdata + document.manageinvites.csrfmiddlewaretoken.value + "&action=1"; //  action = 1 for activation
+		  }
+		  else{
+		    postdata = postdata + document.getElementsByName('csrfmiddlewaretoken')[0].value + "&action=1";
+		  }
+                  postdata += "&tabid=" + tabid;
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert(xmlhttp.responseText);
+		      window.location.href = window.location.href;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ invitationactivationurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		function deactivateinvitation(inviteid, tabref, tabid){
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  csrftokenvalue = "";
+		  if(document.manageinvites){
+		    csrftokenvalue = document.manageinvites.csrfmiddlewaretoken.value;
+		  }
+		  else{ // Case of Chrome and Opera where the form element is stripped off from innerHTML
+		    csrftokenvalue = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+		  }
+		  var postdata = "inviteid=" + inviteid +  "&table=" + tabref + "&csrfmiddlewaretoken=" + csrftokenvalue + "&action=0"; //  action = 1 for activation
+                  postdata += "&tabid=" + tabid
+		  //alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert(xmlhttp.responseText);
+		      window.location.href = window.location.href;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ invitationactivationurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		// Cancel is a permanent state from which the invitation
+		// cannot be made available to user
+		function cancelinvitation(inviteurl, tabref, tabid){
+		  var resp = confirm("This action will permanently cancel the invitation Do you want to continue?");
+    		  if(!resp){
+		    return(false);
+		  }
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  csrftokenvalue = "";
+		  if(document.manageinvites){
+		      csrftokenvalue = document.manageinvites.csrfmiddlewaretoken.value;
+		  }
+		  else{ // Case of Chrome and Opera where the form element is stripped off from innerHTML
+		    csrftokenvalue = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+		  }
+		  var postdata = "inviteurl=" + inviteurl +  "&table=" + tabref + "&csrfmiddlewaretoken=" + csrftokenvalue + "&tabid=" + tabid;
+		  //alert(postdata);
+		  xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      alert(xmlhttp.responseText);
+		      window.location.href = window.location.href;
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ invitationcancelurl }}', true);
+  		  xmlhttp.send(postdata);
+		}
+
+
+		// Initiator for evaluating the test identified by the
+		// test Id passed in as the argument. This will open a pop up
+		// window which will list the candidates who have taken this
+		// test. Candidates whose responses have not been evaluated 
+		// as yet would be displayed first. The evaluated candidates
+		// responses will be displayed after that.
+		function evaluatetest(testid){
+		    var postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    testdiv = document.getElementById('createtestdiv');
+		    testdiv.style.display = "none";
+		    testdiv.innerHTML = "";
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+   		    xmlhttp.onreadystatechange = function(){
+                        //alert(xmlhttp.responseText);
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			    // Display the data in a screen
+			    testdiv.style.display = "";
+			    testdiv.innerHTML += displayevaluationscreen(xmlhttp.responseText);
+  		        }
+  		    };
+		    xmlhttp.open("POST", '{{ testevaluationurl }}', true);
+  		    xmlhttp.send(postdata);
+		}
+
+
+		// Save evaluator's assessment in DB.
+		function saveassessment(){
+		    maxcctr = evalwin.document.frmevalresp.maxcctr.value;
+		    testid = evalwin.document.frmevalresp.testid.value;
+		    csrftoken = evalwin.document.frmevalresp.csrfmiddlewaretoken.value;
+		    emailid = evalwin.document.frmevalresp.emailid.value;
+		    tabid = evalwin.document.frmevalresp.tabid.value;
+ 		    tabref = evalwin.document.frmevalresp.tabref.value;
+		    evaltestcomment = evalwin.document.frmevalresp.evaltestcomment.value;
+		    // TODO: Restrict usage of special characters in evaltestcomment.
+		    postdata = "maxcctr=" + maxcctr + "&testid=" + testid + "&emailid=" + emailid + "&tabid=" + tabid + "&tabref=" + tabref + "&evaltestcomment=" + evaltestcomment;
+		    if(evalwin.document.frmevalresp.evalcommitstate.checked == true){
+			postdata += "&evalcommitstate=1";
+		    }
+		    for(var i=1; i < maxcctr; i++){
+		        maxscore = parseFloat(evalwin.document.getElementById('maxscore_' + i).value);
+		        negativescore = parseFloat(evalwin.document.getElementById('negativescore_' + i).value);
+		        challengeid = evalwin.document.getElementById('challengeid_' + i).value;
+		        assessment = parseFloat(evalwin.document.getElementById('assessment_' + i).value);
+			var numregex = new RegExp("^\-?[0-9\.]*$");
+			if(!numregex.test(assessment)){
+			    evalwin.focus();
+			    alert("Assessment should be a numeric value");
+			    evalwin.document.getElementById('assessment_' + i).focus();
+			    return (0);
+			}
+		        evalcomment = evalwin.document.getElementById('evalcomment_' + i).value;
+		        if(assessment > maxscore){
+		            alert("Assessment score cannot be greater than maximum score");
+		            evalwin.document.getElementById('assessment_' + i).focus();
+		            return (0);
+		        }
+		        if(negativescore && negativescore < 0 && assessment == negativescore){
+			    resp = confirm("You are marking the candidate with a negative score. It means the candidate's response is incorrect. Do you want to continue?");
+			    if(resp){
+				postdata += "&assessment_" + i + "=" + negativescore;
+			    }
+			    else{
+				evalwin.document.getElementById('assessment_' + i).value = "";
+				evalwin.document.getElementById('assessment_' + i).focus();
+				return (0);
+			    }
+			}
+		        if(negativescore && negativescore < 0 && assessment < negativescore){
+			    alert("Assessment score cannot be less than negative score value");
+			    evalwin.document.getElementById('assessment_' + i).value = "";
+			    evalwin.document.getElementById('assessment_' + i).focus();
+			    return (0);
+			}
+			else if(assessment >= 0){
+			    postdata += "&assessment_" + i + "=" + assessment;
+			}
+			postdata += "&maxscore_" + i + "=" + maxscore + "&challengeid_" + i + "=" + challengeid + "&comments_" + i + "=" + evalcomment;
+		    }
+		    postdataencuri = encodeURI(postdata);
+		    encpostdata = Base64.encode(postdataencuri);
+		    encpostdata = encpostdata + "&csrfmiddlewaretoken=" + csrftoken;
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+   		    xmlhttp.onreadystatechange = function(){
+                        //document.write(xmlhttp.responseText);
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			    // Display the response in the parent screen and close this window if everything went well.
+			    alert(xmlhttp.responseText + " Updated scores will be reflected once you close and reopen the 'Evaluation Screen'");
+			    evalwin.close();
+  		        }
+  		    };
+		    xmlhttp.open("POST", '{{ evaluateresponseurl }}', true);
+  		    xmlhttp.send(encpostdata);
+		}
+
+
+		function evaluateresponses(testid, emailid, responsetext){
+		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
+		    responsedata = jsonresp[emailid];
+		    candidateresponse = responsedata.candidateresponse;
+		    evalcommitstate = responsedata.evalcommitstate;
+		    evalwin = window.open("", "evaluationwindow", "width=400, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
+		    //alert(candidateresponse);
+		    html = "<body bgcolor='#669999'><h3>User's Responses</h3><br /><br /><form name='frmevalresp' method='POST' action=''>";
+		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
+		    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
+		    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
+		    html += "<input type='hidden' name='tabid' id='tabid' value='" + responsedata.tabid + "'>";
+		    var separatorPattern = new RegExp("#||#");
+		    cctr = 1;
+		    for (challenge in candidateresponse){
+		        html += "<div id='challengestatement'><b>" + challenge + "</b>";
+			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
+			candidateresp = candidateresponse[challenge].answer;
+			if(separatorPattern.test(candidateresp)){
+			    candidateresp = candidateresp.replace("#||#", ", ");
+			}
+			html += "<br /><br /><b>Candidate's Response: </b>" + decodeURIComponent(candidateresp);
+			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
+			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;
+			html += "<input type='hidden' name='maxscore_" + cctr + "' id='maxscore_" + cctr + "' value='" + candidateresponse[challenge].maxscore + "'>";
+			html += "<input type='hidden' name='negativescore_" + cctr + "' id='negativescore_" + cctr + "' value='" + candidateresponse[challenge].negativescore + "'>";
+			correctanswer = decodeURIComponent(candidateresponse[challenge].correctanswer);
+			if(!correctanswer){
+			    correctanswer = 'Not Available';
+			}
+			correctanswer = correctanswer.replace("#||#", ", ");
+			html += "<br /><br /><b>Correct Answer: </b>" + correctanswer;
+			if(evalcommitstate == false){
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "'>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			}
+			else{
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' disabled>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 disabled>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			}
+			html += "<input type='hidden' name='challengeid_" + cctr + "' id='challengeid_" + cctr + "' value='" + candidateresponse[challenge].challengeid + "'>";
+			html += "<br /><br /><hr>";
+			cctr++;
+		    }
+		    html += "{% csrf_token %}";
+		    html += "<input type='hidden' name='maxcctr' id='maxcctr' value='" + cctr + "'>";
+		    html += "<textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
+		    if(evalcommitstate == false){
+		        html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1'><br /><br />";
+		    }
+		    else{
+			html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />";
+		    }
+		    if(evalcommitstate == false){
+		        html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;";
+		    }
+		    html += "<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
+		    html += "</form></body>";
+		    evalwin.document.write(html);
+		}
+
+
+		//function saveglobalinfo(testid){
+		//}
+
+
+		function disqualifycandidate(testid, emailid){
+		    var xmlhttp;
+		    var postdata = "testid=" + testid + "&emailid=" + emailid + "&csrfmiddlewaretoken=";
+		    postdata += document.frmmaintests.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    yesno = confirm("Click on 'Ok' to confirm action of disqualification of candidate.");
+		    if(!yesno){
+			return(false);
+		    }
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+   		    xmlhttp.onreadystatechange = function(){
+                        //document.write(xmlhttp.responseText);
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			    alert(xmlhttp.responseText);
+  		        }
+  		    };
+		    xmlhttp.open("POST", '{{ disqualifycandidateurl }}', true);
+  		    xmlhttp.send(postdata);
+		}
+
+
+		function displayevaluationscreen(responsetext){
+		    jsonresp = JSON.parse(Base64.decode(responsetext)); // will create an object
+		    testid = -1;
+		    testname = "";
+		    email = "";
+		    for (email in jsonresp){
+   			if (jsonresp.hasOwnProperty(email)){
+       			    answerrecord = jsonresp[email];
+			    testid = answerrecord['testid'];
+			    testname = answerrecord['testname'];
+			    break;
+    			}
+		    }
+		    if(!testname || testname == ""){
+			var html = "<div class='semitrans' align='left'><font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'><br /><br />";
+			return (html);
+		    }
+		    var html = "<div class='semitrans' align='left'><font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
+		    html += "<table border=0 cellspacing='3' cellpadding='3'>";
+		    html += "<tr><td><b>Email</b></td><td><b>Test URL</b></td><td><b>Start Time</b></td><td><b>End Time</b></td><td><b>Responses</b></td><td><b>Outcome</b></td><td><b>Grand Total</b></td><td><b>Test Status</b></td><td><b>Disqualify</b></td><td><b>Comments</b></td></tr>";
+		    rowctr = 1;
+		    for (email in jsonresp){
+   			if (jsonresp.hasOwnProperty(email)){
+			    answerrecord = jsonresp[email];
+			    testurl = answerrecord['testurl'];
+			    starttime = answerrecord['starttime'];
+			    //alert(starttime);
+			    endtime = answerrecord['endtime'];
+			    grandtotal = answerrecord['score'];
+			    outcome = "<font color='#DD0000'>Not evaluated yet</font>";
+			    if (answerrecord['outcome']){
+				outcome = "<font color='#0000DD'>" + answerrecord['outcome'] + "</font>";
+			    }
+			    else if(answerrecord['score'] > 0){
+				outcome = "<font color='#0000DD'>No pass score specified</font>";
+			    }
+			    else if(answerrecord['evalcommitstate']){
+				if(answerrecord['outcome'] == null){
+				    answerrecord['outcome'] = '0';
+				}
+				outcome = "<font color='#0000DD'>" + answerrecord['outcome'] + "</font>";
+			    }
+			    grandtotal = "<font color='#0000DD'>" + answerrecord['score'] + "</font>";
+			    status = answerrecord['status'];
+			    comments = "<font color='#0000DD' size=-1>" + decodeURIComponent(answerrecord['evaltestcomment']) + "</font>";
+			    if(rowctr % 2 == 0){
+				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\");'>Evaluate Responses</a>";
+				if(status == 0 || status == 1){
+				    evaluatestr = "Not Applicable";
+				}
+				statustext = "<font color='#AA0000'>Test not yet taken</font>";
+				if(status == 1){
+				    statustext = "<font color='#00AA00'>Test is being taken</font>";
+				    if(starttime == 'Not Applicable'){
+				        starttime = "";
+				    }
+				}
+				else if(status == 2){
+				    statustext = "<font color='#0000AA'>Test has been taken</font>";
+				    if(starttime == 'Not Applicable'){
+				        starttime = "";
+				    }
+				    if(endtime == 'Not Applicable'){
+				        endtime = "";
+				    }
+				}
+			        html += "<tr bgcolor='#B8D1F3'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+				if(!answerrecord['disqualified']){
+				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				}
+				else{
+				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td nowrap>" + comments + "</td></tr>";
+				}
+			    }
+			    else{
+				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\");'>Evaluate Responses</a>";
+				if(status == 0 || status == 1){
+				    evaluatestr = "Not Applicable";
+				}
+				statustext = "<font color='#AA0000'>Test not yet taken</font>";
+				if(status == 1){
+				    statustext = "<font color='#00AA00'>Test is being taken</font>";
+				    if(starttime == 'Not Applicable'){
+				        starttime = "";
+				    }
+				}
+				else if(status == 2){
+				    statustext = "<font color='#0000AA'>Test has been taken</font>";
+				    if(starttime == 'Not Applicable'){
+				        starttime = "";
+				    }
+				    if(endtime == 'Not Applicable'){
+				        endtime = "";
+				    }
+				}
+				html += "<tr bgcolor='#FFFFFF'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+				if(!answerrecord['disqualified']){
+				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				}
+				else{
+				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td nowrap>" + comments + "</td></tr>";
+				}
+			    }
+			    rowctr++;
+			}
+		    }
+		    html += "<tr><td colspan='9'>&nbsp;</td></tr>";
+		    html += "<tr><td colspan='9' align='center'><!-- <input type='button' name='btnsave' value='Save' onClick='javascript:saveglobalinfo(\"" + testid + "\");'> --><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'></td></tr>";
+		    html += "</table></div>";
+		    return (html);
+		}
+
+
+		function closedivbyid(divid){
+		  thediv = document.getElementById(divid);
+		  if(thediv){
+		    thediv.style.display = "none";
+		    thediv.innerHTML = "";
+		  }
+		}
+
+		function validateinvitationdata(testid){
+		  var processedformname = 'frminvitecandidates' + testid.toString();
+		  var emailsfield = document.getElementById('txtemailslist' + testid.toString());
+		  if(emailsfield.value.trim() == ""){
+		    alert("Please enter email addresses of the users who are to be invited to take the test");
+		    return(false);
+		  }
+		  var newlinewspattern = new RegExp("[\\n\\s]+");
+		  var emailpattern = new RegExp("^\\s*\\w+[\.\\w\_]*\@[\\w\.\-\_]+\\s*$");
+		  var datepattern = new RegExp("\\d{2}\\-\\d{2}\\-\\d{4}(\s+\\d{2}\\:\\d{2}\\:\\d{2})?");
+		  if(newlinewspattern.test(emailsfield.value)){
+		    emailslist = "";
+		    emailvalues = emailsfield.value.split("\n");
+		    for(var i=0; i < emailvalues.length; i++){
+		      emailslist = emailslist + emailvalues[i]
+		    }
+		    emailsfield.value = emailslist.replace(/\s+/g, "");
+		  }
+		  emailslist = "";
+		  var listofemails = emailsfield.value.split(",");
+		  for(var i=0; i < listofemails.length; i++){
+		    if(!emailpattern.test(listofemails[i])){
+		      alert("Invalid email detected. Please rectify and try again");
+		      emailsfield.focus();
+		      return(false);
+		    }
+		  }
+		  var monthdict = {};
+		  monthdict['Jan'] = '01';monthdict['Feb'] = '02';monthdict['Mar'] = '03';monthdict['Apr'] = '04';monthdict['May'] = '05';monthdict['Jun'] = '06';monthdict['Jul'] = '07';monthdict['Aug'] = '08';monthdict['Sep'] = '09';monthdict['Oct'] = '10';monthdict['Nov'] = '11';monthdict['Dec'] = '12';
+		  var validfromfield = document.getElementById('validfrom' + testid.toString());
+		  var validtillfield = document.getElementById('validtill' + testid.toString());
+		  var validtillmonth = '';
+		  var defaultvalidtillvalue = '';
+		  if(validfromfield.value.trim() == "" || validfromfield.value == "dd-mm-yyyy hh:mm:ss"){ // user did not enter a value
+		    var now = new Date();
+		    dateparts = now.toString().split(" ");
+		    validfromfieldstr = dateparts[2] + "-" + monthdict[dateparts[1]] + "-" + dateparts[3] + " " + dateparts[4];
+		    validtillmonth = Number(monthdict[dateparts[1]]) + 3; // By default, a test will be valid till 3 months only.
+		    if(validtillmonth.toString().length < 2){
+		      validtillmonth = '0' + validtillmonth.toString();
+		    }
+		    validfromfield.value = validfromfieldstr;
+		    defaultvalidtillvalue = dateparts[2] + "-" + validtillmonth.toString() + "-" + dateparts[3] + " " + dateparts[4];
+		  }
+		  
+		  if(validtillfield.value.trim() == "dd-mm-yyyy hh:mm:ss" || validtillfield.value.trim() == ""){
+		    validtillfield.value = defaultvalidtillvalue;
+		  }
+		  if(!validfromfield.value.match(datepattern)){
+		    alert("The valid from field has inappropriate format. Please correct it and try again.");
+		    validfromfield.focus();
+		    return(false);
+		  }
+		  else{ // user has entered a value
+		    validfromstr = validfromfield.value;
+		    validfromparts = validfromstr.split(" ");
+		    if(validfromparts.length == 2){
+		      validfromdate = validfromparts[0];
+		      validfromtime = validfromparts[1];
+		    }
+		    else if(validfromparts.length == 1){
+		      validfromdate = validfromparts[0];
+		      validfromtime = "";
+		    }
+		    validfromdateparts = validfromdate.split("-");
+		    if(validfromdateparts.length < 3){
+		      alert("Incorrect date format in valid from field. Please rectify and try again.");
+		      validfromfield.focus();
+		      return(false);
+		    }
+		    validfromdd = validfromdateparts[0];
+		    validfrommm = validfromdateparts[1];
+		    validfromyyyy = validfromdateparts[2];
+		    if(parseInt(validfrommm) > 12){
+		      alert("Incorrect Valid From field month value");
+		      validfromfield.focus();
+		      return(false);
+		    }
+		    if(validfrommm == '01' || validfrommm == '03' || validfrommm == '05' || validfrommm == '07' || validfrommm == '08' || validfrommm == '10' || validfrommm == '12'){
+		      if(parseInt(validfromdd) > 31){
+		        alert("Invalid day value in Valid From field");
+		      	validfromfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else if(validfrommm == '04' || validfrommm == '06' || validfrommm == '09' || validfrommm == '11'){
+		      if(parseInt(validfromdd) > 30){
+			alert("Invalid day value in Valid From field");
+		      	validfromfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else{
+		      if((validfromyyyy % 4 == 0 && validfromyyyy % 100 != 0) || (validfromyyyy % 100 == 0 && validfromyyyy % 400 == 0)){ // leap year
+			if(parseInt(validfromdd) > 29){
+			  alert("Invalid day value in Valid From field");
+		      	  validfromfield.focus();
+		      	  return(false);
+			}
+		      }
+		      else{
+			if(parseInt(validfromdd) > 28){
+			  alert("Invalid day value in Valid From field");
+		      	  validfromfield.focus();
+		      	  return(false);
+			}
+		      }
+		    }
+		    if(validfromtime != ""){
+		      validfromtimeparts = validfromtime.split(":");
+		      if(validfromtimeparts.length > 3){
+			alert("Invalid time value in Valid From field");
+			validfromfield.focus();
+		      	return(false);
+		      }
+		      if(validfromtimeparts[0] >= 24 || validfromtimeparts[0] < 0 || validfromtimeparts[1] > 59 || validfromtimeparts[1] < 0 || validfromtimeparts[2] > 59 || validfromtimeparts[2] < 0){
+			alert("Invalid time value in Valid From field");
+			validfromfield.focus();
+		      	return(false);
+		      }
+		    }
+		  }
+		  if(validtillfield.value != "" && !datepattern.test(validtillfield.value)){
+		    alert("The valid till field has inappropriate format. Please correct it and try again.");
+		    validtillfield.focus();
+		    return(false);
+		  }
+		  if(validtillfield.value != "" && datepattern.test(validtillfield.value)){ // user has entered a value
+		    validtillstr = validtillfield.value;
+		    validtillparts = validtillstr.split(" ");
+		    if(validtillparts.length == 2){
+		      validtilldate = validtillparts[0];
+		      validtilltime = validtillparts[1];
+		    }
+		    else if(validtillparts.length == 1){
+		      validtilldate = validtillparts[0];
+		      validtilltime = "";
+		    }
+		    validtilldateparts = validtilldate.split("-");
+		    if(validtilldateparts.length < 3){
+		      alert("Incorrect date format in Valid Till field. Please rectify and try again.");
+		      validtillfield.focus();
+		      return(false);
+		    }
+		    validtilldd = validtilldateparts[0];
+		    validtillmm = validtilldateparts[1];
+		    validtillyyyy = validtilldateparts[2];
+		    if(parseInt(validtillmm) > 12){
+		      alert("Incorrect Valid Till field month value");
+		      validtillfield.focus();
+		      return(false);
+		    }
+		    if(validtillmm == '01' || validtillmm == '03' || validtillmm == '05' || validtillmm == '07' || validtillmm == '08' || validtillmm == '10' || validtillmm == '12'){
+		      if(parseInt(validtilldd) > 31){
+		        alert("Invalid day value in Valid Till field");
+		      	validtillfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else if(validtillmm == '04' || validtillmm == '06' || validtillmm == '09' || validtillmm == '11'){
+		      if(parseInt(validtilldd) > 30){
+			alert("Invalid day value in Valid Till field");
+		      	validtillfield.focus();
+		      	return(false);
+		      }
+		    }
+		    else{
+		      if((validtillyyyy % 4 == 0 && validtillyyyy % 100 != 0) || (validtillyyyy % 100 == 0 && validtillyyyy % 400 == 0)){ // leap year
+			if(parseInt(validtilldd) > 29){
+			  alert("Invalid day value in Valid Till field");
+		      	  validtillfield.focus();
+		      	  return(false);
+			}
+		      }
+		      else{
+			if(parseInt(validtilldd) > 28){
+			  alert("Invalid day value in Valid Till field");
+		      	  validtillfield.focus();
+		      	  return(false);
+			}
+		      }
+		    }
+		    if(validtilltime != ""){
+		      validtilltimeparts = validtilltime.split(":");
+		      if(validtilltimeparts.length > 3){
+			alert("Invalid time value in Valid Till field");
+			validtillfield.focus();
+		      	return(false);
+		      }
+		      if(validtilltimeparts[0] >= 24 || validtilltimeparts[0] < 0 || validtilltimeparts[1] > 59 || validtilltimeparts[1] < 0 || validtilltimeparts[2] > 59 || validtilltimeparts[2] < 0){
+			alert("Invalid time value in Valid Till field");
+			validtillfield.focus();
+		      	return(false);
+		      }
+		    }
+		  }
+		  return true;
+		}
+
+		// Send an invitation to all email ids in the textarea
+		// for the test identified by testid.
+		function sendinvitation(testid){
+		  if(!validateinvitationdata(testid)){
+		    return (false);
+		  }
+		  var xmlhttp;
+		  if (window.XMLHttpRequest){
+    		    xmlhttp=new XMLHttpRequest();
+  		  }
+  		  else{
+    		    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		  }
+		  postdata = "testid=" + testid;
+		  var processedformname = 'frminvitecandidates' + testid.toString();
+		  var processeddivid = 'invitationdiv' + testid.toString();
+		  csrftoken = document.getElementsByName("csrfmiddlewaretoken")[0];
+		  emailslist = document.getElementById('txtemailslist' + testid.toString());
+		  //alert(emailslist.value);
+  	 	  validfrom = document.getElementById('validfrom' + testid.toString());
+		  validtill = document.getElementById('validtill' + testid.toString());
+   		  baseurl = document.getElementById('baseurl' + testid.toString());
+  	 	  forcefreshurl = document.getElementById('forcefreshurl').value;
+		  postdata = postdata + "&csrfmiddlewaretoken=" + csrftoken.value + "&txtemailslist=" + emailslist.value + "&validfrom=" + validfrom.value + "&validtill=" + validtill.value + "&baseurl=" + baseurl.value + "&forcefreshurl=" + forcefreshurl;
+		  xmlhttp.onreadystatechange = function(){
+		    //alert(xmlhttp.responseText);
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		      sendinvitestatusdiv.innerHTML = "";
+		      sendinvitestatusdiv.style = "display:none";
+		      errorpattern = new RegExp("Error:\\s*");
+		      successpattern = new RegExp("Success:\\s*");
+		      if(errorpattern.test(xmlhttp.responseText)){
+			alert("Could not send the invitations to the candidates - " + xmlhttp.responseText);
+			return (false);
+		      }
+		      else if(successpattern.test(xmlhttp.responseText)){
+		        alert("The candidates have been invited for the test " + testid.toString());
+			closedivbyid('invitationdiv' + testid.toString());
+		        return (true);
+		      }
+		      else{
+			alert(xmlhttp.responseText);
+			closedivbyid('invitationdiv' + testid.toString());
+			return (true);
+		      }
+  		    }
+  		  };
+		  xmlhttp.open("POST", '{{ sendtestinvitationurl }}', true);
+  		  xmlhttp.send(postdata);
+		  sendinvitestatusdiv = document.getElementById('sendinvitestatus');
+		  sendinvitestatusdiv.style = "";
+		  sendinvitestatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>&nbsp;<font size=-2 color='#00FF00'>Sending emails... Please wait.</font>";
+		}
+
+		function setvisibility(vtype, testid){
+		    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
+		    visibilityvalue = 0;
+		    visibilityelements = Array();
+                    if(vtype == "test"){
+		        visibilityelements = document.getElementsByName('creator_visibility_' + testid);
+		    }
+		    else if(vtype == "usertest"){
+		        visibilityelements = document.getElementsByName('candidate_visibility_' + testid);
+		    }
+		    else{
+			alert("Incorrect value for visibility elements");
+			return ("");
+		    }
+		    for(var ctr=0; ctr < visibilityelements.length; ctr++){
+			if(visibilityelements[ctr].checked){
+			    visibilityvalue = visibilityelements[ctr].value;
+			    break;
+			}
+		    }
+		    postdata = "csrfmiddlewaretoken=" + csrftoken;
+		    postdata = postdata + "&visibility=" + visibilityvalue + "&testid=" + testid + "&vtype=" + vtype;
+		    //alert(postdata);
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+    		        xmlhttp=new XMLHttpRequest();
+  		    }
+  		    else{
+    		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  		    }
+		    xmlhttp.onreadystatechange = function(){
+		    	//alert(xmlhttp.responseText);
+  		    	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			    alert(xmlhttp.responseText);
+		    	}
+		    };
+		    xmlhttp.open("POST", '{{ settestvisibilityurl }}', true);
+  		    xmlhttp.send(postdata);
+		}
+
+	var popupBlockerChecker = {
+        check: function(popup_window){
+            var _scope = this;
+            if (popup_window) {
+                if(/chrome/.test(navigator.userAgent.toLowerCase())){
+                    setTimeout(function () {
+                        _scope._is_popup_blocked(_scope, popup_window);
+                     },200);
+                }
+		else{
+                    popup_window.onload = function () {
+                        _scope._is_popup_blocked(_scope, popup_window);
+                    };
+                }
+            }
+	    else{
+                _scope._displayError();
+            }
+	},
+	_is_popup_blocked: function(scope, popup_window){
+	    if ((popup_window.innerHeight > 0)==false){ scope._displayError(); }
+	},
+	_displayError: function(){
+	    alert("Popup Blocker is enabled! Please add this site to your exception list and click on the 'click here to draw' link once again. We regret this inconvenience.");
+	}
+    	};
+
+
+	function opencanvas(testid, challengeid){
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	    	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    canvashtml = xmlhttp.responseText;
+		    //alert(canvashtml);
+		    cnvshndl = window.open("", "canvaswindow", "width=900, height=500, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
+		    popupBlockerChecker.check(cnvshndl);
+		    cnvshndl.document.write(canvashtml);
+	    	}
+	    };
+	    xmlhttp.open("GET", '{{ getcanvasurl }}' + "?testid=" + testid + "&challengeid=" + challengeid, true);
+	    xmlhttp.send();
+	}
+
+
+	function opencanvas_ver1(){
+	    drawdiv = document.getElementById('drawcanvas');
+	    drawhtml = "<div class='container'><canvas id='drawingcanvas' class='imageView' width='400' height='300'><p>Unfortunately, your browser is no longer supported by our web application. We are sorry for the inconvenience. Please use one of the supported browsers listed below, or draw the image you want using an offline tool.</p><p>Supported browsers: <a href='http://www.opera.com'>Opera</a>, <a href='http://www.mozilla.com'>Firefox</a>, <a href='http://www.apple.com/safari'>Safari</a>, and <a href='http://www.konqueror.org'>Konqueror</a>.</p></canvas></div><a href='#/' onClick='javascript:removecanvas();'><font color='#AA0000' size=-1><i>Remove canvas (and discard drawing).</i></font></a>";
+	    // Add a script block in head
+	    // Check if we have a script tag with source pointed to drawing.js
+	    drawingpattern = new RegExp("drawing\.js");
+    	    allscripttags = document.getElementsByTagName('script');
+	    drawingfound = 0;
+	    for(var i=0; i < allscripttags.length; i++){
+		scripttag = allscripttags[i];
+		if(scripttag.src && drawingpattern.test(scripttag.src)){
+		    drawingfound = 1;
+		    break;
+		}
+	    }
+	    if(!drawingfound){ // Create the script tag with src pointing to drawing.js only if we don't already have one.
+	        var scripttag = document.createElement("script");
+	        scripttag.type = "text/javascript";
+	        scripttag.async = true;
+	        document.head.appendChild(scripttag);
+	    	scripttag.src = "static/javascript/drawing.js";
+	    }
+	    drawdiv.innerHTML = drawhtml;
+	    drawdiv.style.display = "";
+	    var evt;
+	    if (document.createEvent) {
+    		evt = document.createEvent("MutationEvents");
+    		evt.initEvent("divloaded", true, true);
+  	    } 
+	    else{
+    		evt = document.createEventObject();
+    		evt.eventType = "divloaded";
+  	    }
+	    evt.eventName = "divloaded";
+	    if (document.createEvent){
+    		drawdiv.dispatchEvent(evt);
+  	    }
+	    else{
+    		drawdiv.fireEvent("on" + evt.eventType, evt);
+  	    }
+	}
+
+	
+	function removecanvas(){
+	    drawdiv = document.getElementById('drawcanvas');
+	    drawdiv.innerHTML = "<div id='drawcanvas'><a href='#/' onClick='javascript:opencanvas();'><font color='#AA0000' size=-1><i>click here to draw</i></font></a></div>";
+	    return (false);
+	}
+	
+	
+	function scheduletest(testid){
+	    var postdata = "";
+	    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata += "testid=" + testid + "&csrfmiddlewaretoken=" + csrftoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		//alert(xmlhttp.responseText);
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    schedulepopup = window.open("", "schedulewindow", "width=1200, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    schedulepopup.document.write(xmlhttp.responseText);
+		    schedulepopup.onfocus = schedulepopup.loaddatepicker;
+		    //schedulepopup.blur();
+		    schedulepopup.focus();
+		}
+	    };
+	    xmlhttp.open("POST", '{{ gettestscheduleurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+
+	function activatestatusnow(testid){
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ activatetestbycreator }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+
+	function deactivatestatusnow(testid){
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    alert(xmlhttp.responseText);
+		}
+	    };
+	    xmlhttp.open("POST", '{{ deactivatetestbycreator }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	
+	function createinterview(uid, createinterviewurl){
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    waitdiv = document.getElementById('waiticon');
+	    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'><font style='font-weight:bold;' size=-1 color='#0000AA'>Please bear with us while we prepare and launch the interview window...</font>";
+	    // Gather data from the form. If any required value is missing, assign the default value for that field (if one exists),
+	    // or alert the user about the missing value.
+	    postdata = ""
+	    numericpattern = new RegExp("^\\d+$");
+	    emailpattern = new RegExp("@.*\.");
+	    for(var i=0; i < document.createinterviewform.elements.length; i++){
+		if(document.createinterviewform.elements[i].name == 'interviewtitle' && document.createinterviewform.elements[i].value.trim() == ""){
+		    alert("Interview title cannot be empty. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'interviewtopic' && document.createinterviewform.elements[i].value.trim() == ""){
+		    alert("Interview topic cannot be empty. Please enter a value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'totalscore' && !numericpattern.test(document.createinterviewform.elements[i].value) && document.createinterviewform.elements[i].value != ""){
+		    alert("Total score cannot be non-numeric. Please enter a numeric value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'maxresponsestarttime' && !numericpattern.test(document.createinterviewform.elements[i].value.trim()) && document.createinterviewform.elements[i].value.trim() != "" ){
+		    alert("Max Response Start Time cannot be non-numeric. Please enter a numeric value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'numchallenges' && !numericpattern.test(document.createinterviewform.elements[i].value.trim()) && document.createinterviewform.elements[i].value.trim() != "" ){
+		    alert("Number of Challenges cannot be non-numeric. Please enter a numeric value for it.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'interviewduration' && document.createinterviewform.elements[i].value.trim() == ""){
+		    // Assign a default value
+		    document.createinterviewform.elements[i].value = '3600';
+		}
+		if(document.createinterviewform.elements[i].name == 'medium' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = 'audiovisual';
+		}
+		if(document.createinterviewform.elements[i].name == 'publishdate' && document.createinterviewform.elements[i].value.trim() == ""){
+		    alert("Interview publish date cannot be empty. Please enter a value for it. It should be in 'dd-mon-yyyy' format.");
+		    document.createinterviewform.elements[i].focus();
+		    return (false);
+		}
+		if(document.createinterviewform.elements[i].name == 'challengeseparatorcharacter' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = '#';
+		}
+		if(document.createinterviewform.elements[i].name == 'responseendcharacter' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = '#';
+		}
+		if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == false){
+		    continue;
+		}
+		if(document.createinterviewform.elements[i].name == 'chkrightnow' && document.createinterviewform.elements[i].checked == false){
+		    continue;
+		}
+		else if(document.createinterviewform.elements[i].name == 'realtime' && document.createinterviewform.elements[i].checked == true){
+		    if(document.createinterviewform.scheduledatetime.value == "" || document.createinterviewform.scheduledatetime.value == "YYYY-MM-DD hh:mm:ss" || document.createinterviewform.chkrightnow.checked == true){
+			d = new Date();
+			yyyy = d.getFullYear();
+	    		dd = d.getDate();
+	    		mm = d.getMonth() + 1;
+			hh = d.getHours();
+			min = d.getMinutes();
+			ss = d.getSeconds();
+	    		dd = dd.toString();
+	    		mm = mm.toString();
+			hh = hh.toString();
+			min = min.toString();
+			ss = ss.toString();
+	    		if(dd.length < 2){
+			    dd = "0" + dd;
+	    		}
+	    		if(mm.length < 2){
+			    mm = "0" + mm;
+	    		}
+			if(hh.length < 2){
+			    hh = "0" + hh;
+	    		}
+			if(min.length < 2){
+			    min = "0" + min;
+	    		}
+			if(ss.length < 2){
+			    ss = "0" + ss;
+	    		}
+	    		var months = {'01':'JAN', '02': 'FEB', '03':'MAR', '04':'APR', '05':'MAY', '06':'JUN', '07':'JUL', '08':'AUG', '09': 'SEP', '10':'OCT', '11':'NOV', '12':'DEC'};
+	    		//curdate = dd + "-" + months[mm] + "-" + yyyy + " " + hh + ":" + min + ":" + ss;
+			curdate = yyyy + "-" + mm + "-" + dd + " " + hh + ":" + min + ":" + ss;
+			//alert(curdate);
+			document.createinterviewform.scheduledatetime.value = curdate;
+		    }
+		    if(document.createinterviewform.invitationemailaddr.value.trim() == ""){
+			alert("Email address of the candidate may not be left empty if realtime is checked");
+			document.createinterviewform.invitationemailaddr.focus();
+			return (false);
+		    }
+		    if(!emailpattern.test(document.createinterviewform.invitationemailaddr.value.trim())){
+			alert("Please enter a valid email address.");
+			document.createinterviewform.invitationemailaddr.focus();
+			return (false);
+		    }
+		}
+		if(document.createinterviewform.elements[i].name == 'randomsequencing' && document.createinterviewform.elements[i].checked == false){
+		    continue;
+		}
+		if(document.createinterviewform.elements[i].name == 'introfilename' && document.createinterviewform.elements[i].value.trim() == ""){
+		    document.createinterviewform.elements[i].value = 'intro.wav';
+		}
+		postdata += document.createinterviewform.elements[i].name + "=" + document.createinterviewform.elements[i].value + "&";
+	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    // Open a popup window here to add challenges for the interview
+		    errorpattern = new RegExp('Error:');
+		    if(errorpattern.test(xmlhttp.responseText)){
+			alert(xmlhttp.responseText);
+			return (0);
+		    }
+		    var windowName = 'addintro'; 
+		    var popUp = window.open('', windowName, 'width=1000, height=700, left=24, top=24, scrollbars=1, resizable');
+		    if (popUp == null || typeof(popUp)=='undefined') { 	
+			alert('Please disable your pop-up blocker and click the "Open Intro" button again.'); 
+		    } 
+		    else { 	
+			popUp.focus();
+		    }
+		    popUp.document.write(xmlhttp.responseText);
+		    popUp.document.close();
+		    waitdiv.innerHTML = "";
+		    popUp.parent.location.href = popUp.parent.location.href; // Basically refreshing the parent window.
+		}
+	    };
+	    if(document.createinterviewform.btncreateinterview.value == 'Add Intro'){
+		document.createinterviewform.btncreateinterview.value = 'Open Intro';
+	    }
+	    xmlhttp.open("POST", '{{ createinterviewurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+	function focusfield(){
+	    if(document.getElementById('scheduledatetime').value == "YYYY-MM-DD hh:mm:ss"){
+		document.getElementById('scheduledatetime').value = "";
+	    }
+	}
+
+ 	function blurfield(){
+	    if(document.getElementById('scheduledatetime').value == ""){
+		document.getElementById('scheduledatetime').value = "YYYY-MM-DD hh:mm:ss";
+	    }
+	    datetimepattern = new RegExp("\\d{4}\\-\\d{2}\\-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}");
+	    fieldval = document.getElementById('scheduledatetime').value;
+	    if(!datetimepattern.test(fieldval) && fieldval != "YYYY-MM-DD hh:mm:ss"){
+		document.getElementById('fieldmsg').innerHTML = "<font color='#AA0000' size=-1>Incorrect format for date/time value.</font>";
+		return(0);
+	    }
+	    else{
+		document.getElementById('fieldmsg').innerHTML = "";
+	    }
+	}
+
+	function processrightnow(){
+	    if(document.getElementById('chkrightnow').checked == true){
+		document.getElementById('scheduledatetime').value = "";
+	    }
+	}
+
+	function showinvitationfields(elem){
+	    invitationspan = document.getElementById('invitationemail');
+	    if(elem.checked == true){
+		invitationspan.style.display = "";
+		invitationspan.innerHTML = "<tr><td><font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='text' name='scheduledatetime' id='scheduledatetime' value='YYYY-MM-DD hh:mm:ss' maxlength='20' size='15' onfocus='javascript:focusfield();' onblur='javascript:blurfield();'> <br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br /></td></tr>";
+		document.createinterviewform.randomsequencing.disabled=true;
+	    }
+	    else{
+		invitationspan.style.display = "none";
+		invitationspan.innerHTML = "";
+		document.createinterviewform.randomsequencing.disabled=false;
+	    }
+	    // Also, clear any date specified in 'Publish this interview on' field and set it to current date
+	    var d = new Date();
+	    yyyy = d.getFullYear();
+	    dd = d.getDate();
+	    mm = d.getMonth() + 1;
+	    dd = dd.toString();
+	    mm = mm.toString();
+	    if(dd.length < 2){
+		dd = "0" + dd;
+	    }
+	    if(mm.length < 2){
+		mm = "0" + mm;
+	    }
+	    var months = {'01':'JAN', '02': 'FEB', '03':'MAR', '04':'APR', '05':'MAY', '06':'JUN', '07':'JUL', '08':'AUG', '09': 'SEP', '10':'OCT', '11':'NOV', '12':'DEC'};
+	    pubdate = dd + "-" + months[mm] + "-" + yyyy;
+	    
+	    document.createinterviewform.publishdate.value = pubdate;
+	    // Also, modify the 'medium' field to appropriate value.
+ 	    document.createinterviewform.medium.value = 'audiovisual';
+	}
+
+
+        function checkintnameavailability(title){
+	    csrfmiddlewaretoken = document.frmmaintests.csrfmiddlewaretoken.value;
+	    postdata = "inttitle=" + title + "&csrfmiddlewaretoken=" + csrfmiddlewaretoken;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+		namewarn = document.getElementById('namewarning');
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    if(xmlhttp.responseText == '1'){
+			namewarn.innerHTML = "<font color='#00AA00' size=-1 face='verdana'>Available</font>";
+		    }
+		    else{
+			namewarn.innerHTML = "<font color='#AA0000' size=-1 face='verdana'>NOT Available</font>";
+		    }
+		}
+	    };
+	    xmlhttp.open("POST", '{{ chkintnameavailabilityurl }}', true);
+  	    xmlhttp.send(postdata);
+	}
+
+		</script>
+		{% include "inc/right_panel.html" %}
+		<div class="post">
+			<span class="meta">
+			<h3>Dear {{ displayname }},</h3>
+			{{ msg }} {{ newuser }}
+			<div class="entry">
+			<!-- Tests HTML goes here. -->
+			<div id='createtestdiv' style='display:none;'></div>
+			<h3><font color='#00BB00'>You may create a new test by clicking on this link: {{ createlink }}</font></h3>
+			<h3><font color='#00BB00'>Alternatively, you may upload a new test from the screen pointed to by this link: {{ uploadlink }}</font></h3>
+			<h3><font color='#00BB00'>You may create an interview by clicking on this link: {{ interviewlink }}</font></h3>
+			<h3><font color='#00BB00'>And here are the past details of all tests (created/owned tests, evaluated tests and tests taken) associated with your account: </font></h3>
+			<form name='frmmaintests' id='frmmaintests' method='POST' action=''>
+			{% csrf_token %}
+			<div id='testsascreator' style="">
+			<h3>Tests as Creator</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>
+			</tr>
+			<tr>
+			  <td colspan="22">&nbsp;</td>
+			</tr>
+			{% autoescape on %}
+			{% for testnm in tests_creator_ordered_createdate reversed %}
+			<tr>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#/' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  {% if creator_tests_info|dictlookup:testnm|getval:21 < 1 %}
+			  <td nowrap align='center'><font size=-1 color='#AA0000'>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% else %}
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% endif %}
+			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:4 %}<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> {% else %} <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:4 }}</font></td> {% endif %}
+			  {% if not creator_tests_info|dictlookup:testnm|getval:13 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:22 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:23 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>
+			  {% if creator_tests_info|dictlookup:testnm|getval:18 == 'private' %}<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='0' checked onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='1'  onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			  {% else %}
+			    {% if creator_tests_info|dictlookup:testnm|getval:18 == 'protected' %}
+			      <input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='0' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='1' checked onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			    {% else %}
+			      <input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='0' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='1' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='2' checked onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			    {% endif %}
+			  {% endif %}
+			  </font></td>
+			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
+			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
+			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td>
+			{% else %}
+			  <td nowrap align='right'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td>
+			{% endif %}
+			</tr> 
+			{% endfor %}
+			{% endautoescape %}
+			</table>
+			<br />
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
+			<br />
+			<font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>
+			</div>
+			<br /><br />
+			<div id='testsasevaluator' style="">
+			<h3>Tests as Evaluator</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
+			</tr>
+			<tr>
+			  <td colspan="17">&nbsp;</td>
+			</tr>
+			{% for testnm in tests_evaluator_ordered_createdate reversed %}
+			<tr>
+			  {% if evaluator_tests_info|dictlookup:testnm|getval:18 == 'public' or evaluator_tests_info|dictlookup:testnm|getval:18 == 'protected' %}
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td>
+			  {% else %}
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td>
+			  {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  {% if evaluator_tests_info|dictlookup:testnm|getval:23 < 1 %}
+			  <td nowrap align='center'><font size=-1 color='#AA0000'>{{ evaluator_tests_info|dictlookup:testnm|getval:23 }} ({{ evaluator_tests_info|dictlookup:testnm|getval:22 }} out of {{ evaluator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% else %}
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:23 }} ({{ evaluator_tests_info|dictlookup:testnm|getval:22 }} out of {{ evaluator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  {% endif %}
+			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}'>{{ evaluator_tests_info|dictlookup:testnm|getval:20 }} (username={{ evaluator_tests_info|dictlookup:testnm|getval:21 }})</a></font></td>
+			  <td align='left'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:4 %}<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> {% else %} <td nowrap align='right'><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:4 }}</font></td> {% endif %}
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:13 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
+			  {% if not evaluator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:26 }}</font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:27 }}</font></td>
+			</tr>
+			{% endfor %}
+			</table>
+			<br />
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
+			</div>
+			<br /><br />
+			<div id='testsascandidate' style="">
+			<h3>Tests as Candidate</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Percentile Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Taken On</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
+			</tr>
+			<tr>
+			  <td colspan="13">&nbsp;</td>
+			</tr>
+			{% for testnm in tests_candidate_ordered_createdate reversed %}  
+			<tr>
+			  {% if candidate_tests_info|dictlookup:testnm|getval:18 == 'public' %}
+			  <td align='center'><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td>
+			  {% else %}
+			  <td align='center'><font size=-1 color='#0000AA'>{{ testnm }}</font></td>
+			  {% endif %}
+			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:4 }}</font></td>
+			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:22 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:26 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:27 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:23 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:13 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:10 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:8 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:24 }}</font></td>
+			  <td><font size=-1 color='#0000AA'>
+			  {% if candidate_tests_info|dictlookup:testnm|getval:25 == 0 %}<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='0' checked onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='1'  onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			  {% else %}
+			    {% if candidate_tests_info|dictlookup:testnm|getval:25 == 1 %}
+			      <input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='0' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='1' checked onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			    {% else %}
+			      <input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='0' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='1' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='2' checked onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			    {% endif %}
+			  {% endif %}
+			  </font></td>
+			</tr>
+			{% endfor %}
+			</table>
+			<br />
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
+			</div>
+			<br /><br />
+			<div id='interviewsconducted' style="">
+			<h3>Interviews Conducted</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration (in seconds)</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>
+			</tr>
+			<tr>
+			  <td colspan="11">&nbsp;</td>
+			</tr>
+			{% for interviewtitle in interviewlist_asinterviewer %}  
+			    <tr>
+  			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:1 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:3 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:4 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:5 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:6 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:7 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:8 }}</font></td>
+		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:9 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:10 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}</font></td>
+			</tr>
+			{% endfor %}
+			</table>
+			</div>
+			<br /><br />
+			<div id='interviewsattended' style="">
+			<h3>Interviews Attended</h3>
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<tr>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration (in seconds)</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Scheduled Time</font></td>
+ 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Actual Start Time</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>
+			</tr>
+			<tr>
+			  <td colspan="14">&nbsp;</td>
+			</tr>
+			{% for interviewtitle in interviewlist_asinterviewee %}  
+			<tr>
+  			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:1 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:3 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:4 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:5 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:6 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:7 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:8 }}</font></td>
+		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:9 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:10 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:11 }}</font></td>
+		   	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:12 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:13 }}</font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}</font></td>
+			</tr>
+			{% endfor %}
+			</table>
+			<br />
+			<!-- {{ test_tables }} -->
+			</form>
+			</div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+
+	

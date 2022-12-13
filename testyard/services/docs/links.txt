@@ -1,0 +1,7 @@
+C library to read ini files:
+----------------------------
+https://github.com/compuphase/minIni/tree/master/dev
+
+C library to parse XML:
+-----------------------
+https://stackoverflow.com/questions/399704/xml-parser-for-c

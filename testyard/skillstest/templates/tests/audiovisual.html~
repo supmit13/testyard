@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name='keywords' content='WebRTC, HTML5, JavaScript' />
+<meta name='description' content='App to attend Interviews' />
+<meta name='viewport' content='width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1'>
+
+<base target='_blank'>
+<script language='JavaScript'>
+function nextquestion(){
+}
+
+function finishinterview(){
+    window.close();
+}
+
+function startrecording(){
+  navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || null;
+  var video_audio_properties = {video: true, audio: true};
+  function onSuccess(stream){
+            document.getElementById("video").src = window.URL.createObjectURL(stream);
+            //property of video tag.
+            document.getElementById("video").play();
+        }
+  function onError(error){
+            console.log("Video capture error: ", error.code);
+        }
+        if(navigator.getUserMedia != null){
+            navigator.getUserMedia(video_audio_properties, onSuccess, onError);
+        }
+        else{
+            alert("microphone and webcam API not supported");
+        }
+}
+
+function stoprecording(){
+}
+
+</script>
+
+<title>WebRTC client</title>
+
+<!-- <link rel='stylesheet' href='css/main.css' /> -->
+
+</head>
+
+<body>
+
+<div id='container'>
+
+  <div id='videos'>
+    <video id='localVideo' autoplay muted></video>
+    <video id='remoteVideo' autoplay></video>
+  </div>
+
+</div>
+<div>
+<input type='button' name='btnstart' id='btnstart_id' value='Start Capturing' onClick='javascript:startrecording();'>
+<input type='button' name='btnstop' id='btnstop_id' value='Stop Capturing' onClick='javascript:stoprecording();'>
+<input type='button' name='btnnext' id='btnnext_id' value='Next Question' onClick='javascript:nextquestion();'>
+<input type='button' name='btnfinish' id='btnfinish_is' value='Finish Interview' onClick='javascript:finishinterview();'>
+</div>
+
+<script src='static/javascript/audiovisual/socket.io.js'></script>
+<script src='static/javascript/audiovisual/adapter.js'></script>
+<script src='static/javascript/audiovisual/main.js'></script>
+
+</body>
+</html>

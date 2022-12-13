@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
+<META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<script src="static/javascript/jquery-2.1.3.min.js"></script>
+<!-- PayUMoney Scripts here - For production -->
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<!-- PayUMoney CSS below -->
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" >
+<!-- PayUMoney Scripts here - For sandbox -->
+<script id="bolt" src="https://sboxcheckout-static.citruspay.com/bolt/run/bolt.min.js" bolt-color="#0000AA" bolt-logo="static/images/boltlogo.jpeg"></script>
+<!-- PayUMoney Scripts here - For production -->
+<!-- <script id="bolt" src="https://checkout-static.citruspay.com/bolt/run/bolt.min.js" bolt-color="<color-code>" bolt-logo="static/images/boltlogo.jpeg"></script> -->
+
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link href="static/css/font_awesome_min.css" rel="stylesheet">
+<script type='text/javascript'>
+
+
+
+function checkamount(){
+    balance = document.frmwithdraw.balance.value;
+    withdrawamt = document.frmwithdraw.withdrawamt.value;
+    if(balance < withdrawamt){
+	alert("Withdrawal amount cannot be greater than balance amount. Please rectify this mistake and try again");
+        return(0);
+    }
+    actualwithdrawamt = (1 - {{cutpercent}}/100) * withdrawamt;
+    if(document.frmwithdraw.securecode.value == ""){
+	alert("Value of securecode cannot be empty. Please check your email and enter the value of the code here");
+	document.frmwithdraw.securecode.focus();
+	return(0);
+    }
+    yesno = confirm("After deducting testyard's fees, you will receive USD " + actualwithdrawamt + " only. Confirm withdrawal?");
+    if(!yesno){
+        return(false);
+    }
+    
+    var xmlhttp;
+    postdata = "csrfmiddlewaretoken=" + document.frmwithdraw.csrfmiddlewaretoken.value + "&balance=" + document.frmwithdraw.balance.value + "&withdrawamount=" + actualwithdrawamt + "&earnings=" + document.frmwithdraw.earnings.value + "&securecode=" + document.frmwithdraw.securecode.value + "&bankaccts=" + document.getElementById('bankaccts').value;
+    //alert(postdata);
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    statusdiv = document.getElementById('statusmsg');
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    statusdiv.innerHTML = xmlhttp.responseText;
+        }
+    };
+    withdrawurl = document.frmwithdraw.action;
+    //alert(withdrawurl);
+    //alert(postdata);
+    xmlhttp.open('POST', withdrawurl, true);
+    xmlhttp.send(postdata);
+    document.frmwithdraw.startwithdraw.disabled=true;
+    statusdiv.innerHTML = "<img src='static/images/loading_small.gif'>processing inputs... may take a l'il while. Please be patient.";
+}
+
+</script>
+</head>
+<body>
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="#">TEST<span>YARD</span></a></h1>
+		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p> 
+
+	</div>
+	
+	<!-- Here we go with the group profile template -->
+
+	<div class="row">
+		<div class="col-md-offset-2 col-md-8 col-lg-offset-3 col-lg-6">
+    	 
+            <div style="padding-left:50px;padding-top:40px;padding-bottom:50px;padding-right:50px">         
+                <div>
+                    <figure>
+                        <img src="{{grpimagefile}}" alt="" class="img-circle img-responsive" width='100' height='100'>
+                        <figcaption class="ratings">
+			    <h4><p style="color:#0000AA;text-decoration-line:underline;">Account Financial Status</p></h4>
+                            <p style="color:#0000AA"><strong>Total Earnings (in USD):</strong>
+                               <span style="color:#0000AA">{{earnings}}</span>
+			    </p>
+                            <p style="color:#0000AA"><strong>Balance Amount in Account (in USD):</strong>
+                                <span style="color:#0000AA">{{balance}}</span>
+                            </p>
+                            <p style="color:#0000AA"><strong>Last Transaction Date: </strong>
+                                <span style="color:#0000AA">{{lasttransactiondate}}</span>
+                            </p>
+                            
+                        </figcaption>
+                    </figure>
+                </div>
+	    
+	    <br /><hr><br />
+            <div>
+                <div>
+		<form name='frmwithdraw' id='frmwithdraw' method='POST' action='skillstest/subscriptions/dowithdrawal/'>
+		<h4><p style="color:#0000AA;text-decoration-line:underline;">Initiate Withdrawal</p></h4>
+                    <p style="color:#0000AA">Please Enter the Amount to Withdraw (in USD):&nbsp;&nbsp;<input type='text' name='withdrawamt' value=''><br /><span style="color:#AA0000;font-style:italic">** Please note that TestYard will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span></p>
+		    <p style="color:#0000AA">A code has been sent to the email address registered for this account. <br />Please enter that code here:&nbsp;&nbsp;<input type='text' name='securecode' value=''></p>
+                    <p style="color:#0000AA">Select the bank account to use: 
+		    <select name='bankaccts' id='bankaccts'>
+		    {% for key, value in bankaccts.items %}
+			<option value='{{value}}'>{{key}}</option>
+		    {% endfor %}
+		    </select>
+		    </p>
+		    <p style="color:#0000AA">From here, you will now be routed to the payment gateway. Please follow the instructions therein.</p>
+		    <p><input type='button' name='startwithdraw' value='Continue' onClick='javascript:checkamount();'>&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Window' onClick='javascript:window.close();'></p>
+		    <hr>
+		    [ OR TRANSFER TO YOUR PAYPAL ACCOUNT - PANEL TO ALLOW USERS TO DO THIS ]
+		    <input type='hidden' name='balance' value='{{balance}}'><input type='hidden' name='earnings' value='{{earnings}}'>{% csrf_token %}
+                </div>
+		</form>
+	        
+		<div id='statusmsg'></div>
+		<!-- <a id="statusmsg">Click "Continue" to create or register an account on WePay</a> -->
+
+		
+	    
+        </div>
+    	</div>                 
+    </div>
+    </div>
+	<!-- group profile template ends here -->
+</div>
+</body>
+</html>

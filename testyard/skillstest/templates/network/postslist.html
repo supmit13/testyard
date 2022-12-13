@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>List of Posts</title>
+<style type="text/css">
+	.subtable{
+		width:100%; 
+		border:0; 
+	}
+	.subtable td{ 
+		padding:7px; width:100%;
+	}
+	.subtable tr{
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the ODD background rows  */
+	.subtable tr:nth-child(odd){ 
+		background: #5de5f4;
+	}
+	/*  Define the background color for all the EVEN background rows  */
+	.subtable tr:nth-child(even){
+		background: #a7eaf2;
+	}
+</style>
+{% load extratemptags %}
+<script type='text/javascript'>
+function savepostschanges(postid){
+    resp = confirm("Are you sure you want these changes?");
+    if(resp == false){
+        return(false);
+    }
+    var postdata = "csrfmiddlewaretoken=" + document.frmpostslist.csrfmiddlewaretoken.value;
+    postdata += "&postid=" + postid;
+    scopeid = "scope_" + postid;
+    deletedid = "deleted_" + postid;
+    hiddenid = "hidden_" + postid;
+    scopevalue = document.getElementById(scopeid).value;
+    postdata += "&scope=" + scopevalue;
+    deletedelement = document.getElementById(deletedid);
+    if(deletedelement.checked == "checked" || deletedelement.checked == true){
+        postdata += "&deleted=" + postid;
+    }
+    hiddenelement = document.getElementById(hiddenid);
+    if(hiddenelement.checked == "checked" || hiddenelement.checked == true){
+        postdata += "&hidden=" + postid;
+    }
+    waitdiv = document.getElementById('wait_' + postid);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    waitdiv.innerHTML = "";
+	    alert(xmlhttp.responseText);
+        }
+    };
+    xmlhttp.open('POST', "{{savepostinfourl}}", true);
+    xmlhttp.send(postdata);
+    waitdiv.style.display = "";
+    waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
+}
+</script>
+</head>
+<body>
+<div>
+<h3 style='color:#0000AA'>List of Posts on the {{groupname}} Group</h3>
+<form name='frmpostslist' id='frmpostslist' method='POST' action=''>
+{% csrf_token %}
+<input type='hidden' name='groupid' value='{{groupid}}'><input type='hidden' name='groupname' value='{{groupname}}'>
+<table class="subtable" width='90%'>
+<tr><td style='color:#0000AA;font-weight:bold;' width="15%">Post Tag</td><td style='color:#0000AA;font-weight:bold;' width="30%">Content</td><td style='color:#0000AA;font-weight:bold;'>Posted By</td><td style='color:#0000AA;font-weight:bold;'>Attachment</td><td style='color:#0000AA;font-weight:bold;'>Scope</td><td style='color:#0000AA;font-weight:bold;' nowrap>Deleted</td><td style='color:#0000AA;font-weight:bold' nowrap>Hidden</td><td style='color:#0000AA;font-weight:bold;' nowrap>Stars</td><td style='color:#0000AA;font-weight:bold;' nowrap>Posted On</td><td style='color:#0000AA;font-weight:bold;' nowrap>Save Changes</td></tr>
+{% for postid in sequence %}
+<tr><td style='color:#0000AA;' width="15%">{{posts|dictlookup:postid|getval:0}}</td><td style='color:#0000AA;' width="20%">{{posts|dictlookup:postid|getval:1}}</td><td style='color:#0000AA;'>{{posts|dictlookup:postid|getval:2}}</td><td style='color:#0000AA;'>{{posts|dictlookup:postid|getval:3}}</td><td style='color:#0000AA;' nowrap><select name='scope_{{postid}}' id='scope_{{postid}}'>{% if posts|dictlookup:postid|getval:4 == 'private' %} <option value='private' selected>Private</option> {% else %} <option value='private'>Private</option> {% endif %} {% if posts|dictlookup:postid|getval:4 == 'protected' %} <option value='protected' selected>Protected</option> {% else %} <option value='protected'>Protected</option> {% endif %} {% if posts|dictlookup:postid|getval:4 == 'public' %} <option value='public' selected>Public</option> {% else %} <option value='public'>Public</option> {% endif %} </select></td><td style='color:#0000AA;' nowrap>{% if posts|dictlookup:postid|getval:5 == 1 %} <input type='checkbox' name='deleted_{{postid}}' id='deleted_{{postid}}' value='{{postid}}' checked="checked"> {% else %} <input type='checkbox' name='deleted_{{postid}}' id='deleted_{{postid}}' value='{{postid}}'> {% endif %} - {{posts|dictlookup:postid|getval:5}} </td><td style='color:#0000AA;' nowrap> {% if posts|dictlookup:postid|getval:6 == 1 %} <input type='checkbox' name='hidden_{{postid}}' id='hidden_{{postid}}' value='{{postid}}' checked="checked"> {% else %} <input type='checkbox' name='hidden_{{postid}}' id='hidden_{{postid}}' value='{{postid}}'> {% endif %} - {{posts|dictlookup:postid|getval:6}}</td><td style='color:#0000AA;' nowrap>{{posts|dictlookup:postid|getval:7}}</td><td style='color:#0000AA;' nowrap>{{posts|dictlookup:postid|getval:8}}</td><td style='color:#0000AA;' nowrap><a href='#/' onClick='javascript:savepostschanges({{postid}})'>Save Changes</a><div id='wait_{{postid}}'></div></td></tr>
+{% endfor %}
+</table>
+</form>
+</div>
+</body>
+</html>
+

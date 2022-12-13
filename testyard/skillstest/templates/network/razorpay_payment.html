@@ -1,0 +1,122 @@
+
+<html>
+<head>
+<title>Payment Process - Step #1</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
+<link rel="stylesheet" href="/static/css/main.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <style type="text/css">
+        .panel-title {
+        display: inline;
+        font-weight: bold;
+        }
+        .display-table {
+            display: table;
+        }
+        .display-tr {
+            display: table-row;
+        }
+        .display-td {
+            display: table-cell;
+            vertical-align: middle;
+            width: 61%;
+        }
+    </style>
+
+<script language='JavaScript'>
+String.prototype.trim = function() {
+    a = this.replace(/^\s+/, '');
+    return a.replace(/\s+$/, '');
+};
+
+
+function adjustpayamt(){
+    currname = document.frmpaymentconfirm.currency.options[document.frmpaymentconfirm.currency.options.selectedIndex].value;
+    //alert(currname);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    rate = xmlhttp.responseText;
+	    //alert(rate);
+	    currvalue = document.getElementById('payamt').value * rate;
+	    //alert(currvalue);
+	    document.getElementById('btnconfirmpayment_stripe').value = "Pay " + currname + " " + currvalue.toFixed(2);
+        }
+    }
+    targeturl = "{{currencyrateurl}}";
+    postdata = "currname=" + currname + "&csrfmiddlewaretoken=" + document.frmpaymentconfirm.csrfmiddlewaretoken.value;
+    //alert(postdata);
+    xmlhttp.open("POST",targeturl,true); // Make it an ajax call.
+    xmlhttp.setRequestHeader('X-CSRFToken', document.frmpaymentconfirm.csrfmiddlewaretoken.value);
+    xmlhttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xmlhttp.send(postdata);
+}
+</script>
+</head>
+
+<body bgcolor='#669999'>
+
+<!-- <form name='frmpaymentconfirm' id='frmpaymentconfirm' method="POST"> -->
+<p style='font-weight:bold;color:blue;padding:8px;text-align:center;'>Process Payment</p>
+    <table border=0 cellspacing=4 cellpadding=4><tr><td nowrap><font color='#0000AA'  style='font-weight:bold'>Confirm request to join group '{{groupname}}'?</font></td></tr>
+    <tr><td nowrap><font color='#0000AA'  style='font-weight:bold' size=-1>You will be charged USD {{total_amt}} for the membership. </font></td></tr>
+    </table>
+    {% csrf_token %}
+    <br />
+    <span style="color:#AA0000;font-weight:bold;">{{paymentnote}}</span>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3" style="width:100%;display:block;margin-left:10px;margin-right:auto;text-align:center;">
+            <div class="panel panel-default credit-card-box">
+                <div class="panel-heading display-table" >
+                    <div class="row display-tr" >
+                        <h3 class="panel-title display-td" >Payment Details</h3>
+                        <div class="display-td" >                            
+                            <img class="img-responsive pull-right" src="http://i76.imgup.net/accepted_c22e0.png">
+                        </div>
+                    </div>                    
+                </div>
+		
+                <div class="panel-body">
+			
+  
+                        <div class="row">
+                            <div class="col-xs-12">
+				{% if paidflag == 0 %}
+				<center><button id="rzp-button1">Pay</button>
+				{% else %}
+				<center><button id="rzp-button1" disabled>Pay</button>
+				{% endif %}
+				<span id='waiter'></span>&nbsp;&nbsp;<span id='waiter2'></span>&nbsp;&nbsp;<input type="button" name='btnnojoin' id='btnnojoin' value="No, I won't join now" onClick="window.close();"></center>
+				<p style="color:blue;font-style:italic;text-align:center;">
+				    Joining now will make you a member till {{targetdate}}*
+				</p>
+                            </div>
+                        </div>
+			<input type='hidden' name='payamt' id='payamt' value="{{total_amt}}">                        
+                    </form>
+                </div>
+            </div>        
+        </div>
+    </div>
+	<p style="color:#AA0000;font-style:italic;text-align:center;">
+	* Note: Memberships are subject to changes made to the group by group owners. TestYard doesn't take ownership of any changes to any group made by its owner.
+	</p>
+<!-- </form > -->
+</body>
+<!-- RazorPay JS start -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    var options = {"key": "{{razorpaykey}}", "amount": parseInt({{orderamount}}), "currency": "INR",    "name": "{{groupname}}",    "description": "{{order_desc}}",    "image": "{{groupimageurl}}",    "order_id": "{{razorpayorderid}}", "callback_url": "{{razorpaysuccessurl}}",    "prefill": { "name" : "{{buyername}}", "email" : "{{buyeremail}}", "contact" : "{{buyerphone}}" }, "notes" : {"address" : "Razorpay Corporate Office" }, "theme" : {"color" : "#3399cc" }};
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button1').onclick = function(e){ rzp1.open(); e.preventDefault();}
+</script>
+<!-- RazorPay JS end -->
+</html>
+
+

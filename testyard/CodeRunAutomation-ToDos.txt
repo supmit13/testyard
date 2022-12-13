@@ -1,0 +1,41 @@
+TO DOs For Code Running Automation - Some of these should be implemented in version #1, while the rest should be implemented in version #2.
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+#1. The process starts by running "runvms.py" with appropriate 'vmscount' and 'skills_settings.MAX_VM_INSTANCES_LIN' param values. It 
+invokes the 'poweron' program (poweron.c). This step starts the VM workstation player with the appropriate machine instance in a physically
+ visible window. The step stops for the user to enter the password to login into the VM instance machine.
+TO DO: The password entering activity should be automated so that there is no necessity for a physical user to type in the password. Also,
+ preferably there should not be any physical VM window opening. A thin client would be ideal for the situation.
+
+#2. On logging into the system, the user should open a terminal window, create a directory named 'scripts', and copy a file named 
+'prepare_env.sh' from the "testyard/testyard/scripts" directory of the system hosting the "TestYard" web application. The specific command 
+used from the console of the host system is as follows:
+	rsync -v -e ssh prepare_env.sh supriyo@172.16.16.132:/home/supriyo/scripts/
+The above command is an example command, some of the values need to be modified to get it to work on other systems. Once this command gets 
+executed, the 'prepare_env.sh' script is executed from the command line by the user.
+TO DO: The entire operation above should be executed without the intervention of any human entity. The system should parse a config file
+to retrieve the source and the location of the "prepare-env.sh" script (i.e., it should get the IP address of the system where this script 
+is lying, should find out  the username and password to log into this host, and find the directory in that host where the script is stored),
+log into the host  and copy the script from a location specified in the config file.
+
+#3. The 'prepare_env.sh' is then run by the user from the command line. This downloads and installs all necessary packages/programming
+ environments so that the user scripts may be run on the system.
+TO DO: The 'prepare_env.sh' script should be run automatically and all exceptions should be handled by the code, so that an user need not 
+take any action to bypass download/installation of a certain package that causes a problem with the script.
+
+#4. On execution of the 'prepare_env.sh' script in the VM instance, a few directories are created. Each of them has a purpose in the entire
+sceme of things. One such directory is the 'testcode' directory. It hosts a 'C' program named "setIP" which is executed by the 
+'prepare_env.sh' at a later stage such that the IPs of the VM instances running at that time forms a series (which is easy to handle from 
+within the script). However, trying to do this operation results in an incompatibility error. 
+TO DO: The 'prepare_env.sh' can copy the source code of this file from the appropriate location and do the compiling and linking 
+dynamically. Once that is done, it can be run by the 'prepare_env.sh' and the IP addresses manipulated in the desired way.
+
+#5 On trying to install "Free Pascal Compiler" or 'fpc' using apt-get automatically, the system presents a lot of choices that are to be 
+added by the physical user.
+TO DO: Create appropriate or standard values for all these elements and feed them to the system as and when they appear.
+
+
+
+
+
+

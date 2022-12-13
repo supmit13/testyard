@@ -1,0 +1,972 @@
+	{% include "inc/html_head.html" %}
+	
+	{% include "inc/mission_statement.html" %}
+	   <style>
+		.container { position: relative; }
+	        .imageView { border: 1px solid #0000AA; }
+	    </style>
+
+		<style>
+		.glowing-border {
+		    border: 2px solid #000088;
+		    border-radius: 4px;
+		}
+
+		.glowing-border:focus { 
+		    outline: none;
+		    border-color: #9ecaed;
+		    box-shadow: 0 0 10px #9ecaed;
+		}
+		</style>
+
+		<style>
+			  ul.tab {
+		    list-style-type: none;
+		    margin: 0;
+		    padding: 0;
+		    overflow: hidden;
+		    border: 1px solid #ccc;
+		    background-color: #f1f1f1;
+		}
+		/* Float the list items side by side */
+		ul.tab li {float: left;}
+
+		/* Style the links inside the list items */
+		ul.tab li a {
+		    display: inline-block;
+		    color: black;
+		    text-align: center;
+		    padding: 14px 16px;
+		    text-decoration: none;
+		    transition: 0.3s;
+		    font-size: 17px;
+		}
+
+		/* Change background color of links on hover */
+		ul.tab li a:hover {background-color: #ddd;}
+
+		/* Create an active/current tablink class */
+		ul.tab li a:focus, .active {background-color: #ccc;}
+
+		/* Style the tab content */
+		.tabcontent {
+		    display: none;
+		    padding: 6px 12px;
+		    border: 1px solid #ccc;
+		    border-top: none;
+		}
+	   </style>
+	   <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+           <script type='text/javascript'>
+
+		function openTab(evt, dataName){
+		  var i, tabcontent, tablinks;
+		  tabcontent = document.getElementsByClassName("tabcontent");
+		  for (i = 0; i < tabcontent.length; i++) {
+		    tabcontent[i].style.display = "none";
+		  }
+		  tablinks = document.getElementsByClassName("tablinks");
+		  for (i = 0; i < tablinks.length; i++) {
+		    tablinks[i].className = tablinks[i].className.replace(" active", "");
+		  }
+		  document.getElementById(dataName).style.display = "block";
+		  evt.currentTarget.className += " active";
+	       }
+
+
+	        google.charts.load('current', {'packages':['bar', 'scatterchart', 'calendar']});
+
+		function showStatHelp(){
+		    examplediv = document.getElementById('example');
+		    // Display help explanation and example for every statistic served on this page.
+		}
+
+		function display_tests(){
+		   var xmlhttp; 
+		   if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		   }
+		   else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		   }
+		   ttopic = document.frmanalytics.test_cat.options[document.frmanalytics.test_cat.options.selectedIndex].value;
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        testsdiv = document.getElementById('testnames');
+			testsdiv.innerHTML = xmlhttp.responseText;
+			document.frmanalytics.btndisplay.disabled= false;
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
+  		    xmlhttp.send(postdata);
+		}
+
+
+		function creator_display_tests(){
+		   var xmlhttp;
+		   if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		   }
+		   else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		   }
+		   ttopic = document.frmanalytics.creator_test_cat.options[document.frmanalytics.creator_test_cat.options.selectedIndex].value;
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
+		   postdata += "&role=creator";
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        testsdiv = document.getElementById('creator_testnames');
+			testsdiv.innerHTML = xmlhttp.responseText;
+			document.frmanalytics.creator_btndisplay.disabled= false;
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
+  		    xmlhttp.send(postdata);
+		}
+
+		function evaluator_display_tests(){
+		   var xmlhttp;
+		   if (window.XMLHttpRequest){
+		      xmlhttp=new XMLHttpRequest();
+		   }
+		   else{
+		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		   }
+		   ttopic = document.frmanalytics.evaluator_test_cat.options[document.frmanalytics.evaluator_test_cat.options.selectedIndex].value;
+		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
+		   postdata += "&role=evaluator";
+		    xmlhttp.onreadystatechange = function(){
+  		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		        testsdiv = document.getElementById('evaluator_testnames');
+			testsdiv.innerHTML = xmlhttp.responseText;
+			document.frmanalytics.evaluator_btndisplay.disabled= false;
+  		      }
+  		    };
+  		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
+  		    xmlhttp.send(postdata);
+		}
+
+
+		function displaynote(){
+		    notesdiv = document.getElementById('notes');
+		    if(document.frmanalytics.analytic_technique.options[document.frmanalytics.analytic_technique.options.selectedIndex].value == "comp_mmm"){
+			notesdiv.innerHTML = "<font color='#AA0000' size=-1>Disclaimer: The values and displays for this analytic are only relevant when test sessions of most of the test takers have been evaluated. If not, the values and plots for this analytic are meaningless.</font>";
+		    }
+		    else{
+			notesdiv.innerHTML = "";
+		    }
+		}
+
+
+		function sortmmyyyy(unsortedlist){
+		    sortedlist = Array();
+		    yyyymmdict = {};
+		    for(var i=0; i < unsortedlist.length;i++){
+			dparts = unsortedlist[i].split("/");
+			yyyy = dparts[1];
+			mm = dparts[0];
+			if(yyyymmdict.hasOwnProperty(yyyy)){
+			    mmlist = yyyymmdict[yyyy];
+			    mmlist[mmlist.length] = mm;
+			}
+			else{
+			    yyyymmdict[yyyy] = Array(mm);
+			}
+		    }
+		    yyyylist = Object.keys(yyyymmdict);
+		    yyyylist.sort();
+		    j = 0;
+ 		    for(k=0;k < yyyylist.length; k++){
+			yyyy = yyyylist[k];
+			mmsorted = yyyymmdict[yyyy];
+			mmsorted.sort();
+			for(l=0;l < mmsorted.length;l++){
+			    mm = mmsorted[l];
+			    sortedlist[j] = mm + "/" + yyyy;
+			    j++;
+			}
+		    }
+		    return (sortedlist);
+		}
+
+
+    		function display_plot(usertype){
+		    if(usertype == "" || usertype == "candidate"){
+		    analytic_technique = document.frmanalytics.analytic_technique.options[document.frmanalytics.analytic_technique.options.selectedIndex].value;
+		    ttopic = document.frmanalytics.test_cat.options[document.frmanalytics.test_cat.options.selectedIndex].value;
+		    }
+		    else if(usertype == "creator"){
+		        analytic_technique = document.frmanalytics.creator_analytic_technique.options[document.frmanalytics.creator_analytic_technique.options.selectedIndex].value;
+		    	ttopic = document.frmanalytics.creator_test_cat.options[document.frmanalytics.creator_test_cat.options.selectedIndex].value;
+		    }
+		    else if(usertype == "evaluator"){
+		        analytic_technique = document.frmanalytics.evaluator_analytic_technique.options[document.frmanalytics.evaluator_analytic_technique.options.selectedIndex].value;
+		    	ttopic = document.frmanalytics.evaluator_test_cat.options[document.frmanalytics.evaluator_test_cat.options.selectedIndex].value;
+		    }
+		    //alert(document.frmanalytics.test_cat.options.selectedIndex);
+		    var xmlhttp; 
+		    if (window.XMLHttpRequest){
+		        xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "";
+                    //nodataflag = 1;
+ 		    //alert(analytic_technique);
+		    if(!document.frmanalytics.usertests || !document.frmanalytics.usertests.options){
+			alert("The screen needs to be refreshed to plot the new data. Please click Ok to continue.");
+			location.reload();
+		    }
+		    testid = document.frmanalytics.usertests.options[document.frmanalytics.usertests.options.selectedIndex].value;
+		    postdata += "analytic_technique=" + analytic_technique + "&test_topic=" + ttopic + "&testid=" + testid + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
+		    //alert(postdata);
+		    xmlhttp.onreadystatechange = function(){
+  		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+			//alert(xmlhttp.responseText);
+			displaydata = document.getElementById('displaydata');
+			if(usertype == "creator"){
+			    displaydata = document.getElementById('creator_displaydata');
+			}
+			else if(usertype == "evaluator"){
+			    displaydata = document.getElementById('evaluator_displaydata');
+			}
+			chartdataobj = {};
+			try{
+			    chartdataobj = JSON.parse(xmlhttp.responseText)
+			}
+			catch(err){ // Not a JSON object, so must be a string with some info on the outcome of the server side code.
+   			    alert(xmlhttp.responseText);
+			}
+			chartdata = Array();
+			if(analytic_technique == "comp_topper"){
+			    headers = ['Testnames', 'My Score', 'Max Score'];
+			}
+			else if(analytic_technique == "comp_all"){
+			    headers = [ 'User', 'Score' ];
+			}
+			else if(analytic_technique == "comp_cats"){
+			    headers = [ 'Testname', 'Score' ];
+			}
+			else if(analytic_technique == "comp_chlg"){
+			    headers = [ 'Challenge', 'My Score', 'Max Score' ];
+			}
+			else if(analytic_technique == "comp_mmm"){
+			    headers = [ 'Statname',  'My Score', 'Stat Score' ];
+			}
+			else if(analytic_technique == "comp_cohort"){
+			    headers = [ 'testname',  'Candidates Count' ];
+			}
+			else if(analytic_technique == "comp_sbt"){
+    			    headers = [ 'Time', 'Score' ];
+			}
+			else if(analytic_technique == "comp_ppt"){
+			    headers = [ 'Period', 'Score %' ];
+			}
+			else if(analytic_technique == "comp_ttperf"){
+			    headers = [ 'Time', 'Score %' ];
+			}
+			else if(analytic_technique == "comp_passfail"){
+			    headers = [ 'Time', 'Pass %' ];
+			}
+			else if(analytic_technique == "creator_comp_scores"){
+			    headers = [ 'User', 'Score' ];
+			}
+			else if(analytic_technique == "creator_comp_testpop"){
+			    headers = [ 'Testname', 'Takers Count' ];
+			}
+			else if(analytic_technique == "creator_show_testtimes"){
+			    headers = [ 'Testname', 'Time' ];
+			}
+			else if(analytic_technique == "creator_comp_mmm"){
+			    headers = [ 'Testname', 'Mean, Median and Mode Scores' ];
+			}
+			else if(analytic_technique == "creator_comp_testusage"){
+			    headers = [ 'Testname', 'No. of Takers' ];
+			}
+			else if(analytic_technique == "creator_comp_cohort"){
+			    headers = [ 'Testname', 'No. of Takers' ];
+			}
+			else if(analytic_technique == "evaluator_ratio_pass_total"){
+			    headers = [ 'Statistic', 'Count' ];
+			}
+			else if(analytic_technique == "evaluator_count_evaluated_tests"){
+			    headers = [ 'Testname', 'Count' ];
+			}
+			else if(analytic_technique == "evaluator_ans_evaluated_by_time"){
+			    headers = [ 'Time', 'Count' ];
+			}
+  			chartdata[0] = headers;
+			if(analytic_technique == "comp_topper"){
+			    // chartdataobj is an associative array... iterate over it.
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            scores = chartdataobj[testname];
+			            myscore = scores[0];
+			            maxscore = scores[1];
+			            scoredata = [testname, parseFloat(myscore), parseFloat(maxscore) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Relative Performance Chart',
+			    	    subtitle: 'My score vs max score in test(s)',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_all"){
+			    username = "";
+			    i = 1;
+			    for (username in chartdataobj){
+				if (chartdataobj.hasOwnProperty(username)){
+				    score = chartdataobj[username];
+				    scoredata = [ username, parseFloat(score) ];
+				    chartdata[i] = scoredata;
+				    //nodataflag = 0;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Comparative Performance Chart',
+			    	    subtitle: 'My score vs Others in the test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_cats"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            score = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(score) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Test Scores in a Topic',
+			    	    subtitle: 'Score in each test in the selected topic',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_chlg"){
+			    challenge = "";
+			    i = 1;
+		    	    for (challenge in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(challenge)){
+       			            score = chartdataobj[challenge];
+				    myscore = score[0];
+				    maxscore = score[1];
+			            scoredata = [challenge, parseFloat(myscore), parseFloat(maxscore) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Challenge Scores in a Test',
+			    	    subtitle: 'Score in each challenge of selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_mmm"){
+			    statname = "";
+			    i = 1;
+		    	    for (statname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(statname)){
+       			            score = chartdataobj[statname];
+				    myscore = score[0];
+				    statscore = score[1];
+			            scoredata = [statname, parseFloat(myscore), parseFloat(statscore) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag  0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Statistical Scores in a Test',
+			    	    subtitle: 'Statistical scores in selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_cohort"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Cohort Analysis',
+			    	    subtitle: 'Cohort Analysis for users of a selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_sbt"){
+			    testname = "";
+			    i = 1;
+			    minval = 0;
+			    maxval = 0;
+			    dateslist = Array();
+			    for (testname in chartdataobj){
+				scorelist = chartdataobj[testname];
+				timedata = scorelist[0];
+				dateslist.push(timedata);
+			    }
+			    dateslist.sort();
+			    for (testname in chartdataobj){
+				if (chartdataobj.hasOwnProperty(testname)){
+				    score = chartdataobj[testname];
+					if(minval > score[1]){
+					    minval = score[1];
+					}
+					if(maxval < score[1]){
+					    maxval = score[1];
+					}
+					datetime = chartdataobj[testname][0];
+				    scoredata = [datetime, parseFloat(score[1]) ];
+				    chartdata[i] = scoredata;
+				    //nodataflag = 0;
+				    i++;
+				}
+			    }
+			    //chartdata_sorted = Array();
+			    //var j = 0;
+			    //for (timedata in dateslist){
+			    //   for(var k=0;k < chartdata.length;k++){
+			    //	    if(timedata == chartdata[k][0]){
+			    //		chartdata_sorted[j] = [timedata, chartdata[k][1]];
+			    //		j++;
+			    //	    }
+			    //	}
+		 	    //}
+			    var options = {
+				  title: 'Time wise tests',
+				  hAxis: {title: 'Time', minValue: chartdata[0], maxValue: chartdata[chartdata.length - 1], textStyle : {color: '0000FF', fontSize : 8}, gridlines: {units :{months : {format: 'M/d/yyyy'}}, count: 10}},
+			      vAxis: {title: 'Score', minValue: minval - 1, maxValue: maxval + 1},
+				  legend: 'none',
+				  colors:['blue','#004411']
+				  
+				};
+			}
+			else if(analytic_technique == "comp_ppt"){
+			    period = "";
+			    // sort chartdataobj by period
+			    sortedchartobjects = Array();
+			    i = 0;
+			    for (period in chartdataobj){
+    				sortedchartobjects[i] = period;
+				i++;
+			    }
+			    sortedchartobjects = sortmmyyyy(sortedchartobjects);
+			    //alert(sortedchartobjects);
+			    i = 1;
+		    	    for (j=0; j < sortedchartobjects.length;j++){
+				if(sortedchartobjects[j] == '' || sortedchartobjects[j] == null){
+				    continue;
+				}
+				period = sortedchartobjects[j];
+				//alert(period);
+   			        if (chartdataobj.hasOwnProperty(period)){
+       			            percentage = chartdataobj[period];
+			            scoredata = [period, parseFloat(percentage) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Average Percentage Scores',
+			    	    subtitle: 'Average of percentage scores in 1 month time periods',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "comp_ttperf"){
+				chtype = "";
+				i = 1;
+				for (chtype in chartdataobj){
+					if (chartdataobj.hasOwnProperty(chtype)){
+						scores = chartdataobj[chtype];
+						percentage = (scores[0]/scores[1]) * 100;
+						chartdata[i] = Array(chtype, percentage);
+						//nodataflag = 0;
+						i++;
+					}
+				}
+				var options = {
+					chart: {
+						title: 'Performance in Different Challenge Types',
+						subtitle: 'Percentage scores in different challenge types in the selected topic',
+					},
+					bars: 'vertical'
+				};
+			}
+			else if(analytic_technique == "comp_passfail"){
+				period = "";
+				sortedchartobjects = Array();
+				    i = 0;
+				    for (period in chartdataobj){
+	    				sortedchartobjects[i] = period;
+					i++;
+				    }
+				    sortedchartobjects = sortmmyyyy(sortedchartobjects);
+				    //alert(sortedchartobjects);
+				    i = 1;
+			    	    for (j=0; j < sortedchartobjects.length;j++){
+					if(sortedchartobjects[j] == '' || sortedchartobjects[j] == null){
+					    continue;
+					}
+					period = sortedchartobjects[j];
+					if (chartdataobj.hasOwnProperty(period)){
+						outcomes = chartdataobj[period];
+						chartdata[i] = Array(period, outcomes[0], outcomes[1]);
+						//nodataflag = 0;
+						i++;
+					}
+				}
+				var options = {
+					chart: {
+						title: 'Pass/Fail versus time',
+						subtitle: 'Outcomes of various tests under a selected topic',
+					},
+					bars: 'vertical'
+				};
+			}
+			else if(analytic_technique == "creator_comp_scores"){
+			    candidatename = "";
+			    i = 1;
+		    	    for (candidatename in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(candidatename)){
+       			            count = chartdataobj[candidatename];
+			            scoredata = Array(candidatename, parseFloat(count));
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Compare Scores of Candidates',
+			    	    subtitle: 'Compare scores of candidates of the selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_testpop"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Test Popularity',
+			    	    subtitle: 'Test popularity based on count of times a test has been taken',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_show_testtimes"){
+			    uname = "";
+			    i = 1;
+		    	    for (uname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(uname)){
+       			            times = chartdataobj[uname];
+				    for(time in times){
+					//alert(times);
+					scoredata = [time, uname ];
+			            	chartdata[i] = scoredata;
+				    }
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Show Test Taking Times',
+			    	    subtitle: 'Display times at which the selected test has been taken',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_mmm"){
+			    statname = "";
+			    i = 1;
+		    	    for (statname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(statname)){
+       			            count = chartdataobj[statname];
+			            scoredata = [statname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Mean, Median and Mode of Test Scores',
+			    	    subtitle: 'Mean, Median and Mode of Test Scores',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_testusage"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Test Usage',
+			    	    subtitle: 'Test usage based on count of times the test has been taken',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "creator_comp_cohort"){
+			    testname = "";
+			    i = 1;
+		    	    for (testname in chartdataobj){
+   			        if (chartdataobj.hasOwnProperty(testname)){
+       			            count = chartdataobj[testname];
+			            scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    //nodataflag = 0;
+			            i++;
+    			        }
+		    	    }
+			    var options = {
+			        chart: {
+			    	    title: 'Cohort Analysis',
+			    	    subtitle: 'Other tests taken by candidates who have taken the selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "evaluator_ratio_pass_total"){
+			    statname = "";
+			    i = 1;
+			    for (statname in chartdataobj){
+				//alert(statname);
+				if (chartdataobj.hasOwnProperty(statname)){
+				    count = chartdataobj[statname];
+				    scoredata = [statname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Pass Fail Counts',
+			    	    subtitle: 'Pass Fail Counts in selected test',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "evaluator_count_evaluated_tests"){
+			    testname = "";
+			    i = 1;
+			    for (testname in chartdataobj){
+				//alert(testname);
+				if (chartdataobj.hasOwnProperty(testname)){
+				    count = chartdataobj[testname];
+				    scoredata = [testname, parseFloat(count) ];
+			            chartdata[i] = scoredata;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Count of tests evaluated under selected topics',
+			    	    subtitle: 'Count of tests evaluated under selected topics',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			else if(analytic_technique == "evaluator_ans_evaluated_by_time"){
+			    evalperiod = "";
+			    sortedchartobjects = Array();
+			    i = 0;
+			    for (evalperiod in chartdataobj){
+    				sortedchartobjects[i] = evalperiod;
+				i++;
+			    }
+			    sortedchartobjects = sortmmyyyy(sortedchartobjects);
+			    //alert(sortedchartobjects);
+			    i = 1;
+		    	    for (j=0; j < sortedchartobjects.length;j++){
+				if(sortedchartobjects[j] == '' || sortedchartobjects[j] == null){
+				    continue;
+				}
+				evalperiod = sortedchartobjects[j];
+				if (chartdataobj.hasOwnProperty(evalperiod)){
+				    count = chartdataobj[evalperiod];
+				    scoredata = [evalperiod, parseFloat(count) ];
+				    chartdata[i] = scoredata;
+				    //nodataflag = 0;
+				    i++;
+				}
+			    }
+			    var options = {
+			        chart: {
+			    	    title: 'Count of evaluations Vs time (monthly basis)',
+			    	    subtitle: 'Count of evaluations Vs time (monthly basis)',
+			        },
+			        bars: 'vertical'
+			    };
+			}
+			//if(nodataflag){
+			    //displaydata.innerHTML = "<font color='#AA0000' style='bold'>There is no data for the selected plot variables.</font>";
+			//}
+			if (analytic_technique == "comp_sbt"){
+			    var data = google.visualization.arrayToDataTable(chartdata);
+			    var chart = new google.visualization.ScatterChart(document.getElementById('displaydata'));
+			    chart.draw(data, options);
+			}
+			else if(analytic_technique == "creator_show_testtimes"){
+			    var data = google.visualization.arrayToDataTable(chartdata);
+			    var chart = new google.visualization.Calendar(document.getElementById('creator_displaydata'));
+			    chart.draw(data, options);
+			}
+			else{
+			    var data = google.visualization.arrayToDataTable(chartdata);
+			    var chart = new google.charts.Bar(displaydata);
+			    chart.draw(data, google.charts.Bar.convertOptions(options));
+			}
+  		    }
+  		    };
+		    if(analytic_technique == "comp_topper"){
+		        xmlhttp.open("POST", '{{ comparewithtoppersurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_all"){
+			xmlhttp.open("POST", '{{ comparewithallurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_cats"){
+			xmlhttp.open("POST", '{{ comparetopicscoresurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_chlg"){
+			xmlhttp.open("POST", '{{ comparechallengescoresurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_mmm"){
+			xmlhttp.open("POST", '{{ comparescoresmmmurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_cohort"){
+			xmlhttp.open("POST", '{{ comparecohorturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_sbt"){
+			xmlhttp.open("POST", '{{ comparesbturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_ppt"){
+			xmlhttp.open("POST", '{{ compareppturl }}', true);
+		    }
+		    else if(analytic_technique == "comp_ttperf"){
+			xmlhttp.open("POST", '{{ comparettperfurl }}', true);
+		    }
+		    else if(analytic_technique == "comp_passfail"){
+			xmlhttp.open("POST", '{{ comparepassfailurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_scores"){
+			xmlhttp.open("POST", '{{ creatorcompscoreurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_testpop"){
+			xmlhttp.open("POST", '{{ creatortestpopurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_show_testtimes"){
+			xmlhttp.open("POST", '{{ creatortesttimesurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_mmm"){
+			xmlhttp.open("POST", '{{ creatortestmmmurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_testusage"){
+			xmlhttp.open("POST", '{{ creatortestusageurl }}', true);
+		    }
+		    else if(analytic_technique == "creator_comp_cohort"){
+			xmlhttp.open("POST", '{{ creatortestcohorturl }}', true);
+		    }
+		    else if(analytic_technique == "evaluator_ratio_pass_total"){
+			xmlhttp.open("POST", '{{ evaluatorratiopassurl }}', true);
+		    }
+		    else if(analytic_technique == "evaluator_count_evaluated_tests"){
+			xmlhttp.open("POST", '{{ evaluatorcounttestsurl }}', true);
+		    }
+		    else if(analytic_technique == "evaluator_ans_evaluated_by_time"){
+			xmlhttp.open("POST", '{{ evaluatoransbytimeurl }}', true);
+		    }
+  		    xmlhttp.send(postdata);
+		}
+	   </script>
+		<!-- ### Post Entry Begin ###  -->
+		{% include "inc/right_panel.html" %}
+		<div class="post">
+			<span class="meta">
+			<h3>Welcome {{ displayname }}</h3>
+			{{ msg }} {{ newuser }}
+			<div class="entry">
+			<form name='frmanalytics'>
+			<ul class="tab" style="white-space:nowrap;width:470px">
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
+			  <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
+                          <!-- <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
+                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'interviewsattended')">Interviews Attended</a></li> -->
+                        </ul>
+			<div id='testsascandidate' style="display:block" class="tabcontent">
+			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
+			<tr>
+			    <td width='30%' valign='top'><span>
+			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
+			    <select name='analytic_technique' onchange='javascript:displaynote();' class="glowing-border">
+				<option value='comp_topper'>Compare with toppers (should select a single test topic)</option>
+				<option value='comp_all'>Compare with all (should select a single test after selecting topic)</option>
+				<option value='comp_cats'>Compare your scores on a topic (should select a single test topic)</option>
+				<option value='comp_chlg'>Compare your scores by challenge with topper(should select a single test)</option>
+				<option value='comp_mmm'>Compare mean, median and mode of all scores in a test (select a test)</option>
+				<option value='comp_cohort'>Other tests taken by users who took the selected test (select a test)</option>
+				<option value='comp_sbt'>Tests scores (under selected topic) against time (select a topic)</option>
+				<option value='comp_ppt'>Scores in percentage over time (under a selected topic)</option>
+				<option value='comp_ttperf'>Performance on different challenge types (under a topic)</option>
+				<option value='comp_passfail'>Pass and Fail in tests under a given topic against time (select topic)</option>
+			    </select>
+			    <div id='notes'></div>
+			    <br /><br />
+			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
+			    <select name='test_cat' onChange='javascript:display_tests();' class="glowing-border">
+				<option value='' selected>Click to select topic</option>
+				{% for ttopic in test_topics %}
+				<option value='{{ttopic}}'>{{ttopic}}</option>
+				{%  endfor %}
+			    </select>
+			    <br /><br />
+			    <div id='testnames'></div>
+			    <br /><br />
+			    <input type='button' name='btndisplay' value='Display' onclick='javascript:display_plot("");' disabled=true>
+			    </span></td>
+			    <td width='70%'>
+				<div id='displaydata' style="width: 900px; height: 500px;">
+				</div>
+			    </td>
+			</tr>
+			</table>
+			</div>
+			<div id='testsascreator' style="" class="tabcontent">
+			 
+			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
+			<tr>
+			    <td width='30%' valign='top'><span>
+			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
+			    <select name='creator_analytic_technique' onchange='javascript:displaynote();' class='glowing-border'>
+				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
+				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
+				<option value='creator_show_testtimes'>Times at which selected test has been taken by candidates</option>
+				<option value='creator_comp_mmm'>Max, Min, Mean, Median and Mode of scores of selected test(s)</option>
+				<option value='creator_comp_testusage'>Chart to display test usages in selected topic</option>
+				<option value='creator_comp_cohort'>Other tests taken by users who took the selected test</option>
+				
+			    </select>
+			    <div id='creator_notes'></div>
+			    <br /><br />
+			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
+			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();' class='glowing-border'>
+				<option value='' selected>Click to select topic</option>
+				{% for ttopic in test_topics %}
+				<option value='{{ttopic}}'>{{ttopic}}</option>
+				{%  endfor %}
+			    </select>
+			    <br /><br />
+			    <div id='creator_testnames'></div>
+			    <br /><br />
+			    <input type='button' name='creator_btndisplay' value='Display' onclick='javascript:display_plot("creator");' disabled=true>
+			    </span></td>
+			    <td width='70%'>
+				<div id='creator_displaydata' style="width: 900px; height: 500px;">
+				</div>
+			    </td>
+			</tr>
+			</table>
+			
+			</div>
+			<div id='testsasevaluator' style="" class="tabcontent">
+			  <table border='0' width='100%' cellspacing='2' cellpadding='4'>
+			<tr>
+			    <td width='30%' valign='top'><span>
+			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
+			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();' class='glowing-border'>
+				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
+				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.(Select a topic only).</option>
+				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.(Select a topic only).</option>
+			    </select>
+			    <div id='evaluator_notes'></div>
+			    <br /><br />
+			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
+			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();' class='glowing-border'>
+				<option value='' selected>Click to select topic</option>
+				{% for ttopic in test_topics %}
+				<option value='{{ttopic}}'>{{ttopic}}</option>
+				{%  endfor %}
+			    </select>
+			    <br /><br />
+			    <div id='evaluator_testnames'></div>
+			    <br /><br />
+			    <input type='button' name='evaluator_btndisplay' value='Display' onclick='javascript:display_plot("evaluator");' disabled=true>
+			    </span></td>
+			    <td width='70%'>
+				<div id='evaluator_displaydata' style="width: 900px; height: 500px;">
+				</div>
+			    </td>
+			</tr>
+			</table>
+			</div>
+			<!--
+			<div id='testsasinterviewer' style="display:block" class="tabcontent">
+			</div>
+			<div id='testsasinterviewee' style="display:block" class="tabcontent">
+			</div>
+			-->
+			{% csrf_token %}
+			</form>
+			</div>
+			<div id='example'><font color='#00AA00' size=-1><a href='#' onClick='javascript:showStatHelp();'>What does this statistic mean?</a></font></div>
+			</span>
+		</div>
+		
+		<!-- ### Post Entry End ###  -->
+		
+	{% include "inc/html_foot.html" %}
