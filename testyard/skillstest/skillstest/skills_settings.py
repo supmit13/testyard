@@ -554,15 +554,15 @@ PROCESSED_SCRIPT_DUMP = "processed"
 ###### AMAZON AWS API INFO ######
 
 ACCESS_KEY_ID = "AKIAI6NC7ETLL3Z42WDA"
-SECRET_ACCESS_KEY = "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"
+SECRET_ACCESS_KEY = "xxxxxxxxxxx+"
 
 AMAZON_ACCT_EMAIL = "supmit2k3@yahoo.com"
-AMAZON_ACCT_PASSWD = "spmprx13"
+AMAZON_ACCT_PASSWD = "xxxxxxxx"
 
 AMAZON_ACCT_ID = "704972534197"
 
 IAM_USER = "supmit"
-IAM_PASSWD = "spmprx13"
+IAM_PASSWD = "xxxxxxxxxxxx"
 
 IAM_SIGNIN_URL = "https://704972534197.signin.aws.amazon.com/console/" # This will change if we ever change the values for IAM_USER or IAM_PASSWD.
 ###### AMAZON AWS SETTINGS END ######
