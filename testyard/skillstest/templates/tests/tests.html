@@ -2,9 +2,16 @@
 	<script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script> 
 	<script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script> 
 	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
+
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!-- New interface code ends here -->
+
         <!-- Speech to text Code starts here -->
         <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shoelace-css/1.0.0-beta16/shoelace.css"> -->
         <link rel="stylesheet" href="static/css/speech2text/styles.css" />
+	<link rel="stylesheet" href="static/css/newiface.css" />
         <script type="text/javascript" src="static/speech2text/speech2text_script.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <!-- Speech to text Code ends here  -->
@@ -1090,7 +1097,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var thediv=document.getElementById('createtestdiv');
 		  if(thediv.style.display == "none"){
 		    thediv.style.display = "";
-		    thediv.style='height:2400px;width:800px;padding-left:20px;';
+		    thediv.style='height:1000px;width:800px;padding-left:20px;';
 		    thediv.innerHTML = "{% include 'tests/create_test_form.html' %}";
 		  }
 		  else{
@@ -2951,7 +2958,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<!-- Tests HTML goes here. -->
-			<div id='createtestdiv' style='display:none;'></div>
+			<div id='createtestdiv' style='display:none;' class='container register align-items-center justify-content-center'></div>
 			<div class="actLink">
 				<h3><img src='static/images/newTest.png' style='height:25px;width:25px;'>&nbsp;&nbsp; {{ createlink }}</h3>
 				<h3><img src='static/images/upload.png' style='height:25px;width:25px;'>&nbsp;&nbsp; {{ uploadlink }}</h3>
