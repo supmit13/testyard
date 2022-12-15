@@ -876,12 +876,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      var publishedregex = new RegExp("published");
 		      if(publishedregex.test(xmlhttp.responseText)){
 		        opresdiv = document.getElementById('opres');
-		        opresdiv.style.display = "";
+		        opresdiv.style = "height:1050px;width:1200px;padding-left:20px;display:flex-right;";
 		        opresdiv.innerHTML = xmlhttp.responseText;
 		        return (false);
 		      }
 		      var thediv=document.getElementById('createtestdiv');
-		      thediv.style.display = "";
+		      thediv.style = "height:1050px;width:1200px;padding-left:20px;display:flex-right;";
 		      thediv.innerHTML = xmlhttp.responseText;
 		      //stripandexecutescript(thediv.innerHTML); // Execute the javascript code in script tags.
 		      return(false);
@@ -1099,7 +1099,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var thediv=document.getElementById('createtestdiv');
 		  if(thediv.style.display == "none"){
 		    thediv.style.display = "";
-		    thediv.style='height:1550px;width:1000px;padding-left:20px;';
+		    thediv.style='height:1550px;width:1000px;padding-left:20px;padding-right:20px;';
 		    thediv.innerHTML = "{% include 'tests/create_test_form.html' %}";
 		  }
 		  else{
@@ -1224,7 +1224,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // alert(xmlhttp.responseText);
   		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		    var thediv=document.getElementById('createtestdiv');
-		    thediv.style.display = "";
+		    thediv.style = "height:550px;width:900px;padding-left:20px;padding-top:20px;display:;";
 		    thediv.innerHTML = xmlhttp.responseText;
   		  }
   		  };

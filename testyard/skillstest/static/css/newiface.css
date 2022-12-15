@@ -93,3 +93,15 @@
     margin-bottom: -15%;
     color: #495057;
 }
+
+.btn-custom1 {
+    color: #212529;
+    background-color: #7cc;
+    border-color: #5bc2c2
+}
+
+.btn-custom2 {
+    color: #ffffff;
+    background-color: #4296f5;
+    border-color: #8ad3d3
+}
