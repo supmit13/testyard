@@ -876,12 +876,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      var publishedregex = new RegExp("published");
 		      if(publishedregex.test(xmlhttp.responseText)){
 		        opresdiv = document.getElementById('opres');
-		        opresdiv.style = "height:1050px;width:1200px;padding-left:20px;display:flex-right;";
+		        opresdiv.style = "height:1050px;width:1200px;padding-left:20px;padding-right:20px;display:flex-right;";
 		        opresdiv.innerHTML = xmlhttp.responseText;
 		        return (false);
 		      }
 		      var thediv=document.getElementById('createtestdiv');
-		      thediv.style = "height:1050px;width:1200px;padding-left:20px;display:flex-right;";
+		      thediv.style = "height:1050px;width:1200px;padding-left:20px;padding-right:20px;";
 		      thediv.innerHTML = xmlhttp.responseText;
 		      //stripandexecutescript(thediv.innerHTML); // Execute the javascript code in script tags.
 		      return(false);

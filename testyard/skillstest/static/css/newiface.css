@@ -94,14 +94,38 @@
     color: #495057;
 }
 
-.btn-custom1 {
+.btn-testyard1 {
     color: #212529;
     background-color: #7cc;
     border-color: #5bc2c2
 }
 
-.btn-custom2 {
+.btn-testyard2 {
     color: #ffffff;
     background-color: #4296f5;
     border-color: #8ad3d3
+}
+
+.slide-container {
+    overflow-x: scroll;
+    white-space: nowrap;
+    padding-right:20px;
+    padding-left:20px;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+.slide {
+    display: inline-block;
+    width: 300px;
+    white-space: normal;
+    padding-right:20px;
+    padding-left:20px;
+    padding-top:10px;
+    padding-bottom:10px;
+}
+
+.input-ty-tiny, select.input-ty-tiny {
+  height: 35px;
+  width: 300px;
+  line-height: 20px;
 }

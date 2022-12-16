@@ -1125,7 +1125,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     edit_challenge_dict = { 'lastchallengectr' : lastchallengectr, 'testlinkid' : testlinkid, 'multimediareqd' : multimediareqd, 'totalscore' : totalscore, 'challengedurationseconds' : challengedurationseconds, 'testtype' : testtype }
     edit_challenge_dict['answeringoptions'] = ""
     if testtype == 'COMP':
-        challengetypeslist = "<font color='#0000AA' style='font-weight:bold;'>Select Challenge Type</font><select name='challengetype' onchange='javascript:displayoptions();'>"
+        challengetypeslist = "<span class='slide-container'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Select Challenge Type</font>:&nbsp;&nbsp;</div><div class='float-right' style='width:50%;'><select name='challengetype' onchange='javascript:displayoptions();' class='form-control input-ty-tiny'>"
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
             if ttcode == 'SUBJ':
@@ -1134,7 +1134,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
                 continue # A challenge cannot be composite
             else:
                 challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
-        challengetypeslist += "</select><br /><div id='ansopts' style=''><font color='#0000AA' style='font-weight:bold;'>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> characters</font>(leave empty for no limit)</p></div>"
+        challengetypeslist += "</select></div></span><br /><div id='ansopts' style=''><span class='slide-container'><div class='slide' style='color:#0000AA;font-weight:bold;justify:left;'>Answer should not exceed </div><div class='float-right' style='width:50%;'><input type='number' name='maxsizewords' value='' size='6' maxlength='6' class='form-control input-ty-tiny' placeholder='no. of characters (leave empty for no limit)'></div></span></div>"
         edit_challenge_dict['challengetypeslist'] = challengetypeslist
     elif testtype == 'MULT' or testtype == 'FILB': # For 'CODN', 'ALGO' and 'SUBJ' type challenges, we need not provide any answering options.
         edit_challenge_dict['answeringoptions'] = "<p>"
