@@ -881,7 +881,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		        return (false);
 		      }
 		      var thediv=document.getElementById('createtestdiv');
-		      thediv.style = "height:1050px;width:1200px;padding-left:20px;padding-right:20px;";
+		      thediv.style = "height:1100px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
+		      thediv.className = "register";
 		      thediv.innerHTML = xmlhttp.responseText;
 		      //stripandexecutescript(thediv.innerHTML); // Execute the javascript code in script tags.
 		      return(false);
