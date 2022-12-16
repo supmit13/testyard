@@ -624,20 +624,20 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    ansoptsdiv.innerHTML = "<input type='hidden' name='oneormore' value='no'>";
 		    if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN' || document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'ALGO'){
 		      if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN'){
-			ansoptsdiv.innerHTML += "<div id='codnlang' style=''><b>Select Programming Language: <select name='progenv' class='glowing-border'><option value='multi'>Yes - Multiple</option>{{ progenv  }}</select><br /></div>";
+			ansoptsdiv.innerHTML += "<span class='slide-container' style='width:100%;'><div class='slide' id='codnlang' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Select Programming Language:</font> <select name='progenv' class='glowing-border'><option value='multi'>Yes - Multiple</option>{{ progenv  }}</select></div></span><br />";
 		      }
-		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizelines' value='' size='6' maxlength='6'> lines. </b>(leave empty for no limit.)</p></div>";
+		      ansoptsdiv.innerHTML += "<span class='slide-container' style='width:100%;'><div class='slide' id='ansopts' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Lines in Answer (leave empty for no limit.)</font><input type='text' name='maxsizelines' value='' size='6' maxlength='6'> </div></span><br />";
 		      responsekeydiv.style.display = "none";
 		      responsekeydiv.innerHTML = "";
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'SUBJ'){
-		      ansoptsdiv.innerHTML += "<div id='ansopts' style=''><b>Answer should not exceed <input type='text' name='maxsizewords' value='' size='6' maxlength='6'> chracters</b>(leave empty for no limit)</p></div>";
+		      ansoptsdiv.innerHTML += "<span class='slide-container' style='width:100%;'><div class='slide' id='ansopts' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Characters in Answer (leave empty for no limit) </font><input type='text' name='maxsizewords' value='' size='6' maxlength='6'> </div></span><br />";
 		      responsekeydiv.style.display = "none";
 		      responsekeydiv.innerHTML = "";
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'FILB'){
 		      responsekeydiv.style.display = "";
-		      responsekeydiv.innerHTML = "<b>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><input type='text' name='responsekey' value='' size='10' maxlength='250'></br>";
+		      responsekeydiv.innerHTML = "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</div><div class='float-right' style='width:50%;'><input type='text' name='responsekey' value='' size='10' maxlength='250'></div></span></br>";
 		    }
 		  }
 		}
