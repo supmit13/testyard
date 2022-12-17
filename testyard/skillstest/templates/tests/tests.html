@@ -493,7 +493,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 		function getresponseoptionswithcheckboxes(){
-		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		  var html = "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:left;'>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</div></span><br>";
 		  if(document.challengeform.choice1.value.trim() != ""){
 		    if(document.challengeform.choice1.value.match(/of\s+the\s+above/ig)){
 			alert("You may not enter values like 'All of the above' or 'None of the above' as choices. Please make them 'All of the other options' or 'None of the other options' respectively");
@@ -501,7 +501,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice1.value.focus();
 			return;
 		      }
-		    html += "<i>Option #a: <input type='checkbox' name='responsekey[]' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #a: <input type='checkbox' name='responsekey[]' value='"+ document.challengeform.choice1.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice1.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice2.value.trim() != ""){
 		    if(document.challengeform.choice2.value.match(/of\s+the\s+above/ig)){
@@ -510,7 +510,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice2.value.focus();
 			return;
 		      }
-		    html += "<i>Option #b: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #b: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice2.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice2.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice3.value.trim() != ""){
 		    if(document.challengeform.choice3.value.match(/of\s+the\s+above/ig)){
@@ -519,7 +519,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice3.value.focus();
 			return;
 		      }
-		    html += "<i>Option #c: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #c: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice3.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice3.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice4.value.trim() != ""){
 		    if(document.challengeform.choice4.value.match(/of\s+the\s+above/ig)){
@@ -528,7 +528,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice4.value.focus();
 			return;
 		      }
-		    html += "<i>Option #d: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #d: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice4.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice4.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice5.value.trim() != ""){
 		    if(document.challengeform.choice5.value.match(/of\s+the\s+above/ig)){
@@ -537,7 +537,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice5.value.focus();
 			return;
 		      }
-		    html += "<i>Option #e: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #e: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice5.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice5.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice6.value.trim() != ""){
 		    if(document.challengeform.choice6.value.match(/of\s+the\s+above/ig)){
@@ -546,7 +546,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice6.value.focus();
 			return;
 		      }
-		    html += "<i>Option #f: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #f: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice6.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice6.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice7.value.trim() != ""){
 		    if(document.challengeform.choice7.value.match(/of\s+the\s+above/ig)){
@@ -555,7 +555,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice7.value.focus();
 			return;
 		    }
-		    html += "<i>Option #g: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #g: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice7.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice7.value + "</i></font></div></span><br>";
 		  }
 		  if(document.challengeform.choice8.value.trim() != ""){
 		    if(document.challengeform.choice8.value.match(/of\s+the\s+above/ig)){
@@ -564,7 +564,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			document.challengeform.choice8.value.focus();
 			return;
 		      }
-		    html += "<i>Option #h: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:right;'><i>Option #h: <input type='checkbox' name='responsekey[]' value='" + document.challengeform.choice8.value + "'  class='form-control input-ty-tiny'>" + document.challengeform.choice8.value + "</i></font></div></span><br>";
 		  }
 		  return(html);
 		}
@@ -606,9 +606,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // alert(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value);
 		  if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'MULT'){
 		    ansoptsdiv.style.display = "";
-		    ansoptsdiv.innerHTML = "<div id='ansopts' style=''><p><b>Can there be more than one correct answer:</b>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();'>No<br><b>Please enter the options you want to be made available for this challenge/question.(max 8 options) </b><br><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();'><br><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();'><br><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();'></p></div>";
+		    ansoptsdiv.innerHTML = "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Can there be more than one correct answer:</font></div><div class='float-right' style='width:50%;'>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();'>No</div></span><br><span class='slide-container row'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Please enter the options you want to be made available for this challenge/question.(max 8 options) </font></div><div class='float-right' style='width:50%;color:#0000AA;'><div style='white-space: nowrap;display: inline-block;'><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div></div></span><br />";
 		    responsekeydiv.style.display = "";
-		    responsekeydiv.innerHTML = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</b><br>";
+		    responsekeydiv.innerHTML = "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</font></div></span><br>";
 		    // check if 'oneormore' is 'yes' or 'no', and accordingly display the checkboxes or radio buttons.
 		    for (var i=0; i < document.getElementsByName('oneormore').length; i++){
 		      if(document.getElementsByName('oneormore')[i].checked == true && document.getElementsByName('oneormore')[i].value == 'yes'){
@@ -624,20 +624,20 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    ansoptsdiv.innerHTML = "<input type='hidden' name='oneormore' value='no'>";
 		    if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN' || document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'ALGO'){
 		      if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'CODN'){
-			ansoptsdiv.innerHTML += "<span class='slide-container' style='width:100%;'><div class='slide' id='codnlang' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Select Programming Language:</font> <select name='progenv' class='glowing-border'><option value='multi'>Yes - Multiple</option>{{ progenv  }}</select></div></span><br />";
+			ansoptsdiv.innerHTML += "<span class='slide-container'><div class='slide' id='codnlang'><font color='#0000AA' style='font-weight:bold;justify:left;'>Select Programming Language:</font></div><div class='float-right' style='width:50%;'> <select name='progenv' class='form-control input-ty-tiny'><option value='multi'>Yes - Multiple</option>{{ progenv  }}</select></div></span><br />";
 		      }
-		      ansoptsdiv.innerHTML += "<span class='slide-container' style='width:100%;'><div class='slide' id='ansopts' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Lines in Answer (leave empty for no limit.)</font><input type='text' name='maxsizelines' value='' size='6' maxlength='6'> </div></span><br />";
+		      ansoptsdiv.innerHTML += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Lines in Answer (leave empty for no limit.)</font></div><div class='float-right' style='width:50%;'><input type='text' name='maxsizelines' value='' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span><br />";
 		      responsekeydiv.style.display = "none";
 		      responsekeydiv.innerHTML = "";
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'SUBJ'){
-		      ansoptsdiv.innerHTML += "<span class='slide-container' style='width:100%;'><div class='slide' id='ansopts' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Characters in Answer (leave empty for no limit) </font><input type='text' name='maxsizewords' value='' size='6' maxlength='6'> </div></span><br />";
+		      ansoptsdiv.innerHTML += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Characters in Answer (leave empty for no limit) </font></div><div class='float-right' style='width:50%;'><input type='text' name='maxsizewords' value='' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span><br />";
 		      responsekeydiv.style.display = "none";
 		      responsekeydiv.innerHTML = "";
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'FILB'){
 		      responsekeydiv.style.display = "";
-		      responsekeydiv.innerHTML = "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</div><div class='float-right' style='width:50%;'><input type='text' name='responsekey' value='' size='10' maxlength='250'></div></span></br>";
+		      responsekeydiv.innerHTML = "<span class='slide-container'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</div><div class='float-right' style='width:50%;'><input type='text' name='responsekey' value='' size='10' maxlength='250' class='form-control input-ty-tiny'></div></span></br>";
 		    }
 		  }
 		}
