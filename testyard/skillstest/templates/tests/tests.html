@@ -606,7 +606,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // alert(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value);
 		  if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'MULT'){
 		    ansoptsdiv.style.display = "";
-		    ansoptsdiv.innerHTML = "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Can there be more than one correct answer:</font></div><div class='float-right' style='width:50%;'>&nbsp;<input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();'>Yes&nbsp;&nbsp;&nbsp;&nbsp;<input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();'>No</div></span><br><span class='slide-container row'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Please enter the options you want to be made available for this challenge/question.(max 8 options) </font></div><div class='float-right' style='width:50%;color:#0000AA;'><div style='white-space: nowrap;display: inline-block;'><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div></div></span><br />";
+		    ansoptsdiv.innerHTML = "<span class='slide-container row'><div class='slide align-items-start' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Can there be more than one correct answer:</font></div><div class='align-items-end' style='width:50%;'>&nbsp;<label class='radio-inline control-label' style='color:#0000AA;'><input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();' style='height:35px;'>Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class='radio-inline control-label' style='color:#0000AA;'><input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();' style='height:35px;'>No</label></div></span><br><span class='slide-container row'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Please enter the options you want to be made available for this challenge/question.(max 8 options) </font></div><div class='float-right' style='width:50%;color:#0000AA;'><div style='white-space: nowrap;display: inline-block;'><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div></div></span><br />";
 		    responsekeydiv.style.display = "";
 		    responsekeydiv.innerHTML = "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-weight:bold;justify:left;'>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</font></div></span><br>";
 		    // check if 'oneormore' is 'yes' or 'no', and accordingly display the checkboxes or radio buttons.
@@ -668,8 +668,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 		// Javascript to update challenges
-		function editchallenge(testid, challengeid){
-		  addchallenges(testid, challengeid);
+		function editchallenge(testid, challengeid, challengetype="Subjective"){
+		  addchallenges(testid, challengeid, challengetype);
 		}
 
 
@@ -861,7 +861,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 		// Function to initiate addition of challenge from the
 		// challenges list screen.
-		function addchallenges(testid, challengeid){
+		function addchallenges(testid, challengeid, challengetype="Subjective"){
 		  // Create a POST request with the testId as the only param and send it to 'addmoreurl'.
 		  challengeid = challengeid || null;
 		  var xmlhttp;
@@ -881,7 +881,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		        return (false);
 		      }
 		      var thediv=document.getElementById('createtestdiv');
-		      thediv.style = "height:1100px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
+		      thediv.style = "height:1200px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
+                      if(challengetype == "Multiple Choice"){
+			thediv.style = "height:2100px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
+		      }
 		      thediv.className = "register";
 		      thediv.innerHTML = xmlhttp.responseText;
 		      //stripandexecutescript(thediv.innerHTML); // Execute the javascript code in script tags.
@@ -1225,7 +1228,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // alert(xmlhttp.responseText);
   		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		    var thediv=document.getElementById('createtestdiv');
-		    thediv.style = "height:550px;width:900px;padding-left:20px;padding-top:20px;display:;";
+		    thediv.style = "height:800px;width:900px;padding-left:20px;padding-top:20px;display:;";
 		    thediv.innerHTML = xmlhttp.responseText;
   		  }
   		  };
