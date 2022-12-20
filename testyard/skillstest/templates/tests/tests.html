@@ -1117,6 +1117,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // Populate the div (id='createtestdiv') with the form
 		  var thediv=document.getElementById('createtestdiv');
 		  if(thediv.style.display == "none"){
+                    thediv.style='height:1350px;width:1000px;padding-left:10px;padding-top:10px;';
 		    thediv.style.display = "";
 		    thediv.innerHTML = "{% include 'tests/create_interview_form.html' %}";
 		  }
@@ -1268,13 +1269,15 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var publishedregex = new RegExp("published");
 		    if(publishedregex.test(xmlhttp.responseText)){
 		      opresdiv = document.getElementById('opres');
-		      opresdiv.style.display = "";
+		      //opresdiv.style.display = "";
+                      opresdiv.style = "height:800px;width:900px;padding-left:20px;padding-top:20px;display:;";
 		      opresdiv.innerHTML = xmlhttp.responseText;
 		      return (false);
 		    }
 		    else{
 		      var thediv=document.getElementById('maincontainer');
-		      thediv.style.display = "";
+                      thediv.style = "height:800px;width:900px;padding-left:20px;padding-top:20px;display:;";
+		      //thediv.style.display = "";
 		      uid = userid;
 		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
 		      return (false);
@@ -2809,7 +2812,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    if(elem.checked == true){
 		invitationspan.style.display = "";
 		
-		invitationspan.innerHTML = "<font color='#FFFFF' style='font-weight:bold' size=-1 face='Verdana'>*Enter Email of Candidate:</font></td><td><input type='text' name='invitationemailaddr' id='invitationemailaddr' value=''><br /><br /></td></tr><tr><td align='right'  valign='middle' nowrap><font color='#FFFFFF' face='verdana' style='font-weight:bold;' size=-1>*Schedule this Interview on: </font></td><td align='left' nowrap><input type='button' name='btnscheduledatetime' id='btnscheduledatetime' value='Schedule Interview' maxlength='20'  onfocus='javascript:focusfield();' onblur='javascript:blurfield();' onClick='javascript:getSchedule();'><br /><div id='divschedule'></div><input type='hidden' name='interviewdatetime' id='interviewdatetime' value=''><br><font color='#FFFFFF'>OR</font><br> <b><font color='#FFFFFF' size=-1>I want to conduct it right now: </font><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();'></b><span id='fieldmsg'></span><br /><br />";
+		invitationspan.innerHTML = "<div class='row' style='padding-left:5%;padding-right:5%;'><div class='form-group col-sm'><label class='control-label inline'></label></div></div><div class='row' style='padding-left:5%;padding-right:5%;'><div class='form-group col-sm'><label class='control-label inline' style='color:#0048a1;padding-right:5px;'>*Enter Email of Candidate:</label></div><div class='form-group col-sm'><input type='text' name='invitationemailaddr' id='invitationemailaddr' value='' class='form-control' style='width:300px;margin-bottom:0px;padding-left:5px;display:inline-block;'></div></div><div class='row' style='padding-left:5%;padding-right:5%;'><div class='form-group col-sm'><label class='control-label inline'>&nbsp;&nbsp;</label></div></div><div class='row' style='padding-left:5%;padding-right:5%;'><div class='form-group col-sm'><label class='control-label inline' style='color:#0048a1;padding-right:5px;'>*Schedule this Interview on: </label></div><div class='form-group col-sm'><input type='button' name='btnscheduledatetime' id='btnscheduledatetime' value='Schedule Interview' maxlength='20'  onfocus='javascript:focusfield();' onblur='javascript:blurfield();' onClick='javascript:getSchedule();' class='form-control' style='width:300px;margin-bottom:0px;padding-left:5px;display:inline-block;'><div id='divschedule'></div></div></div><input type='hidden' name='interviewdatetime' id='interviewdatetime' value=''><br><font color='#0000AA'>OR</font><br> <div class='row' style='padding-left:5%;padding-right:5%;'><div class='form-group col-sm'><label class='control-label inline' style='color:#0048a1;padding-right:5px;'>I want to conduct it right now: </label></div><div class='form-group col-sm'><input type='checkbox' name='chkrightnow' id='chkrightnow' value='1' onClick='javascript:processrightnow();' class='form-control' style='width:300px;margin-bottom:0px;padding-left:5px;display:inline-block;'><span id='fieldmsg'></span></div></div>";
 		//document.createinterviewform.randomsequencing.disabled=true;
 	    }
 	    else{
