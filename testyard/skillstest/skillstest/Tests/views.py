@@ -1205,7 +1205,7 @@ def edit(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore, multiprogenv) = ("", False, False, 0, "", "", 0, "", False, '')
+    (lastchallengectr, evendistribution, multimediareqd, totalscore, challengenumbersstr, csrfmiddlewaretoken, negativescoring, mediafile, oneormore, multiprogenv, diagramfile) = ("", False, False, 0, "", "", 0, "", False, '', '')
     # Retrieve challenge data and create challenge object...
     editoperationflag = False
     challengeobj = Challenge()
@@ -1285,6 +1285,11 @@ def edit(request):
         challengeobj.mediafile = request.FILES['mediafile'].name
     #if request.POST.has_key('imagecreatedfile') and request.POST['imagecreatedfile'] != '':
     #    challengeobj.mediafile = request.POST['imagecreatedfile'] # An image drawn on canvas by the user overrides an image uploaded by the user.
+    if request.POST.has_key('diagramfile') and request.POST['diagramfile'] != "":
+        diagramfile = request.POST['diagramfile']
+        username = userobj.displayname
+        diagrampath = mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + diagramfile
+        challengeobj.mediafile = diagramfile
     challengeobj.maxresponsesizeallowable = ""
     if request.POST.has_key('maxsizewords'):
         challengeobj.maxresponsesizeallowable = request.POST['maxsizewords']
@@ -2204,6 +2209,9 @@ def editchallenge(request):
     challenge_dict['testtype'] = testobj.testtype
     challenge_dict['testname'] = testobj.testname
     challenge_dict['mediafile'] = challengeobj.mediafile
+    challengemedia = None
+    if challengeobj.mediafile:
+        challengemedia = challengeobj.mediafile
     challenge_dict['extresourceurl'] = challengeobj.additionalurl
     if challenge_dict['extresourceurl'] is None:
         challenge_dict['extresourceurl'] = ""
@@ -2232,7 +2240,11 @@ def editchallenge(request):
     challenge_dict['challengequality'] = challengeobj.challengequality
     challenge_dict['oneormore'] = challengeobj.oneormore
     challenge_dict['testlinkid'] = challengeobj.testlinkid
-    
+    if challengemedia is not None:
+        username = userobj.displayname
+        challenge_dict['challengemedia'] = "media" + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + challengemedia
+    else:
+        challenge_dict['challengemedia'] = ""
     challenge_dict['skillqualitylist'] = ''
     for skillqual in mysettings.SKILL_QUALITY.keys():
         if challenge_dict['challengequality'] == skillqual:

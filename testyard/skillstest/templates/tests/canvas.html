@@ -42,10 +42,12 @@
 		    saveresp = "The image was successfully saved in the context of the test and challenge being edited.";
 		}
 		else if(pngpattern.test(saveresp)){
-		    alert("You can create and upload an image using the given canvas only after you have created and saved the challenge. You should try this only while editing an already existing challenge. Sorry for this inconvenience.");
+		    //alert("You can create and upload an image using the given canvas only after you have created and saved the challenge. You should try this only while editing an already existing challenge. Sorry for this inconvenience.");
+		    dr = window.opener.document.getElementById('diagramfile');
+                    dr.value=saveresp;
 	    	    window.close();
 		}
-	    	alert(saveresp);
+	    	//alert(saveresp);
 	    	window.close();
     	    }
     	};
