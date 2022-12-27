@@ -192,12 +192,14 @@ def get_user_tests(request):
         else:
             continue
         tests_candidate_ordered_createdate.append(test.testname)
-    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-scheduledtime')
+    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')
     interviews_list = {}
     interviewerslist = []
     interviews_list['asinterviewer'] = {}
+    asinterviewer_seq = []
     for interview in interviewsasinterviewer:
         inttitle = interview.title
+        asinterviewer_seq.append(inttitle)
         #inttopic = interview.topic
         inttopic = ""
         inttopicname = interview.topicname
@@ -227,8 +229,10 @@ def get_user_tests(request):
         interviews_list['asinterviewer'][inttitle] = intdata
     interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')
     interviews_list['asinterviewee'] = {}
+    asinterviewee_seq = []
     for intcandidate in interviewsasinterviewees:
         interviewname = intcandidate.interview.title
+        asinterviewee_seq.append(interviewname)
         #interviewtopic = intcandidate.interview.topic
         interviewtopic = ""
         interviewtopicname = intcandidate.interview.topicname
@@ -269,7 +273,9 @@ def get_user_tests(request):
     tests_user_dict['testlist_asevaluator'] = testlist_asevaluator
     tests_user_dict['testlist_ascandidate'] = testlist_ascandidate
     tests_user_dict['interviewlist_asinterviewer'] = interviews_list['asinterviewer']
+    tests_user_dict['asinterviewer_seq'] = asinterviewer_seq
     tests_user_dict['interviewlist_asinterviewee'] = interviews_list['asinterviewee']
+    tests_user_dict['asinterviewee_seq'] = asinterviewee_seq
     tests_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     tests_user_dict['displayname'] = userobj.displayname
     tests_user_dict['createlink'] = createlink
@@ -1289,6 +1295,13 @@ def edit(request):
         diagramfile = request.POST['diagramfile']
         username = userobj.displayname
         diagrampath = mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + diagramfile
+        # Do we have a previously created mediafile for this challenge? If so, we need to delete it.
+        # The reason we need to delete it is because a functionally disruptive attack may be launched
+        # using this feature to eat away precious data centre memory drives. One may potentially 
+        # keep creating data files this way to fill up all memory spaces.
+        existingmediafile = challengeobj.mediafile
+        if type(existingmediafile) == str and os.path.exists(mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + existingmediafile):
+            os.unlink(mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "tests" + os.path.sep + testobj.id.__str__() + os.path.sep + existingmediafile)
         challengeobj.mediafile = diagramfile
     challengeobj.maxresponsesizeallowable = ""
     if request.POST.has_key('maxsizewords'):
@@ -1526,7 +1539,10 @@ def deletechallenges(request):
         return HttpResponse(message)
     challengesdeleted = []
     missingchidlist = []
+    numpattern = re.compile("^\s*\d+\s*$")
     for chid in challengeidlist:
+        if not re.search(numpattern, str(chid)): # This doesn't look like a valid challenge id to me.
+            continue
         try:
             chlng = Challenge.objects.filter(id=chid)[0]
             chlng.delete()
