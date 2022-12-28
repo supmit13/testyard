@@ -1,5 +1,16 @@
 	{% include "inc/html_head.html" %}
 
+	<!-- <script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script>  -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- <script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script>  -->
+	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
+
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!-- New interface code ends here -->
+
 	<script type='text/javascript'>
 	function saveoptionalinfo(uid){
 	    var xmlhttp;
@@ -39,19 +50,19 @@
 			<p><font color='#0000AA' style='font-weight:bold;' size=-1>Note: The information below is optional and you may choose to fill it up or leave it. If you furnish us with the information, we will use it for statistical purposes only. We will not disclose this information to any third party. This information will help us provide you with more accurate test information in the future.</font></p>
 			<table border=0 cellspacing=3 cellpadding=2>
 			<tr>
-				<td valign='middle' class="blue">House No. and Street Address:</td><td valign='bottom'> <textarea name='houseno_and_street_address' rows='9' cols='35' class="glowing-border glob-input input-height-60">{{ houseno_and_street_address }}</textarea></td>
+				<td valign='middle' class="blue">House No. and Street Address:</td><td valign='bottom'> <textarea name='houseno_and_street_address' rows='3' cols='35' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='500'>{{ houseno_and_street_address }}</textarea></td>
 			</tr>
 			<tr>
-				<td valign='middle' class="blue">City:</td><td valign='bottom'> <input type='text' name='city' id='city' value='{{ city }}' class="glowing-border glob-input"></td>
+				<td valign='middle' class="blue">City:</td><td valign='bottom'> <input type='text' name='city' id='city' value='{{ city }}' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='50'></td>
 			</tr>
 			<tr>
-				<td valign='middle' class="blue">Pin or Zip Code:</td><td valign='bottom'> <input type='text' name='pin_or_zip_code' id='pin_or_zip_code' value='{{ pin_or_zip_code }}' class="glowing-border glob-input"></td>
+				<td valign='middle' class="blue">Pin or Zip Code:</td><td valign='bottom'> <input type='text' name='pin_or_zip_code' id='pin_or_zip_code' value='{{ pin_or_zip_code }}' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='10'></td>
 			</tr>
 			<tr>
-				<td valign='middle' class="blue">Country:</td><td valign='bottom'> <input type='text' name='country' id='country' value='{{ country }}' class="glowing-border glob-input"></td>
+				<td valign='middle' class="blue">Country:</td><td valign='bottom'> <input type='text' name='country' id='country' value='{{ country }}' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='50'></td>
 			</tr>
 			<tr>
-					<td valign='middle' class="blue">Profession:</td><td valign='bottom'> <select name='profession' class="glowing-border glob-input">
+					<td valign='middle' class="blue">Profession:</td><td valign='bottom'> <select name='profession' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 			{% if profession == 'student' %}
 			    <option value='student' selected>Student</option>
 			{% else %}
@@ -88,10 +99,10 @@
 			    <option value='other'>Other</option>
 			{% endif %}
 			</select></td></tr>
-			<tr><td valign='middle' class="blue">Age (in years):</td><td valign='bottom'> <input type='text' name='age' id='age' value='{{ age }}' class="glowing-border glob-input"></td></tr>
-			<tr><td valign='middle' class="blue">Reason for Use:</td><td valign='bottom'> <textarea name='reasonforuse' rows='5' cols='35' class="glowing-border glob-input">{{ reasonforuse }}</textarea></td></tr>
-			<tr><td valign='middle' class="blue">Self Description:</td><td valign='bottom'> <textarea name='selfdescription' rows='5' cols='35' class="glowing-border glob-input input-height-60">{{ selfdescription }}</textarea></td></tr>
-			<tr><td valign='middle' class="blue">Highest Qualification:</td><td valign='bottom'> <select name='highestqualification' class="glowing-border glob-input">
+			<tr><td valign='middle' class="blue">Age (in years):</td><td valign='bottom'> <input type='text' name='age' id='age' value='{{ age }}' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='5'></td></tr>
+			<tr><td valign='middle' class="blue">Reason for Use:</td><td valign='bottom'> <textarea name='reasonforuse' rows='3' cols='35' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='500'>{{ reasonforuse }}</textarea></td></tr>
+			<tr><td valign='middle' class="blue">Self Description:</td><td valign='bottom'> <textarea name='selfdescription' rows='3' cols='35' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='500'>{{ selfdescription }}</textarea></td></tr>
+			<tr><td valign='middle' class="blue">Highest Qualification:</td><td valign='bottom'> <select name='highestqualification' class="form-control select-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 			{% if highestqualification == 'graduate' %}
 			    <option value='graduate' selected>Graduate</option>
 			{% else %}
@@ -123,9 +134,9 @@
 			    <option value='none'>None</option>
 			{% endif %}
 			</select></td></tr>
-			<tr><td valign='middle' class="blue">Field of Study:</td><td valign='bottom'> <input type='text' name='fieldofstudy' id='fieldofstudy' value='{{ fieldofstudy }}' class="glowing-border glob-input"></td></tr>
-			<tr><td valign='middle' class="blue">Present Employer or Institution:</td><td valign='bottom'> <input type='text' name='presentemployer_or_institution' id='presentemployer_or_institution' value='{{ presentemployer_or_institution }}' class="glowing-border glob-input"></td></tr>
-			<tr><td valign='middle' colspan=2><input type='button' name='btnsaveoptionalinfo' class="btn-gbl btn-suc" value='Save Info' onClick='javascript:saveoptionalinfo("{{ user_id }}");'>&nbsp;&nbsp;<!-- <input type='reset' name='resetbutton' value='Clear All'> --></td></tr>
+			<tr><td valign='middle' class="blue">Field of Study:</td><td valign='bottom'> <input type='text' name='fieldofstudy' id='fieldofstudy' value='{{ fieldofstudy }}' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='50'></td></tr>
+			<tr><td valign='middle' class="blue">Present Employer or Institution:</td><td valign='bottom'> <input type='text' name='presentemployer_or_institution' id='presentemployer_or_institution' value='{{ presentemployer_or_institution }}' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' maxlength='100'></td></tr>
+			<tr><td>&nbsp;</td><td valign='middle'><input type='button' name='btnsaveoptionalinfo' class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;' value='Save Info' onClick='javascript:saveoptionalinfo("{{ user_id }}");'>&nbsp;&nbsp;<!-- <input type='reset' name='resetbutton' value='Clear All'> --></td></tr>
 			</table>
 			{% csrf_token %}
 			</form>
