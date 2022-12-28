@@ -183,7 +183,10 @@ def testschallengesearch(request):
                 if validtilldd > curdatetime:
                     copyable = "False"
                     break
-        resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : trec.progenv, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed, 'copyable' : copyable}
+        progenvstr = str(trec.progenv)
+        if trec.progenv is None:
+            progenvstr = "-"
+        resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : progenvstr, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed, 'copyable' : copyable}
     datadict['resultrecs'] = resultrecs
     tmpl = get_template("advsearch/testrecords.html")
     cxt = Context(datadict)

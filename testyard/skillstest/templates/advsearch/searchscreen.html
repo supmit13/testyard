@@ -1,4 +1,15 @@
 {% include "inc/html_head.html" %}
+
+	<!-- <script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script>  -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- <script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script>  -->
+	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
+
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!-- New interface code ends here -->
 	
 	{% include "inc/mission_statement.html" %}
 		<style>
@@ -169,39 +180,36 @@
 		}
 		</style>
 		<div class="post">
-			<span width='40%'>
-			<span nowrap style="color:#0000AA;font-style:italic;">Logged in as {{ displayname }}:&nbsp;&nbsp;<a href="{{ logout_url }}"><b>Logout</b></a></span>
-			</span>
+			
 			<span class="meta">
 			<h3>Welcome {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
 			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
-			<div class="entry">
+			<div class="entry form-group">
 			<form name='frmadvsearch' id='frmadvsearch' method='POST' action='/search/advsearch/'>
-			<center>
-			<table border=0 cellspacing=3 cellpadding=3 width='80%'>
+			
+			<table border=0 cellspacing=3 cellpadding=3 width='90%'>
 			<tr><td align='center' colspan=3 nowrap><font color='#0000AA' style='font-weight:bold'>Search tests, challenges, users and groups</font></td></tr>
 			<tr><td colspan=3><hr></td></tr>
 			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Tests</font></td></tr>
-			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Test Name:</font></td><td><input type='text' name='testname' value='' id='testname' class="glowing-border"></td><td>&nbsp;</td></tr>
-			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='searchphrase' value='' id='searchphrase' class="glowing-border"></td><td>&nbsp;</td></tr>
-			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Test Creator:</font></td><td><input type='text' name='testcreator' value='' id='testcreator' class="glowing-border"></td><td>&nbsp;</td></tr>
-			<tr><td align='center' colspan=3><input type='button' name='searchtest' id='searchtest' onClick='javascript:conductsearchtest();' value='Search Tests/Challenges'></td></tr>
+			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Enter Test Name:</label></td><td><input type='text' name='testname' value='' id='testname'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Search Phrase:</label></td><td><input type='text' name='searchphrase' value='' id='searchphrase'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Test Creator:</label></td><td><input type='text' name='testcreator' value='' id='testcreator'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
+			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchtest' id='searchtest' onClick='javascript:conductsearchtest();' value='Search Tests/Challenges' class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr>
 
 			<tr><td colspan=3><hr></td></tr>
 			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Users</font></td></tr>
-			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Enter Username:</font></td><td><input type='text' name='username' value='' id='username' class="glowing-border"></td><td>&nbsp;</td></tr>
-			<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold'>Search Phrase:</font></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase' class="glowing-border"></td><td>&nbsp;</td></tr>
-			<tr><td align='center' colspan=3><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'></td></tr>
+			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Enter Username:</label></td><td><input type='text' name='username' value='' id='username'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
+			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Search Phrase:</label></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
+			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'  class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr>
 			</table>
-			</center>
+
 			{% csrf_token %}
 			</form>
-			
-			<div id='searchresults'></div>
 			</div>
-			
 			</span>
+			<div id='searchresults'></div>
+			
 		</div>
 		
 		<!-- ### Post Entry End ###  -->
