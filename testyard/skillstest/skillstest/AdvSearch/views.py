@@ -489,6 +489,7 @@ def displaychallenges(request):
     # Display the challenges...
     challengesqset = Challenge.objects.filter(test=testobj)
     challengesdict = {}
+    numchallenges = 0
     for challengeobj in challengesqset:
         challengestatement = challengeobj.statement
         challengetype = challengeobj.challengetype
@@ -498,14 +499,17 @@ def displaychallenges(request):
         if not responsekey:
             responsekey = "NA"
         mediafile = challengeobj.mediafile
+        if mediafile is None:
+            mediafile = "-"
         additionalurl = challengeobj.additionalurl
         timeframe = challengeobj.timeframe
         challengequality = challengeobj.challengequality
         oneormore = challengeobj.oneormore
         options = [challengeobj.option1, challengeobj.option2, challengeobj.option3, challengeobj.option4, challengeobj.option5, challengeobj.option6, challengeobj.option7, challengeobj.option8 ]
         challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, options]
+        numchallenges += 1
     tmpl = get_template("advsearch/challengeslist.html")
-    datadict = {'challengesdict' : challengesdict }
+    datadict = {'challengesdict' : challengesdict, 'numchallenges' : numchallenges }
     cxt = Context(datadict)
     challengesinfohtml = tmpl.render(cxt)
     return HttpResponse(challengesinfohtml)

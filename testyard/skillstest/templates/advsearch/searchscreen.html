@@ -146,8 +146,12 @@
 		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 			  divscr = document.getElementById('transscreens2');
 			  divscr.style.display = "";
+			  m = xmlhttp.responseText.split("|#|");
+			  num = parseInt(m[1]);
+			  h = num*150+300+100; // 300 pixels extra for header and an empty row after it, 100 more for some border padding.
+			  divscr.style.height = h.toString() + "px";
 			  //alert(xmlhttp.responseText);
-			  divscr.innerHTML = xmlhttp.responseText + "<br /><a href='#/' onClick='javascript:closescreen();' style='color:#0000AA;'>Close Screen</a>";
+			  divscr.innerHTML = m[0] + "<br/><a href='#/' onClick='javascript:closescreen();' style='color:#0000AA;'>Close Screen</a>";
 		      }
 		    };
 		    xmlhttp.open("POST", '{{ displaytestchallenges }}', true);

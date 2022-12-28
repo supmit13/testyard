@@ -1,28 +1,36 @@
 {% load extratemptags %}
+<style>
+hr.search {
+  border: 1px solid #0000AA;
+}
+</style>
+
 <div>
 <a href="#/" onClick="javascript:closescreen();" style="color:#0000AA;">Close Screen</a>
 </div>
-<table border=0 cellspacing='2' cellpadding='3'>
+<div style='padding-left:5px;padding-top:5px;color:#0000AA;'>
+<table border=0 cellspacing='2' cellpadding='3' style='width:90%;'>
 
-<tr bgcolor='#00ccff'>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Challenge Statement</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Challenge Type</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;'>Score</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Available Options <br />(For multiple choice type)</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Correct Response</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Negative Score <br />(If any)</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Media File</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Additional URL</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Timeframe<br />(In seconds)</font></td>
-    <td nowrap><font color='#0000AA' style='font-weight:bold;' nowrap>Challenge Quality</font></td>
+<tr>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Challenge Statement</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Challenge Type</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Score</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Available Options <br />(For multiple choice type)</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Correct Response</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Negative Score <br />(If any)</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Media File</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Additional URL</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Timeframe<br />(In seconds)</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Challenge Quality</td>
 </tr>
-
+<tbody>
+<tr><td colspan='10' style='width:100%;'><hr class='search'></td></tr>
 {% for challengeid in challengesdict %}
-<tr bgcolor='#99ffcc'>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:0}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:1}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:2}}</font></td>
-    <td nowrap><font color='#0000AA' nowrap>
+<tr>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:0}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:1}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:2}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>
     <ul>
     {% for option in challengesdict|dictlookup:challengeid|getval:10 %}
     {% if option != "" %}
@@ -32,15 +40,16 @@
     </ul>
     </td>
     <!-- <td nowrap><font color='#0000AA' nowrap>{{challengesdict|dictlookup:challengeid|getval:10}}</font></td> -->
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:4}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:3}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:5}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:6}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:7}}</font></td>
-    <td nowrap><font color='#0000AA'>{{challengesdict|dictlookup:challengeid|getval:8}}</font></td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:4}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:3}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:5}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:6}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:7}}</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:8}}</td>
 </tr>
 {% endfor %}
+</tbody>
 </table>
-
-
+</div>
+|#|{{numchallenges}}
 

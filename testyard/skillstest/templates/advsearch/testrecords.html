@@ -22,7 +22,7 @@
 
 {% for testname, otherattribs in resultrecs.items %}
 <tr bgcolor='#99ffcc'>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'><a href='#/' onClick='javascript:showchallenges("{{otherattribs.id}}", "{{otherattribs.copyable}}");'>{{testname}}</a></font></td>
+    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'><a href='#' onClick='javascript:showchallenges("{{otherattribs.id}}", "{{otherattribs.copyable}}");'>{{testname}}</a></font></td>
     <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.topic}}</font></td>
     <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.creator}}</font></td>
     <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.testtype}}</font></td>

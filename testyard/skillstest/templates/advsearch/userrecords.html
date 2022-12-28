@@ -1,23 +1,23 @@
 <table border=0 cellspacing='2' cellpadding='3' style='width:1200px;'>
 <tr bgcolor='#00ccff'>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Profile Photo</font></td>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Display Name</font></td>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Name</font></td>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Sex</font></td>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Active</font></td>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Member Since</font></td>
-    <td  style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>User Type</font></td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>Profile Photo</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>Display Name</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>Name</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>Sex</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>Active</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>Member Since</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;' valign='top'>User Type</td>
 </tr>
 
 {% for displayname, otherattribs in resultrecs.items %}
 <tr bgcolor='#99ffcc'>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'><img src='{{otherattribs.userpic}}' width='35' height='35'></font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'><a href='#/' onClick='javascript:displaytestsdata("{{displayname}}");'>{{displayname}}</a></font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.firstname}} {{otherattribs.middlename}} {{otherattribs.lastname}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.sex}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.active}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.membersince}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.usertype}}</font></td>
+    <td style='padding-left:5px;color:#0000AA;'><img src='{{otherattribs.userpic}}' width='35' height='35'></td>
+    <td style='padding-left:5px;color:#0000AA;'><a href='#/' onClick='javascript:displaytestsdata("{{displayname}}");'>{{displayname}}</a></td>
+    <td style='padding-left:5px;color:#0000AA;'>{{otherattribs.firstname}} {{otherattribs.middlename}} {{otherattribs.lastname}}</td>
+    <td style='padding-left:5px;color:#0000AA;'>{{otherattribs.sex}}</td>
+    <td style='padding-left:5px;color:#0000AA;'>{{otherattribs.active}}</td>
+    <td style='padding-left:5px;color:#0000AA;'>{{otherattribs.membersince}}</td>
+    <td style='padding-left:5px;color:#0000AA;'>{{otherattribs.usertype}}</td>
 </tr>
 {% endfor %}
 </table>
