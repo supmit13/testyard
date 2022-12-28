@@ -157,8 +157,8 @@ def gettestsbytopic(request):
         wuqset9 = WouldbeUsers.objects.filter(test__evaluator__groupmember9__emailid=useremail)
         wuqset10 = WouldbeUsers.objects.filter(test__evaluator__groupmember10__emailid=useremail)
         wuqset = list(chain(wuqset1, wuqset2, wuqset3, wuqset4, wuqset5, wuqset6, wuqset7, wuqset8, wuqset9, wuqset10))
-    alltestshtml = "<font color='#0000AA'><b>Select a Test:</b></font>"
-    alltestshtml += "<select name='usertests' class='glowing-border'><option value='all' selected>Select Test</option>"
+    alltestshtml = "<Label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'>Select a Test:</label>"
+    alltestshtml += "<select name='usertests' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'><option value='all' selected>Select Test</option>"
     uniqtestnames = {}
     try:
         for ut in utqset:

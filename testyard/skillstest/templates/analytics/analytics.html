@@ -1,6 +1,18 @@
 	{% include "inc/html_head.html" %}
 	
 	{% include "inc/mission_statement.html" %}
+
+	<!-- <script src='static/webaudiovisual/jquery.min.js' type='text/javascript'></script>  -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- <script src='static/webaudiovisual/jquery-ui.min.js' type='text/javascript'></script>  -->
+	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+	<script src='static/datetimepicker/datetimepicker_css.js' type='text/javascript'></script>
+
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<!-- New interface code ends here -->
+
 	   <style>
 		.container { position: relative; }
 	        .imageView { border: 1px solid #0000AA; }
@@ -841,19 +853,17 @@
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<form name='frmanalytics'>
-			<ul class="tab" style="white-space:nowrap;width:470px">
-                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
-			  <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
-                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
-                          <!-- <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
-                          <li><a href="#/" class="tablinks" style="color:blue;font-size:100%;font-weight:bold" onclick="openTab(event, 'interviewsattended')">Interviews Attended</a></li> -->
+			<ul class="tab testtabUl" style="white-space:nowrap;width:1000px">
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
+			  <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsattended')">Interviews Attended</a></li>
                         </ul>
-			<div id='testsascandidate' style="display:block" class="tabcontent">
-			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
-			<tr>
-			    <td width='30%' valign='top'><span>
-			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
-			    <select name='analytic_technique' onchange='javascript:displaynote();' class="glowing-border">
+			<span id='testsascandidate' style="display:block" class="tabcontent">
+			<div class='form-group'>
+			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Comparison Technique:</b></label>
+			    <select name='analytic_technique' onchange='javascript:displaynote();' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='comp_topper'>Compare with toppers (should select a single test topic)</option>
 				<option value='comp_all'>Compare with all (should select a single test after selecting topic)</option>
 				<option value='comp_cats'>Compare your scores on a topic (should select a single test topic)</option>
@@ -865,34 +875,33 @@
 				<option value='comp_ttperf'>Performance on different challenge types (under a topic)</option>
 				<option value='comp_passfail'>Pass and Fail in tests under a given topic against time (select topic)</option>
 			    </select>
+			    </div>
 			    <div id='notes'></div>
-			    <br /><br />
-			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
-			    <select name='test_cat' onChange='javascript:display_tests();' class="glowing-border">
+			    <br />
+			    <div class='form-group'>
+			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Skill Topic:</b></label>
+			    <select name='test_cat' onChange='javascript:display_tests();' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
 				<option value='{{ttopic}}'>{{ttopic}}</option>
 				{%  endfor %}
 			    </select>
-			    <br /><br />
+			    </div>
+			    <br />
 			    <div id='testnames'></div>
-			    <br /><br />
-			    <input type='button' name='btndisplay' value='Display' onclick='javascript:display_plot("");' disabled=true>
-			    </span></td>
-			    <td width='70%'>
-				<div id='displaydata' style="width: 900px; height: 500px;">
-				</div>
-			    </td>
-			</tr>
-			</table>
-			</div>
-			<div id='testsascreator' style="" class="tabcontent">
+			    <br />
+			    <div class='form-group'>
+			    <input type='button' name='btndisplay' value='Display' onclick='javascript:display_plot("");' disabled=true class='btn btn-primary' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
+			    </div>
+			    <div id='displaydata' style="width: 900px; height: 500px;">
+			    </div>
+
+			</span>
+			<span id='testsascreator' style="" class="tabcontent">
 			 
-			<table border='0' width='100%' cellspacing='2' cellpadding='4'>
-			<tr>
-			    <td width='30%' valign='top'><span>
-			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
-			    <select name='creator_analytic_technique' onchange='javascript:displaynote();' class='glowing-border'>
+			<div class='form-group'>
+			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Comparison Technique:</b></label>
+			    <select name='creator_analytic_technique' onchange='javascript:displaynote();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
 				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
 				<option value='creator_show_testtimes'>Times at which selected test has been taken by candidates</option>
@@ -901,59 +910,58 @@
 				<option value='creator_comp_cohort'>Other tests taken by users who took the selected test</option>
 				
 			    </select>
-			    <div id='creator_notes'></div>
-			    <br /><br />
-			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
-			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();' class='glowing-border'>
+			</div> 
+			<div id='creator_notes'></div>
+			    <br />
+			<div class='form-group'>
+			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Skill Topic:</b></label>
+			    <select name='creator_test_cat' onChange='javascript:creator_display_tests();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
 				<option value='{{ttopic}}'>{{ttopic}}</option>
 				{%  endfor %}
 			    </select>
-			    <br /><br />
+			</div>
+			    <br />
 			    <div id='creator_testnames'></div>
-			    <br /><br />
-			    <input type='button' name='creator_btndisplay' value='Display' onclick='javascript:display_plot("creator");' disabled=true>
-			    </span></td>
-			    <td width='70%'>
+			    <br />
+			<div class='form-group'>
+			    <input type='button' name='creator_btndisplay' value='Display' onclick='javascript:display_plot("creator");' disabled=true class='btn btn-primary' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
+			</div>
+			    
 				<div id='creator_displaydata' style="width: 900px; height: 500px;">
 				</div>
-			    </td>
-			</tr>
-			</table>
+			    </span>
 			
-			</div>
-			<div id='testsasevaluator' style="" class="tabcontent">
-			  <table border='0' width='100%' cellspacing='2' cellpadding='4'>
-			<tr>
-			    <td width='30%' valign='top'><span>
-			    <font color='#0000AA'><b>Select a Comparison Technique:</b></font>
-			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();' class='glowing-border'>
+			<span id='testsasevaluator' style="" class="tabcontent">
+			  <div class='form-group'>
+			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Comparison Technique:</b></label>
+			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
 				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.(Select a topic only).</option>
 				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.(Select a topic only).</option>
 			    </select>
+			    </div>
 			    <div id='evaluator_notes'></div>
-			    <br /><br />
-			    <font color='#0000AA'><b>Select a Skill Topic:</b></font>
-			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();' class='glowing-border'>
+			    <br />
+			    <div class='form-group'>
+			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Skill Topic:</b></label>
+			    <select name='evaluator_test_cat' onChange='javascript:evaluator_display_tests();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='' selected>Click to select topic</option>
 				{% for ttopic in test_topics %}
 				<option value='{{ttopic}}'>{{ttopic}}</option>
 				{%  endfor %}
 			    </select>
-			    <br /><br />
+			    </div>
+			    <br />
 			    <div id='evaluator_testnames'></div>
-			    <br /><br />
-			    <input type='button' name='evaluator_btndisplay' value='Display' onclick='javascript:display_plot("evaluator");' disabled=true>
-			    </span></td>
-			    <td width='70%'>
+			    <br />
+			    <div class='form-group'>
+			    <input type='button' name='evaluator_btndisplay' value='Display' onclick='javascript:display_plot("evaluator");' disabled=true class='btn btn-primary' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
+			    </div>
 				<div id='evaluator_displaydata' style="width: 900px; height: 500px;">
 				</div>
-			    </td>
-			</tr>
-			</table>
-			</div>
+			</span>
 			<!--
 			<div id='testsasinterviewer' style="display:block" class="tabcontent">
 			</div>
@@ -964,7 +972,7 @@
 			</form>
 			</div>
 			<div id='example'><font color='#00AA00' size=-1><a href='#' onClick='javascript:showStatHelp();'>What does this statistic mean?</a></font></div>
-			</span>
+
 		</div>
 		
 		<!-- ### Post Entry End ###  -->
