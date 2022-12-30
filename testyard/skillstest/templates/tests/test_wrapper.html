@@ -391,7 +391,10 @@ function sendtoserver(postdata){
     //alert(jsonobj);
     var allowedlanguages = jsonobj.allowedlanguages;
     var rules = jsonobj.rules;
+    var rulesdict = jsonobj.rulesdict;
     var skillquality = jsonobj.quality;
+    qualitydict = jsonobj.qualitydict;
+    anslangdict = jsonobj.answeringlanguagedict;
     maxscore = jsonobj.maxscore;
     duration = jsonobj.duration;
     challengescount = Object.size(jsonobj.challenges);
@@ -406,15 +409,19 @@ function sendtoserver(postdata){
     qareadiv.innerHTML += "<center>" + scrollclockhtml() + "</center><br />";
     qareadiv.innerHTML += "<br /><center><h2><font color='#0000AA'>" + jsonobj.testname + "</font></h2></center><br /><br />";
     qareadiv.innerHTML += "<h3><font color='#0000AA'>Rules:</font></h3>";
+    var rulenumber = 1;
     for (var rulectr = 0; rulectr < rules.length; rulectr++){
-        qareadiv.innerHTML += "<i><font color='#0000AA'>" + (rulectr + 1) + ". " + rules[rulectr] + "</font></i><br />";
+        if(typeof rulesdict[rules[rulectr]] != 'undefined'){
+            qareadiv.innerHTML += "<i><font color='#0000AA'>" + rulenumber.toString() + ". " + rulesdict[rules[rulectr]] + "</font></i><br />";
+	    rulenumber++;
+	}
     }
     qareadiv.innerHTML += "<hr>";
     qareadiv.innerHTML += "<br /><br /><b><font color='#0000AA'>Please note the following: </font></b><br />";
     if(jsonobj.progenv != "" && jsonobj.progenv != null){
         qareadiv.innerHTML += "<font color='#0000AA'>You may be given a '" + jsonobj.progenv + "' programming environment while taking this test. You will need it to solve some of the challenges.</font><br />";
     }
-    qareadiv.innerHTML += "<font color='#0000AA'>This test is intended for '" + skillquality + "' quality candidates.</font><br />";
+    qareadiv.innerHTML += "<font color='#0000AA'>This test is intended for '" + qualitydict[skillquality] + "' quality candidates.</font><br />";
     qareadiv.innerHTML += "<font color='#0000AA'>The total marks is " + maxscore + ".</font><br />";
     durationinmins = (duration/60);
     if (durationinmins < 60){
@@ -429,14 +436,18 @@ function sendtoserver(postdata){
     }
     qareadiv.innerHTML += "<font color='#0000AA'>There are " + challengescount + " questions in this test.</font><br />";
     qareadiv.innerHTML += "<font color='#0000AA'>You may answer this test in any of the following languages: </font>";
+    morelang = 0;
     for (langctr = 0; langctr < allowedlanguages.length - 1; langctr++){
-        qareadiv.innerHTML += "<font color='#0000AA'>" + allowedlanguages[langctr] + ", </font>";
+	if(typeof anslangdict[allowedlanguages[langctr]] != 'undefined'){
+            qareadiv.innerHTML += "<font color='#0000AA'>" + anslangdict[allowedlanguages[langctr]] + ", </font>";
+	    morelang = 1;
+	}
     }
-    if(allowedlanguages.length > 1){
-        qareadiv.innerHTML += "<font color='#0000AA'> and " + allowedlanguages[allowedlanguages.length - 1] + ".</font><br />";
+    if(morelang != 0){
+        qareadiv.innerHTML += "<font color='#0000AA'> and " + anslangdict[allowedlanguages[allowedlanguages.length - 1]] + ".</font><br />";
     }
     else{
-        qareadiv.innerHTML += "<font color='#0000AA'>" + allowedlanguages[allowedlanguages.length - 1] + ".</font><br />";
+        qareadiv.innerHTML += "<font color='#0000AA'>" + anslangdict[allowedlanguages[allowedlanguages.length - 1]] + ".</font><br />";
     }
     // Set the start time of the test - the ceremony is about to begin.
     starttime = new Date();

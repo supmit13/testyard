@@ -125,19 +125,19 @@
 			    docheight = '150%';
 			  }
 			  else if(numrecords < 50){
-			    docheight = '300%';
+			    docheight = '320%';
 			  }
 			  else if(numrecords < 100){
-			    docheight = '650%';
+			    docheight = '685%';
 			  }
 			  else if (numrecords < 250){
-			    docheight = '1000%';
-			  }
-			  else if(numrecords < 350){
 			    docheight = '1200%';
 			  }
+			  else if(numrecords < 350){
+			    docheight = '1550%';
+			  }
 			  else{
-			    docheight = '1500%';
+			    docheight = '1800%';
 			  }
 			  divscr.style.height = docheight;
 			  divscr.innerHTML = htmlcontent;
@@ -176,7 +176,7 @@
 			  h = num*150+300+100; // 300 pixels extra for header and an empty row after it, 100 more for some border padding.
 			  divscr.style.height = h.toString() + "px";
 			  //alert(xmlhttp.responseText);
-			  divscr.innerHTML = m[0] + "<br/><a href='#/' onClick='javascript:closescreen();' style='color:#0000AA;'>Close Screen</a>";
+			  divscr.innerHTML = m[0];
 		      }
 		    };
 		    xmlhttp.open("POST", '{{ displaytestchallenges }}', true);

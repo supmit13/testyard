@@ -2738,6 +2738,9 @@ def showtestcandidatemode(request):
         alloptionslist.sort(reverse = True)
         challengesdict[statement]['sortedoptions'] = alloptionslist
     testdict['challenges'] = challengesdict
+    testdict['rulesdict'] = mysettings.RULES_DICT
+    testdict['qualitydict'] = mysettings.SKILL_QUALITY
+    testdict['answeringlanguagedict'] = mysettings.ANSWER_LANG_DICT
     jsonstr = json.dumps(testdict)
     # Now, encrypt jsonstr...
     #(encjsonstr, iv) = encryptstring(jsonstr)

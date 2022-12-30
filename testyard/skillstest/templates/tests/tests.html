@@ -1705,6 +1705,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 			    // Display the data in a screen
 			    testdiv.style.display = "";
+			    testdiv.className = "container";
+			    testdiv.style='padding-left:20px;padding-right:20px;';
+                            testdiv.style.height = "1550px";
+                            testdiv.style.width = "250%";
 			    testdiv.innerHTML += displayevaluationscreen(xmlhttp.responseText);
   		        }
   		    };
@@ -1960,10 +1964,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     			}
 		    }
 		    if(!testname || testname == ""){
-			var html = "<div class='semitrans' align='left' style='background-color: rgba(0,0,255,0.5);'><font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'><br /><br />";
+			var html = "<font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'><br /><br />";
 			return (html);
 		    }
-		    var html = "<div class='semitrans' align='left' style='background-color: rgba(0,0,255,0.5);><font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
+		    var html = "<font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
 		    html += "<table border=0 cellspacing='3' cellpadding='3'>";
 		    html += "<tr><td><b>Email</b></td><td><b>Test URL</b></td><td><b>Start Time</b></td><td><b>End Time</b></td><td><b>Responses</b></td><td><b>Outcome</b></td><td><b>Grand Total</b></td><td><b>Test Status</b></td><td><b>Disqualify</b></td><td><b>Comments</b></td></tr>";
 		    rowctr = 1;
@@ -2058,7 +2062,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    html += "<tr><td colspan='9'>&nbsp;</td></tr>";
 		    html += "<tr><td colspan='9' align='center'><!-- <input type='button' name='btnsave' value='Save' onClick='javascript:saveglobalinfo(\"" + testid + "\");'> --><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'></td></tr>";
-		    html += "</table></div>";
+		    html += "</table>";
 		    return (html);
 		}
 

@@ -4,8 +4,9 @@ hr.search {
   border: 1px solid #0000AA;
 }
 </style>
-&nbsp;&nbsp;<a href='#/' onClick='javascript:closescreen();'><label color='#0000AA'>Close</label></a>
-<br /><br />
+&nbsp;&nbsp;<input type='button' name='close_ut_top' id='close_ut_top' onClick='javascript:closescreen();' value='Close'  class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;'>
+<br/><br/>
+{% if testscreated|length > 0 %}
 <p style="font-weight:bold;color:#0000AA">Tests Conducted</p>
 <table border='1' cellspacing='3' cellpadding='3'>
 <tr>
@@ -17,8 +18,11 @@ hr.search {
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p style="font-weight:bold;color:#0000AA">Tests Conducted: None</p>
+{% endif %}
 <br />
-
+{% if testsevaluated|length > 0 %}
 <p style="font-weight:bold;color:#0000AA">Tests Evaluated</p>
 <table border='1' cellspacing='3' cellpadding='3'>
 <tr>
@@ -30,8 +34,11 @@ hr.search {
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p style="font-weight:bold;color:#0000AA">Tests Evaluated: None</p>
+{% endif %}
 <br />
-
+{% if teststaken|length > 0 %}
 <p style="font-weight:bold;color:#0000AA">Tests Taken</p>
 <table border='1' cellspacing='3' cellpadding='3'>
 <tr>
@@ -43,8 +50,11 @@ hr.search {
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p style="font-weight:bold;color:#0000AA">Tests Taken: None</p>
+{% endif %}
 <br />
-
+{% if interviewsconducted|length > 0 %}
 <p style="font-weight:bold;color:#0000AA">Interviews Conducted</p>
 <table border='1' cellspacing='3' cellpadding='3'>
 <tr>
@@ -56,8 +66,12 @@ hr.search {
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p style="font-weight:bold;color:#0000AA">Interviews Conducted: None</p>
+{% endif %}
 <br />
 
+{% if interviewsattended|length > 0 %}
 <p style="font-weight:bold;color:#0000AA">Interviews Attended</p>
 <table border='1' cellspacing='3' cellpadding='3'>
 <tr>
@@ -69,8 +83,11 @@ hr.search {
 </tr>
 {% endfor %}
 </table>
+{% else %}
+<p style="font-weight:bold;color:#0000AA">Interviews Attended: None</p>
+{% endif %}
 <br />
 <input type='hidden' name='totalrecordscount' id='totalrecordscount' value='{{totalrecordscount}}'>
 
 <br />
-&nbsp;&nbsp;<a href='#/' onClick='javascript:closescreen();'><label color='#0000AA'>Close</label></a>
+&nbsp;&nbsp;<input type='button' name='close_ut_bottom' id='close_ut_bottom' onClick='javascript:closescreen();' value='Close'  class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;'>

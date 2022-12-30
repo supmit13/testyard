@@ -455,7 +455,7 @@ def displaychallenges(request):
         return response
     # First, check to see if the challenges may be shown - the test should be in public scope and it should not have any existing schedule.
     if testobj.scope != "public":
-        message = "<span style='color:#AA0000;'>The test identified by name '%s' is not in public domain. Hence, the challenges are not accessible to the logged in user.</span>"%testobj.testname
+        message = "<span style='color:#AA0000;'>The test identified by name '%s' is not in public domain. Hence, the challenges are not accessible to the logged in user.</span><br/>&nbsp;&nbsp;<input type='button' name='close_ch_top' id='close_ut_top' onClick='javascript:closescreen();' value='Close'  class='btn btn-primary' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;'>"%testobj.testname
         response = HttpResponse(message)
         return response
     # Check if it has a future schedule
