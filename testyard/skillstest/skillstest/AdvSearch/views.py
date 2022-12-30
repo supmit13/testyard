@@ -297,6 +297,7 @@ def testinfosearch(request):
     displayname = request.POST['displayname']
     datadict = {}
     uobj = None
+    totalrecordscount = 0
     try:
         uobj = User.objects.get(displayname=displayname)
     except:
@@ -319,6 +320,7 @@ def testinfosearch(request):
         testid = testobj.id
         if not testscreated.has_key(str(testid)):
             testscreated[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules]
+            totalrecordscount += 1
         else:
             pass
     datadict['testscreated'] = testscreated
@@ -339,6 +341,7 @@ def testinfosearch(request):
             testrules = testobj.ruleset
             testid = testobj.id
             testsevaluated[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules]
+            totalrecordscount += 1
         else:
             pass
     datadict['testsevaluated'] = testsevaluated
@@ -368,6 +371,7 @@ def testinfosearch(request):
                 score = "Not evaluated yet"
             else:
                 teststaken[str(testid)] = [testname, testtopic, testtype, testquality, negativescoring, testtotalscore, testpassscore, testrules, score]
+            totalrecordscount += 1
         else:
             if not evalcommitstate:
                 score = "Not evaluated yet"
@@ -393,6 +397,7 @@ def testinfosearch(request):
             pass
         if not interviewsconducted.has_key(str(interviewid)):
             interviewsconducted[str(interviewid)] = [interviewtitle, interviewtopic, maxscore, maxduration, quality, candidateemail]
+            totalrecordscount += 1
         else:
             pass
     datadict['interviewsconducted'] = interviewsconducted
@@ -409,9 +414,11 @@ def testinfosearch(request):
         if not interviewsattended.has_key(str(interviewcandidateid)):
             interviewsattended[str(interviewcandidateid)] = [interviewtitle, interviewer, interviewtopic]
             #interviewsattended[str(interviewcandidateid)] = [interviewtitle, interviewer, interviewtopic, interviewdate]
+            totalrecordscount += 1
         else:
             pass
     datadict['interviewsattended'] = interviewsattended
+    datadict['totalrecordscount'] = totalrecordscount
     tmpl = get_template("advsearch/usertestinfo.html")
     cxt = Context(datadict)
     usertestinfohtml = tmpl.render(cxt)

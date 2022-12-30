@@ -1,48 +1,48 @@
 <table border=0 style='width:2500px;'>
 <tr bgcolor='#00ccff'>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Test Name</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Test Topic</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Creator</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Test Type</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Creation Date</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Max. Score</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Pass Score</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Rules</font></td>
-    <td style='padding-left:5px;color:#0000AA;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Test Duration</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Allowed Languages</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Challenges Count</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Published On</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Multimedia Req.</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Programming Env.</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Test Scope</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Test Quality</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Negative Scoring</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;' valign='top'><font color='#0000AA' style='font-weight:bold;'>Copy Test</font></td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Test Name</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Test Topic</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Creator</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Test Type</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Creation Date</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Max. Score</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Pass Score</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Rules</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.9em;font-weight:bold;' valign='top'>Test Duration</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Allowed Languages</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Challenges Count</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Published On</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Multimedia Req.</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Programming Env.</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Test Scope</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Test Quality</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Negative Scoring</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.9em;font-weight:bold;' valign='top'>Copy Test</td>
 </tr>
 
 {% for testname, otherattribs in resultrecs.items %}
 <tr bgcolor='#99ffcc'>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'><a href='#' onClick='javascript:showchallenges("{{otherattribs.id}}", "{{otherattribs.copyable}}");'>{{testname}}</a></font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.topic}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.creator}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.testtype}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.createdate}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.maxscore}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.passscore}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;'>{{otherattribs.ruleset}}</td>
-    <td style='padding-left:5px;color:#0000AA;'><font color='#0000AA'>{{otherattribs.duration}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.allowedlanguages}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.challengecount}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.publishdate}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.multimediareqd}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.progenv}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.scope}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.quality}}</font></td>
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><font color='#0000AA'>{{otherattribs.negativescoreallowed}}</font></td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'><a href='#' onClick='javascript:showchallenges("{{otherattribs.id}}", "{{otherattribs.copyable}}");'>{{testname}}</a></td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.topic}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.creator}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.testtype}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.createdate}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.maxscore}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.passscore}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.ruleset}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.duration}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.allowedlanguages}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.challengecount}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.publishdate}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.multimediareqd}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.progenv}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.scope}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.quality}}</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>{{otherattribs.negativescoreallowed}}</td>
     {% if otherattribs.scope == "public" and otherattribs.copyable == "True" %}
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'><a href='#/' onClick='javascript:copytest("{{otherattribs.id}}");' alttext='Copying a test allows you to create a new test that is identical to the test being copied.'>Copy Test</a></td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'><a href='#/' onClick='javascript:copytest("{{otherattribs.id}}");' alttext='Copying a test allows you to create a new test that is identical to the test being copied.'>Copy Test</a></td>
     {% else %}
-    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;'>&nbsp;*</td>
+    <td style='padding-left:5px;color:#0000AA;overflow-wrap: break-word;font-size:0.8em;'>&nbsp;*</td>
     {% endif %}
 </tr>
 {% endfor %}

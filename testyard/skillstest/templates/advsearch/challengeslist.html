@@ -15,7 +15,7 @@ hr.search {
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Challenge Statement</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Challenge Type</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Score</td>
-    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Available Options <br />(For multiple choice type)</td>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top' nowrap>Available Options <br />(For multiple choice type)</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Correct Response</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Negative Score <br />(If any)</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;font-weight:bold;overflow-wrap: break-word;' valign='top'>Media File</td>
@@ -30,7 +30,7 @@ hr.search {
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:0}}</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:1}}</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:2}}</td>
-    <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;' nowrap>
     <ul>
     {% for option in challengesdict|dictlookup:challengeid|getval:10 %}
     {% if option != "" %}

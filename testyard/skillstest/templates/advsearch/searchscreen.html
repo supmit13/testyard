@@ -115,7 +115,32 @@
 			  divscr = document.getElementById('transscreens2');
 			  divscr.style.display = "";
 			  //alert(xmlhttp.responseText);
-			  divscr.innerHTML = xmlhttp.responseText;
+			  htmlcontent = xmlhttp.responseText;
+			  const parser = new DOMParser();
+			  const htmldoc = parser.parseFromString(htmlcontent, 'text/html');
+			  numrecordstr = htmldoc.getElementById('totalrecordscount').value;
+			  numrecords = parseInt(numrecordstr);
+			  docheight = '150%';
+			  if (numrecords < 20){
+			    docheight = '150%';
+			  }
+			  else if(numrecords < 50){
+			    docheight = '300%';
+			  }
+			  else if(numrecords < 100){
+			    docheight = '650%';
+			  }
+			  else if (numrecords < 250){
+			    docheight = '1000%';
+			  }
+			  else if(numrecords < 350){
+			    docheight = '1200%';
+			  }
+			  else{
+			    docheight = '1500%';
+			  }
+			  divscr.style.height = docheight;
+			  divscr.innerHTML = htmlcontent;
 		      }
 		    };
 		    xmlhttp.open("POST", '{{ searchtestinfourl }}', true);
