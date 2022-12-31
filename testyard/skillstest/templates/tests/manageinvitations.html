@@ -1,10 +1,11 @@
-<p><form name='manageinvites' id='manageinvites' method='POST' action=''><h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
+<p><form name='manageinvites' id='manageinvites' method='POST' action=''><h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";' class='btn btn-primary'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
+<input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='{{testsinvitecounter}}'>
 {% if usertest.LENGTH > 0 %}
 <br /><br />
 <div id='utinfo' style=''>
 <font color='#0508E3' style='font-weight:bold;'>Invitations to Existing Users</font><font color='#0508E3' size=-1 style='font-weight:bold;'><i>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
-<table border='1' cellspacing='4' cellpadding='4'>
-<tr>
+<table border='1' cellspacing='4' cellpadding='4' style='width:90%;'>
+<tr style='background:#FFFFFF;'>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till (UTC)</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test URL</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Username</font></td>
@@ -14,13 +15,17 @@
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Score</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Started At - Ended At</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>IP Address</font></td>
-    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td>
-    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>SessionID</font></td>
+    <!-- <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td>
+    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>SessionID</font></td> -->
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Actions</font></td>
 </tr>
 {% for utkey, utvalue in usertest.items %}
     {% if utkey != 'LENGTH' %}
-    <tr>
+	{% if forloop.counter|divisibleby:2 %}
+    <tr style='background:#b8d1f3;'>
+	{% else %}
+    <tr style='background:#ffffff;'>
+	{% endif %}
         <td nowrap align='center'><font color='#0000CC' size=-1>{{ utvalue.0 }} - {{ utvalue.1 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.2 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.4 }}</font></td>
@@ -30,8 +35,8 @@
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.7 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.8 }} - {{ utvalue.9 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.10 }}</font></td>
-        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.11 }}</font></td>
-        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.12 }}</font></td>
+        <!-- <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.11 }}</font></td>
+        <td nowrap align='center'><font color='#0508E3' size=-1>{{ utvalue.12 }}</font></td> -->
 	{% if utvalue.14 == 1 %}
 	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
         {% else %}
@@ -54,7 +59,7 @@
 <div id='wbuinfo' style=''>
 <font color='#0508E3' style='font-weight:bold;'>Invitations to Users Not Registered on TestYard</font>  <font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
 <table border=1 cellspacing='4' cellpadding='4'>
-<tr>
+<tr style='background:#ffffff;'>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till (UTC)</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Test URL</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Email ID</font></td>
@@ -63,12 +68,16 @@
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Score</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Started At - Ended At</font></td>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>IP Address</font></td>
-    <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td>
+    <!-- <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Software Used</font></td> -->
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Action</font></td>
 </tr>
 {% for wbukey, wbuvalue in wouldbeusers.items %}
     {% if wbukey != 'LENGTH' %}
-    <tr>
+        {% if forloop.counter|divisibleby:2 %}
+    <tr style='background:#b8d1f3;'>
+	{% else %}
+    <tr style='background:#ffffff;'>
+	{% endif %}
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.0 }} - {{ wbuvalue.1 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.2 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.3 }}</font></td>
@@ -77,7 +86,7 @@
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.6 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.7 }} - {{ wbuvalue.8 }}</font></td>
         <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.9 }}</font></td>
-        <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.10 }}</font></td>
+        <!-- <td nowrap align='center'><font color='#0508E3' size=-1>{{ wbuvalue.10 }}</font></td> -->
 	{% if wbuvalue.12 == 1 %}
 	<td nowrap align='center'><font color='#FF0000' size=-1>Cancelled</font></td>
 	{%else %}
@@ -98,7 +107,7 @@
 <table border=0 cellspacing=4 cellpadding=4>
 <tr>
 <!-- <td nowrap><input type='button' name='btnclose' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";enableLink("manageexistinginvitations");'></td> -->
-<td nowrap><input type='button' name='btnclose' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";'></td>
+<td nowrap><input type='button' name='btnclose' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";' class='btn btn-primary'></td>
 </tr>
 </table>
 </form></p>

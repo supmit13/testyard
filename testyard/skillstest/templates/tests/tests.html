@@ -1579,8 +1579,38 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      thediv.style.display = "";
-		      thediv.style='height:1600px;width:2800px;';
-		      thediv.innerHTML = xmlhttp.responseText;
+                      htmlcontent = xmlhttp.responseText;
+		      const parser = new DOMParser();
+		      const htmldoc = parser.parseFromString(htmlcontent, 'text/html');
+                      try{
+		          numrecordstr = htmldoc.getElementById('testsinvitecounter').value;
+                      }
+                      catch(err){
+                          numrecordstr = "0";
+                      }
+                      //alert(numrecordstr);
+                      numrecords = 0;
+		      numrecords = parseInt(numrecordstr);
+                      if (numrecords < 10){
+                          thediv.style.height = '500px';
+		      }
+                      else if (numrecords < 25){
+                          thediv.style.height = '1200px';
+		      }
+                      else if (numrecords < 50){
+                          thediv.style.height = '2200px';
+		      }
+                      else if (numrecords < 100){
+                          thediv.style.height = '4400px';
+		      }
+                      else if (numrecords < 150){
+                          thediv.style.height = '6500px';
+		      }
+                      else{
+                          thediv.style.height = '500%';
+                      }
+                      thediv.style.width = '1600px';
+		      thediv.innerHTML = htmlcontent;
   		    }
   		  };
 		  xmlhttp.open("POST", '{{ manageinvitationsurl }}', true);
@@ -1704,12 +1734,33 @@ ul.tab li a:focus, .active {background-color: #ccc;}
                         //alert(xmlhttp.responseText);
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 			    // Display the data in a screen
-			    testdiv.style.display = "";
-			    testdiv.className = "container";
+			    eval_elements = displayevaluationscreen(xmlhttp.responseText);
+                            rowcount = parseInt(eval_elements[1]);
+                            testdiv.style.display = "";
+			    testdiv.className = "register";
 			    testdiv.style='padding-left:20px;padding-right:20px;';
-                            testdiv.style.height = "1550px";
-                            testdiv.style.width = "250%";
-			    testdiv.innerHTML += displayevaluationscreen(xmlhttp.responseText);
+                            testdiv.style.background = '#669999'; // -webkit-linear-gradient(left, #3931af, #00c6ff);
+                            testdiv.style.height = "100px";
+                            testdiv.style.width = "110%";
+                            if (rowcount < 10){
+                                testdiv.style.height = "350px";
+                            }
+                            else if (rowcount < 25){
+                                testdiv.style.height = "550px";
+                            }
+                            else if (rowcount < 40){
+                                testdiv.style.height = "950px";
+                            }
+                            else if (rowcount < 60){
+                                testdiv.style.height = "1250px";
+                            }
+                            else if (rowcount < 80){
+                                testdiv.style.height = "1550px";
+                            }
+                            else{
+                                testdiv.style.height = "2000px";
+                            }
+                            testdiv.innerHTML += eval_elements[0];
   		        }
   		    };
 		    xmlhttp.open("POST", '{{ testevaluationurl }}', true);
@@ -1964,12 +2015,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     			}
 		    }
 		    if(!testname || testname == ""){
-			var html = "<font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'><br /><br />";
-			return (html);
+			var html = "<font color='#0000AA' style='font-weight:bold;'>There are no responses to evaluate for this test.&nbsp;&nbsp;</font><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")' class='btn btn-primary'><br /><br />";
+			return (new Array(html, 0));
 		    }
 		    var html = "<font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
 		    html += "<table border=0 cellspacing='3' cellpadding='3'>";
-		    html += "<tr><td><b>Email</b></td><td><b>Test URL</b></td><td><b>Start Time</b></td><td><b>End Time</b></td><td><b>Responses</b></td><td><b>Outcome</b></td><td><b>Grand Total</b></td><td><b>Test Status</b></td><td><b>Disqualify</b></td><td><b>Comments</b></td></tr>";
+		    html += "<tr><td style='color:#0000AA;'><b>Email</b></td><td style='color:#0000AA;'><b>Test URL</b></td><td style='color:#0000AA;'><b>Start Time</b></td><td style='color:#0000AA;'><b>End Time</b></td><td style='color:#0000AA;'><b>Responses</b></td><td style='color:#0000AA;'><b>Outcome</b></td><td style='color:#0000AA;'><b>Grand Total</b></td><td style='color:#0000AA;'><b>Test Status</b></td><td style='color:#0000AA;'><b>Disqualify</b></td><td style='color:#0000AA;'><b>Comments</b></td></tr>";
 		    rowctr = 1;
 		    for (email_testid in jsonresp){
                         keyparts = email_testid.split("####");
@@ -2020,7 +2071,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				        endtime = "";
 				    }
 				}
-			        html += "<tr bgcolor='#B8D1F3'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+			        html += "<tr bgcolor='#B8D1F3'><td nowrap style='color:#0000AA;'><font size=-1>" + email + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + testurl + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + starttime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + endtime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
 				if(!answerrecord['disqualified']){
 				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
 				}
@@ -2049,7 +2100,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				        endtime = "";
 				    }
 				}
-				html += "<tr bgcolor='#FFFFFF'><td nowrap><font size=-1>" + email + "</font></td><td nowrap><font size=-1>" + testurl + "</font></td><td nowrap><font size=-1>" + starttime + "</font></td><td nowrap><font size=-1>" + endtime + "</font></td><td nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+				html += "<tr bgcolor='#FFFFFF'><td style='color:#0000AA;' nowrap><font size=-1>" + email + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + testurl + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + starttime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + endtime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
 				if(!answerrecord['disqualified']){
 				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
 				}
@@ -2061,9 +2112,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			}
 		    }
 		    html += "<tr><td colspan='9'>&nbsp;</td></tr>";
-		    html += "<tr><td colspan='9' align='center'><!-- <input type='button' name='btnsave' value='Save' onClick='javascript:saveglobalinfo(\"" + testid + "\");'> --><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")'></td></tr>";
+		    html += "<tr><td colspan='9' align='center'><!-- <input type='button' name='btnsave' value='Save' onClick='javascript:saveglobalinfo(\"" + testid + "\");'> --><input type='button' name='btnclose' value='Close Screen' onClick='javascript:closedivbyid(\"createtestdiv\")' class='btn btn-primary'></td></tr>";
 		    html += "</table>";
-		    return (html);
+		    return (new Array(html, rowctr));
 		}
 
 
@@ -3030,7 +3081,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
 			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
 			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
-			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#/' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
+			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
 			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  {% if creator_tests_info|dictlookup:testnm|getval:21 < 1 %}
@@ -3105,10 +3156,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% for testnm in tests_evaluator_ordered_createdate reversed %}
 			<tr>
 			  {% if evaluator_tests_info|dictlookup:testnm|getval:18 == 'public' or evaluator_tests_info|dictlookup:testnm|getval:18 == 'protected' %}
-			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
 			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
 			  {% else %}
-			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td>
+			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td>
 			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td> -->
 			  {% endif %}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>

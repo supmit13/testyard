@@ -3416,15 +3416,16 @@ def manageinvitations(request):
     usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")
     wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active")
     if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
-        message = "Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\">Close</a>"%testid
+        message = "Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\">Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'>"%testid
         response = HttpResponse(message)
         return response
-    invitations_dict = {'usertest' : {}, 'wouldbeusers' : {}, 'testname' : testobj.testname, 'testid' : testid }
+    invitations_dict = {'usertest' : {}, 'wouldbeusers' : {}, 'testname' : testobj.testname, 'testid' : testid, 'testsinvitecounter' : 0 }
     usertest_dict = invitations_dict['usertest']
     wouldbeusers_dict = invitations_dict['wouldbeusers']
     usertest_dict['LENGTH'] = usertestqset.__len__()
     wouldbeusers_dict['LENGTH'] = wouldbeuserqset.__len__()
     ctr = 100
+    testsinvitecounter = 0
     for usertest in usertestqset:
         status = usertest.status
         if usertest.status == 0:
@@ -3454,10 +3455,12 @@ def manageinvitations(request):
             #usertest_dict[str(ctr)] = [ skillutils.readabledatetime(str(usertest.validfrom)), skillutils.readabledatetime(str(usertest.validtill)), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled, usertest.id ]
             usertest_dict[str(ctr)] = [ str(usertest.validfrom), str(usertest.validtill), usertest.testurl, usertest.emailaddr, usertest.user.displayname, status, outcome, score, starttime, endtime, ipaddress, clientsware, usertest.sessid, usertest.active, usertest.cancelled, usertest.id ]
         except:
-            fs = open("/home/supriyo/work/dddd7.txt", "w")
-            fs.write(sys.exc_info()[1].__str__());
-            fs.close()
+            pass
+            #fs = open("/home/supriyo/work/dddd7.txt", "w")
+            #fs.write(sys.exc_info()[1].__str__());
+            #fs.close()
         ctr += 1
+        testsinvitecounter += 1
     invitations_dict['usertest'] = usertest_dict
     ctr = 100
     for wouldbeuser in wouldbeuserqset:
@@ -3489,7 +3492,9 @@ def manageinvitations(request):
         #wouldbeusers_dict[str(wouldbeuserid)] = [ skillutils.readabledatetime(str(wouldbeuser.validfrom)), skillutils.readabledatetime(str(wouldbeuser.validtill)), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled, wouldbeuser.id ]
         wouldbeusers_dict[str(wouldbeuserid)] = [ str(wouldbeuser.validfrom), str(wouldbeuser.validtill), wouldbeuser.testurl, wouldbeuser.emailaddr, status, outcome, score, starttime, endtime, ipaddress, clientsware, wouldbeuser.active, wouldbeuser.cancelled, wouldbeuser.id ]
         ctr += 1
+        testsinvitecounter += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict
+    invitations_dict['testsinvitecounter'] = testsinvitecounter
     tmpl = get_template("tests/manageinvitations.html")
     invitations_dict.update(csrf(request))
     cxt = Context(invitations_dict)
