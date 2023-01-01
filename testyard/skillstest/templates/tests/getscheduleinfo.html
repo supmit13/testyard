@@ -4,6 +4,12 @@
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
 <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
+
+<!-- New interface code starts here -->
+<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'>
+<script src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'></script>
+<!-- New interface code ends here -->
+
 <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' type='text/javascript'></script>
 <script src='http://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script>
 <script src="static/datetimepicker/datetimepicker_css.js"></script>
@@ -20,7 +26,7 @@ function validateinput(){
     allelements = document.frmgetschedule.elements;
     for(var i=0; i< allelements.length; i++){
         if(startpattern.exec(allelements[i].name) || endpattern.exec(allelements[i].name)){
-	    if(!datepattern.exec(allelements[i].value)){
+	    if(!datepattern.exec(allelements[i].value) || allelements[i].value.trim() == ""){
 		if(recvddatepattern.exec(allelements[i].value)){ // We got date without the number of seconds
 		    allelements[i].value = allelements[i].value + ":00"
 		}
@@ -33,8 +39,10 @@ function validateinput(){
             
 	}
 	else if(allelements[i].name == 'start_new' || allelements[i].name == 'end_new'){
-	    if(allelements[i].value == "" || allelements[i].value == ""){
-		continue;
+	    if(allelements[i].value.trim() == ""){
+		alert("Date format should be yyyy-mm-dd hh:mm:ss");
+		allelements[i].focus();
+		return (false);
 	    }
 	    if(!datepattern.exec(allelements[i].value)){
 		alert("Date format should be yyyy-mm-dd hh:mm:ss");
@@ -50,7 +58,15 @@ function validateinput(){
             }
 	}
 	else if(allelements[i].name == 'emails_new'){ // This will contain emails as comma separated values
+	    if(allelements[i].value.trim() == ""){
+		alert("Please enter at least one email Id");
+	        return (false);
+	    }
 	    allemails = allelements[i].value.split(",");
+	    if(allemails.length == 0){
+		alert("Please enter at least one email Id");
+	        return (false);
+	    }
 	    sanitized_emails = Array();
 	    for(var j=0; j < allemails.length; j++){
 		emailstr = allemails[j].trim();
@@ -103,31 +119,35 @@ function saveschedules(){
 </script>
 <title>Schedule the Test</title>
 </head>
-<body bgcolor='#669999'>
+<body style='background:#669999;color:#0000AA;'>
+<br/><br/>
+<div class='container'>
 <center><h3>Add/Edit Schedule Information ('{{testname}}')</h3></center>
 <form name='frmgetschedule' id='frmgetschedule' method='POST' action=''>
 <center>
 <table border='0' cellspacing='2' cellpadding='2' width='80%'>
 <tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Schedule Id</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled Start<br />(yyyy-mm-dd hh:mm:ss)</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled End<br />(yyyy-mm-dd hh:mm:ss)</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Candidate Email Ids</font></td></tr>
 <tr>
-<td nowrap valign='top'><font color='#0000AA' size=-1>New Schedule</font></td><td align='center' valign='top'><input type='text' name='start_new' id='start_new' value=''><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center' valign='top'><input type='text' name='end_new' id='end_new' value=''><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40'></textarea></td>
+<td nowrap valign='top'><font color='#0000AA' size=-1>New Schedule</font></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='text' name='start_new' id='start_new' value='' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='text' name='end_new' id='end_new' value='' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40' class='form-control'></textarea></td>
 </tr>
 {% for schedid, schedtuple in scheduleinfo.items %}
 <tr>
 {% if schedtuple.2 == 0 %}
-<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center' valign='middle' nowrap><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
 {% else %}
-<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' disabled></td><td align='center' valign='middle' nowrap><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control' disabled></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
 {% endif %}
 </tr>
 {% endfor %}
+<tr><td colspan=4>&nbsp;</td></tr>
 <tr>
-<td colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Schedules' onClick='javascript:saveschedules();'><span id='waitspan' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();'></td>
+<td colspan=4 align='center' style='padding-left:10px;padding-right:10px;'><input type='button' name='btnsave' id='btnsave' value='Save Schedules' onClick='javascript:saveschedules();' class='btn btn-primary'><span id='waitspan' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();' class='btn btn-testyard1'></td>
 </tr>
 </table>
 </center>
 {% csrf_token %}
 <input type='hidden' name='testid' id='testid' value='{{testid}}'>
 </form>
+</div>
 </body>
 </html>
