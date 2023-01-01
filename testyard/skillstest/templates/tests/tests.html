@@ -1740,25 +1740,25 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    testdiv.className = "register";
 			    testdiv.style='padding-left:20px;padding-right:20px;';
                             testdiv.style.background = '#669999'; // -webkit-linear-gradient(left, #3931af, #00c6ff);
-                            testdiv.style.height = "100px";
-                            testdiv.style.width = "110%";
+                            testdiv.style.height = "150px";
+                            testdiv.style.width = "125%";
                             if (rowcount < 10){
-                                testdiv.style.height = "350px";
+                                testdiv.style.height = "400px";
                             }
                             else if (rowcount < 25){
-                                testdiv.style.height = "550px";
+                                testdiv.style.height = "750px";
                             }
                             else if (rowcount < 40){
-                                testdiv.style.height = "950px";
+                                testdiv.style.height = "1100px";
                             }
                             else if (rowcount < 60){
-                                testdiv.style.height = "1250px";
-                            }
-                            else if (rowcount < 80){
                                 testdiv.style.height = "1550px";
                             }
+                            else if (rowcount < 80){
+                                testdiv.style.height = "1950px";
+                            }
                             else{
-                                testdiv.style.height = "2000px";
+                                testdiv.style.height = "2550px";
                             }
                             testdiv.innerHTML += eval_elements[0];
   		        }
@@ -2020,7 +2020,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    var html = "<font color='#0000AA' style='font-weight:bold;'>Candidates List for " + testname + "</font><br /><br />";
 		    html += "<table border=0 cellspacing='3' cellpadding='3'>";
-		    html += "<tr><td style='color:#0000AA;'><b>Email</b></td><td style='color:#0000AA;'><b>Test URL</b></td><td style='color:#0000AA;'><b>Start Time</b></td><td style='color:#0000AA;'><b>End Time</b></td><td style='color:#0000AA;'><b>Responses</b></td><td style='color:#0000AA;'><b>Outcome</b></td><td style='color:#0000AA;'><b>Grand Total</b></td><td style='color:#0000AA;'><b>Test Status</b></td><td style='color:#0000AA;'><b>Disqualify</b></td><td style='color:#0000AA;'><b>Comments</b></td></tr>";
+		    html += "<tr><td style='color:#0000AA;'><b>Email</b></td><td style='color:#0000AA;'><b>Test URL</b></td><td style='color:#0000AA;'><b>Start Time</b></td><td style='color:#0000AA;'><b>End Time</b></td><td style='color:#0000AA;'><b>Responses</b></td><td style='color:#0000AA;'><b>Outcome</b></td><td style='color:#0000AA;'><b>Grand Total</b></td><td style='color:#0000AA;' nowrap><b>Test Status</b></td><td style='color:#0000AA;'><b>Disqualify</b></td><td style='color:#0000AA;'><b>Comments</b></td></tr>";
 		    rowctr = 1;
 		    for (email_testid in jsonresp){
                         keyparts = email_testid.split("####");
@@ -2071,12 +2071,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				        endtime = "";
 				    }
 				}
-			        html += "<tr bgcolor='#B8D1F3'><td nowrap style='color:#0000AA;'><font size=-1>" + email + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + testurl + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + starttime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + endtime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
+			        html += "<tr bgcolor='#B8D1F3'><td nowrap style='color:#0000AA;'><font size=-1>" + email + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + testurl + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + starttime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + endtime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td><font size=-1 nowrap>" + statustext + "</font></td><td nowrap>";
 				if(!answerrecord['disqualified']){
-				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td>" + comments + "</td></tr>";
 				}
 				else{
-				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td nowrap>" + comments + "</td></tr>";
+				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td>" + comments + "</td></tr>";
 				}
 			    }
 			    else{
@@ -2102,10 +2102,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				}
 				html += "<tr bgcolor='#FFFFFF'><td style='color:#0000AA;' nowrap><font size=-1>" + email + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + testurl + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + starttime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + endtime + "</font></td><td style='color:#0000AA;' nowrap><font size=-1>" + evaluatestr + "</font></td><td nowrap><font size=-1>" + outcome + "</font></td><td nowrap><font size=-1>" + grandtotal + "</font></td><td nowrap><font size=-1>" + statustext + "</font></td><td nowrap>";
 				if(!answerrecord['disqualified']){
-				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td nowrap>" + comments + "</td></tr>";
+				    html += "<a href='#/' onClick='javascript:disqualifycandidate(\"" + testid + "\", \"" + email + "\")'><font size=-1>Disqualify</font></a></td><td>" + comments + "</td></tr>";
 				}
 				else{
-				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td nowrap>" + comments + "</td></tr>";
+				    html += "<font color='#AA0000' size=-1>Disqualified</font></td><td>" + comments + "</td></tr>";
 				}
 			    }
 			    rowctr++;

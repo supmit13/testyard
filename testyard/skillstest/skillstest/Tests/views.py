@@ -409,31 +409,31 @@ def get_next_date(curtestdate, attemptsinterval, attemptsintervalunit):
     YYYY, MM, DD = datepart.split("-")
     hh, mm, ss = timepart.split(":")
     if attemptsintervalunit == 'h':
-        hh = hh + attemptsinterval
+        hh = int(hh) + int(attemptsinterval)
         if hh > 24:
-            hh = hh - 24
-            DD = DD + 1
+            hh = int(hh) - 24
+            DD = int(DD) + 1
     elif attemptsintervalunit == 'm':
-        mm = mm + attemptsinterval
+        mm = int(mm) + int(attemptsinterval)
         if mm > 60:
-            mm = mm - 60
-            hh = hh + 1
+            mm = int(mm) - 60
+            hh = int(hh) + 1
     elif attemptsintervalunit == 'd':
-        DD = DD + attemptsinterval
+        DD = int(DD) + int(attemptsinterval)
         if DD > 30:
-            DD = DD - 30
-            MM = MM + 1
+            DD = int(DD) - 30
+            MM = int(MM) + 1
     elif attemptsintervalunit == 'M':
-        MM = MM + attemptsinterval
+        MM = int(MM) + int(attemptsinterval)
         if MM > 12:
-            MM = MM - 12
-            YYYY = YYYY + 1
+            MM = int(MM) - 12
+            YYYY = int(YYYY) + 1
     elif attemptsintervalunit == 'Y':
-        YYYY = YYYY + attemptsinterval
+        YYYY = int(YYYY) + int(attemptsinterval)
     else:
         msg = "Incorrect attemptsintervalunit (%s)"%attemptsintervalunit
         return(msg)
-    next_test_date = YYYY + "-" + MM + "-" + DD + " " + hh + ":" + mm + ":" + ss
+    next_test_date = str(YYYY) + "-" + str(MM) + "-" + str(DD) + " " + str(hh) + ":" + str(mm) + ":" + str(ss)
     return next_test_date
 
 
@@ -658,7 +658,7 @@ def manage(request):
             multipleattempts = tobj.allowmultiattempts
             maxattemptscount = tobj.maxattemptscount
             attemptsinterval = tobj.attemptsinterval
-            attemptsintervalunit = tobj.attemptsinterval
+            attemptsintervalunit = tobj.attemptsintervalunit
             scope = tobj.scope
             activationdate = tobj.activationdate
             usertestqset = UserTest.objects.filter(test=tobj)
