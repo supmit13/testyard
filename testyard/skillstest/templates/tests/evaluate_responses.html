@@ -24,7 +24,7 @@
 
 </head>
 
-<body bgcolor="#669999"><h3>User's Responses</h3><br /><br /><form name="frmevalresp" method="POST" onmousemove="javascript:displayMathExprEvalRespView({{maxctr}});">
+<body bgcolor="#669999"><div style='color:#0000aa;'><h3>User's Responses</h3><br /><br /><form name="frmevalresp" method="POST" onmousemove="javascript:displayMathExprEvalRespView({{maxctr}});">
 <input type='hidden' name='testid' id='testid' value='{{testid}}'>
 <input type='hidden' name='emailid' id='emailid' value='{{emailid}}'>
 <input type='hidden' name='tabref' id='tabref' value='{{responsedata.tabref}}'>
@@ -87,7 +87,7 @@
 		    {% endif %}
 		    <input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>
 		    </form>
-                    
+                    </div>
 		    </body></html>
     
 

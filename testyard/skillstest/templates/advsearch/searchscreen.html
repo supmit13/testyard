@@ -10,6 +10,7 @@
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 	<!-- New interface code ends here -->
+
 	
 	{% include "inc/mission_statement.html" %}
 		<style>
@@ -43,6 +44,7 @@
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		            divres = document.getElementById('searchresults');
 			    divres.style.display = "";
+                            divres.style = "padding-left:10px;padding-right:10px;";
 			    responsedata = xmlhttp.responseText;
 			    divres.innerHTML = responsedata;
   		        }
@@ -69,6 +71,7 @@
     		            divres = document.getElementById('searchresults');
 			    divres.innerHTML = "";
 			    divres.style.display = "";
+                            divres.style = "padding-left:10px;padding-right:10px;";
 			    responsedata = xmlhttp.responseText;
 			    divres.innerHTML = responsedata;
   		        }
@@ -208,10 +211,11 @@
 		  position:absolute; top:250px; left:0px; width:125%; height:250%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 		}
 		</style>
+	 	{% include "inc/right_panel.html" %}
 		<div class="post">
 			
 			<span class="meta">
-			<h3>Welcome {{ displayname }}</h3>
+			<h3 class="blue" style='font-size:14px;font-weight:bold;'>Hello {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
 			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
 			<div class="entry form-group">

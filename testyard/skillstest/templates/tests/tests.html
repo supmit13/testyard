@@ -1528,6 +1528,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // Form to be open in 'createtestdiv'
 		  var thediv = document.getElementById('invitationdiv' + testid);
 		  thediv.style.display = "";
+                  //thediv.style = "padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;";
 		  var divinnerhtml = "{% include 'tests/invitecandidatesform.html' %}";
 		  divinnerhtml = divinnerhtml.replace(/####TESTID####/g, testid);
 		  curdatetime = new Date();
@@ -3023,7 +3024,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		{% include "inc/right_panel.html" %}
 		<div class="post">
 			<span class="meta">
-			<h3 class="blue">Welcome {{ displayname }}</h3>
+			<h3 class="blue">Hello {{ displayname }}</h3>
 			{{ msg }} {{ newuser }}
 			<div class="entry">
 			<!-- Tests HTML goes here. -->
