@@ -1721,8 +1721,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
 		    //alert(postdata);
 		    testdiv = document.getElementById('createtestdiv');
-		    testdiv.style.display = "none";
-		    testdiv.innerHTML = "";
+                    // Show waiting status to user while we load the data.
+                    testdiv.style.display = "";
+		    testdiv.innerHTML = "<center><img src='/static/images/loading_big2.gif'></center>";
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
     		        xmlhttp=new XMLHttpRequest();
@@ -1733,10 +1734,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
    		    xmlhttp.onreadystatechange = function(){
                         //alert(xmlhttp.responseText);
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+                            testdiv.innerHTML = "";
 			    // Display the data in a screen
 			    eval_elements = displayevaluationscreen(xmlhttp.responseText);
                             rowcount = parseInt(eval_elements[1]);
-                            testdiv.style.display = "";
 			    testdiv.className = "register";
 			    testdiv.style='padding-left:20px;padding-right:20px;';
                             testdiv.style.background = '#669999'; // -webkit-linear-gradient(left, #3931af, #00c6ff);
@@ -1872,6 +1873,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     			tex2jax: {inlineMath: [[\"\\[\", \"\\]\"], [\"\[\", \"\]\"]]} \n \
 		    });";
 		    html += "</scr" + "ipt>\n";
+		    html += "<!-- New interface code starts here -->\n<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'>\n";
+                    html += "<scr" + "ipt" + " src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'>" + "</scr" + "ipt>\n";
+	            html += "<!-- New interface code ends here -->\n";
 		    html += "\n<scr" + "ipt type=\"text/javascript\">";
 		    // Javascript for displaying mathjax symbols in questions and answers on evaluation page. ++ Supriyo.
 		    html += "function displayMathExprEvalRespView(countresp){ \n \
@@ -1891,8 +1895,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    html += "</scr" + "ipt>\n";
                     html += "</head>";
 		    html += "<body bgcolor=\"#669999\"><br />";
-		    html += "<div style='color:#CC0000;font-style:italic;font-weight:bold'>Candidate has deviated from the test screen " + responsedata.windowchangeattempts + " times during the course of the test. Total integrity is upon the discretion of the evaluator.</div><br />";
-		    html += "<h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
+		    html += "<div style='color:#CC0000;font-style:italic;font-weight:bold;padding-left:20px;padding-right:10px;padding-top:10px;padding-bottom:10px;'>Candidate has deviated from the test screen " + responsedata.windowchangeattempts + " times during the course of the test. Total integrity is upon the discretion of the evaluator.</div><br />";
+		    html += "<div style='color:#0000AA;background:#669999;padding-left:20px;padding-right:10px;padding-bottom:10px;padding-top:10px;'><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
 		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
 		    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
 		    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
@@ -1926,7 +1930,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			candidaterespdecoded = candidaterespdecoded.replace("__GT__", ">");
 			candidaterespdecoded = candidaterespdecoded.replace("__LT__", "<");
 			
-			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
+			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');' style='color:#0000BB;font-size:14px;'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
 			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;
 			html += "<input type='hidden' name='maxscore_" + cctr + "' id='maxscore_" + cctr + "' value='" + candidateresponse[challenge].maxscore + "'>";
@@ -1938,12 +1942,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			correctanswer = correctanswer.replace("#||#", ", ");
 			html += "<br /><br /><b>Correct Answer: </b>" + correctanswer;
 			if(evalcommitstate == false){
-			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "'>";
-			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' class='form-control'>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 class='form-control'>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
 			}
 			else{
-			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' disabled>";
-			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 disabled>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' class='form-control' disabled>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 disabled class='form-control'>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
 			}
 			html += "<input type='hidden' name='challengeid_" + cctr + "' id='challengeid_" + cctr + "' value='" + candidateresponse[challenge].challengeid + "'>";
 			html += "<br /><br /><hr>";
@@ -1951,7 +1955,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    
 		    html += "<input type='hidden' name='maxcctr' id='maxcctr' value='" + cctr + "'>";
-		    html += "<textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
+		    html += "<b>Evaluator's Notes: </b><textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40 class='form-control'>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
 		    if(evalcommitstate == false){
 		        html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1'><br /><br />";
 		    }
@@ -1959,11 +1963,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />";
 		    }
 		    if(evalcommitstate == false){
-		        html += "<input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>";
+		        html += "<div class='row' style='padding-left:20px;padding-top:10px;'><input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();' class='btn btn-primary' style='padding-right:10px;'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style='padding-left:10px;padding-right:10px;'></div>";
 		    }
-		    html += "<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>";
+		    html += "&nbsp;&nbsp;&nbsp;&nbsp;<input type='button' name='btnclose' value='Close' onClick='javascript:window.close();' class='btn btn-testyard2'></div>";
 		    html += "</form>";
-                    
+                    html += "</div>";
 		    html += "</body></html>";
 		    evalwin = window.open("", "evaluationwindow", "width=800, height=600, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
 		    evalwin.document.write(html);
