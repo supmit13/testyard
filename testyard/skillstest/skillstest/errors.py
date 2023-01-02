@@ -182,6 +182,9 @@ error_codes = { \
         '1182' : 'The details pertaining to you have been captured by the application. Your content is now being posted.', \
         '1183' : 'The Linkedin post data doesn\'t exist in our records. Please try to post again.',\
         '1184' : 'The records for posting on linkedin do not match at the two phases. This might occur if you take a long time in the process of posting your test/interview result, or if your connection is not stable. If you keep encountering this issue, please feel free to contact our support staff at support@testyard.in.',\
+        '1185' : 'Required parameter schedule Id missing.',\
+        '1186' : 'Could not find schedule object matching the given Id.',\
+        '1187' : 'Could not find required parameters start and/or end.',\
     }
 
 def error_msg(code):
