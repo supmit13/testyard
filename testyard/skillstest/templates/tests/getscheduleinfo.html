@@ -130,6 +130,83 @@ function saveschedules(){
     waittag.style= "";
     waittag.innerHTML = "<img src='static/images/loading_small.gif'><font color='#0000AA' size=-1>Sending emails... please wait</font>";
 }
+
+
+function updateschedule(schedid){
+    //alert(schedid);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+    }
+    else{
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    alert(xmlhttp.responseText);
+	}
+    };
+    //alert(postdata);
+    starttime = document.getElementById("start_" + schedid).value;
+    starttime = starttime.replace("T", " ");
+    starttime = encodeURI(starttime + ":00");
+    endtime = document.getElementById("end_" + schedid).value;
+    endtime = endtime.replace("T", " ");
+    endtime = encodeURI(endtime + ":00");
+    postdata = "csrfmiddlewaretoken=" +  document.frmgetschedule.csrfmiddlewaretoken.value + "&schedid=" + encodeURI(schedid.toString()) + "&start=" + starttime + "&end=" + endtime;
+    xmlhttp.open("POST", '{{ updatescheduleurl }}', true);
+    xmlhttp.send(postdata);
+}
+
+function showallemailids(schedid, page=1, newwin=true){
+    //alert(schedid);
+    var xmlhttp;
+    waittag = document.getElementById('waitemailids_'+schedid.toString());
+    if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+    }
+    else{
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //alert(xmlhttp.responseText);
+            emailidslist = JSON.parse(xmlhttp.responseText)
+	    nextpage = page+1;
+	    prevpage = page-1;
+            if(prevpage < 1){
+		prevpage=1;
+	    }
+            emailids_str = "\<html\>\<head\>\<title\>Email Ids\<\/title\>\<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='NO-CACHE'\>\<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'\>\<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'\>\<script src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'\>\<\/script\>\<\/head\>\<body style='background:#669999;color:#0000AA;margin:auto;text-align:center;'>" + emailidslist.join("<br/>") + "<br/><br/><input type='button' name='closebtn' id='closebtn' value='Close' class='btn btn-testyard1' onclick='window.close();'><br/><br/><label style='margin:auto;text-align:center;color:#0000AA;'><a href='#/' onclick='javascript:showallemailids(" + schedid.toString() + ", " + prevpage.toString() + ", false);'>Prev</a>|<a href='#/' onclick='javascript:showallemailids(" + schedid.toString() + ", " + nextpage.toString() + ", false);'>Next</a></label><br/><br/></body></html>";
+	    waittag.style= "display:none";
+	    waittag.innerHTML = "";
+            height = "600";
+            if(emailidslist.length < 10){
+		height = "400";
+	    }
+            else if(emailidslist.length < 50){
+		height = "800";
+	    }
+	    else if(emailidslist.length < 100){
+		height = "1000";
+	    }
+	    if(newwin){
+                emailswin = window.open("", "emailslistwindow", "width=400, height=" + height + ", location=no, status=no, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
+	    }
+	    else{
+		emailswin = window;
+	    }
+            emailswin.document.write(emailids_str);
+	}
+    };
+    //alert(postdata);
+    postdata = "csrfmiddlewaretoken=" +  document.frmgetschedule.csrfmiddlewaretoken.value + "&schedid=" + schedid.toString() + "&page=" + page.toString();
+    xmlhttp.open("POST", '{{ showallemailidsurl }}', true);
+    xmlhttp.send(postdata);
+    waittag.style.display= "";
+    waittag.innerHTML = "<img src='static/images/loading_small.gif'>";
+}
+
 </script>
 <title>Schedule the Test</title>
 </head>
@@ -140,23 +217,27 @@ function saveschedules(){
 <form name='frmgetschedule' id='frmgetschedule' method='POST' action=''>
 <center>
 <table border='0' cellspacing='2' cellpadding='2' width='80%'>
-<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Schedule Id</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled Start<!-- <br />(yyyy-mm-dd hh:mm:ss) --></font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled End<!-- <br />(yyyy-mm-dd hh:mm:ss) --></font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Candidate Email Ids</font></td></tr>
+<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Schedule Id</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled Start<!-- <br />(yyyy-mm-dd hh:mm:ss) --></font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled End<!-- <br />(yyyy-mm-dd hh:mm:ss) --></font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Candidate Email Ids</font></td><td>&nbsp;</td></tr>
 <tr>
-<td nowrap valign='top'><font color='#0000AA' size=-1>New Schedule</font></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_new' id='start_new' value='' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_new' id='end_new' value='' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40' class='form-control'></textarea></td>
+<td nowrap valign='top'><font color='#0000AA' size=-1>New Schedule</font></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_new' id='start_new' value='' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_new' id='end_new' value='' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40' class='form-control'></textarea></td><td>&nbsp;</td>
 </tr>
+<tr><td colspan=5>&nbsp;</td></tr>
+<tr>
+<td colspan=5 align='center' style='padding-left:10px;padding-right:10px;'><input type='button' name='btnsave' id='btnsave' value='Save Schedules' onClick='javascript:saveschedules();' class='btn btn-primary'><span id='waitspan' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();' class='btn btn-testyard1'></td><td>&nbsp;</td>
+</tr>
+<tr><td colspan=5>&nbsp;</td></tr>
+<tr><td colspan=5>&nbsp;</td></tr>
 {% for schedid, schedtuple in scheduleinfo.items %}
 <tr>
 {% if schedtuple.2 == 0 %}
-<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td valign='middle'><font color='#0000AA' size=-1>{% if schedtuple.3 != "" %}{{schedtuple.3}}...&nbsp; {% else %}&nbsp;{% endif %}<a href='#/' onclick='javascript:showallemailids("{{schedid}}");'>List all email Ids</a><label id='waitemailids_{{schedid}}' style='display:none;'></label></font></td><td><a href='#/' onclick='javascript:updateschedule("{{schedid}}");' style='font-size:14px;'>save</a></td>
 {% else %}
-<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control' disabled></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control' disabled></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{% if schedtuple.3 != "" %}{{schedtuple.3}}...&nbsp;{% else %}&nbsp;{% endif %}<a href='#/' onclick='javascript:showallemailids("{{schedid}}");' style='font-size:14px;'>List all email Ids</a><label id='waitemailids_{{schedid}}' style='display:none;'></label></font></td><td>&nbsp;</td>
 {% endif %}
 </tr>
 {% endfor %}
-<tr><td colspan=4>&nbsp;</td></tr>
-<tr>
-<td colspan=4 align='center' style='padding-left:10px;padding-right:10px;'><input type='button' name='btnsave' id='btnsave' value='Save Schedules' onClick='javascript:saveschedules();' class='btn btn-primary'><span id='waitspan' style=''></span>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Window' onClick='javascript:window.close();' class='btn btn-testyard1'></td>
-</tr>
+<tr><td colspan=5>&nbsp;</td></tr>
+<tr><td colspan=5>&nbsp;</td></tr>
 </table>
 </center>
 {% csrf_token %}

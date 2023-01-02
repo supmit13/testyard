@@ -5500,7 +5500,7 @@ def gettestschedule(request):
         response = HttpResponse(message)
         return response
     # Get all schedules for this test.
-    allschedulesqset = Schedule.objects.filter(test=testobj).order_by('createdon')
+    allschedulesqset = Schedule.objects.filter(test=testobj).order_by('-createdon')
     # Now look for all schedules for this test in 'Tests_usertest' and 'Tests_wouldbeusers' tables.
     schedule_dict = {}
     for schedobj in allschedulesqset:
@@ -5514,22 +5514,196 @@ def gettestschedule(request):
         past = 0
         try:
             if scheduledtestsqset_wbu.__len__() > 0 and curdatetime > scheduledtestsqset_wbu[0].validfrom:
-                print publishdate, " ##### ",activationdate, "#####", curdatetime
+                #print publishdate, " ##### ",activationdate, "#####", curdatetime
                 past = 1
             elif scheduledtestsqset_ut.__len__() > 0 and curdatetime > scheduledtestsqset_ut[0].validfrom:
-                print publishdate, " ##### ",activationdate, "#####", curdatetime
+                #print publishdate, " ##### ",activationdate, "#####", curdatetime
                 past = 1
             validfrom, validto = schedobj.slot.split('#||#')
-            emailsliststr = ", ".join(emailslist)
+            emailsliststr = ", ".join(emailslist[:2]) # Show only 2 email Ids. If the user wants to see more, she will click on the listing link.
             schedule_dict[str(schedobj.id)] = (validfrom, validto, past, emailsliststr)
         except:
             print sys.exc_info()[1].__str__()
     tmpl = get_template("tests/getscheduleinfo.html")
-    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname}
+    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname, 'showallemailidsurl' : mysettings.SHOW_ALL_EMAILS_URL, 'updatescheduleurl' : mysettings.UPDATE_SCHEDULE_URL}
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     schedulehtml = tmpl.render(cxt)
     return HttpResponse(schedulehtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def updateschedule(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    scheduleid = -1
+    scheduleobj = None
+    starttime, endtime = "", ""
+    if request.POST.has_key('schedid'):
+        scheduleid = request.POST['schedid']
+    else:
+        message = error_msg('1185')
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('start'):
+        starttime = request.POST['start']
+    else:
+        message = error_msg('1187')
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('end'):
+        endtime = request.POST['end']
+    else:
+        message = error_msg('1187')
+        response = HttpResponse(message)
+        return response
+    try:
+        scheduleobj = Schedule.objects.get(id=scheduleid)
+    except:
+        message = error_msg('1186')
+        response = HttpResponse(message)
+        return response
+    scheduleobj.slot = starttime + "#||#" + endtime
+    scheduleobj.save()
+    usertestqset = UserTest.objects.filter(schedule=scheduleobj)
+    wouldbeusersqset = WouldbeUsers.objects.filter(schedule=scheduleobj)
+    for utobj in usertestqset:
+        try:
+            starttime_date, starttime_time = starttime.split(" ")
+            starttime_year, starttime_month, starttime_day = starttime_date.split("-")
+            starttime_components = starttime_time.split(":")
+            if starttime_components.__len__() > 2:
+                starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], starttime_components[2]
+            else:
+                starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], "00"
+            utobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
+            endtime_date, endtime_time = endtime.split(" ")
+            endtime_year, endtime_month, endtime_day = endtime_date.split("-")
+            endtime_components = endtime_time.split(":")
+            if endtime_components.__len__() > 2:
+                endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], endtime_components[2]
+            else:
+                endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], "00"
+            utobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)
+        except:
+            message = sys.exc_info()[1].__str__()
+            response = HttpResponse(message)
+            return response
+        try:
+            utobj.save()
+        except:
+            utobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
+            utobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
+            utobj.save()
+    for wbuobj in wouldbeusersqset:
+        try:
+            starttime_date, starttime_time = starttime.split(" ")
+            starttime_year, starttime_month, starttime_day = starttime_date.split("-")
+            starttime_components = starttime_time.split(":")
+            if starttime_components.__len__() > 2:
+                starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], starttime_components[2]
+            else:
+                starttime_hour, starttime_minute, starttime_second = starttime_components[0], starttime_components[1], "00"
+            wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second), 0, pytz.UTC)
+            endtime_date, endtime_time = endtime.split(" ")
+            endtime_year, endtime_month, endtime_day = endtime_date.split("-")
+            endtime_components = endtime_time.split(":")
+            if endtime_components.__len__() > 2:
+                endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], endtime_components[2]
+            else:
+                endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], "00"
+            wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)                  
+        except:
+            #print sys.exc_info()[1].__str__()
+            message = " Could not update record."
+            response = HttpResponse(message)
+            return response
+        try:
+            wbuobj.save()
+        except:
+            message = "Error: %s Making ammends to rectify the situation... All will be well.\n"%sys.exc_info()[1].__str__()
+            wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
+            wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
+            wbuobj.save() 
+    message = "Updated existing schedule."
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showallemailids(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    scheduleid = -1
+    pageno = 1
+    if request.POST.has_key('schedid'):
+        scheduleid = request.POST['schedid']
+    else:
+        message = error_msg('1185')
+        response = HttpResponse(message)
+        return response
+    if request.POST.has_key('page'):
+        try:
+            pageno = int(request.POST['page'])
+        except:
+            pageno = 1
+    scheduleobj = None
+    try:
+        scheduleobj = Schedule.objects.get(id=scheduleid)
+    except:
+        message = error_msg('1186')
+        response = HttpResponse(message)
+        return response
+    testobj = scheduleobj.test
+    scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=scheduleobj)
+    scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=scheduleobj)
+    emailslist = []
+    for utobj in scheduledtestsqset_ut:
+        emailslist.append(utobj.emailaddr)
+    for wbuobj in scheduledtestsqset_wbu:
+        emailslist.append(wbuobj.emailaddr)
+    segsize = 100
+    segmentstart = segsize * pageno - segsize
+    segmentend = segmentstart + segsize
+    if emailslist.__len__() < segmentstart:
+        message = json.dumps(['',])
+        return HttpResponse(message)
+    else:
+        if emailslist.__len__() < segmentend:
+            segmentend = emailslist.__len__()
+        message = json.dumps(emailslist[segmentstart:segmentend])
+        return HttpResponse(message)
+
 
 
 @skillutils.is_session_valid
