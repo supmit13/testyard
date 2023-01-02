@@ -16,8 +16,10 @@
 <script language='JavaScript'>
 
 function validateinput(){
-    datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}[:\\d{2}]?");
-    recvddatepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}[:\\d{2}]?");
+    datepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(:\\d{2})?");
+    recvddatepattern = new RegExp("\\d{4}-\\d{2}-\\d{2}T\\d{2}:?\\d{0,2}");
+    //datepattern = new RegExp("\\d{2}\/\\d{2}\/\\d{4}\,\\s+\\d{2}:\\d{2}:?\\d{0,2}");
+    //recvddatepattern = new RegExp("\\d{2}\/\\d{2}\/\\d{4}\,\\s+\\d{2}:?\\d{0,2}");
     startpattern = new RegExp("^start_\\d+$");
     endpattern = new RegExp("^end_\\d+$");
     emailpattern = new RegExp("^\\w+[\\.\\w]{0,}@\\w+[\\-\\w]{0,}\\.\\w{2,3}[\\.\\w]{0,}$")
@@ -88,10 +90,22 @@ function saveschedules(){
     if(!validateinput()){
         return (false);
     }
+    startpattern = new RegExp("^start_\\d+$");
+    endpattern = new RegExp("^end_\\d+$");
     postdata = "csrfmiddlewaretoken=" +  document.frmgetschedule.csrfmiddlewaretoken.value;
     allelements = document.frmgetschedule.elements;
     for(var i=0; i< allelements.length; i++){
         value = encodeURI(allelements[i].value);
+	if(startpattern.exec(allelements[i].name) || endpattern.exec(allelements[i].name)){
+	    value = allelements[i].value;
+	    value = value.replace("T", " ");
+	    value = encodeURI(value + ":00");
+	}
+	else if(allelements[i].name == 'start_new' || allelements[i].name == 'end_new'){
+	    value = allelements[i].value;
+	    value = value.replace("T", " ");
+	    value = encodeURI(value + ":00");
+	}
         postdata += "&" + allelements[i].name + "=" + value;
     }
     postdata += "&joingroupflag=0";
@@ -126,16 +140,16 @@ function saveschedules(){
 <form name='frmgetschedule' id='frmgetschedule' method='POST' action=''>
 <center>
 <table border='0' cellspacing='2' cellpadding='2' width='80%'>
-<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Schedule Id</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled Start<br />(yyyy-mm-dd hh:mm:ss)</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled End<br />(yyyy-mm-dd hh:mm:ss)</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Candidate Email Ids</font></td></tr>
+<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Schedule Id</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled Start<!-- <br />(yyyy-mm-dd hh:mm:ss) --></font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Scheduled End<!-- <br />(yyyy-mm-dd hh:mm:ss) --></font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Candidate Email Ids</font></td></tr>
 <tr>
-<td nowrap valign='top'><font color='#0000AA' size=-1>New Schedule</font></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='text' name='start_new' id='start_new' value='' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='text' name='end_new' id='end_new' value='' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40' class='form-control'></textarea></td>
+<td nowrap valign='top'><font color='#0000AA' size=-1>New Schedule</font></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_new' id='start_new' value='' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center' valign='top' style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_new' id='end_new' value='' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_new', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center'><textarea name='emails_new' id='emails_new' rows='5' cols='40' class='form-control'></textarea></td>
 </tr>
 {% for schedid, schedtuple in scheduleinfo.items %}
 <tr>
 {% if schedtuple.2 == 0 %}
-<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control'><img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('start_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control'><!-- <img src="static/datetimepicker/images/cal.gif" onclick="javascript:NewCssCal('end_{{schedid}}', 'yyyyMMdd', 'dropdown', true, 24, true, 'future')" style="cursor:pointer"/> --></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
 {% else %}
-<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control' disabled></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='text' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
+<td align='center' valign='middle' nowrap><font color='#0000AA' size=-1>{{schedid}}</font></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='start_{{schedid}}' id='start_{{schedid}}' value='{{schedtuple.0}}' class='form-control' disabled></td><td align='center' valign='middle' nowrap style='padding-left:10px;padding-right:10px;'><input type='datetime-local' name='end_{{schedid}}' id='end_{{schedid}}' value='{{schedtuple.1}}' class='form-control' disabled></td><td valign='middle'><font color='#0000AA' size=-1>{{schedtuple.3}}</font></td>
 {% endif %}
 </tr>
 {% endfor %}
