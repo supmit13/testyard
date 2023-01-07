@@ -56,6 +56,7 @@ from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
 from skillstest.utils import Logger
+from skillstest.Tests.tasks import send_emails
 
 
 def get_user_tests(request):
@@ -3345,7 +3346,8 @@ def sendtestinvitations(request):
         fromaddr = "testyardteam@testyard.in"
         retval = 0
         try:
-            retval = send_mail(emailsubject, emailmessage, fromaddr, [email,], False)
+            send_emails.delay(emailsubject, emailmessage, fromaddr, email, False)
+            #retval = send_mail(emailsubject, emailmessage, fromaddr, [email,], False)
             if usertestobj:
                 usertestobj.save()
             else:
@@ -3358,7 +3360,7 @@ def sendtestinvitations(request):
             #response = HttpResponse(message)
             #return response
             continue # Continue processing the rest of the emails in the list.
-    message = "Success! All candidates have been emailed with the link."
+    message = "Success! All candidates are being emailed with the link."
     # Dump all emails Ids to which email could not be sent
     failure = False
     for error_email in error_emails_list:
@@ -4042,7 +4044,8 @@ def evaluateresponses(request):
             TestYard Test Facilitation Team.
         """%(utobj.test.testname, utobj.score, utobj.test.maxscore, utobj.score, utobj.test.maxscore, outcome, passscore)
         try:
-            retval = send_mail(subject, message, fromaddr, [email,], False)
+            #retval = send_mail(subject, message, fromaddr, [email,], False)
+            retval = send_emails.delay(subject, message, fromaddr, email, False)
         except:
             message = error_msg('1160')
             #print message
@@ -5403,7 +5406,8 @@ def disqualifycandidate(request):
     #str(emailmessage).content_subtype = 'html'
     """
     try:
-        retval = send_mail(emailsubject, emailmessage, fromaddr, [ emailid, ], False)
+        #retval = send_mail(emailsubject, emailmessage, fromaddr, [ emailid, ], False)
+        retval = send_emails.delay(emailsubject, emailmessage, fromaddr, emailid, False)
     except:
         message += "Could not send email to the candidate."
     """
@@ -5639,7 +5643,8 @@ def updateschedule(request):
             message = "Error: %s Making ammends to rectify the situation... All will be well.\n"%sys.exc_info()[1].__str__()
             wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
             wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
-            wbuobj.save() 
+            wbuobj.save()
+    # TODO: Send email to all users intimating the change in the schedule
     message = "Updated existing schedule."
     response = HttpResponse(message)
     return response
@@ -5851,7 +5856,8 @@ def setschedule(request):
             #str(emailmessage).content_subtype = 'html'
             retval = 0
             try:
-                retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
+                #retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
+                retval = send_emails.delay(emailsubject, emailmessage, fromaddr, new_email, False)
                 utobj.save()
                 #print utobj.validfrom, utobj.validtill
             except:
@@ -6382,7 +6388,8 @@ def createinterview(request):
         #str(message).content_subtype = 'html'
         # Send email
         try:
-            retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
+            #retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
+            retval = send_emails.delay(subject, message, fromaddr, emailinvitationtarget, False)
         except:
             if mysettings.DEBUG:
                 print "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
@@ -6446,7 +6453,8 @@ def createinterview(request):
             #str(message).content_subtype = 'html'
             # Send email
             try:
-                retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
+                #retval = send_mail(subject, message, fromaddr, [emailinvitationtarget,], False)
+                retval = send_emails.delay(subject, message, fromaddr, emailinvitationtarget, False)
             except:
                 if mysettings.DEBUG:
                     retmsg = "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
@@ -6467,7 +6475,8 @@ def createinterview(request):
             fromaddr = userobj.emailid
             toaddr = userobj.emailid
             try:
-                retval = send_mail(subject, message, fromaddr, [toaddr,], False)
+                #retval = send_mail(subject, message, fromaddr, [toaddr,], False)
+                retval = send_emails.delay(subject, message, fromaddr, toaddr, False)
             except:
                 if mysettings.DEBUG:
                     retmsg = "sendmail failed for %s - %s\n"%(toaddr, sys.exc_info()[1].__str__())
@@ -7598,7 +7607,8 @@ def mobile_setschedule(request):
         fromaddr = "testyardteam@testyard.com"
         retval = 0
         try:
-            retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
+            #retval = send_mail(emailsubject, emailmessage, fromaddr, [new_email,], False)
+            retval = send_emails.delay(emailsubject, emailmessage, fromaddr, new_email, False)
             utobj.save()
         except:
             if mysettings.DEBUG:

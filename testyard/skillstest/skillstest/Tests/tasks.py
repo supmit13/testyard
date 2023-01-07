@@ -4,12 +4,16 @@ from skillstest import settings as mysettings
 from skillstest.Tests.models import Test, UserTest, WouldbeUsers, Challenge, UserResponse
 
 import os, sys, datetime, re
-from django.core.mail import send_mail
 import glob, base64
 import simplejson as json
 import urllib,urllib2
 from BeautifulSoup import BeautifulSoup
 import shutil
+
+import celery
+from celery import shared_task
+from django.core.mail import send_mail
+
 
 hex_to_ascii = {'%20' : ' ', '%21' : '!', '%22' : '"', '%23' : '#', '%24' : '$', '%25' : '%', '%26' : '&', \
           '%27' : "'", '%28' : '(', '%29' : ')', '%2A' : '*', '%2B' : '+', '%2C' : ',', '%2D' : '-', '%2E' : '.', '%2F' : '/', '%30' : '0',\
@@ -32,7 +36,7 @@ utf8_to_ascii = {'%E2%80%90' : '-', '%E2%80%97' : '_', '%E2%80%9C' : '"', '%E2%8
 This scans all tests and activates the ones whose publish and 
 activate dates are in the past. It also sets the 'status' flag
 to 1 if the test is complete with all questions set and scores
-equalling the 'fullmarks' of the test.
+equaling the specified 'total marks' of the test.
 """
 def scan_and_activate():
     logpath = mysettings.LOG_PATH
@@ -147,7 +151,6 @@ def process_answer_scripts():
         testpages = json.loads(testpagesstr, strict=False)
         testendmessage = testpages.pop() # The last entity contains the test end message
         for challengeresp in testpages:
-            #print challengeresp[1], "SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",challengeresp[2].decode("utf-8")
             testobj = Test.objects.get(id=testid)
             # First, create an UserResponse object
             userrespobj = UserResponse()
@@ -228,7 +231,14 @@ def process_answer_scripts():
     print "Added challenge responses into UserResponse and updated UserTest/WouldbeUsers successfully. Exiting...\n"
         
 
+"""
+This is a celery task.
+Set up as per: https://realpython.com/asynchronous-tasks-with-django-and-celery/
+"""
+@celery.task(name="skillstest.Tests.tasks.send_emails")
+def send_emails(subject, messagebody, fromaddr, toaddress, b=False):
+    retval = send_mail(subject, message, fromaddr, [toaddress,], b)
+    return retval
 
-
-
+# Run celery command inside testyard/skillstest: python -m skillstest.celery_tasks -A skillstest worker
 
