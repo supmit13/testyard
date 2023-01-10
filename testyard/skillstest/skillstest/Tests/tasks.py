@@ -2,6 +2,7 @@ from django.conf import settings
 import skillstest.utils as skillutils
 from skillstest import settings as mysettings
 from skillstest.Tests.models import Test, UserTest, WouldbeUsers, Challenge, UserResponse
+from skillstest.celery_tasks import emailqueueapp as emailqueueapp
 
 import os, sys, datetime, re
 import glob, base64
@@ -11,8 +12,10 @@ from BeautifulSoup import BeautifulSoup
 import shutil
 
 import celery
+from celery import Celery
 from celery import shared_task
 from django.core.mail import send_mail
+
 
 
 hex_to_ascii = {'%20' : ' ', '%21' : '!', '%22' : '"', '%23' : '#', '%24' : '$', '%25' : '%', '%26' : '&', \
@@ -229,16 +232,16 @@ def process_answer_scripts():
         #print jsondir
     # Thats it, we are done. 
     print "Added challenge responses into UserResponse and updated UserTest/WouldbeUsers successfully. Exiting...\n"
-        
+
 
 """
 This is a celery task.
 Set up as per: https://realpython.com/asynchronous-tasks-with-django-and-celery/
 """
-@celery.task(name="skillstest.Tests.tasks.send_emails")
+@emailqueueapp.task
 def send_emails(subject, messagebody, fromaddr, toaddress, b=False):
-    retval = send_mail(subject, message, fromaddr, [toaddress,], b)
+    retval = send_mail(subject, messagebody, fromaddr, [toaddress,], b)
     return retval
 
-# Run celery command inside testyard/skillstest: python -m skillstest.celery_tasks -A skillstest worker
+# Run celery command inside testyard/skillstest: python -m celery -A skillstest.Tests.tasks worker --broker=redis://127.0.0.1:6379
 

@@ -3360,7 +3360,7 @@ def sendtestinvitations(request):
             #response = HttpResponse(message)
             #return response
             continue # Continue processing the rest of the emails in the list.
-    message = "Success! All candidates are being emailed with the link."
+    message = "Success! All candidates are being queued for email with the link."
     # Dump all emails Ids to which email could not be sent
     failure = False
     for error_email in error_emails_list:
@@ -5633,8 +5633,7 @@ def updateschedule(request):
                 endtime_hour, endtime_minute, endtime_second = endtime_components[0], endtime_components[1], "00"
             wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second), 0, pytz.UTC)                  
         except:
-            #print sys.exc_info()[1].__str__()
-            message = " Could not update record."
+            message = " Could not update record: %s"%sys.exc_info()[1].__str__()
             response = HttpResponse(message)
             return response
         try:
@@ -5873,7 +5872,7 @@ def setschedule(request):
                 utobj.save()
                 error_emails_list.append(new_email)
                 continue # Continue processing the rest of the emails in the list.
-        message = "Success! All candidates have been emailed with the link."
+        message = "Success! All candidates have been queued for email with the link."
         # Dump all emails Ids to which email could not be sent
         for error_email in error_emails_list:
             emailfail = EmailFailure()
@@ -6481,9 +6480,9 @@ def createinterview(request):
                 if mysettings.DEBUG:
                     retmsg = "sendmail failed for %s - %s\n"%(toaddr, sys.exc_info()[1].__str__())
                     return HttpResponse(retmsg)
-            html = "The interview has been scheduled at %s hours, and the candidate has been informed about it by email."%scheduledatetime
+            html = "The interview has been scheduled at %s hours, and the candidate is being informed about it by email."%scheduledatetime
             html += "You may conduct the interview at the mentioned hour by clicking on the following link: %s"%intcandidateobj.interviewurl
-            html += "<br />The interview link (above) has also been sent to your email address."
+            html += "<br />The interview link (above) is also being sent to your email address. It might take a little while based of how busy our email servers are."
             #str(html).content_subtype = 'html'
             return HttpResponse(html)
         else:
@@ -7617,9 +7616,9 @@ def mobile_setschedule(request):
             error_emails_list.append(new_email)
             continue # Continue processing the rest of the emails in the list.
     if retval == 0:
-        message = "Success! All candidates except the following ones have been emailed with the link: %s"%(", ".join(error_emails_list))
+        message = "Success! All candidates except the following ones have been queued for email with the link: %s"%(", ".join(error_emails_list))
     else:
-        message = "Success! All candidates have been emailed with the link."
+        message = "Success! All candidates have been queued for email with the link."
     # Dump all emails Ids to which email could not be sent
     for error_email in error_emails_list:
         emailfail = EmailFailure()
