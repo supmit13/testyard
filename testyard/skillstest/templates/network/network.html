@@ -1,5 +1,14 @@
 	{% include "inc/html_head.html" %}
 	
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<style>
+	a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px;}
+	a.btn:hover { border-radius: .25rem; }
+	</style>
+	<!-- New interface code ends here -->
+
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -738,10 +747,10 @@
 	function displaycreategroupscreen(){
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.style.display = "";
-	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action=''>";
+	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action='' >";
 	    html += "{% csrf_token %}";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Name: &nbsp;</font></td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();' class='glowing-border'><span id='checkavailability' style='' nowrap></span></td></tr>";
+	    html += "<tr><td nowrap style='font-weight:bold;color:#0000AA;padding-left:5px;'>Group Name: &nbsp;</td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();' class='glowing-border'><span id='checkavailability' style='' nowrap></span></td></tr>";
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic' class='glowing-border'>";
@@ -2604,17 +2613,17 @@
 
 		<div class="post">
 			<span class="meta">
-			<h3 class='blue'>Hello {{ displayname }}</h3>
-
+			<h3 class='blue' style="font-size:14px;font-weight:bold;">Hello {{ displayname }}</h3>
+			<br/><br/>
 			<div class="entry">
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaycreategroupscreen();'>Create a group</a></h3>
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayjoinagroupscreen();'>Join a group</a></h3>
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();'>Add a contact</a></h3>
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();'>Post a message</a></h3><br />
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");'>Manage owned groups</a></h3><div id='managewait'></div>
-			<!-- <h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard&copy; will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br /> -->
+			<h5><img src='static/images/creategroup.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaycreategroupscreen();' class='btn btn-primary'>Create a group</a></h5>
+			<h5><img src='static/images/joingroup.png' style='height: 30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayjoinagroupscreen();' class='btn btn-primary'>Join a group</a></h5>
+			<h5><img src='static/images/addcontact.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();' class='btn btn-primary'>Add a contact</a></h5>
+			<h5><img src='static/images/postmessage.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();' class='btn btn-primary'>Post a message</a></h5><br />
+			<h5><img src='static/images/managegroups.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");' class='btn btn-primary'>Manage owned groups</a></h5><div id='managewait'></div>
+			<!-- <h3><img src='static/images/open_link.png' style='height:25px;width:25px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();' class='btn btn-primary'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard&copy; will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br /> -->
 
-			<h3><img src='static/images/open_link.png' style='height:15px;width:15px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();'>Give a test to one or more groups</a></h3><br />
+			<h5><img src='static/images/givetest.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();' class='btn btn-primary'>Give a test to one or more groups</a></h5><br />
 			</div>
 			<div style='display:none;' id="transscreens" class="semitrans"></div>
 			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
