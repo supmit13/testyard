@@ -121,7 +121,13 @@
 	}
 
 
-	function closegroupdivscreen(ctr){
+	function closegroupdivscreen(ctr, divid=null){
+            if(divid != null){
+		screendiv = document.getElementById(divid);
+                h = screendiv.offsetHeight;
+                h = h - 400;
+                screendiv.style.height = h + 'px';
+	    }
 	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
 	    showgroupdivarea.style.display = "none;";
 	    showgroupdivarea.innerHTML = "";
@@ -342,7 +348,8 @@
         }
 
 
-	function showgrouppage(grpmembername, grpname, csrftoken, ctr){
+	function showgrouppage(grpmembername, grpname, csrftoken, ctr, screendivid){
+            screendiv = document.getElementById(screendivid);
 	    showgroupdivarea = document.getElementById("showgroupdiv_" + ctr);
 	    showgroupdivarea.style = "";
 	    html = "";
@@ -360,6 +367,9 @@
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsobj = JSON.parse(xmlhttp.responseText);
 		    html = "";
+                    h = screendiv.offsetHeight;
+                    h = h + 400;
+                    screendiv.style.height = h + 'px';
 		    if(jsobj.groupimagefile){
 			html += "<img src='" + jsobj.groupimagefile + "' height='100px' width='100px'>";
 		    }
@@ -381,45 +391,45 @@
 		    if(jsobj.allowentry){
 			if(jsobj.alreadyrequested == '0' && jsobj.alreadyrefused == '0' && jsobj.alreadyallowed == '0' && jsobj.alreadyignored == '0'){
 			    if(!jsobj.ispaid || (!jsobj.entryfee && !jsobj.subscriptionfee)){
-		            	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+		            	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			    }
 			    else{
 				if(jsobj.entryfee > 0){
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 				}
 				else if(jsobj.subscriptionfee > 0){
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 				}
 			    }
 			}
 			else if(jsobj.alreadyrequested == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have already sent a join request to this group.&nbsp;&nbsp;</font><input type='button' name='btngentlereminder' id='btngentlereminder' value='Send gentle reminder' onClick='javascript:sendgentlereminder(\"" + jsobj.groupid +  "\", \"" + ctr + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 			else if(jsobj.alreadyrefused == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been refused entry to this group earlier. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 			else if(jsobj.alreadyallowed == '1' && jsobj.removedblocked != '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You are already a member of this group. Do you want to exit from this group?&nbsp;&nbsp;</font><div class='row' style='padding-left:20px;padding-right:20px;'><input type='button' name='btnexitrequest' id='btnexitrequest' value='Exit Group' onClick='javascript:grpexitrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");' class='btn btn-primary' style='width:250px;padding-left:5px;padding-right:5px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;padding-left:5px;padding-right:5px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;padding-left:5px;padding-right:5px;'></div></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 			else if(jsobj.alreadyignored == '1'){
 			    if(!jsobj.ispaid){
-			    	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    	html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:sendjoinrequest(\"" + jsobj.groupid +  "\", \"" + ctr + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			    }
 			    else{
 				if(jsobj.entryfee > 0){
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.entryfee + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 				}
 				else if(jsobj.subscriptionfee > 0){
-				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+				html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>Your request to join this group has been ignored in the past. However, you may send another join request to this group.&nbsp;&nbsp;</font><input type='button' name='btnjoinrequest' id='btnjoinrequest' value='Send join request' onClick='javascript:showpaymentgwsubscriptionform(\"" + jsobj.groupid +  "\", \"" + ctr + "\", \"" + jsobj.subscriptionfee + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 				}
 			    }
 			}
 			else if(jsobj.removedblocked == '1'){
-			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been removed or blocked from entering this group in the past. Hence, you may not send a request to join this group. However, you may request the group's owner to unblock you or reinstate you in the group. You may do so by clicking on the 'Review my Membership' button here.&nbsp;&nbsp;</font><input type='button' name='btnreviewmembership' id='btnreviewmembership' value='Review my Membership' onClick='javascript:reviewmembership(\"" + jsobj.groupid +  "\", \"" + ctr + "\");'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ");'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
+			    html += "<span width='80%' align='center'><form name='frmjoingroup' id='frmjoingroup' method='POST' action=''><table border=0><tr><td align='center' nowrap><font color='#AA0000' style='font-style:italic' size=-1>You have been removed or blocked from entering this group in the past. Hence, you may not send a request to join this group. However, you may request the group's owner to unblock you or reinstate you in the group. You may do so by clicking on the 'Review my Membership' button here.&nbsp;&nbsp;</font><input type='button' name='btnreviewmembership' id='btnreviewmembership' value='Review my Membership' onClick='javascript:reviewmembership(\"" + jsobj.groupid +  "\", \"" + ctr + "\");' class='btn btn-primary' style='width:250px;'><span id='showprogress_" + ctr + "' style=''>&nbsp;</span>&nbsp;&nbsp;<input type='button' name='btnclosejoin' id='btnclosejoin' value='Close' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'></td></tr></table>{% csrf_token %}<input type='hidden' name='groupid' id='groupid' value='" + jsobj.groupid + "'></form></span><br><br>";
 			}
 		    }
 		    else{
-			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ");'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");'></span><br><br>";
+			html += "<span width='60%' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>This group is not accepting join requests at the present moment. </font><br><input type='button' name='btnclosejoin' id='btnclosejoin' onClick='javascript:closegroupdivscreen(" + ctr + ", \"" + screendivid + "\");' class='btn btn-testyard1' style='width:250px;'>&nbsp;&nbsp;<input type='button' name='btnopengroup' id='btnopengroup' value='Open Group Page' onClick='javascript:opengrouppage(" + jsobj.groupid + ");' class='btn btn-primary' style='width:250px;'></span><br><br>";
 		    }
 		    showgroupdivarea.style.display = "";
 		    showgroupdivarea.innerHTML = html;
@@ -783,7 +793,8 @@
 	}
 
 
-	function searchforgroup(){
+	function searchforgroup(screendivid){
+            screendiv = document.getElementById(screendivid);
 	    grpkeyword = document.getElementById('grpkeyword').value.trim();
 	    postdata = "grpkeyword=" + grpkeyword + "&csrfmiddlewaretoken=" + document.joinagroup.csrfmiddlewaretoken.value;
 	    topic = document.getElementById('topic');
@@ -812,13 +823,30 @@
 			searchresultarea.innerHTML = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
 			return(0);
 		    }
+		    screendiv.style = "display:;height:100%;";
+		    //alert(jsonresult.length);
+                    if(jsonresult.length < 20){
+			screendiv.style = "display:;height:200%;";
+		    }
+                    else if(jsonresult.length < 40){
+			screendiv.style = "display:;height:300%;";
+		    }
+		    else if(jsonresult.length < 60){
+			screendiv.style = "display:;height:550%;";
+		    }
+		    else if(jsonresult.length < 100){
+			screendiv.style = "display:;height:750%;";
+		    }
+		    else{
+			screendiv.style = "display:;height:1500%;";
+		    }
 		    html = "<table border=0 cellspacing=2 cellpadding=5 width='95%' class='tbl-fixed-width'>";
 		    for(var j=0; j < jsonresult.length; j++){
 			if(j % 2 == 0){
-			    html += "<tr bgcolor='#66CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			    html += "<tr bgcolor='#66CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\", \"" + screendivid + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
 			}
 			else{
-			    html += "<tr bgcolor='#99CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</font></a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
+			    html += "<tr bgcolor='#99CCFF'><td><a href='#/' onClick='javascript:showgrouppage(\"" + jsonresult[j]['membername'] + "\", \"" + jsonresult[j]['groupname'] + "\", \"" + document.joinagroup.csrfmiddlewaretoken.value + "\", \"" + j.toString() + "\", \"" + screendivid + "\");'><font color='#0000BB'>" + jsonresult[j]['groupname'] + " - " + jsonresult[j]['tagline'] + "<br>" + jsonresult[j]['description'] + "</font></a><br><div id='showgroupdiv_" + j.toString() + "' style=''></div></td></tr>";
 			}
 		    }
 		    html += "</table>";
@@ -837,13 +865,13 @@
 	    html += "<form name='joinagroup' id='joinagroup' method='POST' action=''>";
 	    html += "{% csrf_token %}";
 	    html += "<table border='0' cellspacing='3' cellpadding='3'>";
-	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Select Topic(s):</font></td><td align='center'><select name='topic' id='topic' multiple size=4 class='glowing-border'>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold'>Select Topic(s):</font></td><td align='center'><select name='topic' id='topic' multiple size=4 class='form-control' style='width:300px;'>";
 	    {% for topicunderscored, topicname in topics.iteritems %}
 		html += "<option value='{{ topicunderscored }}'>{{ topicname }}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
-	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Enter Keyword:</font></td><td align='center'><input type='text' name='grpkeyword' id='grpkeyword' value='' class='glowing-border'></td></tr>";
-	    html += "<tr><td nowrap align='center' colspan='2'><input type='button' name='btnsearchgroups' id='btnsearchgroups' value='Search' onClick='searchforgroup();'>&nbsp;&nbsp;<input type='button' name='btncancelsearch' id='btncancelsearch' value='Close' onClick='closecreategroupscreen();'></td></tr>";
+	    html += "<tr><td nowrap align='right'><font color='#0000AA' style='font-weight:bold'>Enter Keyword:</font></td><td align='center'><input type='text' name='grpkeyword' id='grpkeyword' value='' class='form-control' style='width:300px;'></td></tr>";
+	    html += "<tr><td nowrap align='center' colspan='2'><input type='button' name='btnsearchgroups' id='btnsearchgroups' value='Search' onClick='searchforgroup(\"transscreens\");' class='btn btn-primary' style='width:200px;'>&nbsp;&nbsp;<input type='button' name='btncancelsearch' id='btncancelsearch' value='Close' onClick='closecreategroupscreen();' class='btn btn-testyard1' style='width:200px;'></td></tr>";
 	    html += "</table>";
 	    html += "</form><br><br><div id='searchresultdiv' style=''></div></center>";
             screendiv.innerHTML = html;
@@ -881,7 +909,8 @@
 	}
 
 
-	function searchUser(){
+	function searchUser(screendivid){
+            screendiv = document.getElementById(screendivid);
 	    waiterspan = document.getElementById('searchwaiter');
 	    waiterspan.innerHTML = "<img src='static/images/loading_small.gif'>";
     	    postdata = "emailid=" + document.frmSearchUser.emailid.value + "&";
@@ -908,6 +937,23 @@
 			html = "<tr><td colspan=4 align='center'><i><b><font color='#AA0000'>No record were found</font></b></i></td></tr>";
 		    }
 		    else{
+			screendiv.style = "display:;height:100%;";
+		        //alert(alldispnames.length);
+                        if(alldispnames.length < 20){
+			    screendiv.style = "display:;height:200%;";
+		        }
+                        else if(alldispnames.length < 40){
+			    screendiv.style = "display:;height:300%;";
+		        }
+		        else if(alldispnames.length < 60){
+			    screendiv.style = "display:;height:550%;";
+		        }
+		        else if(alldispnames.length < 100){
+			    screendiv.style = "display:;height:750%;";
+		        }
+		        else{
+			    screendiv.style = "display:;height:1500%;";
+		        }
 			ctr = 0;
 		        for (dispname in alldispnames){
 			    //alert(alldispnames[dispname]);
@@ -918,7 +964,7 @@
 			    name = d['name'];
 			    profilepic = d['profileimage'];
 			    userid = d['uid'];
-			    html += "<tr><td nowrap align='right'><a href='#/' onClick=showuserprofile('" + alldispnames[dispname] + "'); title='public profile'><font color='#0000AA'>" + alldispnames[dispname] + "</font></a></td><td nowrap><font color='#0000AA'>" + name + "</font></td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");'><span id='userwaiter_" + ctr + "'></span></td></tr>";
+			    html += "<tr><td nowrap align='right'><a href='#/' onClick=showuserprofile('" + alldispnames[dispname] + "'); title='public profile'><font color='#0000AA'>" + alldispnames[dispname] + "</font></a></td><td nowrap><font color='#0000AA'>" + name + "</font></td><td><img src='" + profilepic + "' height='90px' width='90px'></td><td align='right'><input type='button' name='connect_" + ctr + "' id='connect_" + ctr + "' value='Send Connect Request'  onClick='javascript:addcontact(" + userid + ", " + ctr + ");' class='btn btn-primary'><span id='userwaiter_" + ctr + "'></span></td></tr>";
 			    ctr++;
 		        }
 		    }
@@ -934,14 +980,15 @@
 
 	function displayaddcontactscreen(){
             screendiv = document.getElementById('transscreens');
-	    screendiv.style.display = "";
+            screendiv.style = "display:;height:80%;";
+	    //screendiv.style.display = "";
 	    html = "<center><font color='#0000AA' style='font-weight:bold'>Search User using one or more of the following parameters</font></center>";
 	    html += "<form name='frmSearchUser' id='frmSearchUser' method='POST' action=''>";
 	    html += "<center><table border=0 cellspacing='3' cellpadding='4'>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Email Id:</font></td><td><input type='text' name='emailid' id='emailid' value='' size=30 maxlength='100' class='glowing-border'></td></tr>";
-            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>User's Name:</font></td><td><input type='text' name='targetusername' id='targetusername' value='' size=30 maxlength='100' class='glowing-border'></td></tr>";
-            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size='-1' align='right'>Name of Tests taken by the User (separated by commas):</font></td><td><input type='text' name='teststaken' id='teststaken' value='' size=30 maxlength='200' class='glowing-border'></td></tr>";
-	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnSearch' id='btnSearch' value='Search' onClick='javascript:searchUser();'><span id='searchwaiter'></span>&nbsp;&nbsp;<input type='button' name='btnClose' id='btnClose' value='Close' onClick='javascript:closecreategroupscreen();'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' align='right'>Email Id:</font></td><td><input type='text' name='emailid' id='emailid' value='' size=30 maxlength='100' class='form-control'></td></tr>";
+            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' align='right'>User's Name:</font></td><td><input type='text' name='targetusername' id='targetusername' value='' size=30 maxlength='100' class='form-control'></td></tr>";
+            html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' align='right'>Name of Tests taken by the User (separated by commas):</font></td><td><input type='text' name='teststaken' id='teststaken' value='' size=30 maxlength='200' class='form-control'></td></tr>";
+	    html += "<tr><td align='center'>&nbsp;</td><td align='center'><input type='button' name='btnSearch' id='btnSearch' value='Search' onClick='javascript:searchUser(\"transscreens\");' class='btn btn-primary' style='width:200px;'><span id='searchwaiter'></span>&nbsp;&nbsp;<input type='button' name='btnClose' id='btnClose' value='Close' onClick='javascript:closecreategroupscreen();' class='btn btn-testyard1' style='width:200px;'></td></tr>";
 	    html += "</table></center>{% csrf_token %}</form>";
 	    html += "<br><br><div id='usersearchdiv' style=''></div>";
 	    screendiv.innerHTML = html;
@@ -2626,7 +2673,7 @@
 			<div class="entry">
 			<h5><img src='static/images/creategroup.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaycreategroupscreen();' class='btn btn-primary'>Create a group</a></h5>
 			<h5><img src='static/images/joingroup.png' style='height: 30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayjoinagroupscreen();' class='btn btn-primary'>Join a group</a></h5>
-			<h5><img src='static/images/addcontact.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displayaddcontactscreen();' class='btn btn-primary'>Add a contact</a></h5>
+			<h5><img src='static/images/addcontact.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#' onClick='javascript:displayaddcontactscreen();' class='btn btn-primary'>Add a contact</a></h5>
 			<h5><img src='static/images/postmessage.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:displaypostamessagescreen();' class='btn btn-primary'>Post a message</a></h5><br />
 			<h5><img src='static/images/managegroups.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");' class='btn btn-primary'>Manage owned groups</a></h5><div id='managewait'></div>
 			<!-- <h3><img src='static/images/open_link.png' style='height:25px;width:25px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();' class='btn btn-primary'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard&copy; will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br /> -->
