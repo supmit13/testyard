@@ -297,6 +297,8 @@ def creategroup(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
     groupname, groupdescription, grouptopic, ispaid, isactive, allowentry, cleartest, grouptype, maxmemberscount, bankname, branchname, ifsccode, acctownername, acctnumber, entryfee, subscriptionfee, tagline, currency, require_owner_perms, payschemeval, gstin, subscriptionperiod =  ("" for i in range(0,22))
+    subscriptionperiod = 0
+    subscriptionfee = 0.00
     if request.POST.has_key('groupname'):
         groupname = urllib.unquote(request.POST['groupname']).decode('utf8')
     if request.POST.has_key('groupdescription'):
@@ -367,6 +369,8 @@ def creategroup(request):
     grpobj.entryfee = float(entryfee)
     if not subscriptionfee or subscriptionfee == "" or payschemeval != "subscriptionbased":
         subscriptionfee = 0.0
+    if not subscriptionperiod or subscriptionperiod == "":
+        subscriptionperiod = 0
     grpobj.subscription_fee = float(subscriptionfee)
     grpobj.subscriptionperiod = int(subscriptionperiod)
     grpobj.currency = currency
@@ -406,6 +410,8 @@ def creategroup(request):
     # If ispaid == 1, create a "Connected Account" on stripe. Payments to the group owner cannot be processed without a "Connected Account"
     # Note: Express Onboarding is currently unavailable in India, so we need to use a Stripe US account. First, we need to complete profile info to start using Connect. Docs: https://stripe.com/docs/connect/collect-then-transfer-guide
     try:
+        stripeconnacct = None
+        rzpcustacctobj = None
         if ispaid == 1 and mysettings.ACTIVE_PAYMENT_GATEWAY == "stripe":
             stripeconnacct = StripeConnectedAccount()
             stripe.api_key = mysettings.STRIPE_API_SECRET_US
@@ -450,6 +456,14 @@ def creategroup(request):
             rzpcustacctobj.save() # All set!
     except:
         # Could not create a connected account... Should intimate the user about the situation
+        if rzpcustacctobj is not None:
+            rzpcustacctobj.delete()
+        if stripeconnacct is not None:
+            stripeconnacct.delete()
+        grpmember.delete()
+        grpobj.delete()
+        if ownerbankacctobj is not None:
+            ownerbankacctobj.delete()
         message = "Error occurred while trying to create %s account: %s"%(mysettings.ACTIVE_PAYMENT_GATEWAY, sys.exc_info()[1].__str__())
         logger.warning(message)
         response = HttpResponse(message)

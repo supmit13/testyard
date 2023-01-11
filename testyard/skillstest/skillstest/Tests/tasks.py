@@ -244,4 +244,6 @@ def send_emails(subject, messagebody, fromaddr, toaddress, b=False):
     return retval
 
 # Run celery command inside testyard/skillstest: python -m celery -A skillstest.Tests.tasks worker --broker=redis://127.0.0.1:6379
+# Also run 'export C_FORCE_ROOT="true"' on command line.
+# celery==3.1.25 and redis==2.10.6
 

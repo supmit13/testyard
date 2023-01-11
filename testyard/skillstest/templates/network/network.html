@@ -87,7 +87,7 @@
 
 	var Base64={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",encode:function(e){var t="";var n,r,i,s,o,u,a;var f=0;e=Base64._utf8_encode(e);while(f<e.length){n=e.charCodeAt(f++);r=e.charCodeAt(f++);i=e.charCodeAt(f++);s=n>>2;o=(n&3)<<4|r>>4;u=(r&15)<<2|i>>6;a=i&63;if(isNaN(r)){u=a=64}else if(isNaN(i)){a=64}t=t+this._keyStr.charAt(s)+this._keyStr.charAt(o)+this._keyStr.charAt(u)+this._keyStr.charAt(a)}return t},decode:function(e){var t="";var n,r,i;var s,o,u,a;var f=0;e=e.replace(/[^A-Za-z0-9\+\/\=]/g,"");while(f<e.length){s=this._keyStr.indexOf(e.charAt(f++));o=this._keyStr.indexOf(e.charAt(f++));u=this._keyStr.indexOf(e.charAt(f++));a=this._keyStr.indexOf(e.charAt(f++));n=s<<2|o>>4;r=(o&15)<<4|u>>2;i=(u&3)<<6|a;t=t+String.fromCharCode(n);if(u!=64){t=t+String.fromCharCode(r)}if(a!=64){t=t+String.fromCharCode(i)}}t=Base64._utf8_decode(t);return t},_utf8_encode:function(e){e=e.replace(/\r\n/g,"\n");var t="";for(var n=0;n<e.length;n++){var r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r)}else if(r>127&&r<2048){t+=String.fromCharCode(r>>6|192);t+=String.fromCharCode(r&63|128)}else{t+=String.fromCharCode(r>>12|224);t+=String.fromCharCode(r>>6&63|128);t+=String.fromCharCode(r&63|128)}}return t},_utf8_decode:function(e){var t="";var n=0;var r=c1=c2=0;while(n<e.length){r=e.charCodeAt(n);if(r<128){t+=String.fromCharCode(r);n++}else if(r>191&&r<224){c2=e.charCodeAt(n+1);t+=String.fromCharCode((r&31)<<6|c2&63);n+=2}else{c2=e.charCodeAt(n+1);c3=e.charCodeAt(n+2);t+=String.fromCharCode((r&15)<<12|(c2&63)<<6|c3&63);n+=3}}return t}};
 
-	function senddataasync(uriencodeddata, httpmethod, targeturl){
+	function senddataasync(uriencodeddata, httpmethod, targeturl, divtag=null){
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();
@@ -99,7 +99,7 @@
                 //alert(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    screendiv = document.getElementById('transscreens');
-	    	    screendiv.style.display = "none";
+	    	    //screendiv.style.display = "none";
 	    	    //screendiv.innerHTML = "<font color='#0000AA' style='font-weight:bold' size=-1>Group created successfully</font>";
                     // Check if the returned content is an URL
                     const urlpattern = /^https?/i;
@@ -110,6 +110,9 @@
 		    }
 		    else{ // Just display the content in an alert. This would be the result of an operation.
 		        alert(xmlhttp.responseText);
+		    }
+                    if(divtag){
+			divtag.innerHTML = "";
 		    }
 	        }
 	    };
@@ -521,23 +524,25 @@
 	}
 
 
-	function showpaymentoption(){
+	function showpaymentoption(screendivid){
+            screendiv = document.getElementById(screendivid);
 	    ispaid = document.getElementById('ispaid');
 	    if(ispaid.checked == true){
+                screendiv.style="display:;height:280%;";
 	    	paymentdiv = document.getElementById('paymentdiv');
 	    	// Create the HTML for innerHTML
 	    	html = "<table border='0' cellspacing='2' cellpadding='8'>";
-	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname'>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname' class='form-control'>";
 	    	{% for bankcode, bankname in availablebanks.iteritems %}
 			html += "<option value='{{ bankcode }}'>{{ bankname }}</option>";
 	    	{% endfor %}
 	    	html += "</select></td></tr>";
 	 	
-	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' max_length='250' size='10'></td></tr>";
-	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' size='10'></td></tr>";
-	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' max_length='255' size='20'></td></tr>";
-	    	html += "<tr><td nowrap><font color='#0000AA' size=-1>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' max_length='255' size='20'></td></tr>";
-		//html += "<tr><td nowrap><font color='#0000AA' size=-1>Currency: </font></td><td><select name='currency'>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' max_length='250' size='10' class='form-control'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' size='10' class='form-control'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' max_length='255' size='20' class='form-control'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' max_length='255' size='20' class='form-control'></td></tr>";
+		//html += "<tr><td nowrap><font color='#0000AA'>Currency: </font></td><td><select name='currency'>";
 		//{% for currency in allcurrencies %}
 		//    {% if currency == defaultcurrency %}
 		//        html += "<option value='{{currency}}' selected>{{currency}}</option>";
@@ -547,11 +552,11 @@
 		//{% endfor %}
 		//html += "</select></td></tr>";
 		html += "<tr><td nowrap colspan=2><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
-		html += "<tr><td nowrap><font size=-1 color='#0000AA'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemescreate();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Entry Fee (in USD): </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20'></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Fee (in USD): </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20' disabled=true></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>Subscription Period (in days): </font></td><td><input type='text' name='subscriptionperiod' value='' id='subscriptionperiod' max_length='5' size='20' disabled=true></td></tr>";
-		html += "<tr><td nowrap><font color='#0000AA' size=-1>GSTIN: </font></td><td><input type='text' name='gstin' value='' id='gstin' max_length='20' size='20'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemescreate();' class='form-control'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA'>Entry Fee (in USD): </font></td><td><input type='text' name='entryfee' value='' id='entryfee' max_length='255' size='20' class='form-control'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA'>Subscription Fee (in USD): </font></td><td><input type='text' name='subscriptionfee' value='' id='subscriptionfee' max_length='255' size='20' disabled=true class='form-control'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA'>Subscription Period (in days): </font></td><td><input type='text' name='subscriptionperiod' value='' id='subscriptionperiod' max_length='5' size='20' disabled=true class='form-control'></td></tr>";
+		html += "<tr><td nowrap><font color='#0000AA'>GSTIN: </font></td><td><input type='text' name='gstin' value='' id='gstin' max_length='20' size='20' class='form-control'></td></tr>";
 		//html += "<tr><td nowrap colspan='2' style='font-style:italic;'><font color='#0000AA' size=-1>Subscription Fee is for a period of 30 days starting from the instant of payment. </td></tr>";
 	    	html += "</table>";
 		document.frmcreategroup.require_owner_perms.checked = false;
@@ -560,6 +565,7 @@
 	    	paymentdiv.innerHTML = html;
 	    }
 	    else{
+                screendiv.style="display:;height:175%;";
 		document.frmcreategroup.require_owner_perms.disabled = false;
 		paymentdiv = document.getElementById('paymentdiv');
 		paymentdiv.style.display = "none";
@@ -702,7 +708,7 @@
 	    //alert(postdata);
 	    waiter = document.getElementById('waitspan');
 	    waiter.innerHTML = "<img src='static/images/loading_small.gif'>";
-	    senddataasync(postdata, "POST", '{{ creategroupurl }}');
+	    senddataasync(postdata, "POST", '{{ creategroupurl }}', waiter);
 	    
 	}
 
@@ -736,7 +742,7 @@
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    // Display the response in the parent screen if everything went well.
-		    availspan.innerHTML = xmlhttp.responseText;
+		    availspan.innerHTML = "<font color='#00AA00' size=-2>" + xmlhttp.responseText + "</font>";
 	        }
 	    };
 	    xmlhttp.open('POST', '{{ checkgrpnameavailabilityurl }}', true);
@@ -747,27 +753,29 @@
 	function displaycreategroupscreen(){
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.style.display = "";
+            screendiv.style = "display:;height:175%;";
 	    html = "<form name='frmcreategroup' id='frmcreategroup' method='POST' action='' >";
 	    html += "{% csrf_token %}";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
-	    html += "<tr><td nowrap style='font-weight:bold;color:#0000AA;padding-left:5px;'>Group Name: &nbsp;</td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();' class='glowing-border'><span id='checkavailability' style='' nowrap></span></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic' class='glowing-border'>";
+	    html += "<tr class='form-group'><td nowrap style='font-weight:bold;color:#0000AA;padding-left:5px;'>Group Name: &nbsp;</td><td width='70%'><input type='text' name='groupname' value='' max_length=200 size=30 onblur='javascript:checknameavailability();' class='form-control'><span id='checkavailability' style='' nowrap></span></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Tagline: &nbsp;</font></td><td><input type='text' name='tagline' id='tagline' value='' max_size='200' size='30' class='form-control'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Description: &nbsp;</font></td><td><textarea name='groupdescription' cols='40' rows='10' class='form-control'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Group Topic: &nbsp;</font></td><td width='70%'><select name='grouptopic' class='form-control'>";
 	    {% for topic in alltopics %}
 		html += "<option value='{{ topic }}'>{{ topic }}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Group Permissions</font></td><td nowrap>&nbsp;<font color='#0000AA' size=-1>Is Paid:&nbsp;</font><input type='checkbox' name='ispaid' id='ispaid' value='1' onChange='javascript:showpaymentoption();' class='glowing-border'><br><div id='paymentdiv' style=''></div><font color='#0000AA' size=-1>Group Type:&nbsp;</font><select name='grouptype' class='glowing-border'>";
+            html += "<tr><td colspan='2'><hr></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Group Permissions</font></td><td>&nbsp;<div class='row'><div class='col'><font color='#0000AA'>Is Paid:&nbsp;</font></div><div class='col'><input type='checkbox' name='ispaid' id='ispaid' value='1' onChange='javascript:showpaymentoption(\"transscreens\");' class='form-control'></div></div><div id='paymentdiv' style=''></div><br/><div class='row'><div class='col'><font color='#0000AA'>Group Type:&nbsp;</font></div><div class='col'><select name='grouptype' class='form-control'>";
 	    {% for grptype, grptypename in grouptypes.iteritems %}
 	        html += "<option value='{{ grptype }}'>{{ grptypename }}</option>";
 	    {% endfor %}
-	    html += "</select><br>";
-	    html += "<font color='#0000AA' size=-1>Active:&nbsp;</font><input type='checkbox' name='isactive' id='isactive' value='1' checked class='glowing-border'><br>";
-	    html += "<font color='#0000AA' size=-1>Allow Entry:&nbsp;</font><input type='checkbox' name='allowentry' id='allowentry' value='1' checked class='glowing-border'><br>";
-   	    html += "<font color='#0000AA' size=-1>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1' class='glowing-border'><br>";
-	    html += "<font color='#0000AA' size=-1>Max Members Allowed:&nbsp;</font><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5 class='glowing-border'><br>";
-	    html += "<tr><td colspan=2 align='center'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();'><span id='waitspan'></span></td></tr>";
+	    html += "</select></div></div><br/>";
+	    html += "<div class='row'><div class='col'><font color='#0000AA'>Active:&nbsp;</font></div><div class='col'><input type='checkbox' name='isactive' id='isactive' value='1' checked class='form-control'></div></div><br/>";
+	    html += "<div class='row'><div class='col'><font color='#0000AA'>Allow Entry:&nbsp;</font></div><div class='col'><input type='checkbox' name='allowentry' id='allowentry' value='1' checked class='form-control'></div></div><br/>";
+   	    html += "<div class='row'><div class='col'><font color='#0000AA'>Do you (owner of the group) want to review join requests (for unpaid groups) before allowing the user to be a member:&nbsp;</font></div><div class='col'><input type='checkbox' name='require_owner_perms' id='require_owner_perms' value='1' class='form-control'></div></div><br/>";
+	    html += "<div class='row'><div class='col'><font color='#0000AA'>Max Members Allowed:&nbsp;</font></div><div class='col'><input type='text' name='maxmemberscount' id='maxmemberscount' value='10000' size=5 class='form-control'></div></div><br/>";
+	    html += "<tr><td>&nbsp;</td><td align='right'><div class='row'><div class='form-group'><input type='button' name='btnsave' id='btnsave' value='Create Group' onClick='javascript:creategroup();' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closecreategroupscreen();' class='btn btn-testyard2'><span id='waitspan'></span></div></div></td></tr>";
 	    html += "</table>";
 	    html += "</form>";
 	    screendiv.display = "";

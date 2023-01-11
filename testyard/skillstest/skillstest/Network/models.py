@@ -140,7 +140,7 @@ class Connection(models.Model):
     connectedthru = models.CharField(max_length=200, blank=True, null=True) # If connected through facebook or linkedin or through any other channel.
 
     class Meta:
-        verbose_name = "GroupMember Table"
+        verbose_name = "Connections Table"
         db_table = 'Network_connection'
 
 
@@ -152,7 +152,7 @@ class ConnectionInvitation(models.Model):
     invitationdate = models.DateTimeField(auto_now=True, default=None)
 
     class Meta:
-        verbose_name = "GroupMember Table"
+        verbose_name = "Connection Invitation Table"
         db_table = 'Network_connectioninvitation'
 
 
