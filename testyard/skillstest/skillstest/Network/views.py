@@ -4231,7 +4231,7 @@ def manageownedgroups(request):
     if not searchquery or searchquery == "":
         groupsownerqset = Group.objects.filter(owner=userobj)
     else:
-        groupsownerqset = Group.objects.filter(owner=userobj, groupname__contains=searchquery)
+        groupsownerqset = Group.objects.filter(owner=userobj, groupname__icontains=searchquery)
     nonepattern = re.compile("/None$")
     for group in groupsownerqset:
         gid = str(group.id)

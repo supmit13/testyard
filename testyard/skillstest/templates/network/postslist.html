@@ -21,6 +21,10 @@
 	.subtable tr:nth-child(even){
 		background: #a7eaf2;
 	}
+	html {
+  	    overflow-x: auto;
+  	    overflow-y: auto;
+	}
 </style>
 
 <!-- New interface code starts here -->
@@ -76,13 +80,16 @@ function savepostschanges(postid){
 </script>
 </head>
 <body>
-<div>
+<div style='padding-left:10px;padding-right:10px;padding-top:15px;padding-bottom:15px;'>
 <h3 style='color:#0000AA'>List of Posts on the {{groupname}} Group</h3>
 <form name='frmpostslist' id='frmpostslist' method='POST' action=''>
 {% csrf_token %}
 <input type='hidden' name='groupid' value='{{groupid}}'><input type='hidden' name='groupname' value='{{groupname}}'>
 <table class="subtable" width='90%'>
 <tr><td style='color:#0000AA;font-weight:bold;' width="15%">Post Tag</td><td style='color:#0000AA;font-weight:bold;' width="30%">Content</td><td style='color:#0000AA;font-weight:bold;'>Posted By</td><td style='color:#0000AA;font-weight:bold;'>Attachment</td><td style='color:#0000AA;font-weight:bold;'>Scope</td><td style='color:#0000AA;font-weight:bold;' nowrap>Deleted</td><td style='color:#0000AA;font-weight:bold' nowrap>Hidden</td><td style='color:#0000AA;font-weight:bold;' nowrap>Stars</td><td style='color:#0000AA;font-weight:bold;' nowrap>Posted On</td><td style='color:#0000AA;font-weight:bold;' nowrap>Save Changes</td></tr>
+{% if sequence|length == 0 %}
+<tr><td colspan=10 align='center' style='color:#0000AA;font-style:italic;'>There are no posts in this group as yet. </td></tr>
+{% endif %}
 {% for postid in sequence %}
 <tr><td style='color:#0000AA;' width="15%">{{posts|dictlookup:postid|getval:0}}</td><td style='color:#0000AA;' width="20%">{{posts|dictlookup:postid|getval:1}}</td><td style='color:#0000AA;'>{{posts|dictlookup:postid|getval:2}}</td><td style='color:#0000AA;'>{{posts|dictlookup:postid|getval:3}}</td><td style='color:#0000AA;' nowrap><select name='scope_{{postid}}' id='scope_{{postid}}' class='form-control' style='width:150px;'>{% if posts|dictlookup:postid|getval:4 == 'private' %} <option value='private' selected>Private</option> {% else %} <option value='private'>Private</option> {% endif %} {% if posts|dictlookup:postid|getval:4 == 'protected' %} <option value='protected' selected>Protected</option> {% else %} <option value='protected'>Protected</option> {% endif %} {% if posts|dictlookup:postid|getval:4 == 'public' %} <option value='public' selected>Public</option> {% else %} <option value='public'>Public</option> {% endif %} </select></td><td style='color:#0000AA;' nowrap>{% if posts|dictlookup:postid|getval:5 == 1 %} <input type='checkbox' name='deleted_{{postid}}' id='deleted_{{postid}}' value='{{postid}}' checked="checked" class='form-control'> {% else %} <input type='checkbox' name='deleted_{{postid}}' id='deleted_{{postid}}' value='{{postid}}' class='form-control'> {% endif %} - {{posts|dictlookup:postid|getval:5}} </td><td style='color:#0000AA;' nowrap> {% if posts|dictlookup:postid|getval:6 == 1 %} <input type='checkbox' name='hidden_{{postid}}' id='hidden_{{postid}}' value='{{postid}}' checked="checked" class='form-control'> {% else %} <input type='checkbox' name='hidden_{{postid}}' id='hidden_{{postid}}' value='{{postid}}' class='form-control'> {% endif %} - {{posts|dictlookup:postid|getval:6}}</td><td style='color:#0000AA;' nowrap>{{posts|dictlookup:postid|getval:7}}</td><td style='color:#0000AA;' nowrap>{{posts|dictlookup:postid|getval:8}}</td><td style='color:#0000AA;' nowrap><a href='#/' onClick='javascript:savepostschanges({{postid}})' class='btn btn-primary' style='width:150px;'>Save Changes</a><div id='wait_{{postid}}'></div></td></tr>
 {% endfor %}

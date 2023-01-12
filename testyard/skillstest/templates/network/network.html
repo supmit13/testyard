@@ -2416,7 +2416,6 @@
                     transdiv.innerHTML = xmlhttp.responseText;
 		    transdiv.style.display = "";
 		    waitdiv.innerHTML = "";
-		    //alert(xmlhttp.responseText);
                 }
             };
             xmlhttp.open('POST', '{{manageownedgrpsurl}}', true);
@@ -2544,7 +2543,7 @@
                 if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    waitdiv.innerHTML = "";
 		    //alert(xmlhttp.responseText);
-		    postswin = window.open("postswin", "", "width=800,height=400,location=no,menubar=no,scrollbars=yes,toolbar=no,titlebar=no,resizable=yes,toolbar=no,status=yes");
+		    postswin = window.open("", "_blank", "location=no,scrollbars=yes,resizable=yes,toolbar=no,status=no,width=800,height=400");
 		    postswin.document.write(xmlhttp.responseText);
                 }
             };
