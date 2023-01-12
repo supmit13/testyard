@@ -506,10 +506,10 @@
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    screendiv = document.getElementById('transscreens3');
+                    screendiv.style='display:;width:400%;height:500%;';
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
 		    screendiv.innerHTML = groupdatahtml;
-		    screendiv.style.display = "";
 	        }
 	    };
 	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
@@ -943,16 +943,16 @@
 			    screendiv.style = "display:;height:200%;";
 		        }
                         else if(alldispnames.length < 40){
-			    screendiv.style = "display:;height:300%;";
+			    screendiv.style = "display:;height:400%;";
 		        }
 		        else if(alldispnames.length < 60){
-			    screendiv.style = "display:;height:550%;";
-		        }
-		        else if(alldispnames.length < 100){
 			    screendiv.style = "display:;height:750%;";
 		        }
+		        else if(alldispnames.length < 100){
+			    screendiv.style = "display:;height:1000%;";
+		        }
 		        else{
-			    screendiv.style = "display:;height:1500%;";
+			    screendiv.style = "display:;height:2000%;";
 		        }
 			ctr = 0;
 		        for (dispname in alldispnames){
@@ -1098,7 +1098,7 @@
 		}
 		else{
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
-		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='media/{{displayname}}/groups/" + grpname + "/" + grpimgfile + "' height='{{image_height}}' width='{{image_width}}'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Change/Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics'>";
+		    html = "<form name='frmsettings' id='frmsettings' method='POST' action=''>{% csrf_token %}<center><table border='0' width='60%'><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Image:</td><td nowrap><img src='media/{{displayname}}/groups/" + grpname + "/" + grpimgfile + "' height='{{image_height}}' width='{{image_width}}'></font><br><div id='uploadbox' style='display:none;'></div><a href='#/' onClick='javascript:uploader(\&quot;" + grpimguploadurl + "\&quot;, \&quot;" + csrftoken + "\&quot;);'><font size=-1 color='#0000AA'><i>Change/Upload Image</i></font></a></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Topic</font>:</td><td nowrap><select name='topics' id='topics' class='form-control'>";
 		}
 		{% for topic in alltopics %}
 		    topickey = "{{topic}}".replace(" ", "_");
@@ -1109,7 +1109,7 @@
 			html += "<option value='" + topickey + "'>{{topic}}</option>";
 		    }
 		{% endfor %}
-                html += "</select></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Members Count</font>:</td><td nowrap> <font size=-1 color='#0000AA' style='font-weight: bold'>" + memberscount + "</font></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Max Members Limit</font>:</td><td nowrap> <input type='text' name='maxmemberslimit' id='maxmemberslimit' value='" + maxmemberslimit + "'></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Type</font>:</td><td nowrap> <select name='grouptypes'>";
+                html += "</select></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Members Count</font>:</td><td nowrap> <font size=-1 color='#0000AA' style='font-weight: bold'>" + memberscount + "</font></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Max Members Limit</font>:</td><td nowrap> <input type='text' name='maxmemberslimit' id='maxmemberslimit' value='" + maxmemberslimit + "' class='form-control'></td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Group Type</font>:</td><td nowrap> <select name='grouptypes' class='form-control'>";
 		{% for grpkey, grpval in grouptypes.iteritems %}
 		    if("{{grpkey}}" == grouptype){
 			html += "<option value='{{grpkey}}' selected>{{grpval}}</option>";
@@ -1120,45 +1120,45 @@
 		{% endfor %}
 		html += "</select></td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Allow Entry</font>:</td>";
 		if(allowentry == 'True'){
-		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1' checked>";
+		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1' class='form-control' checked>";
 		}
 		else{
-		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' value='1'>";
+		    html += "<td nowrap><input type='checkbox' name='allowentry' id='allowentry' class='form-control' value='1'>";
 		}
 		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Paid</font>: </td>";
 		if(ispaid == 'True'){
-		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' checked onChange='javascript:changefinancialcontrolstate(this);'>";
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' class='form-control' checked onChange='javascript:changefinancialcontrolstate(this);'>";
 		}
 		else{
-		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1'  onChange='javascript:changefinancialcontrolstate(this);'>";
+		    html += "<td nowrap><input type='checkbox' name='ispaid' id='ispaid' value='1' class='form-control'  onChange='javascript:changefinancialcontrolstate(this);'>";
 		}
 		html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Review user before admitting into the group:&nbsp;</font></td>";
 		if(require_owner_perms == "True"){
-		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' checked onchange='javascript:changepaidstatus();'>";
+		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' class='form-control' checked onchange='javascript:changepaidstatus();'>";
 		}
 		else{
-		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' onchange='javascript:changepaidstatus();'>";
+		html += "<td nowrap><input type='checkbox' name='require_owner_perms' value='1' class='form-control' onchange='javascript:changepaidstatus();'>";
 		}
 		if(ispaid == 'True'){
 		    if(entryfee > 0){
-		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' class='form-control'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
 		    }
 		    else{
-			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();'><option value='entryfeebased'>Entry Fee Based</option><option value='subscriptionbased' selected>Subscription Based</option></select></td></tr>";
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' class='form-control'><option value='entryfeebased'>Entry Fee Based</option><option value='subscriptionbased' selected>Subscription Based</option></select></td></tr>";
 		    }
 		    if(entryfee > 0){
-		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "'></td></tr>";
-		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td></tr>";
-			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Period (in days)</font>: </td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "' disabled=true></td></tr>";
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' class='form-control'></td></tr>";
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' class='form-control' value='" + subscriptionfee + "' disabled=true></td></tr>";
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Period (in days)</font>: </td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' class='form-control' value='" + subscriptionperiod + "' disabled=true></td></tr>";
 		    	//html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
 		    }
 		    else{
-			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
-		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "'></td></tr>";
-			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Period (in days)</font>: </td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "'></td></tr>";
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' class='form-control' disabled=true></td></tr>";
+		    	html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' class='form-control'></td></tr>";
+			html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Period (in days)</font>: </td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "' class='form-control'></td></tr>";
 		    	//html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
 		    }
-		    //html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency'>";
+		    //html += "<tr><td nowrap width='50%' align='right'  title='Value will not be saved is paid is not checked'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' class='form-control'>";
 		    //{% for curr in allcurrencies %}
 		    //  if(currency == '{{curr}}'){
 		    //	    html += "<option value='{{curr}}' selected>{{curr}}</option>";
@@ -1169,16 +1169,16 @@
 		    //{%  endfor %}
 		    //html += "</select></td></tr>";
 		    html += "<tr><td nowrap width='50%' colspan='2'><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "'></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "'></td></tr>";
-    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>GSTIN </font></td><td nowrap><input type='text' name='gstin' id='gstin' value='" + gstin + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' class='form-control'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' class='form-control'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' class='form-control'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' class='form-control'></td></tr>";
+    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' class='form-control'></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>GSTIN </font></td><td nowrap><input type='text' name='gstin' id='gstin' value='" + gstin + "' class='form-control'></td></tr>";
 		}
 		else{
-		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' disabled=true><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
-		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' disabled=true></td></tr>";
-		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' disabled=true></td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' value='" + subscriptionperiod + "' disabled=true></td></tr>";
+		    html += "</td></tr><tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Payment Type:</font></td><td nowrap><select name='payscheme' onChange='javascript:handlepayschemes();' disabled=true class='form-control'><option value='entryfeebased' selected>Entry Fee Based</option><option value='subscriptionbased'>Subscription Based</option></select></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Entry Fee (in USD)</font>: </td><td nowrap><input type='text' name='entryfee' id='entryfee' value='" + entryfee + "' class='form-control' disabled=true></td></tr>";
+		    html += "</td><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee (in USD)</font>: </td><td nowrap><input type='text' name='subscriptionfee' id='subscriptionfee' value='" + subscriptionfee + "' class='form-control' disabled=true></td><td nowrap><input type='text' name='subscriptionperiod' id='subscriptionperiod' class='form-control' value='" + subscriptionperiod + "' disabled=true></td></tr>";
 		    //html += "<tr><td nowrap width='50%' align='right' colspan='2'><font size=-1 color='#0000AA' style='font-weight: bold'>Subscription Fee is for a period of 30 days starting from the instant of payment.</font></td></tr>";
-		    //html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked'>";
+		    //html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Currency</font>: </td><td nowrap><select name='currency' title='Value will not be saved is paid is not checked' class='form-control'>";
 		    //{% for curr in allcurrencies %}
 		    //	if(currency == '{{curr}}'){
 		    //	    html += "<option value='{{curr}}' selected>{{curr}}</option>";
@@ -1189,12 +1189,13 @@
 		    //{%  endfor %}
 		    //html += "</select></td></tr>";
 		    html += "<tr><td nowrap width='50%' colspan='2'><input type='hidden' name='currency' id='currency' value='USD'></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' disabled=true></td></tr>";
-		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' disabled=true></td></tr>";
-    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>GSTIN </font>: </td><td nowrap><input type='text' name='gstin' id='gstin' value='" + gstin + "'></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Bank</font>: </td><td nowrap><input type='text' name='bankname' id='bankname' value='" + bankname + "' class='form-control' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Branch: </font></td><td nowrap><input type='text' name='bankbranch' id='bankbranch' value='" + bankbranch + "' class='form-control' disabled=true></td></tr>";
+		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Name in Account</font>: </td><td nowrap><input type='text' name='acctname' id='acctname' value='" + acctname + "' class='form-control' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Account Number: </font></td><td nowrap><input type='text' name='acctnum' id='acctnum' value='" + acctnum + "' class='form-control' disabled=true></td></tr>";
+    		    html += "<tr><td nowrap width='50%' align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>IFSC Code</font>: </td><td nowrap><input type='text' name='ifsccode' id='ifsccode' value='" + ifsccode + "' class='form-control' disabled=true></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>GSTIN </font>: </td><td nowrap><input type='text' name='gstin' id='gstin' value='" + gstin + "' class='form-control'></td></tr>";
 		}
-		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks' >" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick='javascript:managegroupmembers(\"" + grpname + "\");'><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
-		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();'><input type='reset' name='btnreset' id='btnreset' value='Reset'><input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
+		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks'  class='form-control'>" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick='javascript:managegroupmembers(\"" + grpname + "\");'><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
+                html += "<tr><td nowrap width='100%' colspan=4 align='center'>&nbsp;</td></tr>";
+		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();' class='btn btn-primary' style='width:150px;padding-right:10px;padding-left:10px;'>&nbsp;&nbsp;<input type='reset' name='btnreset' id='btnreset' value='Reset' class='btn btn-testyard2' style='width:150px;padding-right:10px;padding-left:10px;'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();' class='btn btn-testyard1' style='width:150px;padding-right:10px;padding-left:10px;'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
 		paramspaneldiv.style.display = "";
 	 	paramspaneldiv.innerHTML = html;
 	    }
@@ -1624,39 +1625,46 @@
 
 	function displaypostamessagescreen(){
 	    screendiv = document.getElementById('transscreens');
-	    screendiv.style.display = "";
+	    screendiv.style = "display:;width:80%;height:150%;";
 	    html = "<form name='frmpostamessage' id='frmpostamessage' method='POST' action='' enctype='multipart/form-data'>";
 	    html += "{% csrf_token %}";
-	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center>";
+	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center><br/><br/>";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
 	    
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30' class='glowing-border'></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' class='glowing-border' multiple><option value=''>Groups List - None</option>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30' class='form-control'></td></tr>";
+            html += "<tr><td colspan=2 nowrap></td></tr>"
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' class='form-control' multiple><option value=''>------- Groups List ------</option>";
 	    {% for k,v in groupsdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
             html += "</select>";
-	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
-	    html += "<select name='targetconnections' id='targetconnections' size='3' class='glowing-border' multiple><option value=''>Connections List - None</option>";
+	    html += "<div style='font-weight:bold;color:#0000AA;text-align:center;'> OR </div>"
+	    html += "<select name='targetconnections' id='targetconnections' size='3' class='form-control' multiple><option value=''>------- Connections List -------</option>";
 	    {% for k,v in contactsdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
 	    html += "</select>";
-	    html += "<font color='#0000AA' style='font-weight:bold;'> OR </font>"
-	    html += "<select name='testtakers' id='testtakers' size='3' class='glowing-border' multiple><option value=''>Takers of Tests - None</option>";
+	    html += "<div style='font-weight:bold;color:#0000AA;text-align:center;'> OR </div>"
+	    html += "<select name='targettests' id='targettests' size='3' class='form-control' multiple><option value=''>------- Takers of Tests -------</option>";
 	    {% for k,v in testtakersdict.iteritems %}
 	    html += "<option value='{{k}}'>{{v}}</option>";
 	    {% endfor %}
 	    html += "</select></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment' class='glowing-border'>";
-	    html += "<tr><td width='70%' nowrap colspan=2 align='center'><input type='button' name='postmessage' id='postmessage' value='Post Message' onClick='javascript:postmessagetotarget();'>&nbsp;&nbsp;<input type='button' name='closepostscreen' id='closepostscreen' value='Close Screen' onClick='javascript:closescreen();'></td></tr>";
+            html += "<tr><td colspan=2 nowrap></td></tr>"
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10' class='form-control'></textarea></td></tr>";
+            html += "<tr><td colspan=2 nowrap></td></tr>"
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment' class='form-control'>";
+            html += "<tr><td colspan=2 nowrap></td></tr>"
+	    html += "<tr><td width='70%' nowrap colspan=2 align='center'><input type='button' name='postmessage' id='postmessage' value='Post Message' onClick='javascript:postmessagetotarget();' class='btn btn-primary'>&nbsp;<span id='waitspan' style='display:none;'></span>&nbsp;&nbsp;<input type='button' name='closepostscreen' id='closepostscreen' value='Close Screen' onClick='javascript:closescreen();' class='btn btn-testyard1'></td></tr>";
 	    html += "</table></form>";
 	    screendiv.innerHTML = html;
 	}
 
 
 	function postmessagetotarget(){
+            waittag = document.getElementById('waitspan');
+            waittag.style.display='';
+            waittag.innerHTML="<img src='static/images/loading_small.gif'>";
 	    targetgroups = "";
 	    targetconnections = "";
  	    targettests = "";
@@ -1677,9 +1685,9 @@
 	    if(targetconnections.length > 0){
 		targettypes++;
 	    }
-   	    for(var i=1; i < document.frmpostamessage.testtakers.options.length; i++){
-		if(document.frmpostamessage.testtakers.options[i].selected == true){
-		    targettests += document.frmpostamessage.testtakers.options[i].value + "##";
+   	    for(var i=1; i < document.frmpostamessage.targettests.options.length; i++){
+		if(document.frmpostamessage.targettests.options[i].selected == true){
+		    targettests += document.frmpostamessage.targettests.options[i].value + "##";
 		}
 	    }
 	    if(targettests.length > 0){
@@ -1712,6 +1720,8 @@
 	    xmlhttp.onreadystatechange = function(){
                 //alert(xmlhttp.responseText);
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+                    waittag.innerHTML = "";
+                    waittag.style.display='none';
 		    alert(xmlhttp.responseText);
 		    closescreen();
 	        }
@@ -2081,7 +2091,7 @@
 
 	function givetesttogroups(){
 	    transdiv = document.getElementById('transscreens2');
-	    transdiv.style.display = "";
+            transdiv.style = "display:;height:300px;width:700px;";
 	    var xmlhttp;
 	    var fmt = "json";
 	    postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
@@ -2098,20 +2108,23 @@
 		    responsedict = JSON.parse(xmlhttp.responseText);
 		    testsdict = responsedict.tests
 		    groupsdict = responsedict.groups
-		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test' class='glowing-border'>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test' class='form-control'>";
 		    for (testname in testsdict){
 			testid = testsdict[testname];
 			html += "<option value='" + testid + "'>" + testname + "</option>";
 		    }
 	    	    html += "</select></td></tr>";
-		    html += "<tr><td align='right' nowrap><font color='#0000AA' size=-1 style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' class='glowing-border' multiple>";
+                    html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' class='form-control' multiple>";
 		    for (groupname in groupsdict){
 			groupid = groupsdict[groupname];
 			html += "<option value='" + groupid + "'>" + groupname + "</option>";
 		    }
 		    html += "</select></td></tr>";
-		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;' size=-1>Force Create New Test URL:</font></td><td align='left'><input type='checkbox' name='chkforcefreshurl' id='chkforcefreshurl' value='1'></td></tr>";
-		    html += "<tr><td colspan='2' align='center'><input type='button' name='btngive' value='Send Test' onClick='javascript:sendtesttogroups();'>&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Screen' onClick='javascript:closescreen2();'></td></tr>";
+		    html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Force Create New Test URL:</font></td><td align='left'><input type='checkbox' name='chkforcefreshurl' id='chkforcefreshurl' value='1' class='form-control'></td></tr>";
+                    html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
+		    html += "<tr><td align='center'>&nbsp;</td><td align='center' nowrap><input type='button' name='btngive' value='Send Test' onClick='javascript:sendtesttogroups();' class='btn btn-primary' style='width:150px;'>&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Screen' onClick='javascript:closescreen2();' class='btn btn-testyard1' style='width:150px;'></td></tr>";
 	    	    html += "</table>{% csrf_token %}</form></center>";
 		    transdiv.innerHTML = html;
 		}
@@ -2429,7 +2442,7 @@
 		//return (true);
 	    }
 	    else{
-	    	html = "<table border='0'><tr><td>Entry Fee: &nbsp;&nbsp;<input type='text' name='entryfee_" + grpid + "' id='entryfee_" + grpid + "' value='"+ entryfee + "'></td><td>Currency:&nbsp;&nbsp;<select name='currency_" + grpid + "' id='currency_" + grpid + "'>{% for curr in allcurrencies %} <option value='{{curr}}'>{{curr}}</option>{% endfor %}</select></td></tr><tr><td>Bank Name: &nbsp;&nbsp;<input type='text' name='bankname_" + grpid + "' id='bankname_" + grpid + "' value='" + bankname + "'></td><td>Branch Name: &nbsp;&nbsp;<input type='text' name='branchname_" + grpid + "' id='branchname_" + grpid + "' value='" + bankbranch + "'></td></tr><tr><td>Account Number: &nbsp;&nbsp;<input type='text' name='acctnumber_" + grpid + "' id='acctnumber_" + grpid + "' value='" + accountnumber + "'></td><td>IFSCode: &nbsp;&nbsp;<input type='text' name='ifsc_" + grpid + "' id='ifsc_" + grpid + "' value='" + ifscode + "'></td></tr><tr><td>Account Owner's Name:&nbsp;&nbsp;<input type='text' name='acctownername_" + grpid + "' id='acctownername_" + grpid + "' value='" + acctownername + "'></td><td> &nbsp;&nbsp;<input type='button' name='paiddetclose' value='Close Payment Details' onClick='javascript:closepaymentdetails(\"" + grpid + "\");'></td></tr><tr><td colspan='2'><font size=-1>*To save your changes, keep this annexure open and click on the 'Save Info' button at the end of the row.</font></td></tr></table>";
+	    	html = "<table border='0'><tr><td>Entry Fee: &nbsp;&nbsp;<input type='text' name='entryfee_" + grpid + "' id='entryfee_" + grpid + "' value='"+ entryfee + "' class='form-control'></td><td>Currency:&nbsp;&nbsp;<select name='currency_" + grpid + "' id='currency_" + grpid + "' class='form-control'>{% for curr in allcurrencies %} <option value='{{curr}}'>{{curr}}</option>{% endfor %}</select></td></tr><tr><td>Bank Name: &nbsp;&nbsp;<input type='text' name='bankname_" + grpid + "' id='bankname_" + grpid + "' value='" + bankname + "' class='form-control'></td><td>Branch Name: &nbsp;&nbsp;<input type='text' name='branchname_" + grpid + "' id='branchname_" + grpid + "' value='" + bankbranch + "' class='form-control'></td></tr><tr><td>Account Number: &nbsp;&nbsp;<input type='text' name='acctnumber_" + grpid + "' id='acctnumber_" + grpid + "' value='" + accountnumber + "' class='form-control'></td><td>IFSCode: &nbsp;&nbsp;<input type='text' name='ifsc_" + grpid + "' id='ifsc_" + grpid + "' value='" + ifscode + "' class='form-control'></td></tr><tr><td>Account Owner's Name:&nbsp;&nbsp;<input type='text' name='acctownername_" + grpid + "' id='acctownername_" + grpid + "' value='" + acctownername + "' class='form-control'></td><td valign='bottom'> &nbsp;&nbsp;<input type='button' name='paiddetclose' value='Close Payment Details' onClick='javascript:closepaymentdetails(\"" + grpid + "\");' class='btn btn-primary' style='align:bottom;'></td></tr><tr><td colspan='2'><font size=-1>*To save your changes, keep this annexure open and click on the 'Save Info' button at the end of the row.</font></td></tr></table>";
 	    	paiddetailsdiv.innerHTML = html;
 	    }
 	}
@@ -2531,7 +2544,7 @@
                 if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    waitdiv.innerHTML = "";
 		    //alert(xmlhttp.responseText);
-		    postswin = window.open("postswin", "", "width=800, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		    postswin = window.open("postswin", "", "width=800,height=400,location=no,menubar=no,scrollbars=yes,toolbar=no,titlebar=no,resizable=yes,toolbar=no,status=yes");
 		    postswin.document.write(xmlhttp.responseText);
                 }
             };
@@ -2571,11 +2584,19 @@
 	}
 
 
+	function closeimgupload(identifier){
+	    chgimgdiv = document.getElementById(identifier);
+	    chgimgdiv.innerHTML = "";
+            chgimgdiv.style.display='none';
+	}
+
+
 	function changeimg(grpid){
+            identifier = 'imgchange_' + grpid;
 	    chgimgdiv = document.getElementById('imgchange_' + grpid);
 	    chgimgdiv.style.display = "";
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
-	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><input type='file' name='grouppic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage(\"" + grpid + "\");'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
+	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><span class='row'><div class='form-group'><input type='file' name='grouppic' value='' class='form-control'></div><div class='form-group'><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage(\"" + grpid + "\");' class='btn btn-primary' style='width:100px;padding-right:5px;'>&nbsp;&nbsp;<input type='button' name='imgclose' id='imgclose' value='Close' class='btn btn-testyard1' style='width:100px;padding-left:5px;' onclick='javascript:closeimgupload(\"" + identifier + "\");'></div></span></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
 	}
 
 
@@ -2678,7 +2699,7 @@
 			<h5><img src='static/images/managegroups.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:manageownedgrpsscreen("");' class='btn btn-primary'>Manage owned groups</a></h5><div id='managewait'></div>
 			<!-- <h3><img src='static/images/open_link.png' style='height:25px;width:25px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:withdrawfunds();' class='btn btn-primary'>Withdraw Funds</a></h3><span style="color:#AA0000;font-style:italic;">Please note that testyard&copy; will deduct {{cutpercent}}% of all withdrawal transactions as fees.</span><div id='withdrawdiv'></div><br /> -->
 
-			<h5><img src='static/images/givetest.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#/' onClick='javascript:givetesttogroups();' class='btn btn-primary'>Give a test to one or more groups</a></h5><br />
+			<h5><img src='static/images/givetest.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='#' onClick='javascript:givetesttogroups();' class='btn btn-primary'>Give a test to one or more groups</a></h5><br />
 			</div>
 			<div style='display:none;' id="transscreens" class="semitrans"></div>
 			<div style='display:none;' id="transscreens2" class="semitrans2"></div>
