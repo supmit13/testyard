@@ -4643,10 +4643,13 @@ def showgroupprofile(request):
             grppaidtxnqset = GroupPaidTransactions.objects.filter(group=groupobj, payer=userobj).order_by('-transdatetime')
             if list(grppaidtxnqset).__len__() > 0:
                 targetdate = grppaidtxnqset[0].targetperiod
-                tz_info = targetdate.tzinfo
-                currdate = datetime.datetime.now(tz_info)
-                if targetdate > currdate:
-                    datadict['joinstatus'] = 1
+                if targetdate is not None:
+                    tz_info = targetdate.tzinfo
+                    currdate = datetime.datetime.now(tz_info)
+                    if targetdate > currdate:
+                        datadict['joinstatus'] = 1
+                    else:
+                        datadict['joinstatus'] = 0
                 else:
                     datadict['joinstatus'] = 0
         if status != "accept" and groupobj.entryfee == 0 and groupobj.subscription_fee == 0:

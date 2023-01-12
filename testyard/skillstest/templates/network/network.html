@@ -506,7 +506,7 @@
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    screendiv = document.getElementById('transscreens3');
-                    screendiv.style='display:;width:400%;height:500%;';
+                    screendiv.style='display:;width:100%;height:50%;background-color:#e6e6ff;';
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
 		    screendiv.innerHTML = groupdatahtml;
@@ -1085,12 +1085,14 @@
 
 
 	function expandcollapsesettings(grpimgfile, memberscount, maxmemberslimit, basedontopic, grouptype, allowentry, ispaid, entryfee, subscriptionfee, adminremarks, grpname, bankname, bankbranch, acctname, acctnum, ifsccode, currency, require_owner_perms, gstin, subscriptionperiod){
+	    screendiv = document.getElementById('transscreens3');
 	    openclosediv = document.getElementById('openclose');
 	    paramspaneldiv = document.getElementById('paramspanel');
 	    openpattern = new RegExp("Open");
 	    openclosecontent = openclosediv.innerHTML;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
  	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
+                screendiv.style.height = "100%";
 		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
 		if(!grpimgfile){
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
@@ -1195,11 +1197,12 @@
 		}
 		html += "</select></td><td nowrap align='right'><font size=-1 color='#0000AA' style='font-weight: bold'>Admin Remarks</font>:</td><td nowrap> <textarea name='adminremarks' id='adminremarks'  class='form-control'>" + adminremarks + "</textarea></td><td>&nbsp;</td><td align='center' nowrap><a href='#/' onClick='javascript:managegroupmembers(\"" + grpname + "\");'><font size=-1 color='#0000AA' style='font-weight: bold'>Manage Group Members<br /><i>(This will open a pop up window)</i></font></a></td></tr>";
                 html += "<tr><td nowrap width='100%' colspan=4 align='center'>&nbsp;</td></tr>";
-		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();' class='btn btn-primary' style='width:150px;padding-right:10px;padding-left:10px;'>&nbsp;&nbsp;<input type='reset' name='btnreset' id='btnreset' value='Reset' class='btn btn-testyard2' style='width:150px;padding-right:10px;padding-left:10px;'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();' class='btn btn-testyard1' style='width:150px;padding-right:10px;padding-left:10px;'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
+		html += "<tr><td nowrap width='100%' colspan=4 align='center'><input type='button' name='btnsave' id='btnsave' value='Save Changes' onClick='javascript:savesettings();' class='btn btn-primary' style='width:150px;padding-right:10px;padding-left:10px;'>&nbsp;&nbsp;<input type='reset' name='btnreset' id='btnreset' value='Reset' class='btn btn-testyard2' style='width:150px;padding-right:10px;padding-left:10px;background-color:#80d4ff;'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Screen' onClick='javascript:closescreen();' class='btn btn-testyard1' style='width:150px;padding-right:10px;padding-left:10px;background-color:#80d4ff;'></td></tr></table></center><input type='hidden' name='groupname' id='groupname' value='" + grpname + "'></form>";
 		paramspaneldiv.style.display = "";
 	 	paramspaneldiv.innerHTML = html;
 	    }
 	    else{
+                screendiv.style.height = "50%";
 		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee +  '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
 		paramspaneldiv.innerHTML = "";
 		paramspaneldiv.style.display = "none";
