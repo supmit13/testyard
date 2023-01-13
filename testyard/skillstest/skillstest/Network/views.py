@@ -2875,6 +2875,7 @@ def savegroupjoinstatus(request):
         hit = request.POST['hit']
     if hit == 'single':
         ctr = int(request.POST['counter'])
+        displaynames = displaynames + "##"
     if hit == 'multi':
         blockstates = request.POST['blockstates']
         removestates = request.POST['removestates']
@@ -2896,6 +2897,8 @@ def savegroupjoinstatus(request):
         return response
 
     for dispname in displaynames_list:
+        if dispname == "" or dispname is None:
+            continue
         if states_list.__len__() > ctr:
             state = states_list[ctr]
         else:
@@ -2915,7 +2918,7 @@ def savegroupjoinstatus(request):
             removestates_parts.pop()
             chkblock = blockstates_parts[ctr]
             chkremv = removestates_parts[ctr]
-            print dispname + "#####" + chkblock + "####" + chkremv
+            #print dispname + "#####" + chkblock + "####" + chkremv
         else:
             if request.POST.has_key('chkblock_' + str(ctr)):
                 chkblock = 1
@@ -2964,7 +2967,7 @@ def savegroupjoinstatus(request):
                 return response
             message = "accept##" + dispname + "||"
         elif state == "refuse":
-            message = "refuse##" + dispname + "||" # Need to handle this 
+            message = "refuse##" + dispname + "||" # TODO: Need to handle this 
         elif state == "close":
             message = "close##" + dispname + "||"
         try:

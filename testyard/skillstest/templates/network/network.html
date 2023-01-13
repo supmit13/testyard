@@ -2122,7 +2122,8 @@
 	    var xmlhttp;
 	    var fmt = "json";
 	    postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
-	    html = "<center><form name='frmtesttogroups' id='frmtesttogroups' method='POST' action='{{testtogroupsurl}}'><table border=0 width='70%'>";
+	    html = "<style>select { overflow: auto; width: 400px; white-space: nowrap; text-overflow: auto; }</style>";
+	    html += "<center><form name='frmtesttogroups' id='frmtesttogroups' method='POST' action='{{testtogroupsurl}}'><table border=0 width='70%'>";
  	    if (window.XMLHttpRequest){
 		xmlhttp=new XMLHttpRequest();
 	    }
@@ -2138,14 +2139,14 @@
 		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Select a Test:</font></td><td align='left'><select name='test' id='test' class='form-control'>";
 		    for (testname in testsdict){
 			testid = testsdict[testname];
-			html += "<option value='" + testid + "'>" + testname + "</option>";
+			html += "<option value='" + testid + "' label='" + testname + "'>" + testname + "</option>";
 		    }
 	    	    html += "</select></td></tr>";
                     html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
 		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Select Groups:</font></td><td align='left'><select name='groups' id='groups' class='form-control' multiple>";
 		    for (groupname in groupsdict){
 			groupid = groupsdict[groupname];
-			html += "<option value='" + groupid + "'>" + groupname + "</option>";
+			html += "<option value='" + groupid + "' label='" + groupname + "'>" + groupname + "</option>";
 		    }
 		    html += "</select></td></tr>";
 		    html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
