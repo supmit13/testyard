@@ -4445,6 +4445,14 @@ def manageposts(request):
     userobj = sessionobj[0].user
     message = ""
     grpid = request.POST['groupid']
+    pageno = 1
+    if 'pageno' in request.POST.keys():
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
     grpobj = None
     try:
         grpobj = Group.objects.get(id=grpid)
@@ -4453,7 +4461,7 @@ def manageposts(request):
         response = HttpResponse(message)
         return response
     grpname = grpobj.groupname
-    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False).order_by('-createdon')
+    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False).order_by('-createdon')[startctr:endctr]
     contextdict = {}
     contextdict['groupname'] = grpname
     contextdict['groupid'] = grpid
@@ -4475,6 +4483,9 @@ def manageposts(request):
         postssequence.append(postid)
     contextdict['posts'] = postsdict
     contextdict['sequence'] = postssequence
+    contextdict['currentpagenumber'] = int(pageno)
+    contextdict['previouspagenumber'] = int(pageno) - 1
+    contextdict['nextpagenumber'] = int(pageno) + 1
     tmpl = get_template("network/postslist.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
