@@ -4,7 +4,7 @@
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 	<style>
-	a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px;}
+	a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px; height:38px;}
 	a.btn:hover { border-radius: .25rem; }
 	</style>
 	<!-- New interface code ends here -->
@@ -506,7 +506,7 @@
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    screendiv = document.getElementById('transscreens3');
-                    screendiv.style='display:;width:100%;height:50%;background-color:#e6e6ff;';
+                    screendiv.style='display:;width:100%;height:50%;background-color:#e6e6ff;position:absolute;top:10px; left:20px;';
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
 		    screendiv.innerHTML = groupdatahtml;
@@ -1241,25 +1241,25 @@
 	    html = "";
 	    html += "<center><font color='#0000AA' style='font-weight:bold' size='+1'>Join Requests to Group '" + grpname + "'</font></center><br><br><br>";
 	    if(state == 'open' || state == '' || !state){
-		html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open' selected>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
+		html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");' class='form-control' style='width:200px;'><option value='open' selected>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
 	    }
 	    else if(state == 'close'){
-		html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open'>Open</option><option value='close' selected>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
+		html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");' class='form-control' style='width:200px;'><option value='open'>Open</option><option value='close' selected>Closed</option><option value='refuse'>Refused</option><option value='accept'>Accepted</option></select></center>";
 	    }
 	    else if(state == 'refuse'){
-		 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse' selected>Refused</option><option value='accept'>Accepted</option></select></center>";
+		 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");' class='form-control' style='width:200px;'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse' selected>Refused</option><option value='accept'>Accepted</option></select></center>";
 	    }
 	    else if(state == 'accept'){
-		 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept' selected>Accepted</option></select></center>";
+		 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");' class='form-control' style='width:200px;'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept' selected>Accepted</option></select></center>";
 	    }
 	    html += "<br><span style='block:left;clear:both;width:600px;padding-left:50px;word-wrap:break-all;overflow-wrap:break-word;'><font color='#550000' style='font-weight:bold'><i>Note: A 'blocked' user would not be able to post messages in the group, but would remain visible to other members. 'Blocked' users<br> would also be able to view other's posts to the group. A 'removed' user would neither be able to post messages to the group, nor would she/he be able to view messages posted by other members in the group. Also, other members would not be able to see a 'removed' user. </i></font></span><br /><br />";
 	    html += "{% csrf_token %}";
 	    html += "<center><table border='0' cellspacing='3' cellpadding='4'>";
-	    html += "<tr><td align='center' colspan='5'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();'></td></tr>";
+	    html += "<tr><td align='center' colspan='6'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();' class='btn btn-testyard1' style='background-color:#b3b3ff;'></td></tr>";
 	    if(state == "open"){
 		reqslist = joinrequestsinfo['open'];
 		if(reqslist.length > 0){
-		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Username</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right' colspan=2><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
 		}
 		else{
 		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
@@ -1271,7 +1271,7 @@
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
-	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open' selected='selected'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;'><option value='open' selected='selected'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right' colspan=2><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    indx++;
 		    i++;
 		}
@@ -1279,7 +1279,7 @@
             else if(state == "close"){
 		reqslist = joinrequestsinfo['close'];
 		if(reqslist.length > 0){
-		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Username</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right' colspan=2><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
 		}
 		else{
 		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
@@ -1291,7 +1291,7 @@
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
-	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close' selected='selected'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;'><option value='open'>Open</option><option value='close' selected='selected'>Close</option><option value='refuse'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right' colspan=2><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    i++;
 		    indx++;
 		}
@@ -1299,7 +1299,7 @@
 	    else if(state == "refuse"){
 		reqslist = joinrequestsinfo['refuse'];
 		if(reqslist.length > 0){
-		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Username</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right' colspan=2><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
 		}
 		else{
 		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
@@ -1311,7 +1311,7 @@
 		    displayname = request[0];
 		    fullname = request[1];
 		    requestdate = request[2];
-	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse' selected='selected'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+	            html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse' selected='selected'>Refuse</option><option value='accept'>Accept</option></select></td><td nowrap align='right' colspan=2><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    indx++;
 		    i++;
 		}
@@ -1319,7 +1319,7 @@
 	    else if(state == "accept"){
 		reqslist = joinrequestsinfo['accept'];
 		if(reqslist.length > 0){
-		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Users Displayname</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right'><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
+		    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Profile Image</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Full Name</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Username</font></td><td nowrap><font color='#0000AA' style='font-weight:bold' size=-1>Date of Request</font></td><td nowrap align='right' colspan=2><font color='#0000AA' style='font-weight:bold' size=-1>Action</font></td><td>&nbsp;</td></tr>";
 		}
 		else{
 		    html += "<tr><td colspan='6' align='center'><font color='#AA0000' style='font-weight:bold' size=-1>No records found</font></td></tr>"
@@ -1334,25 +1334,25 @@
 		    removed = request[4]
    	 	    blocked = request[5]
 		    if(blocked == true && removed == false){
-	                html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' checked><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed'><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+	                html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td style='width:300px;white-space:nowrap;display: inline-block;' nowrap><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;padding-right:10px;'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select></td><td style='width:200px;white-space:nowrap;display: inline-block;color:#0000AA;font-size:smaller;' nowrap> <div class='row'><div class='form-group'><input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' class='form-control' checked>Block</div>&nbsp;|&nbsp;<div class='form-group'><input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' class='form-control'>Remove</div></div></td><td nowrap><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    }
 		    else if(blocked == true && removed == true){
-			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' checked><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' checked><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td style='width:300px;white-space:nowrap;display: inline-block;' nowrap><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;padding-right:10px;'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select></td><td style='width:200px;white-space:nowrap;display: inline-block;color:#0000AA;font-size:smaller;' nowrap> <div class='row'><div class='form-group'><input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' class='form-control' checked>Block</div>&nbsp;|&nbsp;<div class='form-group'><input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' class='form-control' checked>Remove</div></div> </td><td nowrap><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    }
 		    else if(blocked == false && removed == true){
-			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked'><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' checked><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td style='width:300px;white-space:nowrap;display: inline-block;' nowrap><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;padding-right:10px;'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select> </td><td style='width:200px;white-space:nowrap;display: inline-block;color:#0000AA;font-size:smaller;' nowrap><div class='row'><div class='form-group'><input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' class='form-control'>Block</div>&nbsp;|&nbsp;<div class='form-group'><input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' class='form-control' checked>Remove </div></div></td><td nowrap><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    }
 		    else if(blocked == false && removed == false){
-			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked'><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed'><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td style='width:300px;white-space:nowrap;display: inline-block;' nowrap><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;padding-right:10px;'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select> </td><td style='width:200px;white-space:nowrap;display: inline-block;color:#0000AA;font-size:smaller;' nowrap><div class='row'><div class='form-group'><input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' class='form-control'>Block</div>&nbsp;|&nbsp;<div class='form-group'><input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' class='form-control'>Remove</div></div></td><td nowrap><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    }
 		    else if(blocked == -1 || removed == -1){
-			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td align='right'><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' disabled title='You cannot block the owner of the group'><font size=-1 color='#0000AA'>Block</font>&nbsp;&nbsp;&nbsp;&nbsp;<input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' disabled title='You cannot remove the owner of the group'><font size=-1 color='#0000AA'>Remove</font>&nbsp;&nbsp;</td><td nowrap align='right'><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");'></td></tr>";
+			html += "<tr><td align='center'><img src='" + imglink + "' height='40px' width='40px'></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + fullname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + displayname + "</font></td><td nowrap><font face='Verdana' color='#0000AA' size=-1>" + requestdate + "</font></td><td style='width:300px;white-space:nowrap;display: inline-block;' nowrap><select name='action_" + displayname + "_" + i.toString() + "' id='action_" + displayname + "_" + i.toString() + "' class='form-control' style='width:110px;padding-right:10px;'><option value='open'>Open</option><option value='close'>Close</option><option value='refuse'>Refuse</option><option value='accept' selected='selected'>Accept</option></select> </td><td style='width:200px;white-space:nowrap;display: inline-block;color:#0000AA;font-size:smaller;' nowrap><div class='row'><div class='form-group'><input type='checkbox' name='chkblock_" + i + "' id='chkblock_" + i + "' value='blocked' class='form-control' disabled title='You cannot block the owner of the group'>Block </div>&nbsp;|&nbsp;<div class='form-group'><input type='checkbox' name='chkremv_" + i + "' id='chkremv_" + i + "' value='removed' class='form-control' disabled title='You cannot remove the owner of the group'>Remove </div></div></td><td nowrap><input type='button' name='btnsaverec_" + displayname + "' id='btnsaverec_" + displayname + "' value='Save' onClick='javascript:savethisrecord(\"{{savegroupjoinstatusurl}}\", \"" + displayname + "\", \"" + grpname + "\", \"" + i.toString() + "\");' class='btn btn-primary' style='width:110px;'></td></tr>";
 		    }
 		    indx++;
 		    i++;
 		}
 	    }
-	    html += "<tr><td align='center' colspan='5'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();'></td></tr>";
+	    html += "<tr><td align='center' colspan='6'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();' class='btn btn-testyard1' style='background-color:#b3b3ff;'></td></tr>";
 	    html += "</table></center>";
 	    return (html);
 	}
@@ -1367,16 +1367,17 @@
 	function popupjoinrequests(grpname, joinrequestsinfo_strb64, state){
 	    childisborn = 0;
 	    html = "<html><head><title>Join Requests to '" + grpname + "'</title>";
-	    html += "</head><body bgcolor='#669999'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
+	    html += "\n<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'><scr" + "ipt src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'></scr" + "ipt>\n";
+	    html += "</head><body style='background-color:#669999;'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
 	    html += "<div><font color='#550000' style='font-weight:bold'><i><center>Note: Reloading the parent window will automatically close this window. <br>You are strongly suggested to save your changes on this window before attempting to reload the parent window.<br>You may save  all your changes on this window by clicking on the 'Save Changes' button.</center></i></font></div><br><br>";
 	    html += "<div id='contentspace' style=''>";
   	    html += joinpopupcontent(grpname, joinrequestsinfo_strb64, state);
 	    html += "</div></form>"; // end of 'contentspace' div
 	    html += "</body></html>";
 	    if(childisborn == 0){
-	        joinreqspopup = window.open("", "joinreqswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+	        joinreqspopup = window.open("", "joinreqswin", "width=1200, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
 		joinreqspopup.close();
-		joinreqspopup = window.open("", "joinreqswin", "width=950, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+		joinreqspopup = window.open("", "joinreqswin", "width=1200, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
 	        if(joinreqspopup){
 		    childisborn = 1;
 	        }
@@ -1487,9 +1488,9 @@
 	    replydivcontrol = document.getElementById(replydivid);
 	    html = "<form name='frmreplymsg' method='POST' action='' enctype='multipart/form-data'>";
 	    html += "<table border=0 cellspacing='3' cellpadding='3'>";
-	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>*Reply Message:</font></td><td nowrap><textarea name='replycontent' cols='40' rows='10' class='glowing-border'></textarea></td></tr>";
-	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>Add Attachment:</font></td><td nowrap><input type='file' name='replyattachment' id='replyattachment' value='' class='glowing-border'></td></tr>";
-	    html += "<tr><td nowrap align='center' valign='middle' colspan='2'><input type='button' name='btnreplymsg' id='btnreplymsg' value='Send Reply' onClick='javascript:postreply(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancelreply' id='btncancelreply' value='Discard Reply' onClick='javascript:discardreply(" + postid + ");'></td></tr>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>*Reply Message:</font></td><td nowrap><textarea name='replycontent' cols='40' rows='10' class='form-control'></textarea></td></tr>";
+	    html += "<tr><td nowrap align='right' valign='middle'><font color='#0000AA' style='font-weight:bold;'>Add Attachment:</font></td><td nowrap><input type='file' name='replyattachment' id='replyattachment' value='' class='form-control'></td></tr>";
+	    html += "<tr><td nowrap align='center' valign='middle' colspan='2'><input type='button' name='btnreplymsg' id='btnreplymsg' value='Send Reply' onClick='javascript:postreply(" + postid + ");' class='btn btn-primary' style='width:120px;'>&nbsp;&nbsp;<input type='button' name='btncancelreply' id='btncancelreply' value='Discard Reply' onClick='javascript:discardreply(" + postid + ");' class='btn btn-testyard1' style='width:120px;background-color:#80d4ff;'></td></tr>";
 	    html += "{% csrf_token %}</table><input type='hidden' name='postid' value='" + postid + "'></form>";
 	    //alert(html);
 	    replydivcontrol.innerHTML = html;
@@ -1499,6 +1500,8 @@
 
 
 	function collapsiblegroupposts(grpname, postslistenc, lastelem){
+            screendiv = document.getElementById('transscreens3');
+            h = screendiv.offsetHeight;
 	    postslist_str = Base64.decode(postslistenc);
 	    postslist = JSON.parse(postslist_str);
 	    posts = "<br><br><font color='#0000AA' size=-1>";
@@ -1507,6 +1510,25 @@
 	    if(postslength > {{postsperpage}}){
 		postslength = {{postsperpage}};
 	    }
+            if(postslength < 20){
+		nh = h + 100;
+	    }
+	    else if(postslength < 50){
+		nh = h + 200;
+	    }
+            else if(postslength < 100){
+		nh = h + 400;
+	    }
+            else if(postslength < 500){
+		nh = h + 2500;
+	    }
+	    else if(postslength < 1000){
+		nh = h + 5000;
+	    }
+	    else if(postslength < 5000){
+		nh = h + 25000;
+	    }
+            screendiv.style.height = nh+"%";
 	    for(var i=0; i < postslength; i++){
 		post = postslist[i];
 		attachedfile = post[2];
@@ -1619,6 +1641,8 @@
 
 	function hidegroupposts(grpname, postslistenc, lastelem){
 	    postsdiv = document.getElementById('grouppostspanel');
+            screendiv = document.getElementById('transscreens3');
+            screendiv.style.height = '50%';
 	    postsdiv.innerHTML = "";
 	    anchor = document.getElementById('postsanchor');
 	    anchor.innerHTML = " Show";
