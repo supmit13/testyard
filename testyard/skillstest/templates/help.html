@@ -1,6 +1,16 @@
-	{% include "inc/html_head.html" %}
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<style>
+	a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px; height:38px;align-items: center;justify-content: center;}
+	a.btn:hover { border-radius: .25rem; align-items: center;justify-content: center;}
+	</style>
+	<!-- New interface code ends here -->
 	
+	{% include "inc/html_head.html" %}
+
 	{% include "inc/mission_statement2.html" %}
+
 	<script language='javascript'>
 	function displayprofilehelp(){
 	    csrftoken = document.frmhelp.csrfmiddlewaretoken.value;
@@ -150,19 +160,21 @@
 	</script>
 	
 		<div class="post">
-			<span class="meta">
-			<h3 class="blue">Hello {{ displayname }}</h3>
+			<span class="meta" style='width:150%;'>
+			<h3 class="blue">Hello {{ displayname }}!</h3>
 			<div class="entry"><font color='#0000AA' face='verdana' size=-1>
 			The following links point to pages that describe how to use testyard for your skills testing needs.<br /> This content is divided on the tabs available on the TestYard application. <br />There is no help pertaining to 'About Us', 'Help' and 'Careers' tabs, as they are self-explanatory.<br />If you have any difficulty with any of the features described in those pages, please feel free to contact us on support@testyard.com. We promise to do our best to help you out.<br /><br /></font>
-			<a href='#/' onClick='javascript:displayprofilehelp();'><font color='#0000AA' face='verdana' size=-1>Profile Help</font></a><br />
-			<!-- <a href='#/' onClick='javascript:displaydashboardhelp();'><font color='#0000AA' face='verdana' size=-1>Dashboard Help</font></a><br /> -->
-			<!-- <a href='#/' onClick='javascript:displaysubscriptionhelp();'><font color='#0000AA' face='verdana' size=-1>Subscription Help</font></a><br /> -->
-			<a href='#/' onClick='javascript:displaytestshelp();'><font color='#0000AA' face='verdana' size=-1>Tests Help</font></a><br />
-			<a href='#/' onClick='javascript:displaynetworkhelp();'><font color='#0000AA' face='verdana' size=-1>Network Help</font></a><br />
-			<a href='#/' onClick='javascript:displaysearchhelp();'><font color='#0000AA' face='verdana' size=-1>Search Help</font></a><br />
-			<a href='#/' onClick='javascript:displayanalyticshelp();'><font color='#0000AA' face='verdana' size=-1>Analytics Help</font></a><br />
-			<br />
-			<a href='#/' onClick='javascript:basicusagevideo();'><font color='#0000AA' face='verdana' size=-1>Basic Usage Video</font></a><br />
+		<div class='row'><div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'>
+			<a href='#/' onClick='javascript:displayprofilehelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Profile Help</a></div>
+			<!-- <div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:displaydashboardhelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Dashboard Help</a></div> -->
+			<!-- <div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:displaysubscriptionhelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Subscription Help</a></div> -->
+			<div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:displaytestshelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Tests Help</a></div>
+			<div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:displaynetworkhelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Network Help</a></div>
+			<div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:displaysearchhelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Search Help</a></div>
+			<div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:displayanalyticshelp();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:125px;'>Analytics Help</a><br />
+			</div>
+			<div class='form-group' style='padding-left:5px;padding-right:5px;padding-top:5px;padding-bottom:5px;'><a href='#/' onClick='javascript:basicusagevideo();' class='btn btn-primary' style='font-name:verdana;color:#ddeeff;font-size:smaller;width:135px;'>Basic Usage Video</a></div>
+		</div>
 			</div>
 			</span>
 		</div>

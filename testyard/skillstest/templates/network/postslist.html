@@ -31,8 +31,8 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <style>
-  a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px;}
-  a.btn:hover { border-radius: .25rem; }
+  a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px; height:38px; align-items: center;justify-content: center;}
+  a.btn:hover { border-radius: .25rem;align-items: center;justify-content: center; }
 </style>
 <!-- New interface code ends here -->
 
@@ -89,7 +89,10 @@ function makepagerequest(pageno, requesturl, requestmethod, paramsdict){
 </head>
 <body>
 <div style='padding-left:10px;padding-right:10px;padding-top:15px;padding-bottom:15px;'>
-<h3 style='color:#0000AA'>List of Posts on the {{groupname}} Group</h3><input type='button' name='closewintop' id='closewintop' value='Close' class='btn btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;padding-bottom:10px;padding-top:10px;height:38px;text-align:center;' onclick='javascript:window.close();'><br/>
+<div class='row'>
+<div class='form-group' style='padding-left:10px;padding-right:5px;'><h3 style='color:#0000AA'>List of Posts on the {{groupname}} Group</h3></div><div class='form-group' style='padding-left:10px;padding-right:5px;'><input type='button' name='closewintop' id='closewintop' value='Close' class='btn btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;' onclick='javascript:window.close();'></div>
+</div>
+<br/>
 <form name='frmpostslist' id='frmpostslist' method='POST' action=''>
 {% csrf_token %}
 <input type='hidden' name='groupid' value='{{groupid}}'><input type='hidden' name='groupname' value='{{groupname}}'>
@@ -103,7 +106,7 @@ function makepagerequest(pageno, requesturl, requestmethod, paramsdict){
 {% endfor %}
 <tr><td colspan=10>&nbsp;</td></tr>
 
-<tr><td colspan=10 align='center'><input type='button' name='closewinbtm' id='closewinbtm' value='Close' class='btn btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;padding-bottom:10px;padding-top:10px;height:38px;text-align:center;' onclick='javascript:window.close();'></td></tr>
+<tr><td colspan=10 align='center'><input type='button' name='closewinbtm' id='closewinbtm' value='Close' class='btn btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;' onclick='javascript:window.close();'></td></tr>
 </table>
 <!-- Pagination tags start here -->
 <script type='text/javascript'>
