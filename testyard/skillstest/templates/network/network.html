@@ -505,6 +505,8 @@
 	    }
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+                    transdiv = document.getElementById('transscreens');
+                    transdiv.style = "display:;"
 		    screendiv = document.getElementById('transscreens3');
                     screendiv.style='display:;width:100%;height:50%;background-color:#e6e6ff;position:absolute;top:10px; left:20px;';
 		    groupdatahtml = xmlhttp.responseText;
@@ -1021,6 +1023,8 @@
 
 
 	function closescreen(scrno=''){
+            //transdiv = document.getElementById('transscreens');
+            //transdiv.style = "display:;width:200%;height:13%;padding-left:10px;padding-right:10px;padding-bottom:10px;";
 	    screendiv = document.getElementById('transscreens' + scrno);
 	    screendiv.innerHTML = "";
 	    screendiv.style.display = "none";
