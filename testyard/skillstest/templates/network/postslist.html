@@ -36,6 +36,8 @@
 </style>
 <!-- New interface code ends here -->
 
+<script src='/static/javascript/network.js'></script>
+
 {% load extratemptags %}
 <script type='text/javascript'>
 function savepostschanges(postid){
@@ -77,6 +79,12 @@ function savepostschanges(postid){
     waitdiv.style.display = "";
     waitdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
 }
+
+function makepagerequest(pageno, requesturl, requestmethod, paramsdict){
+    getpage(pageno, requesturl, requestmethod, paramsdict);
+    //alert(pagecontent);
+    //document.getElementsByTagName('html')[0].innerHTML = pagecontent;
+}
 </script>
 </head>
 <body>
@@ -97,13 +105,23 @@ function savepostschanges(postid){
 
 <tr><td colspan=10 align='center'><input type='button' name='closewinbtm' id='closewinbtm' value='Close' class='btn btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;padding-bottom:10px;padding-top:10px;height:38px;text-align:center;' onclick='javascript:window.close();'></td></tr>
 </table>
+<!-- Pagination tags start here -->
+<script type='text/javascript'>
+paramsdict = {};
+{% for k,v in requestdict.items %}
+paramsdict["{{k}}"] = "{{v}}";
+{% endfor %}
+</script>
 <ul class="pagination">
   {% if previouspagenumber > 0 %}
-    <li><a href="#">Prev</a></li>|
+    <li><a href="#" onclick='javascript:makepagerequest(1, "{{requesturl}}", "{{requestmethod}}", paramsdict)'><img src='/static/images/firstpage.png' style='height:20px;width:20px;'></a></li>&nbsp;&nbsp;|
+    <li><a href="#" onclick='javascript:makepagerequest({{previouspagenumber}}, "{{requesturl}}", "{{requestmethod}}", paramsdict)'>Prev</a></li>|
   {% endif %}
   <li class="active"><a href="#">{{currentpagenumber}}</a></li>|
-  <li><a href="#">Next</a></li>
+  <li><a href="#" onclick='javascript:makepagerequest({{nextpagenumber}}, "{{requesturl}}", "{{requestmethod}}", paramsdict)'>Next</a></li>|&nbsp;&nbsp;
+  <li><a href="#" onclick='javascript:makepagerequest({{lastpagenumber}}, "{{requesturl}}", "{{requestmethod}}", paramsdict)'><img src='/static/images/lastpage.png' style='height:20px;width:20px;'></a></li>
 </ul>
+<!-- Pagination ends here -->
 </form>
 </div>
 </body>

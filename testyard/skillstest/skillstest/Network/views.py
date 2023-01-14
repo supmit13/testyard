@@ -4461,14 +4461,14 @@ def manageposts(request):
         response = HttpResponse(message)
         return response
     grpname = grpobj.groupname
-    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False).order_by('-createdon')[startctr:endctr]
+    postsqset = Post.objects.filter(posttargetgroup=grpobj, deleted=False).order_by('-createdon')
     contextdict = {}
     contextdict['groupname'] = grpname
     contextdict['groupid'] = grpid
     contextdict['savepostinfourl'] = mysettings.SAVE_POST_INFO_URL
     postsdict = {}
     postssequence = []
-    for postobj in postsqset:
+    for postobj in postsqset[startctr:endctr]:
         postid = postobj.id
         postmsgtag = postobj.postmsgtag
         postcontent = postobj.postcontent
@@ -4483,9 +4483,15 @@ def manageposts(request):
         postssequence.append(postid)
     contextdict['posts'] = postsdict
     contextdict['sequence'] = postssequence
+    # Pagination variables
     contextdict['currentpagenumber'] = int(pageno)
     contextdict['previouspagenumber'] = int(pageno) - 1
     contextdict['nextpagenumber'] = int(pageno) + 1
+    contextdict['lastpagenumber'] = int(postsqset.__len__()/mysettings.PAGE_CHUNK_SIZE) + 1
+    contextdict['requesturl'] = mysettings.MANAGE_POSTS_URL
+    contextdict['requestmethod'] = 'post'
+    contextdict['requestdict'] = {'groupid' : grpid, 'csrfmiddlewaretoken' : request.POST['csrfmiddlewaretoken']}
+    # End of pagination variables
     tmpl = get_template("network/postslist.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)

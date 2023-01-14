@@ -152,3 +152,40 @@ function savealljoinrequestchanges(saveurl, groupname){
     return;
 }
 
+
+// csrfmiddlewaretoken should be part of paramsdict
+function getpage(pageno, requesturl, requestmethod, paramsdict={}){
+    data = "";
+    for(p in paramsdict){
+        if(paramsdict.hasOwnProperty(p)){
+	    data += p + "=" + encodeURI(paramsdict[p]) + "&";
+        }
+    }
+    data = data + "pageno=" + pageno.toString();
+    //data = data.substring(0, data.length - 1); // chop last '&' off.
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+        xmlhttp=new XMLHttpRequest();
+    }
+    else{
+        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    //return(xmlhttp.responseText);
+            document.getElementsByTagName('html')[0].innerHTML = xmlhttp.responseText;
+        }
+    };
+    if (requestmethod == 'post'){
+        xmlhttp.open('POST', requesturl, false);
+	xmlhttp.send(data);
+    }
+    else if(requestmethod == 'get'){
+        requesturl = requesturl + "?" + data;
+        xmlhttp.open('GET', requesturl, false);
+        xmlhttp.send();
+    }
+    else{
+    }
+}
+
