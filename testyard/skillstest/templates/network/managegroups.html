@@ -1,8 +1,20 @@
 <script language='JavaScript'>
-	alert({{require_owner_perms}});
+alert({{require_owner_perms}});
+var adminremarks = "{{adminremarks}}";
+adminremarks = adminremarks.replace('"', '\"');
+accountownername = "{{accountownername}}";
+accountownername = accountownername.replace('"', '\"');
 </script>
+<!-- New interface code starts here -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<style>
+a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 250px; height:38px;align-items: center;justify-content: center;}
+a.btn:hover { border-radius: .25rem; align-items: center;justify-content: center;}
+</style>
+<!-- New interface code ends here -->
 <div id="headerpanel">
-    <center><font color='#0000AA' style='font-weight: bold'>{{groupname}}</font> - <font color='#0000AA'><i>{{tagline}}</i> [<a href='#/' onClick='javascript:closescreen();' style='color:#0000AA;'>Close Screen</a>]</font></center>
+    <center><font color='#0000AA' style='font-weight: bold'>{{groupname}}</font> - <font color='#0000AA'><i>{{tagline}}</i> <a href='#/' onClick='javascript:closescreen();' class='btn btn-primary' style='color:#FFFFFF;'>Close Screen</a></font></center>
     <p><div id='descdiv'><span width='70%' align='center' style="width:80%;overflow:auto;word-wrap:break-word;"><i><font size=-1 color='#0000AA'>{{ description }}</font></i></span></div></p>
 </div>
 

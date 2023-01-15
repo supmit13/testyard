@@ -456,7 +456,7 @@
 		    screendiv = document.getElementById('transscreens');
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
-                    screendiv.style = "display:;background:#e6e6ff;";
+                    screendiv.style = "display:;width:80%;height:70%;background-color:#e6e6ff;position:fixed;margin: auto;top:0; left:0;";
 		    screendiv.innerHTML = groupdatahtml;
 		    //screendiv.style.display = "";
 	        }
@@ -863,7 +863,7 @@
 
 	function displayjoinagroupscreen(){
 	    screendiv = document.getElementById('transscreens');
-	    screendiv.style.display = "";
+            screendiv.style = "display:;";
 	    html = "<center><h3><font color='#0000AA'>Search for a group based on the following parameters:</font></h3>";
 	    html += "<form name='joinagroup' id='joinagroup' method='POST' action=''>";
 	    html += "{% csrf_token %}";
@@ -1093,6 +1093,7 @@
 	    screendiv = document.getElementById('transscreens3');
 	    openclosediv = document.getElementById('openclose');
 	    paramspaneldiv = document.getElementById('paramspanel');
+            rightpaneldiv = document.getElementById('transscreens');
 	    openpattern = new RegExp("Open");
 	    openclosecontent = openclosediv.innerHTML;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
@@ -1100,6 +1101,10 @@
  	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
                 if(screendiv && screendiv != null){
                     screendiv.style.height = "100%";
+                }
+		if(rightpaneldiv && rightpaneldiv != null && !screendiv){
+                    rightpaneldiv.style = "display:;height:150%;width:80%;background-color:#e6e6ff;color:#0000aa;"
+                    //rightpaneldiv.style.height = "100%";
                 }
                 //alert(adminremarks);
                 adminremarks = adminremarks.replace(/\"/g, '\\"');
@@ -1219,6 +1224,10 @@
 	    else{
                 if(screendiv && screendiv != null){
                     screendiv.style.height = "50%";
+                }
+                if(rightpaneldiv && rightpaneldiv != null && !screendiv){
+                    rightpaneldiv.style = "display:;height:80%;width:80%;background-color:#e6e6ff;color:#0000aa;"
+                    //rightpaneldiv.style.height = "100%";
                 }
 		//alert(adminremarks);
 		adminremarks = adminremarks.replace(/\"/g, '\\"');
@@ -1520,10 +1529,15 @@
 
 	function collapsiblegroupposts(grpname, postslistenc, lastelem){
             screendiv = document.getElementById('transscreens3');
+            rightpaneldiv = document.getElementById('transscreens');
             h = 800; // Initial value...
             if(screendiv && screendiv != null){
                 h = screendiv.offsetHeight;
 		//alert(h);
+            }
+            if(rightpaneldiv && rightpaneldiv != null && !screendiv){
+                rightpaneldiv.style = "display:;height:150%;width:80%;background-color:#e6e6ff;color:#0000aa;"
+                h = rightpaneldiv.offsetHeight;
             }
 	    postslist_str = Base64.decode(postslistenc);
 	    postslist = JSON.parse(postslist_str);
@@ -1553,6 +1567,9 @@
 	    }
             if(screendiv && screendiv != null){
                 screendiv.style.height = nh+"%";
+            }
+            if(rightpaneldiv && rightpaneldiv != null && !screendiv){
+                rightpaneldiv.style.height = nh+"%";
             }
 	    for(var i=0; i < postslength; i++){
 		post = postslist[i];
@@ -1667,8 +1684,12 @@
 	function hidegroupposts(grpname, postslistenc, lastelem){
 	    postsdiv = document.getElementById('grouppostspanel');
             screendiv = document.getElementById('transscreens3');
+            rightpaneldiv = document.getElementById('transscreens');
             if(screendiv && screendiv != null){
                 screendiv.style.height = '50%';
+            }
+            if(rightpaneldiv && rightpaneldiv != null && !screendiv){
+                rightpaneldiv.style.height = '70%';
             }
 	    postsdiv.innerHTML = "";
 	    anchor = document.getElementById('postsanchor');
