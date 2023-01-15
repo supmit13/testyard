@@ -1903,9 +1903,8 @@
 	    messagesdictstr = Base64.decode(messagesdictenc);
 	    messagesdict = JSON.parse(messagesdictstr);
 	    screendiv = document.getElementById("transscreens");
-	    screendiv.style.display = "";
-	    screendiv.style = "height:400%;width:100%;";
-	    html = "<center><font color='#0000FF' style='font-weight:bold;' size=+1>Message Inbox &nbsp;&nbsp;</font><a href='#/' onClick='javascript:closemessagescreen();'><font color='#0000FF' style='font-weight:bold;' size=-1>[close]<img src='static/images/redcross.png' height='18px' width='18px'></font></a>&nbsp;&nbsp;&nbsp;&nbsp;<span width='35%' align='right' id='searchspan'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value=''>&nbsp;<input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();'></span></center><br><br>";
+	    screendiv.style = "display:;height:100%;width:100%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:0;left:0;overflow-y: scroll;";
+	    html = "<center><div class='row' style='padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;color:#0000ff;font-weight:bold;font-size:larger;'>Message Inbox &nbsp;&nbsp;</div><div align='right' id='searchspan' class='form-group' style='padding-left:5px;padding-right:5px;'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value='' class='form-control' style='width:200px;' placeholder='Search Messages'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();' class='btn btn-primary' style='color:#ffffff;font-size:small;width:140px;height:38px;font-weight:bold;'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div></center><br><br>";
 	    html += "<center><table border='0' cellspacing='6' cellpadding='6' width='90%'>";
 	    idlist = Array();
 	    for (id in messagesdict){
@@ -2009,6 +2008,7 @@
 		}
 	    }
 	    html += "</table></center>";
+            html += "<br/><br/><div class='row' style='text-align:center;padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div><br/><br/>";
 	    //html += "<br><center><div id='getmorediv'><font color='#0000AA' size = -1 style='font-weight:bold;'><a href='#/' onClick=javascript:showmoreposts(messagesdict['start1'], messagesdict['start2']);>Show More</a></font></div></center>";
     	    screendiv.innerHTML = html;
 	}
@@ -2076,9 +2076,9 @@
 	    responsediv = document.getElementById('respdiv' + postid);
 	    responsediv.style.display = "";
 	    html = "<form name='frmresponse" + postid + "' id='frmresponse" + postid + "' method='POST' action='{{ sendmessageresponseurl }}'>";
-	    html += "<input type='file' name='responsemsgfile" + postid + "' id='responsemsgfile" + postid + "' value=''>";
-	    html += "<br><textarea name='txtresponse" + postid + "' id='txtresponse" + postid + "' rows='10' cols='40' onClick='javascript:cleartextarea(" + postid + ");'>Add your reply here.</textarea>";
-	    html += "<br><input type='button' name='btnresponse' value='Post Response' onClick='javascript:sendmessageresponse(" + postid + ");'>&nbsp;&nbsp;<input type='button' name='btncancel' value='Discard Response' onClick='javascript:discardresponse(" + postid + ");'>";
+	    html += "<input type='file' name='responsemsgfile" + postid + "' id='responsemsgfile" + postid + "' value='' class='form-control' style='width:550px;'>";
+	    html += "<br><textarea name='txtresponse" + postid + "' id='txtresponse" + postid + "' rows='5' cols='25' onClick='javascript:cleartextarea(" + postid + ");' class='form-control' style='width:550px;height:250px;'>Add your reply here.</textarea>";
+	    html += "<br><input type='button' name='btnresponse' value='Post Response' onClick='javascript:sendmessageresponse(" + postid + ");' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btncancel' value='Discard Response' onClick='javascript:discardresponse(" + postid + ");' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#aa0000;'>";
 	    html += "</form>";
 	    responsediv.innerHTML = html;
 	}
