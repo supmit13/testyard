@@ -619,6 +619,7 @@ def getgroupinfo(request):
         grpdict['basedontopic'] = groupobj.basedontopic
         grpdict['adminremarks'] = groupobj.adminremarks
         grpdict['adminremarks'] = grpdict['adminremarks'].replace('"', '&amp;quot;')
+        grpdict['adminremarks'] = grpdict['adminremarks'].replace('\n', '\\n')
         grpdict['require_owner_perms'] = groupobj.require_owner_permission
         if groupobj.groupimagefile:
             grpdict['groupimagefile'] = "media/" + groupobj.owner.displayname + "/groups/" + groupobj.groupname + "/" + groupobj.groupimagefile
@@ -914,6 +915,7 @@ def getgroupdata(request):
     contextdict['status'] = grpobj.status
     contextdict['adminremarks'] = grpobj.adminremarks
     contextdict['adminremarks'] = contextdict['adminremarks'].replace('"', '&amp;quot;')
+    contextdict['adminremarks'] = contextdict['adminremarks'].replace("\n", "\\n")
     contextdict['stars'] = grpobj.stars
     contextdict['ispaid'] = grpobj.ispaid
     contextdict['require_owner_perms'] = grpobj.require_owner_permission
@@ -1316,6 +1318,7 @@ def savegroupdata(request):
     groupobj.grouptype = grouptypes
     groupobj.basedontopic = topics
     adminremarks = re.sub("['\"]", "&amp;quot;", adminremarks)
+    adminremarks = adminremarks.replace("\n", "\\n")
     groupobj.adminremarks = adminremarks
     groupobj.allowentry = allowentry
     groupobj.ispaid = ispaid

@@ -456,7 +456,7 @@
 		    screendiv = document.getElementById('transscreens');
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
-                    screendiv.style = "display:;background:#669999;";
+                    screendiv.style = "display:;background:#e6e6ff;";
 		    screendiv.innerHTML = groupdatahtml;
 		    //screendiv.style.display = "";
 	        }
@@ -1101,8 +1101,11 @@
                 if(screendiv && screendiv != null){
                     screendiv.style.height = "100%";
                 }
+                //alert(adminremarks);
                 adminremarks = adminremarks.replace(/\"/g, '\\"');
 		adminremarks = adminremarks.replace(/&amp;quot;/g, '\\"');
+                adminremarks = adminremarks.replace(/\n/g, '\\\n');
+                adminremarks = adminremarks.replace(/\r/g, '\\\r');
 		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
 		if(!grpimgfile){
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
