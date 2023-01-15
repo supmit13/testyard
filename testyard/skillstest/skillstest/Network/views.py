@@ -618,6 +618,7 @@ def getgroupinfo(request):
         grpdict['currency'] = groupobj.currency
         grpdict['basedontopic'] = groupobj.basedontopic
         grpdict['adminremarks'] = groupobj.adminremarks
+        grpdict['adminremarks'] = grpdict['adminremarks'].replace('"', '&amp;quot;')
         grpdict['require_owner_perms'] = groupobj.require_owner_permission
         if groupobj.groupimagefile:
             grpdict['groupimagefile'] = "media/" + groupobj.owner.displayname + "/groups/" + groupobj.groupname + "/" + groupobj.groupimagefile
@@ -877,10 +878,15 @@ def getgroupdata(request):
     grpobj = grpqset[0]
     contextdict = {}
     contextdict['dispname'] = userobj.displayname
+    contextdict['dispname'] = contextdict['dispname'].replace('"', '&quot;')
     contextdict['groupname'] = grpobj.groupname
+    contextdict['groupname'] = contextdict['groupname'].replace('"', '&quot;')
     contextdict['tagline'] = grpobj.tagline
+    contextdict['tagline'] = contextdict['tagline'].replace('"', '&quot;')
     contextdict['description'] = grpobj.description
+    contextdict['description'] = contextdict['description'].replace('"', '&quot;')
     contextdict['ownedby'] = grpobj.owner.firstname + " " + grpobj.owner.middlename + " " + grpobj.owner.lastname + " (" + grpobj.owner.displayname + ") "
+    contextdict['ownedby'] = contextdict['ownedby'].replace('"', '&quot;')
     if grpobj.groupimagefile is not None:
         contextdict['groupimagefile'] = grpobj.groupimagefile
     else:
@@ -907,6 +913,7 @@ def getgroupdata(request):
     contextdict['allowentry'] = grpobj.allowentry
     contextdict['status'] = grpobj.status
     contextdict['adminremarks'] = grpobj.adminremarks
+    contextdict['adminremarks'] = contextdict['adminremarks'].replace('"', '&amp;quot;')
     contextdict['stars'] = grpobj.stars
     contextdict['ispaid'] = grpobj.ispaid
     contextdict['require_owner_perms'] = grpobj.require_owner_permission
@@ -915,10 +922,13 @@ def getgroupdata(request):
         if ownerbankacctqset.__len__() > 0:
             ownerbankacctobj = ownerbankacctqset[0] # Expect to have only one account registered for the user.
             contextdict['bankname'] = ownerbankacctobj.bankname
+            contextdict['bankname'] = contextdict['bankname'].replace('"', '&quot;')
             contextdict['bankbranch'] = ownerbankacctobj.bankbranch
+            contextdict['bankbranch'] = contextdict['bankbranch'].replace('"', '&quot;')
             contextdict['accountnumber'] = ownerbankacctobj.accountnumber
             contextdict['ifsccode'] = ownerbankacctobj.ifsccode
             contextdict['accountownername'] = ownerbankacctobj.accountownername
+            contextdict['accountownername'] = contextdict['accountownername'].replace('"', '&quot;')
         else:
             contextdict['bankname'] = ""
             contextdict['bankbranch'] = ""

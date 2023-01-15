@@ -456,8 +456,9 @@
 		    screendiv = document.getElementById('transscreens');
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
+                    screendiv.style = "display:;background:#669999;";
 		    screendiv.innerHTML = groupdatahtml;
-		    screendiv.style.display = "";
+		    //screendiv.style.display = "";
 	        }
 	    };
 	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
@@ -506,7 +507,7 @@
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
                     transdiv = document.getElementById('transscreens');
-                    transdiv.style = "display:;"
+                    transdiv.style = "display:;background:none;";
 		    screendiv = document.getElementById('transscreens3');
                     screendiv.style='display:;width:100%;height:50%;background-color:#e6e6ff;position:absolute;top:10px; left:20px;';
 		    groupdatahtml = xmlhttp.responseText;
@@ -1095,10 +1096,13 @@
 	    openpattern = new RegExp("Open");
 	    openclosecontent = openclosediv.innerHTML;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+            
  	    if(openpattern.test(openclosecontent)){ // So the next div should be opened now
                 if(screendiv && screendiv != null){
                     screendiv.style.height = "100%";
                 }
+                adminremarks = adminremarks.replace(/\"/g, '\\"');
+		adminremarks = adminremarks.replace(/&amp;quot;/g, '\\"');
 		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings</font><a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;' + ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee + '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + currency + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'> Close</font></a></font>';
 		if(!grpimgfile){
 		    grpimguploadurl = "{{grpimguploadurl}}" + grpname
@@ -1213,6 +1217,8 @@
                 if(screendiv && screendiv != null){
                     screendiv.style.height = "50%";
                 }
+		//alert(adminremarks);
+		adminremarks = adminremarks.replace(/\"/g, '\\"');
 		openclosediv.innerHTML = '<font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Settings <a href=\'#/\' onClick=\'javascript:expandcollapsesettings(\&quot;' + grpimgfile + '\&quot;, \&quot;' + memberscount + '\&quot;, \&quot;' + maxmemberslimit + '\&quot;, \&quot;' + basedontopic + '\&quot;, \&quot;' + grouptype + '\&quot;, \&quot;' + allowentry + '\&quot;, \&quot;'+ ispaid + '\&quot;, \&quot;' + entryfee + '\&quot;, \&quot;' + subscriptionfee +  '\&quot;, \&quot;' + adminremarks + '\&quot;, \&quot;' + grpname + '\&quot;, \&quot;' + bankname + '\&quot;, \&quot;' + bankbranch + '\&quot;, \&quot;' + acctname + '\&quot;, \&quot;' + acctnum + '\&quot;, \&quot;' + ifsccode + '\&quot;, \&quot;' + require_owner_perms + '\&quot;, \&quot;' + gstin + '\&quot;, \&quot;' + subscriptionperiod + '\&quot;);\'><font size=-1 color=\'#0000AA\' style=\'font-weight: bold\'>Open</font></a><br /><br />';
 		paramspaneldiv.innerHTML = "";
 		paramspaneldiv.style.display = "none";
@@ -2448,6 +2454,7 @@
 	    postdata += "&searchquery=" + searchquery;
 	    transdiv = document.getElementById('transscreens');
             //transdiv.style = "display:;width:200%;height:13%;padding-left:10px;padding-right:10px;padding-bottom:10px;";
+            transdiv.style = "background: none;";
  	    waitdiv = document.getElementById('managewait');
             var xmlhttp;
             if (window.XMLHttpRequest){
