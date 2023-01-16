@@ -1,6 +1,8 @@
 <div>
-<span width='30%'><img src='media/{{displayname}}/images/{{profileimage}}' style='height:80px;width:80px;'></span><br /><span width='30%'><font color='#0000AA' size=-1>{{displayname}}</font>&nbsp;&nbsp;<font color='#0000AA' size=-1>({{goodname}})</font></span>&nbsp;&nbsp;&nbsp;&nbsp;|<span width='40%' align='right'><a href='#/' onclick="javascript:sendamessage('{{useremail}}');"><font color='#0000AA' size=-1><i>Send a message</i></font></a></span>|<span width='40%' align='right'><a href='#/' onclick="javascript:closescreen();"><font color='#0000AA' size=-1><i>Close Screen</i></font></a></span>
+<div class='row'><div class='form-group' style='color:#0000aa;font-weight:bold;text-align:center;font-size:larger;padding-left:20px;padding-right:10px;'>{{goodname}}'s Activities</div></div><br/>
+<span width='30%' style='padding-left:10px;padding-right:10px;'><img src='media/{{displayname}}/images/{{profileimage}}' style='height:80px;width:80px;'></span><br /><div class='row'><div class='form-group'><span width='30%' style='padding-left:10px;padding-right:10px;'><font color='#0000AA' size=-1>{{displayname}}</font>&nbsp;&nbsp;<font color='#0000AA' size=-1>({{goodname}})</font></span></div>&nbsp;&nbsp;&nbsp;&nbsp;<div class='form-group'><span width='40%' align='right' style='padding-left:10px;padding-right:10px;'><a href='#/' onclick="javascript:showmessagearea('{{useremail}}');" class='btn btn-primary' style='width:150px;height:38px;color:#ccddee;font-size:smaller;text-align:center;font-weight:bold;'>Send a message</a></span></div>&nbsp;&nbsp;<div class='form-group'><span id='waitspan' style='display:none;'></span></div>&nbsp;&nbsp;<div class='form-group'><span width='40%' align='right' style='padding-left:10px;padding-right:10px;'><a href='#/' onclick="javascript:closescreen();" class='btn btn-testyard1' style='width:150px;height:38px;color:#0000aa;font-size:smaller;text-align:center;background-color:#99ccff;font-weight:bold;'>Close Screen</a></span></div></div>
 </div>
+<input type='hidden' name='totalrowscount' value='TOTALROWSCOUNT#||#{{totalrowscount}}'>
 <hr>
 <table border='0' cellspacing='2' cellpadding='2'>
 <tr>
@@ -77,11 +79,11 @@
 </tr>
 </table>
 </div>
-
+<br/><br/>
 <div id='ctrldiv'>
 <form name='ctrlfrm' id='ctrlfrm' method='GET' action=''>
 {% csrf_token %}
-<center><input type='button' name='btnclose' id='btnclose' value='Close' onClick='javascript:closemessagescreen();'>&nbsp;&nbsp;<input type='button' name='btnblock' id='btnblock' value='Block User' onClick='javascript:blockuser();'>&nbsp;&nbsp;<input type='button' name='btnremoveconn' id='btnremoveconn' value='Remove Connection' onClick='javascript:removeconn();'></center>
+<center><input type='button' name='btnclose' id='btnclose' value='Close' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='width:150px;height:38px;color:#0000aa;font-size:smaller;text-align:center;background-color:#99ccff;font-weight:bold;'>&nbsp;&nbsp;<input type='button' name='btnblock' id='btnblock' value='Block User' onClick='javascript:blockuser();' class='btn btn-primary' style='width:150px;height:38px;color:#ffffcc;font-size:smaller;text-align:center;font-weight:bold;'>&nbsp;&nbsp;<input type='button' name='btnremoveconn' id='btnremoveconn' value='Remove Connection' onClick='javascript:removeconn();' class='btn btn-primary' style='width:150px;height:38px;color:#ffffcc;font-size:smaller;text-align:center;font-weight:bold;'></center>
 </form>
 </div>
 

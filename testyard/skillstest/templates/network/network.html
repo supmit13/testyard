@@ -1844,7 +1844,7 @@
 
 	function showconnectionsprofile(connid){
 	    screendiv = document.getElementById('transscreens');
-	    screendiv.style.display = "";
+	    screendiv.style = "display:;height:550%;width:100%;background-color:#e6e6ff;color:#0000aa;";
 	    html = "";
 	    postdata = "connid=" + connid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
 	    var xmlhttp;
@@ -1859,6 +1859,36 @@
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    html += xmlhttp.responseText;
 		    //alert(html);
+                    rowscountpattern = /TOTALROWSCOUNT#\|\|#(\d+)/g;
+                    m = rowscountpattern.exec(html);
+                    if(m != null && m.length > 1){
+                        try{
+                            rowscount = parseInt(m[1]);
+                            //alert(rowscount);
+                            if(rowscount < 60){
+                                screendiv.style.height = "650%";
+                            }
+                            if(rowscount < 100){
+                                screendiv.style.height = "1100%";
+                            }
+                            else if(rowscount < 200){
+                                screendiv.style.height = "2100%";
+                            }
+                            else if(rowscount < 400){
+                                screendiv.style.height = "4000%";
+                            }
+                            else if(rowscount < 700){
+                                screendiv.style.height = "8000%";
+                            }
+                            else if(rowscount < 1500){
+                                screendiv.style.height = "15000%";
+                            }
+                            else{
+                                screendiv.style.height = "20000%";
+                            }
+                        }
+                        catch(err){ }
+                    }
 		    screendiv.innerHTML = html;
 	        }
 	    };
@@ -2329,7 +2359,7 @@
 		    html = "<font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideownedgroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (ownedgroupname in groupsownedinfo){
-			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "'><!-- <a href='#/' onClick=\"showgroupprofile('" + ownedgroupname + "', '" + groupsownedinfo[ownedgroupname][5] + "', '" + groupsownedinfo[ownedgroupname][4] + "');\"> --><font color='#0000AA'>" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")</font><!-- </a> --></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + groupsownedinfo[ownedgroupname][2] + "' style='font-size:smaller;color:#0000aa;'><!-- <a href='#/' onClick=\"showgroupprofile('" + ownedgroupname + "', '" + groupsownedinfo[ownedgroupname][5] + "', '" + groupsownedinfo[ownedgroupname][4] + "');\"> -->" + ownedgroupname + " - " + groupsownedinfo[ownedgroupname][0].substring(0, 15) + " ...(" + groupsownedinfo[ownedgroupname][1] + ")<!-- </a> --></span></td></tr>";
 		    }
 		    html += "</table>";
 		    owneddivtag = document.getElementById('owneddiv');
@@ -2365,7 +2395,7 @@
 		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>Groups Subscribed</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hidemembergroups('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (membergroupname in groupsmemberinfo){
-			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "'><!-- <a href='#/' onClick=\"showgroupprofile('" + membergroupname + "', '" + groupsmemberinfo[membergroupname][4] + "', '');\"> --><font color='#0000AA'>" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...</font><!-- </a> --></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + groupsmemberinfo[membergroupname][1] + "' style='font-size:smaller;color:#0000aa;'><!-- <a href='#/' onClick=\"showgroupprofile('" + membergroupname + "', '" + groupsmemberinfo[membergroupname][4] + "', '');\"> -->" + membergroupname + " - " + groupsmemberinfo[membergroupname][0].substring(0, 15) + " ...<!-- </a> --></span></td></tr>";
 		    }
 		    html += "</table>";
 		    memberdivtag = document.getElementById('memberdiv');
@@ -2400,7 +2430,7 @@
 		    html = "<font color='#0000AA' style='font-weight: bold' size=-1>All Connections</font><br /><font color='#0000AA' size=-1><a href='#/' onClick=javascript:hideconnections('" + connectedtoid + "');><img src='static/images/minussign.png' style='height:15px;width:15px;'>Hide All</a></font>";
 		    html += "<table border=0 cellspacing='2' cellpadding='2'>";
 		    for (conn in connectionsinfo){
-			html += "<tr><td nowrap><span title='" + connectionsinfo[conn][1] + "'><a href='#/' onClick=showconnpublicprofile('" + conn + "');><font color='#0000AA'>" + conn + " - " + connectionsinfo[conn][0] + "</font></a></span></td></tr>";
+			html += "<tr><td nowrap><span title='" + connectionsinfo[conn][1] + "' style='font-size:smaller;color:#0000aa;'><a href='#/' onClick=showconnpublicprofile('" + conn + "');>" + conn + " - " + connectionsinfo[conn][0] + "</a></span></td></tr>";
 		    }
 		    html += "</table>";
 		    conndivtag = document.getElementById('connectiondiv');
@@ -2715,22 +2745,32 @@
 	}
 
 
+        function cancelmessage(){
+            waitspanelem = document.getElementById('waitspan');
+            waitspanelem.innerHTML = "";
+            waitspanelem.style = "display:none;";
+        }
+
         function showmessagearea(useremail){
 	    waitspanelem = document.getElementById('waitspan');
-	    waitspanelem.style.display = "";
-	    waitspanelem.innerHTML = "<textarea id='msgcontent' rows='4' cols='40'>Enter message here</textarea>&nbsp;&nbsp;<input type='button' name='sendamsg' id='sendamsg' value='Send' onClick='javascript:sendamessage(\"" + useremail + "\");'>";
+	    waitspanelem.style = "display:;";
+	    waitspanelem.innerHTML = "<textarea id='msgcontent' name='msgcontent' rows='2' cols='40' class='form-control' style='width:200px;height:50px;' placeholder='Enter message here'></textarea>&nbsp;&nbsp;<input type='button' name='sendamsg' id='sendamsg' value='Send' onClick='javascript:sendamessage(\"" + useremail + "\");' class='btn btn-primary' style='width:100px;height:38px;color:#ccddee;font-size:smaller;text-align:center;'>&nbsp;&nbsp;<input type='button' name='cancelmsg' id='cancelmsg' value='Cancel' onClick='javascript:cancelmessage();' class='btn btn-testyard1' style='width:100px;height:38px;color:#0000aa;font-size:smaller;text-align:center;background-color:#99ccff;'>";
             textmsg = document.getElementById('msgcontent');
 	    textmsg.focus();
 	}
 
 
         function sendamessage(useremail){
+            yn = confirm("Click Ok to confirm sending the message");
+            if(yn == false){
+		return(0);
+	    }
             var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
 	    postdata += "&useremail=" + useremail;
 	    textmsg = document.getElementById('msgcontent');
-	    alert(textmsg + "   1  ");
+	    //alert(textmsg + "   1  ");
 	    msgvalue = textmsg.value;
-	    postdata += "&message=" + msgvalue;
+	    postdata += "&message=" + encodeURI(msgvalue);
  	    waitspanelem = document.getElementById('waitspan');
             var xmlhttp;
             if (window.XMLHttpRequest){
@@ -2739,11 +2779,12 @@
             else{
                 xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
             }
-	    alert(textmsg + "   2  ");
+	    //alert(textmsg + "   2  ");
             xmlhttp.onreadystatechange = function(){
                 if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    waitspanelem.innerHTML = xmlhttp.responseText;
-		    //alert(xmlhttp.responseText);
+		    waitspanelem.innerHTML = "";
+                    waitspanelem.style = "display:none;";
+		    alert(xmlhttp.responseText);
                 }
             };
             xmlhttp.open('POST', "{{sendamessageurl}}", true);
@@ -2756,6 +2797,62 @@
 	function showreceivedmsgs(useremail){
 	}
 
+
+        function arraybuffertostring(buffer){
+            var bufView = new Uint8Array(buffer);
+            var length = bufView.length;
+            var result = '';
+            var addition = Math.pow(2,8)-1;
+            for(var i = 0;i<length;i+=addition){
+                if(i + addition > length){
+                    addition = length - i;
+                }
+                result += String.fromCharCode.apply(null, bufView.subarray(i,i+addition));
+            }
+            return result;
+        }
+
+        function downloadattachment(attachmentfilewebpath, msgid, userid){
+            var targeturl = "{{downloadattachmenturl}}";
+	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value + "&messageid=" + msgid + "&uid=" + userid + "&attachmentpath=" + encodeURI(attachmentfilewebpath);
+            attachmentparts = attachmentfilewebpath.split("/");
+            attachmentfilename = attachmentparts[attachmentparts.length - 1];
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    // Register the handler
+	    xmlhttp.onreadystatechange = function(){
+	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+              const errorpattern = /error\:/i;
+              attachwin = window.open('', 'attachment', "width=400, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
+              a = attachwin.document.createElement('a');
+              binarydata = [];
+              binarydata.push(xmlhttp.response);
+              a.href = attachwin.URL.createObjectURL(new Blob(binarydata, {type: "application/octet-stream"}));
+              // Give filename you wish to download
+              a.download = attachmentfilename;
+              a.style.display = 'none';
+              attachwin.document.body.appendChild(a);
+              rettext = arraybuffertostring(xmlhttp.response);
+              res = errorpattern.test(rettext);
+              if(res == true){
+	        alert("Error downloading attachment: " + rettext);
+              }
+              else{
+                a.click();
+              }
+              attachwin.close();
+	    }
+	    };
+	    xmlhttp.open("POST",targeturl,true);
+            xmlhttp.responseType = "arraybuffer"; // Most important! If this is not assigned, you download a corrupt file.
+            //xmlhttp.setRequestHeader("Content-type", "x-www-form-urlencoded");
+	    xmlhttp.send(postdata);
+        }
 
 	</script>
 		

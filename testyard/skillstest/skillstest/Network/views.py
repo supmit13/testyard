@@ -33,6 +33,7 @@ from itertools import chain
 from threading import Thread
 import hmac
 import hashlib
+import mimetypes
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
@@ -88,6 +89,7 @@ def get_network_template_vars(userobj):
     templatevars['manageownedgrpsurl'] = mysettings.MANAGE_OWNED_GROUPS_URL
     templatevars['grpinfosaveurl'] = mysettings.GROUPINFO_SAVE_URL
     templatevars['sendamessageurl'] = mysettings.SEND_A_MESSAGE_URL
+    templatevars['downloadattachmenturl'] = mysettings.DOWNLOAD_ATTACHMENT_URL
     templatevars['groupprofileurl'] = mysettings.GROUP_PROFILE_URL
     templatevars['exitgroupurl'] = mysettings.EXIT_GROUP_URL
     templatevars['cutpercent'] = mysettings.CUT_FRACTION * 100
@@ -194,8 +196,11 @@ def network(request):
     messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
     messageobj = None
     for messageobj in messagesqset:
+        messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
         if messageobj.attachmentfile:
-            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            messageattachmentfile = messageobj.attachmentfile.replace('"', "\&quot;")
+            attachtag = str("<a href='#/' onclick='javascript:downloadattachment(\"media/" + messagepostername + "/posts/" + messageattachmentfile + "\", \"" + str(messageobj.id) + "\", \"" + str(userobj.id) + "\");'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            #attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
         else:
             attachtag = ""
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
@@ -218,7 +223,10 @@ def network(request):
             if subpost.newmsg is True:
                 poststr = "new##"
             if subpost.attachmentfile:
-                attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+                subpostername = subpost.poster.displayname.replace('"', "\&quot;")
+                subpostattachmentfile = subpost.attachmentfile.replace('"', "\&quot;")
+                attachtag = str("<a href='#/' onclick='javascript:downloadattachment(\"media/" + subpostername + "/posts/" + subpostattachmentfile + "\",\"" + str(subpost.id) + "\", \"" + str(userobj.id) + "\");'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+                #attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
             else:
                 attachtag = ""
             poststr += str(subpost.id) + "##" + subpost.poster.displayname + "##" + str(subpost.createdon) + "##" + attachtag + "##" + subpost.postmsgtag + "##" + subpost.postcontent
@@ -234,7 +242,10 @@ def network(request):
         else:
             pass
         if messageobj.attachmentfile:
-            attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
+            messagepostattachmentfile = messageobj.attachmentfile.replace('"', "\&quot;")
+            attachtag = str("<a href='#/' onclick='javascript:downloadattachment(\"media/" + messagepostername + "/posts/" + messagepostattachmentfile + "\",\"" + str(messageobj.id) + "\", \"" + str(userobj.id) + "\");'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            #attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
         else:
             attachtag = ""
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
@@ -3589,6 +3600,7 @@ def getconnectioninfo(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
+    totalrowscount = 0
     visibility = 'public'
     if not request.POST.has_key('connid') and not request.POST.has_key('conndisplayname'):
         message = error_msg('1143')
@@ -3660,6 +3672,7 @@ def getconnectioninfo(request):
             taking.append(testdict)
         elif int(usertestobj.status) == 0: # Test not yet taken
             nottaken.append(testdict)
+        totalrowscount += 1
     usertests['taken'] = taken
     usertests['nottaken'] = nottaken
     usertests['taking'] = taking
@@ -3709,6 +3722,7 @@ def getconnectioninfo(request):
         evaluators_str = ",".join(evaluators)
         testsdict = {'testname' : testname, 'topicname' : topicname, 'testtype' : testtype, 'publishdate' : publishdate, 'maxscore' : maxscore, 'passscore' : passscore, 'testlinkid' : testlinkid, 'evaluators' : evaluators_str, 'countuserstaken' : countuserstaken}
         ownedtests.append(testsdict)
+        totalrowscount += 1
     # Get tests evaluated by this user. To do this, first find evaluator group names in which this user is a member
     evalgroupslist = []
     evaluatorsqset = Evaluator.objects.filter() # Get all evaluator groups
@@ -3752,8 +3766,9 @@ def getconnectioninfo(request):
 	    countuserstaken = testgivenqset.__len__() + wouldbeusersqset.__len__()
             testdict = {'testname' : testname, 'topicname' : topicname, 'testtype' : testtype, 'publishdate' : publishdate, 'maxscore' : maxscore, 'passscore' : passscore, 'testlinkid' : testlinkid, 'countuserstaken' : countuserstaken}
             evaluatedtests.append(testdict)
+            totalrowscount += 1
     # Now we have all our data, so we populate the template and return it as response
-    contextdict = {'usertests' : usertests, 'ownedtests' : ownedtests, 'evaluatedtests' : evaluatedtests, 'displayname' : displayname, 'profileimage' : profileimage, 'useremail' : useremail, 'goodname' : goodname, 'useractive' : useractive, 'connectedid' : connecteduser.id, 'directconnectionflag' : directconnectionflag }
+    contextdict = {'usertests' : usertests, 'ownedtests' : ownedtests, 'evaluatedtests' : evaluatedtests, 'displayname' : displayname, 'profileimage' : profileimage, 'useremail' : useremail, 'goodname' : goodname, 'useractive' : useractive, 'connectedid' : connecteduser.id, 'directconnectionflag' : directconnectionflag, 'totalrowscount' : totalrowscount }
     tmpl = get_template("network/userprofile.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
@@ -5273,6 +5288,71 @@ def leavegroup(request):
         grpmemberobj.save()
     message = "You have successfully left the group."
     return HttpResponse(message)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def downloadattachment(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponse(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    attachmentwebpath, msgid, usid = "", -1, -1
+    if 'messageid' in request.POST.keys():
+        try:
+            msgid = int(request.POST['messageid'])
+        except:
+            pass
+    if 'attachmentpath' in request.POST.keys():
+        attachmentwebpath = request.POST['attachmentpath']
+    if 'uid' in request.POST.keys():
+        try:
+            usid = int(request.POST['uid'])
+        except:
+            pass
+    if attachmentwebpath == "" or msgid == -1 or usid == -1:
+        message = "Error: One or more required parameters are missing."
+        return HttpResponse(message)
+    # Check if the user from session and passed user id are the same
+    if usid != userobj.id:
+        message = "Error: Can't allow access to content as we could not ascertain your identity. Please login again and try."
+        return HttpResponse(message)
+    # Check if the given message/post belongs to the user or if the user is the person who posted it.
+    postobj = None
+    try:
+        postobj = Post.objects.get(id=msgid)
+    except:
+        message = "Error: Something failed while retrieving the content - %s"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    if postobj.poster != userobj and postobj.posttargetuser != userobj:
+        message = "Error: You are not authorized to access this content."
+        return HttpResponse(message)
+    # If we are here, then we can provide the user with whatever she/he wants.
+    attachmentwebpath = attachmentwebpath.replace("media", "userdata")
+    attachmentsyspath = mysettings.BASE_PATH + os.path.sep + attachmentwebpath
+    mimetype = mimetypes.MimeTypes().guess_type(attachmentsyspath)[0]
+    if not mimetype:
+        mimetype = "application/octet-stream"
+    # Caution: File may not exist if we have purged some items due to lack of space
+    afcontent = ""
+    try:
+        afb = open(attachmentsyspath, "rb")
+        afcontent = afb.read()
+        afb.close()
+    except:
+        message = "Error: Could not find the file referenced. Possibly it has been purged."
+        return HttpResponse(message)
+    response = HttpResponse(afcontent)
+    response['Content-Type'] = mimetype
+    filesize = os.path.getsize(attachmentsyspath)
+    response['Content-Length'] = filesize
+    response['Content-Disposition'] = "attachment;filename= '%s'"%os.path.basename(attachmentsyspath)
+    return response
+
 
 
 
