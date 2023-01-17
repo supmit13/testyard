@@ -82,6 +82,7 @@
 <br/><br/>
 <div id='ctrldiv'>
 <form name='ctrlfrm' id='ctrlfrm' method='GET' action=''>
+<input type='hidden' name='targetusername' id='targetusername' value='{{displayname}}'>
 {% csrf_token %}
 <center><input type='button' name='btnclose' id='btnclose' value='Close' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='width:150px;height:38px;color:#0000aa;font-size:smaller;text-align:center;background-color:#99ccff;font-weight:bold;'>&nbsp;&nbsp;<input type='button' name='btnblock' id='btnblock' value='Block User' onClick='javascript:blockuser();' class='btn btn-primary' style='width:150px;height:38px;color:#ffffcc;font-size:smaller;text-align:center;font-weight:bold;'>&nbsp;&nbsp;<input type='button' name='btnremoveconn' id='btnremoveconn' value='Remove Connection' onClick='javascript:removeconn();' class='btn btn-primary' style='width:150px;height:38px;color:#ffffcc;font-size:smaller;text-align:center;font-weight:bold;'></center>
 </form>
