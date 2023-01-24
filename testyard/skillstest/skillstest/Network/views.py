@@ -4301,15 +4301,15 @@ def manageownedgroups(request):
         inrtousdqset = ExchangeRates.objects.filter(curr_from='INR', curr_to='USD').order_by("-dateofrate")
         plntousdqset = ExchangeRates.objects.filter(curr_from='PLN', curr_to='USD').order_by("-dateofrate")
         eurtousdqset = ExchangeRates.objects.filter(curr_from='EUR', curr_to='USD').order_by("-dateofrate")
-        inrexchgrate = 1
-        plnexchgrate = 1
-        eurexchgrate = 1
+        inrexchgrate = 1.0
+        plnexchgrate = 1.0
+        eurexchgrate = 1.0
         if len(list(inrtousdqset)) > 0:
-            inrexchgrate = inrtousdqset[0]
+            inrexchgrate = float(inrtousdqset[0].conv_rate)
         if len(list(plntousdqset)) > 0:
-            plnexchgrate = plntousdqset[0]
+            plnexchgrate = float(plntousdqset[0].conv_rate)
         if len(list(eurtousdqset)) > 0:
-            eurexchgrate = eurtousdqset[0]
+            eurexchgrate = float(eurtousdqset[0].conv_rate)
         for transobj in paidtransactionsqset:
             if transobj.currency == 'USD':
                 earnings += transobj.amount
