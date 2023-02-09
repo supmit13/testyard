@@ -1,0 +1,25 @@
+<table border=0 cellspacing='2' cellpadding='3' style='width:1200px;'>
+<tr bgcolor='#00ccff'>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Group Profile Photo</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Group Name</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Tagline</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Topic</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Members</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Status</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Paid</td>
+    <td  style='padding-left:5px;color:#0000AA;font-weight:bold;font-size:0.9em;' valign='top'>Owned By</td>
+</tr>
+
+{% for grpname, otherattribs in resultrecs.items %}
+<tr bgcolor='#99ffcc'>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'><img src='{{otherattribs.groupimage}}' width='35' height='35'></td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'><a href='#/' onClick='javascript:displaygroupsdata("{{otherattribs.groupid}}");'>{{grpname}}</a></td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.tagline}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.topic}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.memberscount}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.status}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.ispaid}}</td>
+    <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.ownername}}</td>
+</tr>
+{% endfor %}
+</table>

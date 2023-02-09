@@ -39,7 +39,9 @@ from itertools import chain
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates
-from skillstest.Tests.views import get_user_tests, iseditable                                                                                                                                                                                                      
+from skillstest.Tests.views import get_user_tests, iseditable
+from skillstest.Network.models import Connection, ConnectionInvitation, GroupMember, Group
+                                                  
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -56,6 +58,7 @@ def advsearch(request):
     tests_user_dict['usersearchurl'] = mysettings.USER_SEARCH_URL
     tests_user_dict['searchtestinfourl'] = mysettings.SEARCH_TEST_INFO_URL
     tests_user_dict['displaytestchallenges'] = mysettings.DISPLAY_SEARCHED_CHALLENGES_URL
+    tests_user_dict['groupsearchurl'] = mysettings.GOUP_SEARCH_URL
     inc_context = skillutils.includedtemplatevars("Search", request)
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
@@ -192,6 +195,65 @@ def testschallengesearch(request):
     cxt = Context(datadict)
     testrecordshtml = tmpl.render(cxt)
     return HttpResponse(testrecordshtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def groupsearch(request):
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.TESTS_CHALLENGE_SEARCH_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    partialgroupname = ""
+    if request.POST.has_key('groupname'):
+        partialgroupname = request.POST['groupname']
+    resultrecs = {}
+    datadict = {}
+    # Conduct search here...
+    matchedbynamegroups = Group.objects.filter(groupname__icontains=partialgroupname)
+    matchedbytaglinegroups = Group.objects.filter(tagline__icontains=partialgroupname)
+    matchedbydescgroups = Group.objects.filter(description__icontains=partialgroupname)
+    for grp in matchedbynamegroups:
+        grpname = grp.groupname
+        grptagline = grp.tagline
+        memberscount = grp.memberscount
+        ownername = grp.owner.displayname
+        grptopic = grp.basedontopic
+        grpstatus = grp.status
+        grppaid = grp.ispaid
+        grpimg = "/media/%s/groups/%s/"%(ownername, grpname) + str(grp.groupimagefile)
+        resultrecs[grpname] = {'groupname' : grpname, 'tagline' : grptagline, 'memberscount' : memberscount, 'ownername' : ownername, 'topic' : grptopic, 'status' : grpstatus, 'ispaid' : grppaid, 'groupimage' : grpimg, 'groupid' : grp.id}
+    for grp in matchedbytaglinegroups:
+        grpname = grp.groupname
+        grptagline = grp.tagline
+        memberscount = grp.memberscount
+        ownername = grp.owner.displayname
+        grptopic = grp.basedontopic
+        grpstatus = grp.status
+        grppaid = grp.ispaid
+        grpimg = "/media/%s/groups/%s/"%(ownername, grpname) + str(grp.groupimagefile)
+        resultrecs[grpname] = {'groupname' : grpname, 'tagline' : grptagline, 'memberscount' : memberscount, 'ownername' : ownername, 'topic' : grptopic, 'status' : grpstatus, 'ispaid' : grppaid, 'groupimage' : grpimg, 'groupid' : grp.id}
+    for grp in matchedbydescgroups:
+        grpname = grp.groupname
+        grptagline = grp.tagline
+        memberscount = grp.memberscount
+        ownername = grp.owner.displayname
+        grptopic = grp.basedontopic
+        grpstatus = grp.status
+        grppaid = grp.ispaid
+        grpimg = "/media/%s/groups/%s/"%(ownername, grpname) + str(grp.groupimagefile)
+        resultrecs[grpname] = {'groupname' : grpname, 'tagline' : grptagline, 'memberscount' : memberscount, 'ownername' : ownername, 'topic' : grptopic, 'status' : grpstatus, 'ispaid' : grppaid, 'groupimage' : grpimg, 'groupid' : grp.id}
+    datadict['resultrecs'] = resultrecs
+    tmpl = get_template("advsearch/grouprecords.html")
+    cxt = Context(datadict)
+    userrecordshtml = tmpl.render(cxt)
+    return HttpResponse(userrecordshtml)
 
 
 @skillutils.is_session_valid

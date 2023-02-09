@@ -81,6 +81,33 @@
 		    xmlhttp.send(postdata);
 		}
 
+		function conductsearchgroup(){
+		    groupname = document.frmadvsearch.grpname.value;
+		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
+		    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + csrftoken;
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+		    	xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+		    	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    xmlhttp.onreadystatechange = function(){
+  		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    		            divres = document.getElementById('searchresults');
+			    divres.innerHTML = "";
+			    divres.style.display = "";
+                            divres.style = "padding-left:10px;padding-right:10px;";
+			    responsedata = xmlhttp.responseText;
+			    divres.innerHTML = responsedata;
+  		        }
+  		    };
+		    //alert(postdata);
+		    xmlhttp.open("POST", '{{ groupsearchurl }}', true);
+		    xmlhttp.send(postdata);
+		}
+
+
 		function copytest(testid){
 		    // Displays the interface which allows the logged in user to request an invitation from the creator of the test.
 		    var xmlhttp;
@@ -100,6 +127,11 @@
 		    };
 		    xmlhttp.open("POST", '{{ copytesturl }}', true);
 		    xmlhttp.send(postdata);
+		}
+
+
+		function displaygroupsdata(grpid){
+
 		}
 
 
@@ -235,6 +267,12 @@
 			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Enter Username:</label></td><td><input type='text' name='username' value='' id='username'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
 			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Search Phrase:</label></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
 			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'  class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr>
+
+			<tr><td colspan=3><hr></td></tr>
+			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Groups</font></td></tr>
+			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Enter Group Name:</label></td><td><input type='text' name='grpname' value='' id='grpname'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
+			<!-- <tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Search Phrase:</label></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr> -->
+			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchgroup' id='searchgroup' onClick='javascript:conductsearchgroup();' value='Search Groups' class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr>
 			</table>
 
 			{% csrf_token %}
