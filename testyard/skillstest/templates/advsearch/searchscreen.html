@@ -14,16 +14,18 @@
 	
 	{% include "inc/mission_statement.html" %}
 		<style>
-		.glowing-border {
-		    border: 2px solid #000088;
-		    border-radius: 4px;
+		.divbox {
+		  box-sizing: content-box;
+		  width: 700px;
+		  height: 1000px;
+		  border: 3px solid blue;
+		  padding: 40px;
+		  border-radius: 12px;
+		  float: left;
+		  background-color:#e6e6ff;
 		}
 
-		.glowing-border:focus { 
-		    outline: none;
-		    border-color: #9ecaed;
-		    box-shadow: 0 0 10px #9ecaed;
-		}
+		#more {display: none;}
 		</style>
 		<!-- ### Post Entry Begin ###  -->
 		<script type='text/javascript'>
@@ -130,6 +132,24 @@
 		}
 
 
+		function readmorecontent(){
+		    var dots = document.getElementById("dots");
+		    var moretext = document.getElementById("more");
+		    var anchor = document.getElementById("readmoreanchor");
+
+		    if (dots.style.display === "none") {
+		      dots.style.display = "inline";
+		      anchor.innerHTML = "Read more";
+		      moretext.style.display = "none";
+		    } 
+		    else {
+		      dots.style.display = "none";
+		      anchor.innerHTML = "Read less";
+		      moretext.style.display = "inline";
+		    }
+		}
+
+
 		function displaygroupsdata(grpid){
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
@@ -143,10 +163,10 @@
 		    xmlhttp.onreadystatechange = function(){
 		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
                           divscr = document.getElementById('transscreens2');
-			  divscr.style = "display:;padding-left:10px;padding-right:10px;";
-			  divscr.style.height = "80%;";
-			  divscr.style.width = "40%;";
-			  htmlcontent = "<div class='container'>";
+			  divscr.style = "display:;padding-left:50px;padding-right:10px;";
+			  divscr.style.height = "60%;";
+			  divscr.style.width = "25%;";
+			  htmlcontent = "<div class='container divbox'>";
 			  jsoncontent = JSON.parse(xmlhttp.responseText);
 			  //alert(xmlhttp.responseText);
                           htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Group Name: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent['groupname'] + "</div></div>";
@@ -157,10 +177,49 @@
 				  continue;
 				}
 				if(fieldname == 'description'){
-				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				    first40characters = jsoncontent[fieldname].substring(0,40);
+				    remainingdescription = jsoncontent[fieldname].substring(40,jsoncontent[fieldname].length);
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Description: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;white-space:pre-wrap;word-wrap:break-word;'>" + first40characters + "<span id='dots'>...</span><span id='more'>" + remainingdescription + "</span><a href='#/' onclick='readmorecontent()' id='readmoreanchor'>Read more</a></div></div>";
 				}
 				else if(fieldname == 'groupimage'){
-				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Group Profile Image: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'><img src='" + jsoncontent[fieldname] + "' style='width:150px;height:100px;'></div></div>";
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Group Profile Image: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'><img src='" + jsoncontent[fieldname] + "' style='width:150px;height:100px;'></div></div>";
+				}
+				else if(fieldname == 'memberscount'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Number of Members: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else if(fieldname == 'tagline'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Tagline: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else if(fieldname == 'status'){
+				    if(jsoncontent[fieldname] == true){
+				        htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Status: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>Open</div></div>";
+				    }
+				    else{
+					htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Status: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>Closed</div></div>";
+				    }
+				}
+				else if(fieldname == 'owner'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Owner's Username: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else if(fieldname == 'topic'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Topic of Group: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else if(fieldname == 'createdon'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Created On: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else if(fieldname == 'ispaid'){
+				    if(jsoncontent[fieldname] == true){
+				        htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Paid: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>Yes</div></div>";
+				    }
+				    else{
+					htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Paid: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>No</div></div>";
+				    }
+				}
+				else if(fieldname == 'entryfee'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Entry Fee *: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else if(fieldname == 'subscriptionfee'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Subscription Fee *: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
 				}
 				else{
 				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent[fieldname] + "</div></div>";
@@ -168,7 +227,7 @@
 				htmlcontent += "<div class='row'><hr></div>";
 			    }
 			  }
-			  htmlcontent += "<br/><div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'><input type='button' name='closegroupdata' id='closegroupdata' value='Close' class='btn btn-testyard1' style='width:80px;' onclick='javascript:closescreen();'></div><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>&nbsp;</div></div>";
+			  htmlcontent += "<br/><div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'><input type='button' name='closegroupdata' id='closegroupdata' value='Close' class='btn btn-primary' style='width:80px;' onclick='javascript:closescreen();'></div><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>&nbsp;</div></div>";
 			  htmlcontent += "</div>"; //container div ends here.
 			  divscr.innerHTML = htmlcontent;
 			  return (true);
