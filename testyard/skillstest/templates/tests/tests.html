@@ -28,6 +28,8 @@
 	    tex2jax: {inlineMath: [["\[","\]"],["\\(","\\)"]]}
 	  });
 	</script>
+	<!-- Math keyboard and resources from Mathlive library -->
+	<script src="https://unpkg.com/mathlive"></script>
          <!-- Datetime Picker for Start and End activities -->
 	<link rel="stylesheet" type="text/css" href="static/css/jquery.datetimepicker.css">
 
@@ -418,6 +420,37 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    return(false);
 		  }
 		  return(true);
+		}
+
+
+		function getmathenv(){
+		  var ismathenv = false;
+		  //alert(document.getElementById('mathenv').checked);
+		  ismathenv = document.getElementById('mathenv').checked;
+		  if(ismathenv == true){
+		    var statementctrl = document.getElementById('statement');
+		    var mathfieldctrl = document.createElement('math-field');
+		    mathfieldctrl.name = statementctrl.name;
+		    mathfieldctrl.id = statementctrl.id;
+		    mathfieldctrl.value = statementctrl.value;
+		    mathfieldctrl.className = statementctrl.className;
+		    document.body.style.setProperty("--keyboard-background", "#0080ff");
+		    document.body.style.setProperty("--keyboard-zindex", "12000");
+		    mathfieldctrl.virtualKeyboardMode = 'onfocus';
+		    statementctrl.parentNode.replaceChild(mathfieldctrl, statementctrl);
+		    mathfieldctrl.focus();
+		  }
+		  else{
+		    var statementctrl = document.getElementById('statement');
+		    var textareactrl = document.createElement('textarea');
+		    textareactrl.name = statementctrl.name;
+		    textareactrl.id = statementctrl.id;
+		    textareactrl.value = statementctrl.value;
+		    textareactrl.className = statementctrl.className;
+		    textareactrl.style = 'width:300px;height:100px;';
+		    statementctrl.parentNode.replaceChild(textareactrl, statementctrl);
+		    textareactrl.focus();
+		  }
 		}
 
 		function createtest(usrid, createtesturl, editflag){
@@ -876,7 +909,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      var publishedregex = new RegExp("published");
 		      if(publishedregex.test(xmlhttp.responseText)){
 		        opresdiv = document.getElementById('opres');
-		        opresdiv.style = "height:1050px;width:1200px;padding-left:20px;padding-right:20px;display:flex-right;";
+		        opresdiv.style = "width:1200px;padding-left:20px;padding-right:20px;display:flex-right;";
 		        opresdiv.innerHTML = xmlhttp.responseText;
 		        return (false);
 		      }

@@ -33,9 +33,13 @@ function validateinput(){
 		    allelements[i].value = allelements[i].value + ":00"
 		}
 		else{
-	 	    alert("Date format should be yyyy-mm-dd hh:mm:ss");
-		    allelements[i].focus();
-		    return (false);
+		    currentdatetime = new Date();
+                    givendatetime = new Date(allelements[i].value);
+                    if (currentdatetime < givendatetime){ // If the datetime is in future, this is the time to fix it.
+	 	        alert("Date format should be yyyy-mm-dd hh:mm:ss");
+		        allelements[i].focus();
+		        return (false);
+		    }
 		}
 	    }
             
