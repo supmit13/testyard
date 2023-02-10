@@ -58,7 +58,8 @@ def advsearch(request):
     tests_user_dict['usersearchurl'] = mysettings.USER_SEARCH_URL
     tests_user_dict['searchtestinfourl'] = mysettings.SEARCH_TEST_INFO_URL
     tests_user_dict['displaytestchallenges'] = mysettings.DISPLAY_SEARCHED_CHALLENGES_URL
-    tests_user_dict['groupsearchurl'] = mysettings.GOUP_SEARCH_URL
+    tests_user_dict['groupsearchurl'] = mysettings.GROUP_SEARCH_URL
+    tests_user_dict['groupdataurl'] = mysettings.GROUP_DATA_URL
     inc_context = skillutils.includedtemplatevars("Search", request)
     for inc_key in inc_context.keys():
         tests_user_dict[inc_key] = inc_context[inc_key]
@@ -250,10 +251,44 @@ def groupsearch(request):
         grpimg = "/media/%s/groups/%s/"%(ownername, grpname) + str(grp.groupimagefile)
         resultrecs[grpname] = {'groupname' : grpname, 'tagline' : grptagline, 'memberscount' : memberscount, 'ownername' : ownername, 'topic' : grptopic, 'status' : grpstatus, 'ispaid' : grppaid, 'groupimage' : grpimg, 'groupid' : grp.id}
     datadict['resultrecs'] = resultrecs
+    datadict['groupdataurl'] = mysettings.GROUP_DATA_URL
     tmpl = get_template("advsearch/grouprecords.html")
     cxt = Context(datadict)
     userrecordshtml = tmpl.render(cxt)
     return HttpResponse(userrecordshtml)
+
+
+def getgroupdata(request):
+    message = ''
+    if request.method != "POST": 
+        message = error_msg('1004')
+        response = HttpResponse(json.dumps({'err' : message}))
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    groupid = -1
+    if not request.POST.has_key('groupid'):
+        message = error_msg('1085')
+        response = HttpResponse(json.dumps({'err' : message}))
+        return response
+    groupid = request.POST.get('groupid')
+    grpobj = None
+    try:
+        grpobj = Group.objects.get(id=groupid)
+        if not grpobj:
+            message = error_msg('1086')
+            response = HttpResponse(json.dumps({'err' : message}))
+            return response
+    except:
+        message = sys.exc_info()[1].__str__()
+        response = HttpResponse(json.dumps({'err' : message}))
+        return response
+    groupdict = {'groupname' : grpobj.groupname, 'owner' : grpobj.owner.displayname, 'tagline' : grpobj.tagline, 'memberscount' : str(grpobj.memberscount), 'topic' : grpobj.basedontopic, 'status' : grpobj.status, 'createdon' : str(grpobj.creationdate.year) + '-' + str(grpobj.creationdate.month) + '-' + str(grpobj.creationdate.day) + ' ' + str(grpobj.creationdate.hour) + ':' + str(grpobj.creationdate.minute) + ':' + str(grpobj.creationdate.second) + ' ' + str(grpobj.creationdate.tzinfo), 'groupimage' : "/media/%s/groups/%s/"%(grpobj.owner.displayname, grpobj.groupname) + str(grpobj.groupimagefile), 'ispaid' : grpobj.ispaid, 'entryfee' : grpobj.currency + " " + str(grpobj.entryfee), 'subscriptionfee' : grpobj.currency + " " + str(grpobj.subscription_fee), 'subscriptionperiod' : str(grpobj.subscriptionperiod), 'description' : grpobj.description}
+    jsoncontent = json.dumps(groupdict)
+    response = HttpResponse(jsoncontent)
+    return response
 
 
 @skillutils.is_session_valid

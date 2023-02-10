@@ -131,7 +131,48 @@
 
 
 		function displaygroupsdata(grpid){
-
+		    var xmlhttp;
+		    if (window.XMLHttpRequest){
+			xmlhttp=new XMLHttpRequest();
+		    }
+		    else{
+			xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+		    }
+		    postdata = "groupid=" + grpid + "&csrfmiddlewaretoken=" + document.frmadvsearch.csrfmiddlewaretoken.value;
+		    //alert('{{ groupdataurl }}');
+		    xmlhttp.onreadystatechange = function(){
+		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+                          divscr = document.getElementById('transscreens2');
+			  divscr.style = "display:;padding-left:10px;padding-right:10px;";
+			  divscr.style.height = "80%;";
+			  divscr.style.width = "40%;";
+			  htmlcontent = "<div class='container'>";
+			  jsoncontent = JSON.parse(xmlhttp.responseText);
+			  //alert(xmlhttp.responseText);
+                          htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Group Name: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent['groupname'] + "</div></div>";
+			  htmlcontent += "<div class='row'><hr></div>";
+			  for(const fieldname in jsoncontent){
+			    if(jsoncontent.hasOwnProperty(fieldname)){
+				if(fieldname == 'groupname'){
+				  continue;
+				}
+				if(fieldname == 'description'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				else{
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent[fieldname] + "</div></div>";
+				}
+				htmlcontent += "<div class='row'><hr></div>";
+			    }
+			  }
+			  htmlcontent += "<br/><div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'><input type='button' name='closegroupdata' id='closegroupdata' value='Close' class='btn btn-testyard1' style='width:80px;' onclick='javascript:closescreen();'></div><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>&nbsp;</div></div>";
+			  htmlcontent += "</div>"; //container div ends here.
+			  divscr.innerHTML = htmlcontent;
+			  return (true);
+		      }
+		    };
+		    xmlhttp.open("POST", '{{ groupdataurl }}', true);
+		    xmlhttp.send(postdata);
 		}
 
 
