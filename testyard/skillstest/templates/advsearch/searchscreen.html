@@ -159,6 +159,9 @@
 				if(fieldname == 'description'){
 				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
 				}
+				else if(fieldname == 'groupimage'){
+				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Group Profile Image: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'><img src='" + jsoncontent[fieldname] + "' style='width:150px;height:100px;'></div></div>";
+				}
 				else{
 				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent[fieldname] + "</div></div>";
 				}
