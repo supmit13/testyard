@@ -2153,7 +2153,10 @@ def showuserview(request):
     challenge_dict['challengenegativescore'] = challengenegativescore
     challenge_dict['maxtimeallowed'] = maxtimeallowed
     challenge_dict['usermustrespondresp'] = 'No'
-    challenge_dict['mathenv'] = challengeobj.mathenv
+    if challengeobj.mathenv == True:
+        challenge_dict['mathenv'] = 1
+    else:
+        challenge_dict['mathenv'] = 0
     if usermustrespond:
         challenge_dict['usermustrespondresp'] = 'Yes'
     challenge_dict['additionalurl'] = challengeobj.additionalurl
@@ -2737,7 +2740,10 @@ def showtestcandidatemode(request):
         challengesdict[statement]['oneormore'] = challenge.oneormore
         challengesdict[statement]['chid'] = challenge.id
         challengesdict[statement]['progenv'] = challenge.test.progenv
-        challengesdict[statement]['mathenv'] = challenge.mathenv
+        if challenge.mathenv == True:
+            challengesdict[statement]['mathenv'] = 1
+        else:
+            challengesdict[statement]['mathenv'] = 0
         challengesdict[statement]['maxresponsesizeallowable'] = challenge.maxresponsesizeallowable
         if challenge.maxresponsesizeallowable == "" or challenge.maxresponsesizeallowable == -1:
             challengesdict[statement]['maxresponsesizeallowable'] = mysettings.MAXRESPONSECHARCOUNT

@@ -160,13 +160,26 @@ div.sec {
   });
 </script>
 <script src="static/mathlib/math.min.js"></script>
-<script type="text/javascript" async src="static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+<script type="text/javascript" async src="static/MathJax/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<!-- Math keyboard and resources from Mathlive library -->
+<script type="module">
+import('https://unpkg.com/mathlive?module');
 </script>
 <script>
 function displayMathExprCandidateUserView(){
     mathexprcdusvwdiv = document.getElementById('mathexprcdusvw');
     txtContents = mathexprcdusvwdiv.innerHTML; 
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprcdusvwdiv]);
+    {% if mathenv == 1 %}
+    import('https://unpkg.com/mathlive?module').then((mathlive) => {
+	mathformatting = mathlive.convertLatexToMarkup(txtContents);
+	mathformatting = mathformatting.replace(/\</g, "&lt;");
+	mathformatting = mathformatting.replace(/\>/g, "&gt;");
+	mathexprcdusvwdiv.innerHTML = mathformatting;
+    });
+    userviewform = document.getElementById('frmchallenge');
+    userviewform.onmouseover = 'javascript:void(0);';
+    {% endif %}
+    //MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprcdusvwdiv]);
 }
 </script>
         
@@ -1849,9 +1862,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         if (lbmatch && lbmatch.length > 1){
             challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__") // for logic behind this, check above. Look for "&amp;quot;"
         }
-        //challengetext = challengetext.replace(/>/g, "&gt;");
-        //challengetext = challengetext.replace(/</g, "&lt;");
-        pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
+	pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
         if(jsonobj.challenges[challenge].mediafile != null && jsonobj.challenges[challenge].mediafile != ''){
             var imgpath = "media/" + jsonobj.creator + "/tests/" + jsonobj.testid + "/" + jsonobj.challenges[challenge].mediafile;
             pages[pagectr][0] += "<img src='" + imgpath + "' height='200' width='300'><br />";
