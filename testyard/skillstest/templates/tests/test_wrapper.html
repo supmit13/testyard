@@ -168,13 +168,20 @@ import('https://unpkg.com/mathlive?module');
 <script>
 function displayMathExprCandidateUserView(){
     mathexprcdusvwdiv = document.getElementById('mathexprcdusvw');
-    txtContents = mathexprcdusvwdiv.innerHTML; 
+    if(mathexprcdusvwdiv){
+        txtContents = mathexprcdusvwdiv.innerHTML; 
+    }
+    else{
+        txtContents = "";
+    }
     {% if mathenv == 1 %}
     import('https://unpkg.com/mathlive?module').then((mathlive) => {
 	mathformatting = mathlive.convertLatexToMarkup(txtContents);
 	mathformatting = mathformatting.replace(/\</g, "&lt;");
 	mathformatting = mathformatting.replace(/\>/g, "&gt;");
-	mathexprcdusvwdiv.innerHTML = mathformatting;
+        if(mathexprcdusvwdiv){
+	    mathexprcdusvwdiv.innerHTML = mathformatting;
+	}
     });
     userviewform = document.getElementById('frmchallenge');
     userviewform.onmouseover = 'javascript:void(0);';

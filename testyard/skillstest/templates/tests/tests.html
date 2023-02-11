@@ -52,10 +52,11 @@
 	}
 
 
-        function displayMathExprChallengeUserView(){
+        function displayMathExprChallengeUserView(menv){
             //alert("HELLO");
 	    mathexprchusvwdiv = document.getElementById('mathexprchusvw');
 	    txtContents = mathexprchusvwdiv.innerHTML;
+	    if(menv == 'True'){
 	    import('https://unpkg.com/mathlive?module').then((mathlive) => {
 		mathformatting = mathlive.convertLatexToMarkup(txtContents);
 		mathformatting = mathformatting.replace(/\</g, "&lt;");
@@ -64,6 +65,7 @@
       	    });
 	    userviewform = document.getElementById('frmuserview');
 	    userviewform.onmouseover = 'javascript:void(0);';
+	    }
 	    //MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprchusvwdiv]);
 	}
 
