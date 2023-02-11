@@ -1319,6 +1319,8 @@ def edit(request):
         oneormore = request.POST['oneormore']
     if request.POST.has_key('skillquality'):
         challengeobj.challengequality = request.POST['skillquality']
+    if request.POST.has_key('mathenv'):
+        challengeobj.mathenv = request.POST['mathenv']
     if request.POST.has_key('extresourceurl'):
         challengeobj.additionalurl = request.POST['extresourceurl']
     # Now let us get the available options for 'MULT' type test
@@ -1443,6 +1445,7 @@ def testsummary(request):
         challenge['challengetype'] = mysettings.TEST_TYPES[chlng.challengetype]
         challenge['timeframe'] = chlng.timeframe
         challenge['mediafile'] = chlng.mediafile
+        challenge['mathenv'] = chlng.mathenv
         challenge['mediafileshortname'] = challenge['mediafile']
         if not challenge['mediafile']:
             challenge['mediafileshortname'] = ""
@@ -2150,6 +2153,7 @@ def showuserview(request):
     challenge_dict['challengenegativescore'] = challengenegativescore
     challenge_dict['maxtimeallowed'] = maxtimeallowed
     challenge_dict['usermustrespondresp'] = 'No'
+    challenge_dict['mathenv'] = challengeobj.mathenv
     if usermustrespond:
         challenge_dict['usermustrespondresp'] = 'Yes'
     challenge_dict['additionalurl'] = challengeobj.additionalurl
@@ -2221,6 +2225,10 @@ def editchallenge(request):
         prevscore = chlng.challengescore
     challenge_dict['challengeid'] = challengeid
     challenge_dict['statement'] = challengeobj.statement
+    if challengeobj.mathenv == True:
+        challenge_dict['mathenv'] = "checked"
+    else:
+        challenge_dict['mathenv'] = ""
     challenge_dict['multimediareqd'] = testobj.multimediareqd
     challenge_dict['negativescoring'] = testobj.negativescoreallowed
     challenge_dict['testtype'] = testobj.testtype
@@ -2729,6 +2737,7 @@ def showtestcandidatemode(request):
         challengesdict[statement]['oneormore'] = challenge.oneormore
         challengesdict[statement]['chid'] = challenge.id
         challengesdict[statement]['progenv'] = challenge.test.progenv
+        challengesdict[statement]['mathenv'] = challenge.mathenv
         challengesdict[statement]['maxresponsesizeallowable'] = challenge.maxresponsesizeallowable
         if challenge.maxresponsesizeallowable == "" or challenge.maxresponsesizeallowable == -1:
             challengesdict[statement]['maxresponsesizeallowable'] = mysettings.MAXRESPONSECHARCOUNT

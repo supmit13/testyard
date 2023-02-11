@@ -225,6 +225,7 @@ class Challenge(models.Model):
     testlinkid = models.CharField(max_length=200, null=False, blank=False)
     oneormore = models.NullBooleanField(default=True)
     proglang = models.CharField(max_length=200, default='', null=True,blank=True)
+    mathenv = models.BooleanField(default=False)
 
     class Meta:
         verbose_name = "Challenge Table"

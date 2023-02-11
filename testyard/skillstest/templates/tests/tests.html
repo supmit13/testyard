@@ -431,6 +431,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var statementctrl = document.getElementById('statement');
 		    var mathfieldctrl = document.createElement('math-field');
 		    mathfieldctrl.name = statementctrl.name;
+		    //alert(mathfieldctrl.name);
 		    mathfieldctrl.id = statementctrl.id;
 		    mathfieldctrl.value = statementctrl.value;
 		    mathfieldctrl.className = statementctrl.className;
@@ -953,10 +954,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		function validatechallengedata(){
 		  numericpattern = new RegExp("^[\\d\.]*$");
 		  // Challenge statement can't be empty.
-		  if(document.challengeform.statement.value.trim() == ""){
+		  statementcontrol = document.getElementById('statement');
+		  //alert(statementcontrol.value);
+		  if(statementcontrol.value.trim() == ""){
 		    alert("Challenge statement can't be empty.");
-		    document.challengeform.statement.value = "";
-		    document.challengeform.statement.focus();
+		    statementcontrol.value = "";
+		    statementcontrol.focus();
 		    return false;
 		  }
 		  if(document.challengeform.challengescore.type == 'text' && document.challengeform.evendistribution.value != 1){
@@ -1006,7 +1009,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 		function savechallenge(usrid){
+		  statementcontrol = document.getElementById('statement');
 		  var postdata = new FormData(document.forms.namedItem("challengeform"));
+		  postdata.append("statement", statementcontrol.value);
 		  var xmlhttp;
   		  if (window.XMLHttpRequest){
     		    xmlhttp=new XMLHttpRequest();
