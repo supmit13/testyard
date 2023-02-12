@@ -166,7 +166,7 @@ div.sec {
 import('https://unpkg.com/mathlive?module');
 </script>
 <script>
-function displayMathExprCandidateUserView(){
+function displayMathExprCandidateUserView(menv){
     mathexprcdusvwdiv = document.getElementById('mathexprcdusvw');
     if(mathexprcdusvwdiv){
         txtContents = mathexprcdusvwdiv.innerHTML; 
@@ -174,7 +174,7 @@ function displayMathExprCandidateUserView(){
     else{
         txtContents = "";
     }
-    {% if mathenv == 1 %}
+    if(menv == 1){
     import('https://unpkg.com/mathlive?module').then((mathlive) => {
 	mathformatting = mathlive.convertLatexToMarkup(txtContents);
 	mathformatting = mathformatting.replace(/\</g, "&lt;");
@@ -185,7 +185,7 @@ function displayMathExprCandidateUserView(){
     });
     userviewform = document.getElementById('frmchallenge');
     userviewform.onmouseover = 'javascript:void(0);';
-    {% endif %}
+    }
     //MathJax.Hub.Queue(['Typeset', MathJax.Hub, mathexprcdusvwdiv]);
 }
 </script>
@@ -1863,7 +1863,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         challengetext = challengetext.replace(/[\n]+/g, "<br>");
         challengetext = challengetext.replace(/\s/g, "&nbsp;");
 	challengetext = challengetext.replace(" ", "&nbsp;");
-        pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView();'><div id='infomsg'></div>";
+        pages[pagectr][0] = "<form name='frmchallenge' id='frmchallenge' method='POST' action='' onmouseover='javascript:displayMathExprCandidateUserView(" + jsonobj.challenges[challenge].mathenv.toString() + ");'><div id='infomsg'></div>";
         const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
         if (lbmatch && lbmatch.length > 1){

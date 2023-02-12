@@ -53,10 +53,10 @@
 
 
         function displayMathExprChallengeUserView(menv){
-            //alert("HELLO");
+            //alert(menv);
 	    mathexprchusvwdiv = document.getElementById('mathexprchusvw');
 	    txtContents = mathexprchusvwdiv.innerHTML;
-	    if(menv == 'True'){
+	    if(menv == 1){
 	    import('https://unpkg.com/mathlive?module').then((mathlive) => {
 		mathformatting = mathlive.convertLatexToMarkup(txtContents);
 		mathformatting = mathformatting.replace(/\</g, "&lt;");

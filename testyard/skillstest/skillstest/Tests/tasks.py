@@ -173,7 +173,10 @@ def process_answer_scripts():
             except:
                 for k in hex_to_ascii.keys():
                     challengestatement = challengestatement.replace(k, hex_to_ascii[k])
-                challengeobj = Challenge.objects.filter(test=testobj).filter(statement=challengestatement)[0]
+                challengequeryset = Challenge.objects.filter(test=testobj).filter(statement=challengestatement)
+                challengeobj = None
+                if challengequeryset.__len__() > 0:
+                    challengeobj = challengequeryset[0]
                 if not challengeobj:
                     print "Could not find the challenge '%s'"%challengestatement
                     continue 
