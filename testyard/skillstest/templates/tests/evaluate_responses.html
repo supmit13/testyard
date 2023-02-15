@@ -22,6 +22,10 @@
 	}
 	</script>
 
+<!-- Math keyboard and resources from Mathlive library -->
+<script type="module">
+import('https://unpkg.com/mathlive?module');
+</script>
 </head>
 
 <body bgcolor="#669999"><div style='color:#0000aa;'><h3>User's Responses</h3><br /><br /><form name="frmevalresp" method="POST" onmousemove="javascript:displayMathExprEvalRespView({{maxctr}});">
@@ -34,7 +38,14 @@
 		    {% cctr = 1 %}
 		    {% screen_deviation_count = 0  %}
 		    for (challenge in candidateresponse){
-		        <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}</div></pre></b></div>
+			if(candidateresponse[challenge].mathenv == false){
+		            <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}ddd</div></pre></b></div>
+			}
+                        else{
+			    import('https://unpkg.com/mathlive?module').then((mathlive) => {
+			    <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">mathlive.convertLatexToMarkup({{challenge}})</div></pre></b></div>
+			    }
+			}
 		        <input type='hidden' name='challengestatement_hidden' id='challengestatement_hidden' value='{{challenge}}'>
 			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
 			candidateresp = candidateresponse[challenge].answer;
@@ -45,8 +56,14 @@
 			}
 			candidaterespdecoded = decodeURIComponent(candidateresp);
 			-->
-			<br /><br /><b>Candidate's Response: </b><pre><div id="mathexprcdusvwcndtresp_{{cctr}}">{{candidateresp}}</div></pre>
-			
+			if({{candidateresponse[challenge].mathenv}} == false){
+			    <br /><br /><b>Candidate's Response: </b><pre><div id="mathexprcdusvwcndtresp_{{cctr}}">{{candidateresp}}</div></pre>
+			}
+			else{
+			    import('https://unpkg.com/mathlive?module').then((mathlive) => {
+			    <br /><br /><b>Candidate's Response: </b><pre><div id="mathexprcdusvwcndtresp_{{cctr}}">mathlive.convertLatexToMarkup({{candidateresp}})</div></pre>
+			    }
+			}
 			<br /><br /><b>Max Score: </b>{{candidateresponse[challenge].maxscore}}
 
 			<br /><br /><b>Negative Score: </b>{{candidateresponse[challenge].negativescore}}

@@ -1942,6 +1942,28 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    } \n \
 			}\n";
 		    html += "</scr" + "ipt>\n";
+		    html += "<scr" + "ipt" + ">\n";
+		    html += "function displayMathExprEvalRespView2(countresp){ \n \
+		        mathexprcdusvwdiv = document.getElementById('mathexprcdusvwcndtch_'+countresp.toString());\n \
+    			if(mathexprcdusvwdiv){ \n \
+        		  txtContents = mathexprcdusvwdiv.innerHTML; \n \
+			  txtContents = txtContents.replace(\"<pre>\", \"\");\n \
+			  txtContents = txtContents.replace(\"<\/pre>\", \"\"); \n \
+    			} \n \
+    			else{ \n \
+        		  txtContents = \"\";\n \
+    			}\n  ";
+		    html += "import('https://unpkg.com/mathlive?module').then((mathlive) => {\n \
+			mathformatting = mathlive.convertLatexToMarkup(txtContents); \n \
+			mathformatting = mathformatting.replace(/\</g, \"&lt;\"); \n \
+			mathformatting = mathformatting.replace(/\>/g, \"&gt;\"); \n \
+        		if(mathexprcdusvwdiv){\n \
+	    		    mathexprcdusvwdiv.innerHTML = mathformatting; \n \
+			}\n ";
+		    html += "});\n";
+		    html += "mathexprcdusvwdiv.onmousemove=void(0)";
+		    html += "}";
+		    html += "</scr" + "ipt>\n";
                     html += "</head>";
 		    html += "<body bgcolor=\"#669999\"><br />";
 		    html += "<div style='color:#CC0000;font-style:italic;font-weight:bold;padding-left:20px;padding-right:10px;padding-top:10px;padding-bottom:10px;font-size:14px;'>Note for evaluator: Candidate has deviated from the test screen " + responsedata.windowchangeattempts + " times during the course of the test. Total integrity is upon the discretion of the evaluator.</div><br />";
@@ -1956,7 +1978,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var separatorPattern = new RegExp("#||#");
 		    cctr = 1;
 		    for (challenge in candidateresponse){
-		        html += "<div id='challengestatement'><b><div id=\"mathexprcdusvwcndtch_" + cctr + "\"><pre>" + challenge + "</pre></div></b></div>";
+			//alert(JSON.stringify(candidateresponse[challenge]));
+			if(candidateresponse[challenge].mathenv == false){
+		            html += "<div id='challengestatement'><b><div id=\"mathexprcdusvwcndtch_" + cctr + "\"><pre>" + challenge + "</pre></div></b></div>";
+			}
+			else{
+			    html += "<div id='challengestatement'><b><div id=\"mathexprcdusvwcndtch_" + cctr + "\" onmousemove='displayMathExprEvalRespView2(" + cctr + ");'><pre>" + challenge + "</pre></div></b></div>";
+			}
 			// Write candidate's answer, max score, a text box where evaluator can enter her/his assessment, and a textarea for comments by evaluator.
 			candidateresp = candidateresponse[challenge].answer;
 			if(separatorPattern.test(candidateresp)){

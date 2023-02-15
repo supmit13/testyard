@@ -3717,7 +3717,6 @@ def evaluate(request):
             if ut.active and not ut.cancelled and ut.status == 2:
                 candidaterec = {'emailaddr' : ut.emailaddr, 'starttime' : str(ut.starttime), 'endtime' : str(ut.endtime), 'outcome' : ut.outcome, 'status' : ut.status, 'score' : ut.score, 'stringid' : ut.stringid, 'testurl' : ut.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'usertest', 'tabid' : ut.id, 'candidateresponse' : {}, 'evaltestcomment' : ut.evaluator_comment, 'evalcommitstate' : ut.evalcommitstate, 'disqualified' : ut.disqualified, 'windowchangeattempts' : ut.windowchangeattempts}
                 userresputqueryset = UserResponse.objects.filter(test=testobj, tabref='usertest', tabid=ut.id, emailaddr=ut.emailaddr)
-                
                 for userrespobj in userresputqueryset:
                     # Change for display of english statements in mathjax code starts here.
                     slashbracketpattern = re.compile("^.*\\]?([^\]\[]+)\\[.*$", re.DOTALL)
@@ -3744,7 +3743,7 @@ def evaluate(request):
                         userrespobj.answer = userrespobj.answer # Nothing changes. # We have not implemented with '$' delimiter.
                     
                     # Change for display of english statements in mathjax code ends here.
-                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks }
+                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks, 'mathenv' :  userrespobj.challenge.mathenv}
                 candidateresponses[ut.emailaddr + "####" + str(ut.id)] = candidaterec
         #fp.close()
         for wbu in wbuqset:
@@ -3752,7 +3751,7 @@ def evaluate(request):
                 candidaterec = {'emailaddr' : wbu.emailaddr, 'starttime' : str(wbu.starttime), 'endtime' : str(wbu.endtime), 'outcome' : wbu.outcome, 'status' : wbu.status, 'score' : wbu.score, 'stringid' : wbu.stringid, 'testurl' : wbu.testurl, 'testid' : testid, 'testname' : testobj.testname, 'tabref' : 'wouldbeusers', 'tabid' : wbu.id, 'candidateresponse' : {}, 'evaltestcomment' : wbu.evaluator_comment, 'evalcommitstate' : wbu.evalcommitstate, 'disqualified' : wbu.disqualified, 'windowchangeattempts' : wbu.windowchangeattempts}
                 userrespwbequeryset = UserResponse.objects.filter(test=testobj, tabref='wouldbeusers', tabid=wbu.id, emailaddr=wbu.emailaddr)
                 for userrespobj in userrespwbequeryset:
-                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks, 'windowchangeattempts' : wbu.windowchangeattempts }
+                    candidaterec['candidateresponse'][userrespobj.challenge.statement] = {'answer' : userrespobj.answer, 'responsedatetime' : skillutils.pythontomysqldatetime2(str(userrespobj.responsedatetime)), 'maxscore' : userrespobj.challenge.challengescore, 'negativescore' : userrespobj.challenge.negativescore, 'correctanswer' : userrespobj.challenge.responsekey, 'challengeid' : userrespobj.challenge.id, 'evaluation' : userrespobj.evaluation, 'evaluatorremarks' : userrespobj.evaluator_remarks, 'windowchangeattempts' : wbu.windowchangeattempts, 'mathenv' : userrespobj.challenge.mathenv }
                 candidateresponses[wbu.emailaddr + "####" + str(wbu.id)] = candidaterec
     return HttpResponse(base64.b64encode(json.dumps(candidateresponses)))
 
@@ -3842,6 +3841,7 @@ def showevaluationscr(request):
             candidateresponse['challenge_statement'][challenge_statement]['evaluatorremarks'] = usrrespobj.evaluator_remarks
             candidateresponse['challenge_statement'][challenge_statement]['evaluation'] = usrrespobj.evaluation
             candidateresponse['challenge_statement'][challenge_statement]['negativescore'] = challenge.negativescore
+            candidateresponse['challenge_statement'][challenge_statement]['mathenv'] = challenge.mathenv
             correctanswer = challenge.responsekey
             #fp.write(str(challenge_statement) + " #### " + str(challenge.challengescore) + " #### " + str(challenge.id) + " #### " + str(usrrespobj.evaluator_remarks) + " #### " + str(usrrespobj.evaluation) + " #### " + str(challenge.negativescore) + " #### " + candidateresponse['challengecounter'] + "\n\n")
             correctanswerlist = []
