@@ -322,6 +322,17 @@
 		}
 
 		</script>
+		<script>
+		function handlemathexpressions(ctr){
+		    tdelem = document.getElementById('mathcontent_' + ctr.toString());
+		    tdcontent = tdelem.innerHTML;
+		    import('https://unpkg.com/mathlive?module').then((mathlive) => {
+				mathformatting = mathlive.convertLatexToMarkup(tdcontent);
+				tdelem.innerHTML = mathformatting;
+				tdelem.onmousemove = 'javascript:void();';
+		      	    });
+		}
+		</script>
 		<style>
 		.box {
 		    width:300px;

@@ -27,7 +27,11 @@ hr.search {
 <tr><td colspan='10' style='width:100%;'><hr class='search'></td></tr>
 {% for challengeid in challengesdict %}
 <tr>
+    {% if challengesdict|dictlookup:challengeid|getval:11 == 1 %}
+    <td style='padding-left:10px;padding-top:10px;color:#0000AA;' id='mathcontent_{{forloop.counter}}' onmousemove='javascript:handlemathexpressions({{forloop.counter}});'>{{challengesdict|dictlookup:challengeid|getval:0}}</td>
+    {% else %}
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:0}}</td>
+    {% endif %}
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:1}}</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:2}}</td>
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;' nowrap>

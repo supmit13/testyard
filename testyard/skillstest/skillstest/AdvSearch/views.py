@@ -609,8 +609,11 @@ def displaychallenges(request):
         timeframe = challengeobj.timeframe
         challengequality = challengeobj.challengequality
         oneormore = challengeobj.oneormore
+        mathenv = 0
+        if challengeobj.mathenv == True:
+            mathenv = 1
         options = [challengeobj.option1, challengeobj.option2, challengeobj.option3, challengeobj.option4, challengeobj.option5, challengeobj.option6, challengeobj.option7, challengeobj.option8 ]
-        challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, options]
+        challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, options, mathenv]
         numchallenges += 1
     tmpl = get_template("advsearch/challengeslist.html")
     datadict = {'challengesdict' : challengesdict, 'numchallenges' : numchallenges }
