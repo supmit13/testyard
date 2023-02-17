@@ -5,8 +5,9 @@ hr.search {
 }
 </style>
 
-<div>
-&nbsp;&nbsp;<input type='button' name='close_ch_top' id='close_ut_top' onClick='javascript:closescreen();' value='Close'  class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;'>
+<div class='row'>
+<span class='column' style='font-weight:bold;color:#0000AA;padding-left:20px;padding-right:25px;font-size:x-large;display:flex;justify-content:flex-end;align-items:flex-end;'><u>{{testname}}</u></span>
+<span class='column' style='font-weight:bold;color:#0000AA;'>&nbsp;&nbsp;<input type='button' name='close_ch_top' id='close_ut_top' onClick='javascript:closescreen();' value='Close'  class="btn btn-primary" style='width:150px;margin-bottom:5px;padding-left:5px;display:inline-block;'></span>
 </div>
 <div style='padding-left:5px;padding-top:5px;color:#0000AA;'>
 <table border=0 cellspacing='2' cellpadding='3' style='width:90%;'>
@@ -52,9 +53,11 @@ hr.search {
     <td style='padding-left:10px;padding-top:10px;color:#0000AA;'>{{challengesdict|dictlookup:challengeid|getval:8}}</td>
 </tr>
 {% endfor %}
+<tr><td colspan='10' style='width:100%;'><hr class='search'></td></tr>
 </tbody>
 </table>
 </div>
-&nbsp;&nbsp;<input type='button' name='close_ch_top' id='close_ut_top' onClick='javascript:closescreen();' value='Close'  class='btn btn-primary' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;'>
+<div class='row'><span class='column'>&nbsp;</span>
+&nbsp;&nbsp;<input type='button' name='close_ch_top' id='close_ut_top' onClick='javascript:closescreen();' value='Close'  class='btn btn-primary' style='width:150px;margin-bottom:5px;padding-left:5px;display:inline-block;'></div>
 |#|{{numchallenges}}
 

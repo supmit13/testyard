@@ -616,7 +616,7 @@ def displaychallenges(request):
         challengesdict[str(challengeobj.id)] = [challengestatement, challengetype, challengescore, negativescore, responsekey, mediafile, additionalurl, timeframe, challengequality, oneormore, options, mathenv]
         numchallenges += 1
     tmpl = get_template("advsearch/challengeslist.html")
-    datadict = {'challengesdict' : challengesdict, 'numchallenges' : numchallenges }
+    datadict = {'challengesdict' : challengesdict, 'numchallenges' : numchallenges, 'testname' : testobj.testname }
     cxt = Context(datadict)
     challengesinfohtml = tmpl.render(cxt)
     return HttpResponse(challengesinfohtml)

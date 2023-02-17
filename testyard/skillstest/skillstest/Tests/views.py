@@ -1901,6 +1901,7 @@ def editexistingtest(request):
     create_test_dict['exist_test_id'] = testid
     create_test_dict['numchallenges'] = testobj.challengecount
     create_test_dict['createtesturl'] = skillutils.gethosturl(request) + '/' + mysettings.CREATE_TEST_URL
+    #create_test_dict['datepickercode'] = "<link rel='stylesheet' type='text/css' media='all' href='static/datepick/jsDatePick_ltr.min.css' /><script type='text/javascript' src='static/datepick/jsDatePick.min.1.3.js'></script><script>new JsDatePick({ useMode:2, target:'publishdate', dateFormat:'%d-%M-%Y', limitToToday : false });  new JsDatePick({ useMode:2, target:'activedate', dateFormat:'%d-%M-%Y', limitToToday : false });</script>"
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
     cxt = Context(create_test_dict)

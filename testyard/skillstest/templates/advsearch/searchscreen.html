@@ -326,8 +326,20 @@
 		function handlemathexpressions(ctr){
 		    tdelem = document.getElementById('mathcontent_' + ctr.toString());
 		    tdcontent = tdelem.innerHTML;
+		    //newcontent = tdcontent;
+		    tdparts = tdcontent.split(/\s+/);
+		    consecutivewords = "";
+		    newcontent = "";
+		    for(var i=0; i < tdparts.length;i++){
+			if(tdparts[i].match(/^\\+/)){
+			    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+			    consecutivewords = "";
+			    continue;
+			}	
+			consecutivewords += tdparts[i] + " ";
+		    }
 		    import('https://unpkg.com/mathlive?module').then((mathlive) => {
-				mathformatting = mathlive.convertLatexToMarkup(tdcontent);
+				mathformatting = mathlive.convertLatexToMarkup(newcontent);
 				tdelem.innerHTML = mathformatting;
 				tdelem.onmousemove = 'javascript:void();';
 		      	    });
@@ -402,4 +414,4 @@
 	
 		
 	{% include "inc/html_foot.html" %}
-
+		
