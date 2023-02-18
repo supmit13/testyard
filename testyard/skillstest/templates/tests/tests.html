@@ -56,9 +56,20 @@
             //alert(menv);
 	    mathexprchusvwdiv = document.getElementById('mathexprchusvw');
 	    txtContents = mathexprchusvwdiv.innerHTML;
+	    tdparts = txtContents.split(/\s+/);
+	    consecutivewords = "";
+	    newcontent = "";
+	    for(var i=0; i < tdparts.length;i++){
+		if(tdparts[i].match(/^\\+/g)){
+		    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+		    consecutivewords = "";
+		    continue;
+		}
+		consecutivewords += tdparts[i] + " ";
+	    }
 	    if(menv == 1){
 	    import('https://unpkg.com/mathlive?module').then((mathlive) => {
-		mathformatting = mathlive.convertLatexToMarkup(txtContents);
+		mathformatting = mathlive.convertLatexToMarkup(newcontent);
 		mathformatting = mathformatting.replace(/\</g, "&lt;");
 		mathformatting = mathformatting.replace(/\>/g, "&gt;");
         	mathexprchusvwdiv.innerHTML = mathformatting;
@@ -1953,6 +1964,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     			else{ \n \
         		  txtContents = \"\";\n \
     			}\n  ";
+		    html += "tdparts = txtContents.split(/\s+/);\n \
+	    	    consecutivewords = '';\n \
+	    	    newcontent = \"\";\n \
+	    	    for(var i=0; i < tdparts.length;i++){\n \
+		        if(tdparts[i].match(/^\\+/)){\n \
+		    	    newcontent += \" \\text{ \" + consecutivewords + \" } \" + tdparts[i];\n \
+		    	    consecutivewords = \"\";\n \
+		            continue;\n \
+			}\n \
+			consecutivewords += tdparts[i] + \" \";\n \
+	    	    }\n";
 		    html += "import('https://unpkg.com/mathlive?module').then((mathlive) => {\n \
 			mathformatting = mathlive.convertLatexToMarkup(txtContents); \n \
 			mathformatting = mathformatting.replace(/\</g, \"&lt;\"); \n \

@@ -174,9 +174,20 @@ function displayMathExprCandidateUserView(menv){
     else{
         txtContents = "";
     }
+    tdparts = txtContents.split(/\s+/);
+    consecutivewords = "";
+    newcontent = "";
+    for(var i=0; i < tdparts.length;i++){
+	if(tdparts[i].match(/^\\+/)){
+	    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+	    consecutivewords = "";
+	    continue;
+	}
+	consecutivewords += tdparts[i] + " ";
+    }
     if(menv == 1){
     import('https://unpkg.com/mathlive?module').then((mathlive) => {
-	mathformatting = mathlive.convertLatexToMarkup(txtContents);
+	mathformatting = mathlive.convertLatexToMarkup(newcontent);
 	mathformatting = mathformatting.replace(/\</g, "&lt;");
 	mathformatting = mathformatting.replace(/\>/g, "&gt;");
         if(mathexprcdusvwdiv){

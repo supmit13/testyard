@@ -39,7 +39,7 @@ import('https://unpkg.com/mathlive?module');
 		    {% screen_deviation_count = 0  %}
 		    for (challenge in candidateresponse){
 			if(candidateresponse[challenge].mathenv == false){
-		            <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}ddd</div></pre></b></div>
+		            <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">{{challenge}}</div></pre></b></div>
 			}
                         else{
 			    import('https://unpkg.com/mathlive?module').then((mathlive) => {
