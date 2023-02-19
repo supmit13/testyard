@@ -43,7 +43,19 @@ import('https://unpkg.com/mathlive?module');
 			}
                         else{
 			    import('https://unpkg.com/mathlive?module').then((mathlive) => {
-			    <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">mathlive.convertLatexToMarkup({{challenge}})</div></pre></b></div>
+			    txtContents = "{{challenge}}";
+			    tdparts = txtContents.split(/\s+/);
+	    		    consecutivewords = "";
+			    newcontent = "";
+			    for(var i=0; i < tdparts.length;i++){
+				if(tdparts[i].match(/^\\+/g)){
+				    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+				    consecutivewords = "";
+				    continue;
+				}
+				consecutivewords += tdparts[i] + " ";
+			    }
+			    <div id='challengestatement'><b><pre><div id="mathexprcdusvwcndtch_{{cctr}}">mathlive.convertLatexToMarkup(newcontent)</div></pre></b></div>
 			    }
 			}
 		        <input type='hidden' name='challengestatement_hidden' id='challengestatement_hidden' value='{{challenge}}'>

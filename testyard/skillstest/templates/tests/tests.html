@@ -1964,19 +1964,19 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     			else{ \n \
         		  txtContents = \"\";\n \
     			}\n  ";
-		    html += "tdparts = txtContents.split(/\s+/);\n \
+		    html += "tdparts = txtContents.split(/\\s+/);\n \
 	    	    consecutivewords = '';\n \
 	    	    newcontent = \"\";\n \
 	    	    for(var i=0; i < tdparts.length;i++){\n \
-		        if(tdparts[i].match(/^\\+/)){\n \
-		    	    newcontent += \" \\text{ \" + consecutivewords + \" } \" + tdparts[i];\n \
+		        if(tdparts[i].match(/^[\\$]{0,2}\\\\+/)){\n \
+		    	    newcontent += \" \\\\text{ \" + consecutivewords + \" } \" + tdparts[i];\n \
 		    	    consecutivewords = \"\";\n \
 		            continue;\n \
 			}\n \
 			consecutivewords += tdparts[i] + \" \";\n \
 	    	    }\n";
 		    html += "import('https://unpkg.com/mathlive?module').then((mathlive) => {\n \
-			mathformatting = mathlive.convertLatexToMarkup(txtContents); \n \
+			mathformatting = mathlive.convertLatexToMarkup(newcontent); \n \
 			mathformatting = mathformatting.replace(/\</g, \"&lt;\"); \n \
 			mathformatting = mathformatting.replace(/\>/g, \"&gt;\"); \n \
         		if(mathexprcdusvwdiv){\n \
