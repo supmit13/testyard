@@ -1349,8 +1349,14 @@ function showchallengeresponsescreen(challengeresponsescreenencoded, elem){
         curchallengestatement = curchallengestatement.replace("__GT__", ">");
  	curchallengeid = document.frmchallenge.challengeid.value;
 	if(curchallengetype == 'SUBJ' || curchallengetype == 'ALGO' || curchallengetype == 'CODN'){
-	    textval = document.getElementsByTagName('textarea')[0].value;
-
+	    textarealist = document.getElementsByTagName('textarea');
+	    textval = "";
+	    if(textarealist.length > 0){
+	        textval = textarealist[0].value;
+	    }
+	    else{
+	        textval = document.getElementsByTagName('math-field')[0].value;
+	    }
             if(curchallengetype == 'CODN'){
                 textval = myCodeMirror.getValue();
 	    }
@@ -1854,6 +1860,48 @@ function code_exec(testid, challengeid, targetemail){
 }
 
 
+function showhidemathkeyboard(chid){
+    tagid = 'respmathenv_' + chid;
+    chktag = document.getElementById(tagid);
+    responseareatag = document.getElementById('id_' + chid);
+    if(chktag.checked == true){ // show math keyboard
+	    var mathfieldctrl = document.createElement('math-field');
+	    mathfieldctrl.name = responseareatag.name;
+
+	    mathfieldctrl.id = responseareatag.id;
+	    txtContents = responseareatag.value;
+	    tdparts = txtContents.split(/\s+/);
+	    consecutivewords = "";
+	    newcontent = "";
+	    for(var i=0; i < tdparts.length;i++){
+		if(tdparts[i].match(/^\\+/g)){
+		    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+		    consecutivewords = "";
+		    continue;
+		}
+		consecutivewords += tdparts[i] + " ";
+	    }
+	    mathfieldctrl.value = newcontent;
+	    mathfieldctrl.className = responseareatag.className;
+	    document.body.style.setProperty("--keyboard-background", "#0080ff");
+	    document.body.style.setProperty("--keyboard-zindex", "12000");
+	    mathfieldctrl.virtualKeyboardMode = 'onfocus';
+	    mathfieldctrl.style.height = '100px';
+	    responseareatag.parentNode.replaceChild(mathfieldctrl, responseareatag);
+	    mathfieldctrl.focus();
+    }
+    else{ // hide math keyboard
+        var textareactrl = document.createElement('textarea');
+        textareactrl.name = responseareatag.name;
+	textareactrl.id = responseareatag.id;
+	textareactrl.value = responseareatag.value;
+	textareactrl.className = responseareatag.className;
+	textareactrl.style = 'width:300px;height:100px;';
+	responseareatag.parentNode.replaceChild(textareactrl, responseareatag);
+	textareactrl.focus();
+    }
+}
+
 function getchallenges(encjson, starttime, mytime, ruleflag){
     decrypteddata = Base64.decode(encjson);
     jsonobj = JSON.parse(decrypteddata);
@@ -1878,7 +1926,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
         const headerregex = /\<(\w+\.\w+)\>/;
         lbmatch = headerregex.exec(challengetext);
         if (lbmatch && lbmatch.length > 1){
-            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__") // for logic behind this, check above. Look for "&amp;quot;"
+            challengetext = challengetext.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__"); // for logic behind this, check above. Look for "&amp;quot;"
         }
 	pages[pagectr][0] += "<b id='bchallenge'><div id='mathexprcdusvw' style='color:#0000AA;'><pre>" + challengetext + "</pre></div></b><br />";
         if(jsonobj.challenges[challenge].mediafile != null && jsonobj.challenges[challenge].mediafile != ''){
@@ -1898,6 +1946,9 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
                 challengearg = challengearg.replace(/<(\w+\.\w+)>/g, "__LT__" + lbmatch[1] + "__GT__");
             }
 	    challengeargenc = Base64.encode(challengearg);
+	    //if(jsonobj.challenges[challenge].mathenv.toString() == "1"){
+	    //    pages[pagectr][0] += "<b>Enable Math Keyboard:</b>&nbsp;&nbsp;<input type='checkbox' id='respmathenv_" + jsonobj.challenges[challenge].chid + "' name='respmathenv_" + jsonobj.challenges[challenge].chid + "' value='1'  onclick='showhidemathkeyboard(\"" + jsonobj.challenges[challenge].chid + "\")'><br/>";
+	    //}
             pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id=\"sa\" style=\"display:block;\"></span>";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
