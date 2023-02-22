@@ -1998,8 +1998,50 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    html += "});\n";
 		    html += "mathexprcdusvwdiv.onmousemove=void(0)";
 		    html += "}";
+		    html += "\n\n";
+		    html += "function displayMathExprEvalRespView3(countresp){\n \
+		    mathexprcdusvwcndtrespdiv = document.getElementById('mathexprcdusvwcndtresp_'+countresp.toString());\n \
+    			if(mathexprcdusvwcndtrespdiv){ \n \
+        		  txtContents = mathexprcdusvwcndtrespdiv.innerHTML; \n \
+			  txtContents = txtContents.replace(\"<pre>\", \"\");\n \
+			  txtContents = txtContents.replace(\"<\/pre>\", \"\"); \n \
+    			} \n \
+    			else{ \n \
+        		  txtContents = \"\";\n \
+    			}\n txtContents = txtContents.replace(/\\&amp;nbsp;/g, ' ');\n ";
+    		    html += "tdparts = txtContents.split(/\\s+/);\n \
+	    	    consecutivewords = '';\n \
+	    	    newcontent = \"\";\n \
+	    	    for(var i=0; i < tdparts.length;i++){\n \
+		        if(tdparts[i].match(/^[\\$]{0,2}\\\\+/)){\n \
+		    	    newcontent += \" \\\\text{ \" + consecutivewords + \" } \" + tdparts[i];\n \
+		    	    consecutivewords = \"\";\n \
+		            continue;\n \
+			}\n \
+			else if(tdparts[i].match(/\\\\[\\{\\[\\w]+/)){\n \
+		    	    newcontent += \" \\\\text{ \" + consecutivewords + \" } \" + tdparts[i];\n \
+		    	    consecutivewords = \"\";\n \
+		            continue;\n \
+			} \n \
+			else {\n \
+		    	    // Do nothing. \n \
+			} \n \
+			consecutivewords += tdparts[i] + \" \";\n \
+	    	    }\n \
+	    	    if(newcontent == \"\"){\n newcontent = \" \\\\text{ \" + consecutivewords + \" } \";\n}\n";
+		    html += "import('https://unpkg.com/mathlive?module').then((mathlive) => {\n \
+			mathformatting = mathlive.convertLatexToMarkup(newcontent); \n \
+			mathformatting = mathformatting.replace(/\</g, \"&lt;\"); \n \
+			mathformatting = mathformatting.replace(/\>/g, \"&gt;\"); \n \
+        		if(mathexprcdusvwcndtrespdiv){\n \
+	    		    mathexprcdusvwcndtrespdiv.innerHTML = mathformatting; \n \
+			}\n ";
+		    html += "});\n";
+		    html += "mathexprcdusvwcndtrespdiv.onmousemove=void(0)";
+		    html += "}";
+		    html += "\n\n";
 		    html += "</scr" + "ipt>\n";
-                    html += "</head>";
+                   html += "</head>";
 		    html += "<body bgcolor=\"#669999\"><br />";
 		    html += "<div style='color:#CC0000;font-style:italic;font-weight:bold;padding-left:20px;padding-right:10px;padding-top:10px;padding-bottom:10px;font-size:14px;'>Note for evaluator: Candidate has deviated from the test screen " + responsedata.windowchangeattempts + " times during the course of the test. Total integrity is upon the discretion of the evaluator.</div><br />";
 		    html += "<div style='color:#0000AA;background:#669999;padding-left:20px;padding-right:10px;padding-bottom:10px;padding-top:10px;'><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
@@ -2041,8 +2083,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			candidaterespdecoded = candidaterespdecoded.replace(/ /g, '\u00a0');//Replace space with nbsp ('\u00a0' is &nbsp;)
 			candidaterespdecoded = candidaterespdecoded.replace("__GT__", ">");
 			candidaterespdecoded = candidaterespdecoded.replace("__LT__", "<");
-			
-			html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div><font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');' style='color:#0000BB;font-size:14px;'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
+			if(candidateresponse[challenge].mathenv == true){
+			    html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\" onmousemove='displayMathExprEvalRespView3(" + cctr + ");'>" + candidaterespdecoded + "</div>"; 
+			}
+			else{
+			    html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\">" + candidaterespdecoded + "</div>"; 
+			}
+			html += "<font color='#0000AA' style='font-style:italic'><a href='#/' onclick=\'window.open(\"{{ hosturl }}/skillstest/static/math_translator.html?cctr=" + cctr + "\",\"mathwindow\", \"width=600, height=800, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false\")\');' style='color:#0000BB;font-size:14px;'>Convert to math expressions if applicable</a></font><br /><div id='mathexpr_" + cctr + "'></div>";
 			html += "<br /><br /><b>Max Score: </b>" + candidateresponse[challenge].maxscore;
 			html += "<br /><br /><b>Negative Score: </b>" + candidateresponse[challenge].negativescore;
 			html += "<input type='hidden' name='maxscore_" + cctr + "' id='maxscore_" + cctr + "' value='" + candidateresponse[challenge].maxscore + "'>";
