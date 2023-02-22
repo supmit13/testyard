@@ -454,11 +454,24 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    mathfieldctrl.name = statementctrl.name;
 		    //alert(mathfieldctrl.name);
 		    mathfieldctrl.id = statementctrl.id;
-		    mathfieldctrl.value = statementctrl.value;
+		    txtContents = statementctrl.value;
+		    tdparts = txtContents.split(/\s+/);
+		    consecutivewords = "";
+		    newcontent = "";
+		    for(var i=0; i < tdparts.length;i++){
+			if(tdparts[i].match(/^\\+/g)){
+			    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+			    consecutivewords = "";
+			    continue;
+			}
+			consecutivewords += tdparts[i] + " ";
+		    }
+		    mathfieldctrl.value = newcontent;
 		    mathfieldctrl.className = statementctrl.className;
 		    document.body.style.setProperty("--keyboard-background", "#0080ff");
 		    document.body.style.setProperty("--keyboard-zindex", "12000");
 		    mathfieldctrl.virtualKeyboardMode = 'onfocus';
+		    mathfieldctrl.style.height = '100px';
 		    statementctrl.parentNode.replaceChild(mathfieldctrl, statementctrl);
 		    mathfieldctrl.focus();
 		  }
