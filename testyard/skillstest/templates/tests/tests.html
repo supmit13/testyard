@@ -455,6 +455,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    //alert(mathfieldctrl.name);
 		    mathfieldctrl.id = statementctrl.id;
 		    txtContents = statementctrl.value;
+		    doubledollarpattern = /\$\$/g;
+		    txtContents = txtContents.replace(doubledollarpattern, '');
+		    //alert(txtContents);
 		    tdparts = txtContents.split(/\s+/);
 		    consecutivewords = "";
 		    newcontent = "";
@@ -1973,6 +1976,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
         		  txtContents = mathexprcdusvwdiv.innerHTML; \n \
 			  txtContents = txtContents.replace(\"<pre>\", \"\");\n \
 			  txtContents = txtContents.replace(\"<\/pre>\", \"\"); \n \
+			  doubledollarpattern = /\\$\\$/g;\n \
+		    	  txtContents = txtContents.replace(doubledollarpattern, '');\n \
     			} \n \
     			else{ \n \
         		  txtContents = \"\";\n \
@@ -2005,6 +2010,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
         		  txtContents = mathexprcdusvwcndtrespdiv.innerHTML; \n \
 			  txtContents = txtContents.replace(\"<pre>\", \"\");\n \
 			  txtContents = txtContents.replace(\"<\/pre>\", \"\"); \n \
+			  doubledollarpattern = /\\$\\$/g\n \
+		    	  txtContents = txtContents.replace(doubledollarpattern, '');\n \
     			} \n \
     			else{ \n \
         		  txtContents = \"\";\n \
