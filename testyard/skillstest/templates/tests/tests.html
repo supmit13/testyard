@@ -2061,6 +2061,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    html += "{% csrf_token %}";
 		    var separatorPattern = new RegExp("#||#");
 		    cctr = 1;
+		    challenge = challenge.replace(/__SINGLEQUOTE__/g, "'");
 		    for (challenge in candidateresponse){
 			//alert(JSON.stringify(candidateresponse[challenge]));
 			if(candidateresponse[challenge].mathenv == false){
@@ -2090,6 +2091,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			candidaterespdecoded = candidaterespdecoded.replace(/ /g, '\u00a0');//Replace space with nbsp ('\u00a0' is &nbsp;)
 			candidaterespdecoded = candidaterespdecoded.replace("__GT__", ">");
 			candidaterespdecoded = candidaterespdecoded.replace("__LT__", "<");
+			candidaterespdecoded = candidaterespdecoded.replace(/__SINGLEQUOTE__/g, "'");
+			candidaterespdecoded = candidaterespdecoded.replace(/__DOUBLEQUOTE__/g, "\"");
 			if(candidateresponse[challenge].mathenv == true){
 			    html += "<br /><br /><b>Candidate's Response: </b><div id=\"mathexprcdusvwcndtresp_" + cctr + "\" onmousemove='displayMathExprEvalRespView3(" + cctr + ");'>" + candidaterespdecoded + "</div>"; 
 			}
