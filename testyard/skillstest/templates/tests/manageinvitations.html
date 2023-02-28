@@ -1,9 +1,9 @@
-<p><form name='manageinvites' id='manageinvites' method='POST' action=''><h3><font color='#0508E3'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";' class='btn btn-primary'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
+<p><form name='manageinvites' id='manageinvites' method='POST' action=''><h3><font color='#000000'><u>Existing Invitations for '{{ testname }}' Test</u></font></h3><span align='right'><input type='button' name='btnclosetop' value='Close Invitations View' onClick='thediv=document.getElementById("existinginvitationdiv{{ testid }}");thediv.style="display:none";thediv.innerHTML="";' class='btn btn-primary'></span><!-- <input type='text' name='txtsearchinvitations' value=''><input type='button' name='btnsearchinvitations' value='Search Invitations' onClick='javascript:searchinvitations(jsdata);' onKeyPress='javascript:searchinvitations(jsdata);'> -->
 <input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='{{testsinvitecounter}}'>
 {% if usertest.LENGTH > 0 %}
 <br /><br />
 <div id='utinfo' style=''>
-<font color='#0508E3' style='font-weight:bold;'>Invitations to Existing Users</font><font color='#0508E3' size=-1 style='font-weight:bold;'><i>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
+<font color='#000000' style='font-weight:bold;'>Invitations to Existing Users</font><font color='#000000' size=-1 style='font-weight:bold;'><i>  (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
 <table border='1' cellspacing='4' cellpadding='4' style='width:90%;'>
 <tr style='background:#FFFFFF;'>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till (UTC)</font></td>
@@ -51,13 +51,13 @@
 {% endfor %}
 </table>
 {% endif %}
-<font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
+<font color='#000000' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
 </div>
 
 {% if wouldbeusers.LENGTH > 0 %}
 <br /><br />
 <div id='wbuinfo' style=''>
-<font color='#0508E3' style='font-weight:bold;'>Invitations to Users Not Registered on TestYard</font>  <font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
+<font color='#000000' style='font-weight:bold;'>Invitations to Users Not Registered on TestYard</font>  <font color='#000000' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font><br />
 <table border=1 cellspacing='4' cellpadding='4'>
 <tr style='background:#ffffff;'>
     <td nowrap align='center'><font color='#0508E3' size=-1 style='font-weight:bold;'>Valid From - Valid Till (UTC)</font></td>
@@ -101,7 +101,7 @@
 {% endfor %}
 </table>
 {% endif %}
-<font color='#0508E3' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
+<font color='#000000' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
 </div>
 {% csrf_token %}
 <table border=0 cellspacing=4 cellpadding=4>
