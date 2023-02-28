@@ -2140,7 +2140,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		}
 
 
-				
 		function disqualifycandidate(testid, emailid){
 		    var xmlhttp;
 		    var postdata = "testid=" + testid + "&emailid=" + emailid + "&csrfmiddlewaretoken=";
@@ -2221,7 +2220,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    
 			    comments = "<font color='#0000DD' size=-1>" + decodeURIComponent(answerrecord['evaltestcomment']) + "</font>";
 			    if(rowctr % 2 == 0){
-				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Evaluate Responses</a>";
+			        if(answerrecord['outcome']){
+				    evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Show Evaluation</a>";
+				}
+				else{
+				    evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");' style='font-weight:bold;'>Evaluate Responses</a>";
+				}
 				if(status == 0 || status == 1){
 				    evaluatestr = "Not Applicable";
 				}
@@ -2250,7 +2254,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				}
 			    }
 			    else{
-				evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Evaluate Responses</a>";
+			    	if(answerrecord['outcome']){
+				    evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");'>Show Evaluation</a>";
+				}
+				else{
+				    evaluatestr = "<a href='#/' onClick='javascript:evaluateresponses(" + testid + ", \"" + email + "\", \"" + responsetext + "\"," + usertestid + ");' style='font-weight:bold;'>Evaluate Responses</a>";
+				}
 				if(status == 0 || status == 1){
 				    evaluatestr = "Not Applicable";
 				}
