@@ -1289,6 +1289,8 @@ def creatortesttimes(request):
     wbuqset = WouldbeUsers.objects.filter(test=testobj, starttime__isnull=False)
     for utobj in utqset:
         starttime = utobj.starttime
+        if starttime is not None:
+            starttime = starttime.strftime("%Y-%m-%dT%H:%M:%S")
         username = utobj.user.displayname
         if testinfodict.has_key(username):
             timeslist = testinfodict[username]
@@ -1301,6 +1303,8 @@ def creatortesttimes(request):
     for wbuobj in wbuqset:
         emailid = wbuobj.emailaddr
         starttime = wbuobj.starttime
+        if starttime is not None:
+            starttime = starttime.strftime("%Y-%m-%dT%H:%M:%S")
         if testinfodict.has_key(emailid):
             timeslist = testinfodict[emailid]
             timeslist.append(starttime)

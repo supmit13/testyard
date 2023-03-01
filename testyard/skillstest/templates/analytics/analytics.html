@@ -615,10 +615,19 @@
 			    i = 1;
 		    	    for (uname in chartdataobj){
    			        if (chartdataobj.hasOwnProperty(uname)){
-       			            times = chartdataobj[uname];
-				    for(time in times){
+       			    times = chartdataobj[uname];
+				    /*for(time in times){
 					//alert(times);
 					scoredata = [time, uname ];
+			            	chartdata[i] = scoredata;
+				    } */
+				    for(time in times){
+				        //alert(times[time]);
+				        t = times[time];
+				        var regdt = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
+					var dtlist = regdt.exec(t);
+					dtobj = new Date(parseInt(dtlist[1], 10), parseInt(dtlist[2], 10)-1, parseInt(dtlist[3], 10), parseInt(dtlist[4], 10), parseInt(dtlist[5], 10), parseInt(dtlist[6], 10));
+					scoredata = [dtobj, time, uname ];
 			            	chartdata[i] = scoredata;
 				    }
 				    //nodataflag = 0;
