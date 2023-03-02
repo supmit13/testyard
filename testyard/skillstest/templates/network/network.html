@@ -464,6 +464,31 @@
 	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
 	    xmlhttp.send(encodedpostdata);
 	}
+	
+	function managegroupfloat(membername, groupname, currency){
+	    var xmlhttp;
+	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency;
+	    //alert(postdata);
+	    encodedpostdata = encodeURI(postdata);
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    screendiv = document.getElementById('transscreensgrp');
+		    groupdatahtml = xmlhttp.responseText;
+		    //alert(groupdatahtml);
+                    screendiv.style = "display:;width:80%;height:70%;background-color:#e6e6ff;position:fixed;margin: auto;top:0; left:0;";
+		    screendiv.innerHTML = groupdatahtml;
+		    //screendiv.style.display = "";
+	        }
+	    };
+	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
+	    xmlhttp.send(encodedpostdata);
+	}
 
 	function leavegroup(groupname){
 	    var xmlhttp;
@@ -2866,16 +2891,23 @@
 	    }
 	    // Register the handler
 	    xmlhttp.onreadystatechange = function(){
-	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-	        //alert(uid);
+	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){	        
 	        transcreensdiv = document.getElementById('transscreens');
-	        transcreensdiv.style = "display:;height:100%;width:100%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:0;left:0;overflow-y: scroll;";
-	        transcreensdiv.innerHTML = xmlhttp.responseText;
+	        transcreensdiv.style = "display:;height:80%;width:40%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:10%;left:30%;overflow-y: scroll;";
+	        content = xmlhttp.responseText;
+	        transcreensdiv.innerHTML = content;
 	    }
 	    };
 	    xmlhttp.open('POST', "{{showmoresubscribedgroupsurl}}", true);
             xmlhttp.send(postdata);
         }
+        
+        function closelist(){
+	    transcreensdiv = document.getElementById('transscreens');
+	    transcreensdiv.innerHTML = "";
+	    transcreensdiv.style.display = "none";
+	    return (false);
+	}
 
 	</script>
 		

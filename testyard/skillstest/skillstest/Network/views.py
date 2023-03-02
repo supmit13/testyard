@@ -5381,9 +5381,31 @@ def showmoresubscribedgroups(request):
     if uid == -1 or uid != userobj.id:
         message = error_msg('2099')
         return HttpResponse(message)
+    pageno = 1
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass # Let page number remain 1
+    startctr = pageno * mysettings.MORE_CHUNK_SIZE
+    endctr = pageno * mysettings.MORE_CHUNK_SIZE + mysettings.MORE_CHUNK_SIZE
     # Get all groups subscribed by the logged in user.
-    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group').order_by('-membersince')
+    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group').order_by('-membersince')[startctr:endctr]
     htmlcontent = ""
+    contextdict = {}
+    grouplinkslist = []
+    for groupmember in groupmembersqset:
+        grouplink = "<a href='#/' onClick='javascript:managegroupfloat(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
+        grouplinkslist.append(grouplink)
+    contextdict['grouplinkslist'] = grouplinkslist
+    contextdict['endmsg'] = ""
+    if grouplinkslist.__len__() == 0:
+        contextdict['endmsg'] = "There are no more subscribed groups."
+    tmpl = get_template("network/subscribedgroups.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    htmlcontent = tmpl.render(cxt)
+    htmlcontent = htmlcontent.replace("&lt;", "<").replace("&gt;", ">")
     return HttpResponse(htmlcontent)
 
 
