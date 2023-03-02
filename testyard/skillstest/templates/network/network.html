@@ -2853,6 +2853,29 @@
             //xmlhttp.setRequestHeader("Content-type", "x-www-form-urlencoded");
 	    xmlhttp.send(postdata);
         }
+        
+        function showmoresubscribedgroups(uid){
+            csrf = document.searchform.csrfmiddlewaretoken.value;
+            postdata = "uid=" + uid + "&csrfmiddlewaretoken=" + csrf;
+            var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    // Register the handler
+	    xmlhttp.onreadystatechange = function(){
+	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	        //alert(uid);
+	        transcreensdiv = document.getElementById('transscreens');
+	        transcreensdiv.style = "display:;height:100%;width:100%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:0;left:0;overflow-y: scroll;";
+	        transcreensdiv.innerHTML = xmlhttp.responseText;
+	    }
+	    };
+	    xmlhttp.open('POST', "{{showmoresubscribedgroupsurl}}", true);
+            xmlhttp.send(postdata);
+        }
 
 	</script>
 		

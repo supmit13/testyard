@@ -93,6 +93,7 @@ def get_network_template_vars(userobj):
     templatevars['groupprofileurl'] = mysettings.GROUP_PROFILE_URL
     templatevars['exitgroupurl'] = mysettings.EXIT_GROUP_URL
     templatevars['cutpercent'] = mysettings.CUT_FRACTION * 100
+    templatevars['showmoresubscribedgroupsurl'] = mysettings.SHOW_MORE_SUBSCRIBED_GRPS_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -266,7 +267,13 @@ def network(request):
         else:
             connectinvitesdict[str(invid)][2] = invitationdate
             connectinvitesdict[str(invid)][3] = invitationcontent_short
-    contextdict = { 'displayname' : userobj.displayname, 'connections' : contacts, 'groups' : groups, 'topics' : alltopicsdict }
+    groupstolist = []
+    for g in groups[:mysettings.MORE_CHUNK_SIZE]:
+        groupstolist.append(g)
+    morelink = "<a href='#/' onClick='javascript:showmoresubscribedgroups(%s);' style='font-weight:bold;'>More...</a>"%userobj.id
+    if groupstolist.__len__() >= mysettings.MORE_CHUNK_SIZE - 1:
+        groupstolist.append(morelink)
+    contextdict = { 'displayname' : userobj.displayname, 'connections' : contacts, 'groups' : groupstolist, 'topics' : alltopicsdict }
     contextdict['image_height'] = mysettings.PROFILE_PHOTO_HEIGHT
     contextdict['image_width'] = mysettings.PROFILE_PHOTO_WIDTH
     inc_context = skillutils.includedtemplatevars("Network", request) # Since this is the 'Network' page for the user.
@@ -5354,6 +5361,29 @@ def downloadattachment(request):
     return response
 
 
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showmoresubscribedgroups(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponse(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    uid = -1
+    if 'uid' in request.POST.keys():
+        try:
+            uid = int(request.POST['uid'])
+        except:
+            pass
+    if uid == -1 or uid != userobj.id:
+        message = error_msg('2099')
+        return HttpResponse(message)
+    # Get all groups subscribed by the logged in user.
+    groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group').order_by('-membersince')
+    htmlcontent = ""
+    return HttpResponse(htmlcontent)
 
 
