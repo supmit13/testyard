@@ -2783,12 +2783,20 @@ def searchuser(request):
     message = ""
     usersdict = {}
     emailid, targetusername, teststaken = ('' for i in range(0, 3))
+    pageno = 1
     if request.POST.has_key('emailid'):
         emailid = request.POST['emailid']
     if request.POST.has_key('targetusername'):
         targetusername = request.POST['targetusername']
     if request.POST.has_key('teststaken'):
         teststaken = request.POST['teststaken']
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
     userqset = User.objects.all()
     if emailid and emailid != "":
         emailid = emailid.strip()
@@ -2817,7 +2825,17 @@ def searchuser(request):
         if not usersdict.has_key(displayname):
             profileimglink = "media/%s/images/%s"%(displayname,str(uobj.userpic))
             usersdict[displayname] = {'profileimage' : profileimglink, 'name' : uobj.firstname + " " + uobj.middlename + " " + uobj.lastname, 'uid' : uobj.id }
-    message = json.dumps(usersdict)
+    usersdicttosend = {}
+    usernameslist = usersdict.keys()
+    for uname in usernameslist[startctr:endctr]:
+        usersdicttosend[uname] = usersdict[uname]
+    context = {}
+    context['usersdict'] = usersdicttosend
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    context['prevpage'] = prevpage
+    context['nextpage'] = nextpage
+    message = json.dumps(context)
     response = HttpResponse(message)
     return response
 

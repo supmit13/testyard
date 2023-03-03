@@ -899,9 +899,9 @@
 		    html += "</table>";
 		    html += "<br/><div id='pagination'>";
 		    if(prevpage > 0){
-		        html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'><< Prev</a>|";
+		        html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a>|";
 		    }
-		    html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next >></a>";
+		    html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next ></a>";
 		    searchresultarea.innerHTML = html;
 	        }
 	    };
@@ -961,13 +961,14 @@
 	}
 
 
-	function searchUser(screendivid){
+	function searchUser(screendivid, pageno=1){
             screendiv = document.getElementById(screendivid);
 	    waiterspan = document.getElementById('searchwaiter');
 	    waiterspan.innerHTML = "<img src='static/images/loading_small.gif'>";
     	    postdata = "emailid=" + document.frmSearchUser.emailid.value + "&";
  	    postdata += "targetusername=" + document.frmSearchUser.targetusername.value + "&";
 	    postdata += "teststaken=" + document.frmSearchUser.teststaken.value + "&";
+	    postdata += "pageno=" + pageno.toString() + "&";
 	    postdata += "csrfmiddlewaretoken=" + document.frmSearchUser.csrfmiddlewaretoken.value;
 	    //alert(postdata);
 	    uriencodeddata = encodeURI(postdata);
@@ -981,7 +982,10 @@
 	    }
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    jsonresult = JSON.parse(xmlhttp.responseText);
+		    context = JSON.parse(xmlhttp.responseText);
+		    jsonresult = context['usersdict'];
+		    nextpage = context['nextpage'];
+		    prevpage = context['prevpage'];
 		    searchdiv.innerHTML = "";
 		    alldispnames = Object.keys(jsonresult);
 		    html = "<center><table border=0 cellspacing=3 cellpadding=4 width='80%'>";
@@ -1020,7 +1024,12 @@
 			    ctr++;
 		        }
 		    }
-		    html += "</table></center>";
+		    html += "</table>";
+		    html += "<br/><div id='pagination'>";
+		    if(prevpage > 0){
+		        html += "<a href='#/' style='align:center;color:#0000aa;' onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a>|";
+		    }
+		    html += "<a href='#/' style='align:center;color:#0000aa;' onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ")'>Next ></a></div></center>";
 		    waiterspan.innerHTML = "";
 		    searchdiv.innerHTML = html;
 	        }
