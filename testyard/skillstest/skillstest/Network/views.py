@@ -4302,6 +4302,14 @@ def manageownedgroups(request):
     searchquery = ""
     if request.POST.has_key('searchquery'):
         searchquery = request.POST['searchquery']
+    pageno = 1
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
     contextdict = {}
     groupsdict = {}
     groupsownerqset = None
@@ -4310,7 +4318,7 @@ def manageownedgroups(request):
     else:
         groupsownerqset = Group.objects.filter(owner=userobj, groupname__icontains=searchquery)
     nonepattern = re.compile("/None$")
-    for group in groupsownerqset:
+    for group in groupsownerqset[startctr:endctr]:
         gid = str(group.id)
         groupname = str(group.groupname)
         tagline = str(group.tagline)
@@ -4368,6 +4376,10 @@ def manageownedgroups(request):
         if not groupsdict.has_key(gid):
             groupsdict[gid] = [ gid, groupname, tagline, description, maxmemberslimit, status, grouptype, allowentry, groupimagefile, topic, ispaid, currency, entryfee, ownerpermreqd, bankname, bankbranch, accountnumber, earnings, ifscode, accountownername, userobj.displayname ]
     contextdict['groups'] = groupsdict
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    contextdict['nextpage'] = nextpage
+    contextdict['prevpage'] = prevpage
     alltopics = mysettings.TEST_TOPICS
     contextdict['alltopics'] = alltopics
     contextdict['alltypes'] = mysettings.TEST_SCOPES

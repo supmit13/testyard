@@ -2621,9 +2621,10 @@
         }
 
 	
-	function manageownedgrpsscreen(searchquery){
+	function manageownedgrpsscreen(searchquery, pageno=1){
 	    var postdata = "csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
 	    postdata += "&searchquery=" + searchquery;
+	    postdata += "&pageno=" + pageno.toString();
 	    transdiv = document.getElementById('transscreens');
             //transdiv.style = "display:;width:200%;height:13%;padding-left:10px;padding-right:10px;padding-bottom:10px;";
             transdiv.style = "background: none;";
