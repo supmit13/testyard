@@ -94,6 +94,7 @@ def get_network_template_vars(userobj):
     templatevars['exitgroupurl'] = mysettings.EXIT_GROUP_URL
     templatevars['cutpercent'] = mysettings.CUT_FRACTION * 100
     templatevars['showmoresubscribedgroupsurl'] = mysettings.SHOW_MORE_SUBSCRIBED_GRPS_URL
+    templatevars['showmoreconnectionsurl'] = mysettings.SHOW_MORE_CONNECTIONS_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -273,7 +274,13 @@ def network(request):
     morelink = "<a href='#/' onClick='javascript:showmoresubscribedgroups(%s);' style='font-weight:bold;'>More...</a>"%userobj.id
     if groupstolist.__len__() >= mysettings.MORE_CHUNK_SIZE - 1:
         groupstolist.append(morelink)
-    contextdict = { 'displayname' : userobj.displayname, 'connections' : contacts, 'groups' : groupstolist, 'topics' : alltopicsdict }
+    contactstolist = []
+    for c in contacts[:mysettings.MORE_CHUNK_SIZE]:
+        contactstolist.append(c)
+    morelink = "<a href='#/' onClick='javascript:showmoreconnections(%s);' style='font-weight:bold;'>More...</a>"%userobj.id
+    if contactstolist.__len__() >= mysettings.MORE_CHUNK_SIZE - 1:
+        contactstolist.append(morelink)
+    contextdict = { 'displayname' : userobj.displayname, 'connections' : contactstolist, 'groups' : groupstolist, 'topics' : alltopicsdict }
     contextdict['image_height'] = mysettings.PROFILE_PHOTO_HEIGHT
     contextdict['image_width'] = mysettings.PROFILE_PHOTO_WIDTH
     inc_context = skillutils.includedtemplatevars("Network", request) # Since this is the 'Network' page for the user.
@@ -5408,6 +5415,68 @@ def showmoresubscribedgroups(request):
     if grouplinkparamsslist.__len__() == 0:
         contextdict['endmsg'] = "There are no more subscribed groups."
     tmpl = get_template("network/subscribedgroups.html")
+    contextdict.update(csrf(request))
+    cxt = Context(contextdict)
+    htmlcontent = tmpl.render(cxt)
+    htmlcontent = htmlcontent.replace("&lt;", "<").replace("&gt;", ">")
+    return HttpResponse(htmlcontent)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def showmoreconnections(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponse(message)
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    uid = -1
+    if 'uid' in request.POST.keys():
+        try:
+            uid = int(request.POST['uid'])
+        except:
+            pass
+    if uid == -1 or uid != userobj.id:
+        message = error_msg('2099')
+        return HttpResponse(message)
+    pageno = 1
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass # Let page number remain 1
+    startctr = pageno * mysettings.MORE_CHUNK_SIZE
+    endctr = pageno * mysettings.MORE_CHUNK_SIZE + mysettings.MORE_CHUNK_SIZE
+    # Get all connections
+    connectionslist = []
+    contactsdict = {}
+    contactsqset = Connection.objects.filter(focususer=userobj, deleted=False)[startctr:endctr]
+    for contact in contactsqset:
+        contactparams = [contact.id, contact.connectedto.displayname, contact.id, 0]
+        if contact.blocked:
+            contactparams = [contact.id, contact.connectedto.displayname, contact.id, 1]
+        connectionslist.append(contactparams)
+        if not contactsdict.has_key(str()):
+            contactsdict[str(contact.id)] = contact.connectedto.displayname
+            uobj = User.objects.get(displayname=contact.connectedto.displayname)
+            uobjlist.append(uobj)
+        else:
+            pass
+    contextdict['connectionslist'] = connectionslist
+    contextdict['contactsdict'] = contactsdict
+    contextdict['endmsg'] = ""
+    curpage = pageno
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    contextdict['nextpage'] = nextpage
+    contextdict['prevpage'] = prevpage
+    contextdict['uid'] = uid
+    if grouplinkparamsslist.__len__() == 0:
+        contextdict['endmsg'] = "There are no more connections."
+    tmpl = get_template("network/connectionslist.html")
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     htmlcontent = tmpl.render(cxt)

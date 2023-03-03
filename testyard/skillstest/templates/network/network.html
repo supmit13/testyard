@@ -1929,6 +1929,65 @@
 	    xmlhttp.open('POST', '{{getconnectioninfourl}}', true);
 	    xmlhttp.send(postdata);
 	}
+	
+	
+	function showconnectionsprofilefloat(connid){
+	    screendiv = document.getElementById('transscreens');
+	    if(screendiv){
+	        screendiv.innerHTML = "";
+	        screendiv.style.display = "none";
+	    }
+	    screendiv.style = "display:;height:550%;width:100%;background-color:#e6e6ff;color:#0000aa;";
+	    html = "";
+	    postdata = "connid=" + connid + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+                //alert(xmlhttp.responseText);
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    html += xmlhttp.responseText;
+		    //alert(html);
+                    rowscountpattern = /TOTALROWSCOUNT#\|\|#(\d+)/g;
+                    m = rowscountpattern.exec(html);
+                    if(m != null && m.length > 1){
+                        try{
+                            rowscount = parseInt(m[1]);
+                            //alert(rowscount);
+                            if(rowscount < 60){
+                                screendiv.style.height = "650%";
+                            }
+                            if(rowscount < 100){
+                                screendiv.style.height = "1100%";
+                            }
+                            else if(rowscount < 200){
+                                screendiv.style.height = "2100%";
+                            }
+                            else if(rowscount < 400){
+                                screendiv.style.height = "4000%";
+                            }
+                            else if(rowscount < 700){
+                                screendiv.style.height = "8000%";
+                            }
+                            else if(rowscount < 1500){
+                                screendiv.style.height = "15000%";
+                            }
+                            else{
+                                screendiv.style.height = "20000%";
+                            }
+                        }
+                        catch(err){ }
+                    }
+		    screendiv.innerHTML = html;
+	        }
+	    };
+	    xmlhttp.open('POST', '{{getconnectioninfourl}}', true);
+	    xmlhttp.send(postdata);
+	}
 
 
 	function manageconnection(connid){
@@ -2359,6 +2418,7 @@
         	window.location.reload()
     	    }, 60);
 	}
+
 
 
 	function removeconn(){
@@ -2916,6 +2976,29 @@
 	    transcreensdiv.innerHTML = "";
 	    transcreensdiv.style.display = "none";
 	    return (false);
+	}
+	
+	function showmoreconnections(uid, pageno=1){
+	    csrf = document.searchform.csrfmiddlewaretoken.value;
+            postdata = "uid=" + uid + "&csrfmiddlewaretoken=" + csrf + "&pageno=" + pageno;
+            var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    // Register the handler
+	    xmlhttp.onreadystatechange = function(){
+	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){	        
+	        transcreensdiv = document.getElementById('transscreens');
+	        transcreensdiv.style = "display:;height:80%;width:40%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:10%;left:30%;overflow-y: scroll;";
+	        content = xmlhttp.responseText;
+	        transcreensdiv.innerHTML = content;
+	    }
+	    };
+	    xmlhttp.open('POST', "{{showmoreconnectionsurl}}", true);
+            xmlhttp.send(postdata);
 	}
 
 	</script>

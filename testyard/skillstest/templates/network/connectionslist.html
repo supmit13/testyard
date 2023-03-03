@@ -1,0 +1,27 @@
+<div style='padding-left:10px;padding-right:10px;padding-top:15px;padding-bottom:15px;'>
+<div class='form-group' style='padding-left:10px;padding-right:5px;'><input type='button' name='btnclose' value='Close' class='btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;' onclick='javascript:closelist();'></div>
+<br/>
+<span style='padding-left:20px;padding-top:15px;font-weight:bold;color:#0000AA;font-size:larger;'>List of Connections</span>
+<hr style='width:80%;'>
+{% for contactparams in connectionslist %}
+{% if contactparams.3 == 0 %}
+<div class='row'>
+ <a href='#/' onClick="javascript:showconnectionsprofilefloat('{{contactparams.0}}');">{{contactparams.1}}</a><!-- - <a href='#/' onClick="javascript:manageconnection({{contactparams.2}});">manage</a> -->
+</div>
+{% else %}
+<div class='row'>
+ <a href='#/' onClick="javascript:showconnectionsprofilefloat('{{contactparams.0}}');"><font color='#AA0000'>{{contactparams.1}}</font></a> - <a href='#/' onClick="javascript:unblock({{contactparams.2}});"><font color='#AA0000' size=-1>[Unblock]</font></a>
+</div>
+{% endif %}
+{% endfor %}
+<br/>
+<div id="pagination">
+{% if prevpage >= 1 %}
+<a href='#/' onclick='javascript:showmoreconnections({{uid}}, {{prevpage}});'><< Prev</a>|<a href='#/' onclick='javascript:showmoreconnections({{uid}}, {{nextpage}});'>Next >></a>
+{% else %}
+<a href='#/' onclick='javascript:showmoreconnections({{uid}}, {{nextpage}});'>Next >></a>
+{% endif %}
+</div>
+<br/>
+<div class='form-group' style='padding-left:10px;padding-right:5px;'><input type='button' name='btnclose' value='Close' class='btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;' onclick='javascript:closelist();'></div>
+
