@@ -466,6 +466,14 @@
 	}
 	
 	function managegroupfloat(membername, groupname, currency){
+	    membername = membername.replace(/\&quot;/g, "");
+	    groupname = groupname.replace(/\&quot;/g, "");
+	    currency = currency.replace(/\&quot;/g, "");
+	    transcreensdiv = document.getElementById('transscreens');
+	    if(transcreensdiv){
+	        transcreensdiv.innerHTML = "";
+	        transcreensdiv.style.display = "none";
+	    }
 	    var xmlhttp;
 	    postdata = "membername=" + membername + "&groupname=" + groupname + "&csrfmiddlewaretoken=" +  document.searchform.csrfmiddlewaretoken.value + "&currency=" + currency;
 	    //alert(postdata);
@@ -478,7 +486,7 @@
 	    }
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    screendiv = document.getElementById('transscreensgrp');
+		    screendiv = document.getElementById('transscreens');
 		    groupdatahtml = xmlhttp.responseText;
 		    //alert(groupdatahtml);
                     screendiv.style = "display:;width:80%;height:70%;background-color:#e6e6ff;position:fixed;margin: auto;top:0; left:0;";
@@ -489,6 +497,7 @@
 	    xmlhttp.open('POST', '{{ getgroupdataurl }}', true);
 	    xmlhttp.send(encodedpostdata);
 	}
+	
 
 	function leavegroup(groupname){
 	    var xmlhttp;
@@ -2879,9 +2888,9 @@
 	    xmlhttp.send(postdata);
         }
         
-        function showmoresubscribedgroups(uid){
+        function showmoresubscribedgroups(uid, pageno=1){
             csrf = document.searchform.csrfmiddlewaretoken.value;
-            postdata = "uid=" + uid + "&csrfmiddlewaretoken=" + csrf;
+            postdata = "uid=" + uid + "&csrfmiddlewaretoken=" + csrf + "&pageno=" + pageno;
             var xmlhttp;
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();

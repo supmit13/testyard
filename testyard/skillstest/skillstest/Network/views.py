@@ -5393,13 +5393,19 @@ def showmoresubscribedgroups(request):
     groupmembersqset = GroupMember.objects.filter(member=userobj, status=True, removed=False, blocked=False).order_by('-group').order_by('-membersince')[startctr:endctr]
     htmlcontent = ""
     contextdict = {}
-    grouplinkslist = []
+    grouplinkparamsslist = []
     for groupmember in groupmembersqset:
-        grouplink = "<a href='#/' onClick='javascript:managegroupfloat(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
-        grouplinkslist.append(grouplink)
-    contextdict['grouplinkslist'] = grouplinkslist
+        grouplinkparams = [groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname]
+        grouplinkparamsslist.append(grouplinkparams)
+    contextdict['grouplinkparamsslist'] = grouplinkparamsslist
     contextdict['endmsg'] = ""
-    if grouplinkslist.__len__() == 0:
+    curpage = pageno
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    contextdict['nextpage'] = nextpage
+    contextdict['prevpage'] = prevpage
+    contextdict['uid'] = uid
+    if grouplinkparamsslist.__len__() == 0:
         contextdict['endmsg'] = "There are no more subscribed groups."
     tmpl = get_template("network/subscribedgroups.html")
     contextdict.update(csrf(request))

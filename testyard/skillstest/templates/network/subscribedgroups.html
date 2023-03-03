@@ -3,17 +3,18 @@
 <br/>
 <span style='padding-left:20px;padding-top:15px;font-weight:bold;color:#0000AA;font-size:larger;'>List of Groups Subscribed</span>
 <hr style='width:80%;'>
-<ul>
-{% for grplink in grouplinkslist %}
-<li>&nbsp;&nbsp;
+{% for grplinkparams in grouplinkparamsslist %}
 <div class='row'>
- {{grplink}}
+ <a href='#/' onClick="javascript:managegroupfloat('{{grplinkparams.0}}', '{{grplinkparams.1}}', '{{grplinkparams.2}}');">{{grplinkparams.3}}</a>
 </div>
-</li>
 {% endfor %}
-</ul>
 <br/>
-<div style='display:none;' id="transscreensgrp" class="semitrans"></div>
-<div style='display:none;' id="transscreensgrp2" class="semitrans2"></div>
+<div id="pagination">
+{% if prevpage >= 1 %}
+<a href='#/' onclick='javascript:showmoresubscribedgroups({{uid}}, {{prevpage}});'><< Prev</a>|<a href='#/' onclick='javascript:showmoresubscribedgroups({{uid}}, {{nextpage}});'>Next >></a>
+{% else %}
+<a href='#/' onclick='javascript:showmoresubscribedgroups({{uid}}, {{nextpage}});'>Next >></a>
+{% endif %}
+</div>
 <div class='form-group' style='padding-left:10px;padding-right:5px;'><input type='button' name='btnclose' value='Close' class='btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;' onclick='javascript:closelist();'></div>
 
