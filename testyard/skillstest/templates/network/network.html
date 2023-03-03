@@ -830,7 +830,7 @@
 	}
 
 
-	function searchforgroup(screendivid){
+	function searchforgroup(screendivid, pageno=1){
             screendiv = document.getElementById(screendivid);
 	    grpkeyword = document.getElementById('grpkeyword').value.trim();
 	    postdata = "grpkeyword=" + grpkeyword + "&csrfmiddlewaretoken=" + document.joinagroup.csrfmiddlewaretoken.value;
@@ -842,6 +842,7 @@
 		    postdata = postdata + "&topic=" + topicname;
 		}
 	    }
+	    postdata = postdata + "&pageno=" + pageno.toString();
 	    uriencodeddata = encodeURI(postdata);
    	    var xmlhttp;
 	    if (window.XMLHttpRequest){
@@ -855,9 +856,18 @@
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    searchresultarea = document.getElementById('searchresultdiv');
 		    searchresultarea.style.display = "";
-		    jsonresult = JSON.parse(xmlhttp.responseText);
+		    context = JSON.parse(xmlhttp.responseText);
+		    jsonresult = context['results'];
+		    nextpage = context['nextpage'];
+		    prevpage = context['prevpage'];
 		    if(jsonresult.length == 0){
-			searchresultarea.innerHTML = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
+			noresulthtml = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
+			noresulthtml += "<br/><div id='pagination'>";
+		        if(prevpage > 0){
+		            noresulthtml += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a>|";
+		        }
+		        noresulthtml += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next ></a>";
+		        searchresultarea.innerHTML = noresulthtml;
 			return(0);
 		    }
 		    screendiv.style = "display:;height:100%;";
@@ -887,6 +897,11 @@
 			}
 		    }
 		    html += "</table>";
+		    html += "<br/><div id='pagination'>";
+		    if(prevpage > 0){
+		        html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'><< Prev</a>|";
+		    }
+		    html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next >></a>";
 		    searchresultarea.innerHTML = html;
 	        }
 	    };

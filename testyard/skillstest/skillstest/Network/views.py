@@ -549,10 +549,16 @@ def searchgroups(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
+    pageno = 1
     grpkeyword = ""
     selectedtopics = []
     if request.POST.has_key('grpkeyword'):
         grpkeyword = request.POST['grpkeyword'];
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno']);
+        except:
+            pass # Keep pageno = 1
     querystring = request.body
     querystringparts = querystring.split("&")
     for querypart in querystringparts:
@@ -562,6 +568,8 @@ def searchgroups(request):
         elif k == 'topic':
             v = v.replace("_", " ")
             selectedtopics.append(v)
+    startctr = mysettings.PAGE_CHUNK_SIZE * pageno - mysettings.PAGE_CHUNK_SIZE
+    endctr = mysettings.PAGE_CHUNK_SIZE * pageno
     # Note: the keyword may be a part of group's name, description or tagline.
     results = []
     groupsqset = Group.objects.filter(Q(groupname__icontains=grpkeyword) | Q(description__icontains=grpkeyword))
@@ -569,14 +577,20 @@ def searchgroups(request):
     #groupsqset2 = list(Group.objects.filter())
     #for grp in groupsqset2:
     #    groupsqset.append(grp)
-    for grpobj in groupsqset:
+    for grpobj in groupsqset[startctr:endctr]:
         for topicname in selectedtopics:
             topicname = topicname.replace("%20", " ")
             if grpobj.basedontopic == topicname:
                 d = { 'groupname' : grpobj.groupname, 'tagline' : grpobj.tagline, 'description' : grpobj.description, 'memberscount' : grpobj.memberscount, 'membername' : userobj.displayname }
                 results.append(d)
                 break
-    message = json.dumps(results)
+    context = {}
+    context['results'] = results
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    context['nextpage'] = nextpage
+    context['prevpage'] = prevpage
+    message = json.dumps(context)
     response = HttpResponse(message)
     return response
 
