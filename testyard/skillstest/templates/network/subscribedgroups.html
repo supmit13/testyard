@@ -2,12 +2,19 @@
 <div class='form-group' style='padding-left:10px;padding-right:5px;'><input type='button' name='btnclose' value='Close' class='btn-testyard1' style='width:100px;color:#ffffcc;background-color:#0099cc;' onclick='javascript:closelist();'></div>
 <br/>
 <span style='padding-left:20px;padding-top:15px;font-weight:bold;color:#0000AA;font-size:larger;'>List of Groups Subscribed</span>
-<hr style='width:80%;'>
+<hr style='width:100%;'>
+{% if endmsg != "" %}
+<div class='row'>
+{{endmsg}}
+</div>
+{% else %}
 {% for grplinkparams in grouplinkparamsslist %}
 <div class='row'>
- <a href='#/' onClick="javascript:managegroupfloat('{{grplinkparams.0}}', '{{grplinkparams.1}}', '{{grplinkparams.2}}');">{{grplinkparams.3}}</a>
+ <a href='#/' onClick="javascript:managegroupfloat('{{grplinkparams.0}}', '{{grplinkparams.1}}', '{{grplinkparams.2}}');" style='padding-left:20px;'>{{grplinkparams.3}}</a>
 </div>
+<hr>
 {% endfor %}
+{% endif %}
 <br/>
 <div id="pagination">
 {% if prevpage >= 1 %}

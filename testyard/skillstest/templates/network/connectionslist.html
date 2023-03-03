@@ -3,6 +3,9 @@
 <br/>
 <span style='padding-left:20px;padding-top:15px;font-weight:bold;color:#0000AA;font-size:larger;'>List of Connections</span>
 <hr style='width:80%;'>
+{% if endmsg != "" %}
+<div class='row'> {{endmsg}} </div>
+{% else %}
 {% for contactparams in connectionslist %}
 {% if contactparams.3 == 0 %}
 <div class='row'>
@@ -14,6 +17,7 @@
 </div>
 {% endif %}
 {% endfor %}
+{% endif %}
 <br/>
 <div id="pagination">
 {% if prevpage >= 1 %}
