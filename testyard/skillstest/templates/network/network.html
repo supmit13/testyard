@@ -2060,6 +2060,7 @@
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 	            contextdict = JSON.parse(xmlhttp.responseText);
 	            messagesdictenc = contextdict['messagesdictenc'];
+	            //messagesdictenc = xmlhttp.responseText;
 	            pageno = contextdict['pageno'];
 		    showmessages(messagesdictenc, pageno);
 	        }

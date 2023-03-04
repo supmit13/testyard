@@ -331,10 +331,6 @@ def getmoremessages(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
     pageno = 1
-    useremail = ""
-    if request.POST.has_key('useremail'):
-        useremail = urllib.unquote(request.POST['useremail']).decode('utf8')
-    # The above useremail variable is actually never used. Should we use it to identify the user? For now, NO.
     if request.POST.has_key('pageno'):
         try:
             pageno = int(request.POST['pageno'])
@@ -344,10 +340,10 @@ def getmoremessages(request):
     endctr = pageno * mysettings.PAGE_CHUNK_SIZE
     messagesdict = {}
     messageiduseddict = {};
-    messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')[startctr:endctr]
+    messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
     messageobj = None
     messagesctr = 0
-    for messageobj in messagesqset:
+    for messageobj in messagesqset[startctr:endctr]:
         messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
         if messageobj.attachmentfile:
             messageattachmentfile = messageobj.attachmentfile.replace('"', "\&quot;")
@@ -390,9 +386,9 @@ def getmoremessages(request):
             break
     messagesqset2 = []
     if messageobj is not None:
-        messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')[startctr:endctr]
+        messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')
     messagesctr = 0
-    for messageobj in messagesqset2:
+    for messageobj in messagesqset2[startctr:endctr]:
         if not messageiduseddict.has_key(messageobj.id):
             messageiduseddict[messageobj.id] = 1
         else:
