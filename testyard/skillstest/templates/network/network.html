@@ -1317,9 +1317,9 @@
 	    xmlhttp.open('POST', '{{managemembersurl}}', true);
 	    xmlhttp.send(postdata)
 	}
-
-
-	function joinpopupcontent(grpname, joinrequestsinfo_strb64, state){
+	
+	
+	function joinpopupcontent(grpname, joinrequestsinfo_strb64, state, pageno=1){
 	    joinrequestsinfo_str = Base64.decode(joinrequestsinfo_strb64);
 	    joinrequestsinfo = JSON.parse(joinrequestsinfo_str);
 	    showhidediv = document.getElementById("showhidejoinrequests");
@@ -1438,6 +1438,14 @@
 		    i++;
 		}
 	    }
+	    html += "<tr><td align='center' colspan='6'>";
+	    nextpage = pageno + 1;
+	    prevpage = pageno - 1;
+	    if(prevpage > 0){
+	        html += "<a href='#/' onclick='javascript:getmorejoinrequests(\"" + grpname + "\", \"" + state + "\"," + prevpage.toString() + ");'>< Prev</a>|";
+	    }
+	    html += "<a href='#/' onclick='javascript:getmorejoinrequests(\"" + grpname + "\", \"" + state + "\"," + nextpage.toString() + ");'>Next ></a>";
+	    html += "</td></tr>";
 	    html += "<tr><td align='center' colspan='6'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"{{savegroupjoinstatusurl}}\", \"" + grpname + "\");' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();' class='btn btn-testyard1' style='background-color:#b3b3ff;'></td></tr>";
 	    html += "</table></center>";
 	    return (html);
@@ -1450,15 +1458,17 @@
 	}
 
 	// We will be getting base64 encoded data for the 2nd param.
-	function popupjoinrequests(grpname, joinrequestsinfo_strb64, state){
+	function popupjoinrequests(grpname, joinrequestsinfo_strb64, state, pageno=1){
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
 	    childisborn = 0;
 	    html = "<html><head><title>Join Requests to '" + grpname + "'</title>";
 	    html += "\n<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'><scr" + "ipt src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'></scr" + "ipt>\n";
 	    html += "</head><body style='background-color:#669999;'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
 	    html += "<div><font color='#550000' style='font-weight:bold'><i><center>Note: Reloading the parent window will automatically close this window. <br>You are strongly suggested to save your changes on this window before attempting to reload the parent window.<br>You may save  all your changes on this window by clicking on the 'Save Changes' button.</center></i></font></div><br><br>";
 	    html += "<div id='contentspace' style=''>";
-  	    html += joinpopupcontent(grpname, joinrequestsinfo_strb64, state);
+  	    html += joinpopupcontent(grpname, joinrequestsinfo_strb64, state, pageno);
 	    html += "</div></form>"; // end of 'contentspace' div
+	    //html += "<form name='dummyform' id='dummyform' ><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'></form>";
 	    html += "</body></html>";
 	    if(childisborn == 0){
 	        joinreqspopup = window.open("", "joinreqswin", "width=1200, height=800, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
@@ -1489,6 +1499,32 @@
 	    script.setAttribute('src', 'static/javascript/network.js');
 	    script.setAttribute('type', 'text/javascript');
 	    joinreqspopup.document.getElementsByTagName('head')[0].appendChild(script);
+	    
+	    script2 = joinreqspopup.document.createElement("script");
+	    script2.setAttribute('type', 'text/javascript');
+	    script2.innerHTML = "\n \
+	        function getmorejoinrequests(grpname, state, pageno){\n \
+	            var actionurl = '{{getmorejoinrequestsurl}}'; \n \
+	            actionurl = actionurl + '?grpname=' + grpname + '&state=' + state + '&pageno=' + pageno.toString();\n \
+	            var xmlhttp;\n \
+   	            if (window.XMLHttpRequest){\n \
+		        xmlhttp=new XMLHttpRequest();\n \
+	            }\n \
+	            else{\n \
+		        xmlhttp=new ActiveXObject('Microsoft.XMLHTTP');\n \
+	            }\n \
+	            xmlhttp.onreadystatechange = function(){\n \
+			if(xmlhttp.readyState == 4 && xmlhttp.status==200){\n \
+			    contentdiv = document.getElementById('contentspace');\n \
+			    context = JSON.parse(xmlhttp.responseText);\n \
+			    contentdiv.innerHTML = joinpopupcontent2(grpname, context['joinrequestsinfo'], state, pageno);\n \
+			}\n \
+	            };\n \
+	            xmlhttp.open('GET', actionurl, false);\n \
+	            xmlhttp.send();\n \
+	        }\n \
+	    ";
+	    joinreqspopup.document.getElementsByTagName('head')[0].appendChild(script2);
 	}
 
 	

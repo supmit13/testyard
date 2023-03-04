@@ -27,7 +27,7 @@ a.btn:hover { border-radius: .25rem; align-items: center;justify-content: center
 <br /><br />
 {% if joinrequestsinfo|length > 0 %}
 <div id='showhidejoinrequests'>
-<font size='-1' color='#0000AA' style='font-weight:bold'>Join Requests<a href='#/' onClick="javascript:popupjoinrequests('{{groupname}}', '{{joinrequestsinfo}}', 'open');"> Show</a></font>
+<font size='-1' color='#0000AA' style='font-weight:bold'>Join Requests<a href='#/' onClick="javascript:popupjoinrequests('{{groupname}}', '{{joinrequestsinfo}}', 'open', '{{pageno}}');"> Show</a></font>
 </div>
 {% endif %}
 {% endif %}

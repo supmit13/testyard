@@ -96,6 +96,7 @@ def get_network_template_vars(userobj):
     templatevars['showmoresubscribedgroupsurl'] = mysettings.SHOW_MORE_SUBSCRIBED_GRPS_URL
     templatevars['showmoreconnectionsurl'] = mysettings.SHOW_MORE_CONNECTIONS_URL
     templatevars['getmoremessagesurl'] = mysettings.GET_MORE_MESSAGES_URL
+    templatevars['getmorejoinrequestsurl'] = mysettings.GET_MORE_JOIN_REQUESTS_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -1184,10 +1185,10 @@ def getgroupdata(request):
     contextdict['groupposts'] = postcontentenc
     if isowner is True:
         joinrequestsinfo = { 'open' : [], 'close' : [], 'refuse' : [], 'accept' : [] }
-        joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')
-        joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='close')
-        joinreqsrefuseqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='refuse')
-        joinreqsacceptqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='accept')
+        joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')[0:mysettings.PAGE_CHUNK_SIZE]
+        joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='close')[0:mysettings.PAGE_CHUNK_SIZE]
+        joinreqsrefuseqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='refuse')[0:mysettings.PAGE_CHUNK_SIZE]
+        joinreqsacceptqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='accept')[0:mysettings.PAGE_CHUNK_SIZE]
         for joinreq in joinreqsopenqset:
             displayname = joinreq.user.displayname
             fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
@@ -1242,6 +1243,7 @@ def getgroupdata(request):
         if bankacctqset.__len__() > 0:
             contextdict['bankaccountid'] = bankacctqset[0].id
     contextdict['postsperpage'] = mysettings.MAX_POSTS_IN_PAGE
+    contextdict['pageno'] = 1
     # Render content using 'contextdict'
     tmpl = get_template("network/managegroups.html")
     if owned:
@@ -1259,6 +1261,113 @@ def getgroupdata(request):
         managegroupshtml = managegroupshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(managegroupshtml)
 
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+def getmorejoinrequests(request):
+    message = ''
+    if request.method != "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    grpname, state = "", "open"
+    pageno = 1
+    if request.GET.has_key('grpname'):
+        grpname = request.GET['grpname']
+    if request.GET.has_key('state'):
+        state = request.GET['state']
+    if request.GET.has_key('pageno'):
+        try:
+            pageno = int(request.GET['pageno'])
+        except:
+            pass
+    grpobj = None
+    grpqset = None
+    try:
+        grpqset = Group.objects.filter(groupname=grpname)
+    except:
+        print "Error finding the requested group: %s"%(sys.exc_info()[1].__str__())
+        message = error_msg('1089')
+        response = HttpResponse(message)
+    if not grpqset or grpqset.__len__() == 0:
+        message = ""
+        #message = error_msg('1102')
+        response = HttpResponse(message)
+        return response
+    grpobj = grpqset[0]
+    isowner = False
+    if userobj.displayname == grpobj.owner.displayname:
+        isowner = True
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
+    contextdict = {}
+    if isowner is True:
+        joinrequestsinfo = { 'open' : [], 'close' : [], 'refuse' : [], 'accept' : [] }
+        joinreqsopenqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='open')[startctr:endctr]
+        joinreqsclosedqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='close')[startctr:endctr]
+        joinreqsrefuseqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='refuse')[startctr:endctr]
+        joinreqsacceptqset = GroupJoinRequest.objects.filter(group=grpobj, outcome='accept')[startctr:endctr]
+        for joinreq in joinreqsopenqset:
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['open'].append(ll)
+        for joinreq in joinreqsclosedqset:
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['close'].append(ll)
+        for joinreq in joinreqsrefuseqset:
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            ll = [ displayname, fullname, requestdate, userimageurl ]
+            joinrequestsinfo['refuse'].append(ll)
+        for joinreq in joinreqsacceptqset:
+            displayname = joinreq.user.displayname
+            fullname = joinreq.user.firstname + " " + joinreq.user.middlename + " " + joinreq.user.lastname
+            requestdtobj = joinreq.requestdate
+            requestdate = skillutils.yetanotherpythontomysqldatetime(requestdtobj)
+            userimageurl = "media/%s/images/%s"%(joinreq.user.displayname, joinreq.user.userpic)
+            grpmemberqset = GroupMember.objects.filter(group=grpobj, member=joinreq.user)
+            """
+            if grpmemberqset.__len__() == 0:
+                if grpobj.owner != joinreq.user:
+                    message = error_msg('1115')
+                    response = HttpResponse(message)
+                    return response
+            """
+            if grpmemberqset.__len__() > 0:
+                grpmemberobj = grpmemberqset[0]
+                if grpmemberobj.group.owner.displayname != grpmemberobj.member.displayname:
+                    ll = [ displayname, fullname, requestdate, userimageurl, grpmemberobj.removed, grpmemberobj.blocked ]
+                else:
+                    ll = [ displayname, fullname, requestdate, userimageurl, -1, -1 ]
+                joinrequestsinfo['accept'].append(ll)
+        joinrequestsinfo_str = json.dumps(joinrequestsinfo)
+        contextdict['joinrequestsinfo'] = base64.b64encode(joinrequestsinfo_str) # Had to encode this as otherwise the data gets garbled.
+    else:
+        joinrequestsinfo = {}
+        joinrequestsinfo_str = json.dumps(joinrequestsinfo)
+        contextdict['joinrequestsinfo'] = base64.b64encode(joinrequestsinfo_str)
+    contextdict['state'] = state
+    contextdict['pageno'] = pageno
+    message = json.dumps(contextdict)
+    response = HttpResponse(message)
+    return response
+        
 
 @skillutils.is_session_valid
 @skillutils.session_location_match
