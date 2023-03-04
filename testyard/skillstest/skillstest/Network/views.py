@@ -343,7 +343,13 @@ def getmoremessages(request):
     messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
     messageobj = None
     messagesctr = 0
-    for messageobj in messagesqset[startctr:endctr]:
+    for messageobj in messagesqset:
+        if messagesctr < startctr: # We can't just take a slice from messagesqset since we need to get messageobj populated with the last value.
+            messagesctr += 1
+            continue
+        if messagesctr >= endctr:
+            messagesctr += 1
+            continue
         messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
         if messageobj.attachmentfile:
             messageattachmentfile = messageobj.attachmentfile.replace('"', "\&quot;")
@@ -386,9 +392,15 @@ def getmoremessages(request):
             break
     messagesqset2 = []
     if messageobj is not None:
-        messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')
+        messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')        
     messagesctr = 0
-    for messageobj in messagesqset2[startctr:endctr]:
+    for messageobj in messagesqset2:
+        if messagesctr < startctr:
+            messagesctr += 1
+            continue
+        if messagesctr >= endctr:
+            messagesctr += 1
+            continue
         if not messageiduseddict.has_key(messageobj.id):
             messageiduseddict[messageobj.id] = 1
         else:
