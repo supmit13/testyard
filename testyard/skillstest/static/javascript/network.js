@@ -211,7 +211,7 @@ function joinpopupcontent2(grpname, joinrequestsinfo_strb64, state, pageno=1){
 	 html += "<center><font color='#0000AA' face='Verdana'>List Requests by Status:&nbsp;&nbsp;</font><select name='requeststate' onChange='javascript:listselectedstatus(\"" + grpname + "\", \"" + joinrequestsinfo_strb64 + "\");' class='form-control' style='width:200px;'><option value='open'>Open</option><option value='close'>Closed</option><option value='refuse'>Refused</option><option value='accept' selected>Accepted</option></select></center>";
     }
     html += "<br><span style='block:left;clear:both;width:600px;padding-left:50px;word-wrap:break-all;overflow-wrap:break-word;'><font color='#550000' style='font-weight:bold'><i>Note: A 'blocked' user would not be able to post messages in the group, but would remain visible to other members. 'Blocked' users<br> would also be able to view other's posts to the group. A 'removed' user would neither be able to post messages to the group, nor would she/he be able to view messages posted by other members in the group. Also, other members would not be able to see a 'removed' user. </i></font></span><br /><br />";
-    html += "{% csrf_token %}";
+    //html += "{% csrf_token %}";
     html += "<center><table border='0' cellspacing='3' cellpadding='4'>";
     html += "<tr><td align='center' colspan='6'><input type='button' name='btnsaveall' id='btnsaveall' value='Save Changes' onClick='savealljoinrequestchanges(\"skillstest/network/group/savejoinstatus/\", \"" + grpname + "\");' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btnclose' id='btnclose' value='Close Popup' onClick='javascript:window.close();' class='btn btn-testyard1' style='background-color:#b3b3ff;'></td></tr>";
     if(state == "open"){
