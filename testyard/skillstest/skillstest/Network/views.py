@@ -95,6 +95,7 @@ def get_network_template_vars(userobj):
     templatevars['cutpercent'] = mysettings.CUT_FRACTION * 100
     templatevars['showmoresubscribedgroupsurl'] = mysettings.SHOW_MORE_SUBSCRIBED_GRPS_URL
     templatevars['showmoreconnectionsurl'] = mysettings.SHOW_MORE_CONNECTIONS_URL
+    templatevars['getmoremessagesurl'] = mysettings.GET_MORE_MESSAGES_URL
 
     validfrom = datetime.datetime.now()
     validfromstr = skillutils.pythontomysqldatetime2(str(validfrom))
@@ -197,6 +198,7 @@ def network(request):
     messageiduseddict = {};
     messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')
     messageobj = None
+    messagesctr = 0
     for messageobj in messagesqset:
         messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
         if messageobj.attachmentfile:
@@ -235,9 +237,13 @@ def network(request):
             subpostslist.append(poststr)
         if messageobj is not None:
             messagesdict[messageobj.id].append(subpostslist)
+        messagesctr += 1
+        if messagesctr >= int(mysettings.PAGE_CHUNK_SIZE/2):
+            break
     messagesqset2 = []
     if messageobj is not None:
         messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')
+    messagesctr = 0
     for messageobj in messagesqset2:
         if not messageiduseddict.has_key(messageobj.id):
             messageiduseddict[messageobj.id] = 1
@@ -253,6 +259,9 @@ def network(request):
         messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
         if messageobj.newmsg is True:
             messagesdict[messageobj.id] = ["new##" + messagesdict[messageobj.id][0], ]
+        messagesctr += 1
+        if messagesctr >= int(mysettings.PAGE_CHUNK_SIZE/2):
+            break
     messagesdictstr = json.dumps(messagesdict)
     messagesdictenc = base64.b64encode(messagesdictstr)
     for conninvite in connectioninvitationsqset:
@@ -306,6 +315,110 @@ def network(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         managenetworkhtml = managenetworkhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(managenetworkhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getmoremessages(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    pageno = 1
+    useremail = ""
+    if request.POST.has_key('useremail'):
+        useremail = urllib.unquote(request.POST['useremail']).decode('utf8')
+    # The above useremail variable is actually never used. Should we use it to identify the user? For now, NO.
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
+    messagesdict = {}
+    messageiduseddict = {};
+    messagesqset = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=None).order_by('-createdon')[startctr:endctr]
+    messageobj = None
+    messagesctr = 0
+    for messageobj in messagesqset:
+        messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
+        if messageobj.attachmentfile:
+            messageattachmentfile = messageobj.attachmentfile.replace('"', "\&quot;")
+            attachtag = str("<a href='#/' onclick='javascript:downloadattachment(\"media/" + messagepostername + "/posts/" + messageattachmentfile + "\", \"" + str(messageobj.id) + "\", \"" + str(userobj.id) + "\");'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            #attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+        else:
+            attachtag = ""
+        messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
+        if messageobj.newmsg is True:
+            messagesdict[messageobj.id] = ["new##" + messagesdict[messageobj.id][0], ]
+        if not messageiduseddict.has_key(messageobj.id):
+            messageiduseddict[messageobj.id] = 1
+        else:
+            pass
+        subpostsqset1 = Post.objects.filter(posttargettype='user', poster=userobj, relatedpost_id=messageobj.id).order_by('-createdon')
+        subpostsqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj, relatedpost_id=messageobj.id).order_by('-createdon')
+        subpostsqset = list(chain(subpostsqset1, subpostsqset2))
+        subpostslist = []
+        for subpost in subpostsqset:
+            if not messageiduseddict.has_key(subpost.id):
+                messageiduseddict[subpost.id] = 1
+            else:
+                pass
+            poststr = ""
+            if subpost.newmsg is True:
+                poststr = "new##"
+            if subpost.attachmentfile:
+                subpostername = subpost.poster.displayname.replace('"', "\&quot;")
+                subpostattachmentfile = subpost.attachmentfile.replace('"', "\&quot;")
+                attachtag = str("<a href='#/' onclick='javascript:downloadattachment(\"media/" + subpostername + "/posts/" + subpostattachmentfile + "\",\"" + str(subpost.id) + "\", \"" + str(userobj.id) + "\");'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+                #attachtag = str("<a href='media/" + subpost.poster.displayname + "/posts/" + subpost.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            else:
+                attachtag = ""
+            poststr += str(subpost.id) + "##" + subpost.poster.displayname + "##" + str(subpost.createdon) + "##" + attachtag + "##" + subpost.postmsgtag + "##" + subpost.postcontent
+            subpostslist.append(poststr)
+        if messageobj is not None:
+            messagesdict[messageobj.id].append(subpostslist)
+        messagesctr += 1
+        if messagesctr >= int(mysettings.PAGE_CHUNK_SIZE/2):
+            break
+    messagesqset2 = []
+    if messageobj is not None:
+        messagesqset2 = Post.objects.filter(posttargettype='user', posttargetuser=userobj).exclude(relatedpost_id=messageobj.id).exclude(relatedpost_id=None).order_by('-createdon')[startctr:endctr]
+    messagesctr = 0
+    for messageobj in messagesqset2:
+        if not messageiduseddict.has_key(messageobj.id):
+            messageiduseddict[messageobj.id] = 1
+        else:
+            pass
+        if messageobj.attachmentfile:
+            messagepostername = messageobj.poster.displayname.replace('"', "\&quot;")
+            messagepostattachmentfile = messageobj.attachmentfile.replace('"', "\&quot;")
+            attachtag = str("<a href='#/' onclick='javascript:downloadattachment(\"media/" + messagepostername + "/posts/" + messagepostattachmentfile + "\",\"" + str(messageobj.id) + "\", \"" + str(userobj.id) + "\");'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+            #attachtag = str("<a href='media/" + messageobj.poster.displayname + "/posts/" + messageobj.attachmentfile + "'><img src='static/images/attachment.png' height='20px' width='20px' title='Attachment'></a>")
+        else:
+            attachtag = ""
+        messagesdict[messageobj.id] = [ messageobj.poster.displayname + "##" + str(messageobj.createdon) + "##" + attachtag + "##" + messageobj.postmsgtag + "##" + messageobj.postcontent, ]
+        if messageobj.newmsg is True:
+            messagesdict[messageobj.id] = ["new##" + messagesdict[messageobj.id][0], ]
+        messagesctr += 1
+        if messagesctr >= int(mysettings.PAGE_CHUNK_SIZE/2):
+            break
+    messagesdictstr = json.dumps(messagesdict)
+    messagesdictenc = base64.b64encode(messagesdictstr)
+    contextdict = {}
+    contextdict['messagesdict'] = messagesdict
+    contextdict['messagesdictenc'] = messagesdictenc
+    contextdict['pageno'] = pageno
+    contextdump = json.dumps(contextdict)
+    response = HttpResponse(contextdump)
+    return response
 
 
 @skillutils.is_session_valid

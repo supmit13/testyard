@@ -2044,9 +2044,32 @@
 	    xmlhttp.open('POST', '{{messagesearchurl}}', true);
 	    xmlhttp.send(postdata);
 	}
+	
+	
+	function getmessages(pageno=1){
+	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno.toString();
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+	        xmlhttp=new XMLHttpRequest();
+	    }
+	    else{
+	        xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	    }
+	    xmlhttp.onreadystatechange = function(){
+	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	            contextdict = JSON.parse(xmlhttp.responseText);
+	            messagesdictenc = contextdict['messagesdictenc'];
+	            pageno = contextdict['pageno'];
+		    showmessages(messagesdictenc, pageno);
+	        }
+	    };
+	    xmlhttp.open('POST', '{{getmoremessagesurl}}', true);
+	    xmlhttp.send(postdata);
+	}
 
 	// Display all messages to the user - Inbox in the right panel.
-	function showmessages(messagesdictenc){
+	function showmessages(messagesdictenc, pageno=1){
 	    messagesdictstr = Base64.decode(messagesdictenc);
 	    messagesdict = JSON.parse(messagesdictstr);
 	    screendiv = document.getElementById("transscreens");
@@ -2155,6 +2178,14 @@
 		}
 	    }
 	    html += "</table></center>";
+	    nextpage = pageno + 1;
+	    prevpage = pageno - 1;
+	    html += "<br/><div id='pagination' class='row' style='margin:auto;text-align:center;width:30%;padding-left:20px;'>";
+	    if(prevpage > 0){
+	        html += "<a href='#/' onclick='javascript:getmessages(" + prevpage.toString() + ");'  style='align:center;padding-left:20px;'>< Prev</a>|";
+	    }
+	    html += "<a href='#/' onclick='javascript:getmessages(" + nextpage.toString() + ");' style='align:center;padding-left:20px;'>Next ></a>";
+	    html += "</div>";
             html += "<br/><br/><div class='row' style='text-align:center;padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div><br/><br/>";
 	    //html += "<br><center><div id='getmorediv'><font color='#0000AA' size = -1 style='font-weight:bold;'><a href='#/' onClick=javascript:showmoreposts(messagesdict['start1'], messagesdict['start2']);>Show More</a></font></div></center>";
     	    screendiv.innerHTML = html;
