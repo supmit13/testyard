@@ -87,12 +87,18 @@ def testschallengesearch(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     testname, searchphrase, creatorname = "", "", ""
+    pageno = 1
     if request.POST.has_key('testname'):
         testname = request.POST['testname']
     if request.POST.has_key('searchphrase'):
         searchphrase = request.POST['searchphrase']
     if request.POST.has_key('testcreator'):
         testcreator = request.POST['testcreator']
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
     testrecs = []
     testqset, challengesqset, testsqsetcreator = [], [], []
     if testname:
@@ -106,6 +112,7 @@ def testschallengesearch(request):
     # Point to remember: challenges of tests that have not yet been activated or published will not figure in the list.
     # We need to implement this functionality in this method. If iseditable is True, then the test hasn't been published yet
     # and hence we cannot use its challenges/questions in our search results.
+    ctr = 0
     for testobj in testqset:
         if iseditable(testobj): # Test hasn't been published yet. So it is unusable in search result
             continue
@@ -124,7 +131,9 @@ def testschallengesearch(request):
         testrecs.append(testobj)
     resultrecs = {}
     datadict = {}
-    for trec in testrecs:
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
+    for trec in testrecs[startctr:endctr]:
         if trec.testtype == 'COMP':
             trec.testtype = "Composite"
         elif trec.testtype == 'MULT':
@@ -192,6 +201,11 @@ def testschallengesearch(request):
             progenvstr = "-"
         resultrecs[trec.testname] = {'id' : trec.id, 'topic' : trec.topic.topicname, 'creator' : trec.creator.displayname, 'testtype' : trec.testtype, 'createdate' : trec.createdate, 'maxscore' : trec.maxscore, 'passscore' : trec.passscore, 'ruleset' : rulesetstr, 'duration' : str(trec.duration/60) + " 	minutes" , 'allowedlanguages' : trec.allowedlanguages, 'challengecount' : trec.challengecount, 'publishdate' : trec.publishdate, 'multimediareqd' : trec.multimediareqd, 'progenv' : progenvstr, 'scope' : trec.scope, 'quality' : trec.quality, 'negativescoreallowed' : trec.negativescoreallowed, 'copyable' : copyable}
     datadict['resultrecs'] = resultrecs
+    datadict['pageno'] = pageno
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    datadict['nextpage'] = nextpage
+    datadict['prevpage'] = prevpage
     tmpl = get_template("advsearch/testrecords.html")
     cxt = Context(datadict)
     testrecordshtml = tmpl.render(cxt)
@@ -212,8 +226,14 @@ def groupsearch(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     partialgroupname = ""
+    pageno = 1
     if request.POST.has_key('groupname'):
         partialgroupname = request.POST['groupname']
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
     resultrecs = {}
     datadict = {}
     # Conduct search here...
@@ -250,7 +270,18 @@ def groupsearch(request):
         grppaid = grp.ispaid
         grpimg = "/media/%s/groups/%s/"%(ownername, grpname) + str(grp.groupimagefile)
         resultrecs[grpname] = {'groupname' : grpname, 'tagline' : grptagline, 'memberscount' : memberscount, 'ownername' : ownername, 'topic' : grptopic, 'status' : grpstatus, 'ispaid' : grppaid, 'groupimage' : grpimg, 'groupid' : grp.id}
-    datadict['resultrecs'] = resultrecs
+    allmatchedgroupnames = resultrecs.keys()
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
+    pagedgroups = {}
+    for grpname in allmatchedgroupnames[startctr:endctr]:
+        pagedgroups[grpname] = resultrecs[grpname]
+    datadict['resultrecs'] = pagedgroups
+    datadict['pageno'] = pageno
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    datadict['prevpage'] = prevpage
+    datadict['nextpage'] = nextpage
     datadict['groupdataurl'] = mysettings.GROUP_DATA_URL
     tmpl = get_template("advsearch/grouprecords.html")
     cxt = Context(datadict)
@@ -305,10 +336,16 @@ def usersearch(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     username, searchphrase = "", ""
+    pageno = 1
     if request.POST.has_key('user'):
         username = request.POST['user']
     if request.POST.has_key('searchphrase'):
         searchphrase = request.POST['searchphrase']
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
     usersqset_byname = []
     usersqset_byphrase = []
     if username != "":
@@ -336,7 +373,9 @@ def usersearch(request):
         userobjlist.append(userobject)
     resultrecs = {}
     datadict = {}
-    for userobject in userobjlist:
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
+    for userobject in userobjlist[startctr:endctr]:
         firstname = userobject.firstname
         lastname = userobject.lastname
         middlename = userobject.middlename
@@ -364,6 +403,11 @@ def usersearch(request):
             usertype = ""
         resultrecs[displayname] = {'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'active' : active, 'sex' : sex, 'userpic' : userpic, 'membersince' : membersince, 'usertype' : usertype}
     datadict['resultrecs'] = resultrecs
+    datadict['pageno'] = pageno
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    datadict['prevpage'] = prevpage
+    datadict['nextpage'] = nextpage
     tmpl = get_template("advsearch/userrecords.html")
     cxt = Context(datadict)
     userrecordshtml = tmpl.render(cxt)

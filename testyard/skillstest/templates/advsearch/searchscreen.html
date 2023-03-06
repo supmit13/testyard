@@ -29,12 +29,12 @@
 		</style>
 		<!-- ### Post Entry Begin ###  -->
 		<script type='text/javascript'>
-		function conductsearchtest(){
+		function conductsearchtest(pageno=1){
 		    testname = document.frmadvsearch.testname.value;
 		    searchphrase = document.frmadvsearch.searchphrase.value;
 		    testcreator = document.frmadvsearch.testcreator.value;
 		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
-		    postdata = "testname=" + testname + "&searchphrase=" + searchphrase + "&testcreator=" + testcreator + "&csrfmiddlewaretoken=" + csrftoken;
+		    postdata = "testname=" + testname + "&searchphrase=" + searchphrase + "&testcreator=" + testcreator + "&csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno.toString();
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
 		    	xmlhttp=new XMLHttpRequest();
@@ -56,11 +56,11 @@
   		    xmlhttp.send(postdata);
 		}
 
-		function conductsearchuser(){
+		function conductsearchuser(pageno=1){
 		    usrname = document.frmadvsearch.username.value;
 		    searchphrase = document.frmadvsearch.usr_searchphrase.value;
 		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
-		    postdata = "user=" + usrname + "&searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken;
+		    postdata = "user=" + usrname + "&searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno.toString();
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
 		    	xmlhttp=new XMLHttpRequest();
@@ -83,10 +83,10 @@
 		    xmlhttp.send(postdata);
 		}
 
-		function conductsearchgroup(){
+		function conductsearchgroup(pageno=1){
 		    groupname = document.frmadvsearch.grpname.value;
 		    csrftoken = document.frmadvsearch.csrfmiddlewaretoken.value;
-		    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + csrftoken;
+		    postdata = "groupname=" + groupname + "&csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno.toString();
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
 		    	xmlhttp=new XMLHttpRequest();

@@ -22,4 +22,11 @@
     <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.ownername}}</td>
 </tr>
 {% endfor %}
+<tr><td colspan='8'>&nbsp;</td></tr>
+<tr><td colspan='8' style='text-align:center;'>
+{% if prevpage > 0 %}
+<a href='#/' onclick="javascript:conductsearchgroup({{prevpage}});">Prev</a>|
+{% endif %}
+<a href='#/' onclick="javascript:conductsearchgroup({{nextpage}});">Next</a>
+</td></tr>
 </table>

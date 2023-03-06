@@ -48,5 +48,13 @@
 {% endfor %}
 </table>
 <div style="color:#AA0000;font-style:italic;font-size:-1">* Tests that have 'private' or 'protected' scope or are scheduled in future cannot be copied</div>
+<br/>
+<div style="color:#0000AA;font-style:bold;text-align:center;">
+{% if prevpage > 0 %}
+<a href='#/' onclick="javascript:conductsearchtest({{prevpage}});">Prev</a>|
+{% endif %}
+<a href='#/' onclick="javascript:conductsearchtest({{nextpage}});">Next</a>
+</div><br/><br/>
+
 
 

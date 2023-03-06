@@ -20,4 +20,12 @@
     <td style='padding-left:5px;color:#0000AA;font-size:0.8em;'>{{otherattribs.usertype}}</td>
 </tr>
 {% endfor %}
+<tr><td colspan='7'>&nbsp;</td></tr>
+<tr><td colspan='7' style='text-align:center;'>
+{% if prevpage > 0 %}
+<a href='#/' onclick="javascript:conductsearchuser({{prevpage}});">Prev</a>|
+{% endif %}
+<a href='#/' onclick="javascript:conductsearchuser({{nextpage}});">Next</a>
+</td></tr>
 </table>
+
