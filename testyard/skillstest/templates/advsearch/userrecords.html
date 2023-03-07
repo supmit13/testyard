@@ -22,10 +22,16 @@
 {% endfor %}
 <tr><td colspan='7'>&nbsp;</td></tr>
 <tr><td colspan='7' style='text-align:center;'>
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
 {% if prevpage > 0 %}
-<a href='#/' onclick="javascript:conductsearchuser({{prevpage}});">Prev</a>|
+<li class="page-item"><a href='#/' onclick="javascript:conductsearchuser({{prevpage}});" class="page-link" style='font-size:medium;'>Prev</a></li>
 {% endif %}
-<a href='#/' onclick="javascript:conductsearchuser({{nextpage}});">Next</a>
+<li class="page-item"><a href='#/' onclick="javascript:conductsearchuser({{nextpage}});" class="page-link" style='font-size:medium;'>Next</a></li>
+  </ul>
+</nav>
+
 </td></tr>
 </table>
 

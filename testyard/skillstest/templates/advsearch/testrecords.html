@@ -50,10 +50,16 @@
 <div style="color:#AA0000;font-style:italic;font-size:-1">* Tests that have 'private' or 'protected' scope or are scheduled in future cannot be copied</div>
 <br/>
 <div style="color:#0000AA;font-style:bold;text-align:center;">
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
 {% if prevpage > 0 %}
-<a href='#/' onclick="javascript:conductsearchtest({{prevpage}});">Prev</a>|
+<li class="page-item"><a href='#/' onclick="javascript:conductsearchtest({{prevpage}});" class="page-link" style='font-size:medium;'>< Prev</a></li>
 {% endif %}
-<a href='#/' onclick="javascript:conductsearchtest({{nextpage}});">Next</a>
+<li class="page-item"><a href='#/' onclick="javascript:conductsearchtest({{nextpage}});" class="page-link" style='font-size:medium;'>Next ></a></li>
+  </ul>
+</nav>
+
 </div><br/><br/>
 
 

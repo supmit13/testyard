@@ -24,9 +24,15 @@
 {% endfor %}
 <tr><td colspan='8'>&nbsp;</td></tr>
 <tr><td colspan='8' style='text-align:center;'>
+
+<nav aria-label="Page navigation example">
+  <ul class="pagination">
 {% if prevpage > 0 %}
-<a href='#/' onclick="javascript:conductsearchgroup({{prevpage}});">Prev</a>|
+<li class="page-item"><a href='#/' onclick="javascript:conductsearchgroup({{prevpage}});" class="page-link" style='font-size:medium;'>Prev</a></li>
 {% endif %}
-<a href='#/' onclick="javascript:conductsearchgroup({{nextpage}});">Next</a>
+<li class="page-item"><a href='#/' onclick="javascript:conductsearchgroup({{nextpage}});" class="page-link" style='font-size:medium;'>Next</a></li>
+  </ul>
+</nav>
+
 </td></tr>
 </table>
