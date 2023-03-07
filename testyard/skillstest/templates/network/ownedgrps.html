@@ -38,10 +38,14 @@ a.btn:hover { border-radius: .25rem; }
 {% endfor %}
 <tr><td colspan=14>&nbsp;</td></tr>
 <tr><td colspan=14>
+<nav aria-label="Test Records Page Navigation">
+  <ul class="pagination">
 {% if prevpage > 0 %}
-<a href='#' onclick="javascript:manageownedgrpsscreen('{{searchquery}}',{{prevpage}});" style='align:center;color:#0000aa;padding-left:20px;'>< Prev </a>
+<li class='page-item'><a href='#' onclick="javascript:manageownedgrpsscreen('{{searchquery}}',{{prevpage}});" class='page-link' style='align:center;color:#0000aa;padding-left:20px;font-size:medium;'>< Prev </a></li>
 {% endif %}
-<a href='#' onclick="javascript:manageownedgrpsscreen('{{searchquery}}',{{nextpage}});" style='align:center;color:#0000aa;padding-left:20px;'>Next ></a>
+<li class='page-item'><a href='#' onclick="javascript:manageownedgrpsscreen('{{searchquery}}',{{nextpage}});" class='page-link' style='align:center;color:#0000aa;padding-left:20px;font-size:medium;'>Next ></a></li>
+  </ul>
+</nav>
 </td></tr>
 </table>
 <div style='display:none;' id="transscreens3" class="semitrans3"></div>

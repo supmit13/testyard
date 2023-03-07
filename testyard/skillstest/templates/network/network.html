@@ -862,11 +862,11 @@
 		    prevpage = context['prevpage'];
 		    if(jsonresult.length == 0){
 			noresulthtml = "<center><font color='#AA0000' style='font-weight:italic,bold'>The search did not yield any match</font></center>";
-			noresulthtml += "<br/><div id='pagination'>";
+			noresulthtml += "<br/><div id='pagination'><nav aria-label='Search For Group Pagination'><ul class='pagination'>";
 		        if(prevpage > 0){
-		            noresulthtml += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a>|";
+		            noresulthtml += "<li class='page-item'><a class='page-link' style='font-size:medium;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a></li>";
 		        }
-		        noresulthtml += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next ></a>";
+		        noresulthtml += "<li class='page-item'><a class='page-link' style='font-size:medium;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next ></a></li></ul></nav>";
 		        searchresultarea.innerHTML = noresulthtml;
 			return(0);
 		    }
@@ -897,11 +897,11 @@
 			}
 		    }
 		    html += "</table>";
-		    html += "<br/><div id='pagination'>";
+		    html += "<br/><div id='pagination'><nav aria-label='Search For Group Pagination'><ul class='pagination'>";
 		    if(prevpage > 0){
-		        html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a>|";
+		        html += "<li class='page-item'><a class='page-link' style='font-size:medium;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a></li>";
 		    }
-		    html += "<a style='align:center;color:#0000aa;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next ></a>";
+		    html += "<li class='page-item'><a class='page-link' style='font-size:medium;' href='#/' onclick='javascript:searchforgroup(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ");'>Next ></a></li></ul></nav>";
 		    searchresultarea.innerHTML = html;
 	        }
 	    };
@@ -1024,12 +1024,12 @@
 			    ctr++;
 		        }
 		    }
-		    html += "</table>";
-		    html += "<br/><div id='pagination'>";
+		    html += "</table></center>";
+		    html += "<br/><center><div id='pagination'><nav aria-label='Search User Pagination'><ul class='pagination'>";
 		    if(prevpage > 0){
-		        html += "<a href='#/' style='align:center;color:#0000aa;' onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a>|";
+		        html += "<li class='page-item'><a href='#/' class='page-link' style='font-size:medium;'  onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a></li>";
 		    }
-		    html += "<a href='#/' style='align:center;color:#0000aa;' onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ")'>Next ></a></div></center>";
+		    html += "<li class='page-item'><a href='#/' class='page-link' style='font-size:medium;'  onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + nextpage.toString() + ")'>Next ></a></li></ul></nav></div></center>";
 		    waiterspan.innerHTML = "";
 		    searchdiv.innerHTML = html;
 	        }
