@@ -49,6 +49,7 @@
     </tr>
     {% endif %}
 {% endfor %}
+  
 </table>
 {% endif %}
 <font color='#000000' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
@@ -99,9 +100,20 @@
     </tr>
     {% endif %}
 {% endfor %}
-</table>
-{% endif %}
+</table><br/>
 <font color='#000000' size=-1 style='font-weight:bold;'> <i> (Scroll extreme right to find the activation/deactivation links for the invitations.)</i></font>
+{% endif %}
+<br/>
+<div id='pagination' style='text-align:center;padding-left:10px;'>
+<nav aria-label="Manage Invitations Page Navigation">
+  <ul class="pagination">
+  {% if prevpage > 0 %}
+  <li class='page-item'><a href='#/' onclick="javascript:existinginvitations({{testid}}, '##LASTCSRF##', {{prevpage}});" class='page-link' style='font-size:medium;'>< Prev</a></li>
+  {% endif %}
+  <li class="page-item"><a href='#' onclick="javascript:existinginvitations({{testid}}, '##LASTCSRF##', {{nextpage}});" class="page-link" style='font-size:medium;'>Next ></a></li>
+  </ul>
+  </nav>
+</div>
 </div>
 {% csrf_token %}
 <table border=0 cellspacing=4 cellpadding=4>

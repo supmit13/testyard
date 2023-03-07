@@ -3419,11 +3419,20 @@ def manageinvitations(request):
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
     testid = None
+    pageno = 1
     if not request.POST.has_key('testid'):
         message = "Error: %s."%(error_msg('1059'))
         response = HttpResponse(message)
         return response
     testid = request.POST['testid'] # Got the test. Now extract data and populate the manageinvitation.html template
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    csrftoken = ""
+    if request.POST.has_key('csrfmiddlewaretoken'):
+        csrftoken = request.POST['csrfmiddlewaretoken']
     testobj = None
     try:
         testobj = Test.objects.filter(id=testid)[0]
@@ -3431,10 +3440,17 @@ def manageinvitations(request):
         message = "Error: %s"%(error_msg('1056'))
         response = HttpResponse(message)
         return responses
-    usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")
-    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active")
-    if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
-        message = "Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\">Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'>"%testid
+    startctr = pageno * mysettings.TEST_INVITATION_BY_TYPE_CHUNK_SIZE - mysettings.TEST_INVITATION_BY_TYPE_CHUNK_SIZE
+    endctr = pageno * mysettings.TEST_INVITATION_BY_TYPE_CHUNK_SIZE
+    usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")[startctr:endctr]
+    wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active")[startctr:endctr]
+    if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0 and pageno == 1:
+        message = "<p style='color:#aa0000;font-weight:bold;font-size:medium;'>Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\" class='btn btn-primary'>Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'></p>"%testid
+        response = HttpResponse(message)
+        return response
+    elif pageno > 1 and usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
+        message = "<p style='color:#aa0000;font-weight:bold;font-size:medium;'>Info: You do not have any more invitations sent by you to any other user.</p>"
+        message += "<div id='pagination' style='text-align:center;padding-left:10px;'><nav aria-label='Test Records Page Navigation'><ul class='pagination'><li class='page-item'><a href='#/' onclick=\"javascript:existinginvitations(%s, '%s', %s);\" class='page-link' style='font-size:medium;'>< Prev</a></li><li class='page-item'><a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\" class='btn btn-testyard1'>Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'></li></ul></nav></div>"%(testid, csrftoken, pageno-1, testid)
         response = HttpResponse(message)
         return response
     invitations_dict = {'usertest' : {}, 'wouldbeusers' : {}, 'testname' : testobj.testname, 'testid' : testid, 'testsinvitecounter' : 0 }
@@ -3513,6 +3529,11 @@ def manageinvitations(request):
         testsinvitecounter += 1
     invitations_dict['wouldbeusers'] = wouldbeusers_dict
     invitations_dict['testsinvitecounter'] = testsinvitecounter
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    invitations_dict['nextpage'] = nextpage
+    invitations_dict['prevpage'] = prevpage
+    invitations_dict['testid'] = testid
     tmpl = get_template("tests/manageinvitations.html")
     invitations_dict.update(csrf(request))
     cxt = Context(invitations_dict)
