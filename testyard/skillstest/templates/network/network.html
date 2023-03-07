@@ -990,7 +990,7 @@
 		    alldispnames = Object.keys(jsonresult);
 		    html = "<center><table border=0 cellspacing=3 cellpadding=4 width='80%'>";
 		    if(alldispnames.length == 0){
-			html = "<tr><td colspan=4 align='center'><i><b><font color='#AA0000'>No record were found</font></b></i></td></tr>";
+			html = "<tr><td colspan=4 style='text-align:center;font-weight:bold;padding-left:10px;'><p style='color:#aa0000;font-style:italic;'>No records found</p></td></tr>";
 		    }
 		    else{
 			screendiv.style = "display:;height:100%;";
@@ -1025,7 +1025,7 @@
 		        }
 		    }
 		    html += "</table></center>";
-		    html += "<br/><center><div id='pagination'><nav aria-label='Search User Pagination'><ul class='pagination'>";
+		    html += "<br/><center><div id='pagination' style='width:80%;'><nav aria-label='Search User Pagination'><ul class='pagination'>";
 		    if(prevpage > 0){
 		        html += "<li class='page-item'><a href='#/' class='page-link' style='font-size:medium;'  onclick='javascript:searchUser(\&quot;" + screendivid + "\&quot;, " + prevpage.toString() + ");'>< Prev</a></li>";
 		    }
@@ -2064,10 +2064,10 @@
 
 
 	// Method initiator to search messages
-	function messagesearch(){
+	function messagesearch(pageno=1){
 	    searchphrase = document.getElementById('msgsearch').value;
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
-	    postdata = "searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken;
+	    postdata = "searchphrase=" + searchphrase + "&csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno.toString();
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();
@@ -2077,7 +2077,7 @@
 	    }
 	    xmlhttp.onreadystatechange = function(){
 	        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    showmessages(xmlhttp.responseText);
+		    showmessages(xmlhttp.responseText, pageno);
 	        }
 	    };
 	    xmlhttp.open('POST', '{{messagesearchurl}}', true);
@@ -2087,7 +2087,11 @@
 	
 	function getmessages(pageno=1){
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
+	    searchphrase = document.getElementById('msgsearch').value.trim();
 	    postdata = "csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno.toString();
+	    if(searchphrase != ""){
+	        postdata = postdata + "&searchphrase=" + searchphrase;
+	    }
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();
@@ -2112,15 +2116,23 @@
 	function showmessages(messagesdictenc, pageno=1){
 	    messagesdictstr = Base64.decode(messagesdictenc);
 	    messagesdict = JSON.parse(messagesdictstr);
-	    screendiv = document.getElementById("transscreens");
-	    screendiv.style = "display:;height:100%;width:100%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:0;left:0;overflow-y: scroll;";
-	    html = "<center><div class='row' style='padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;color:#0000ff;font-weight:bold;font-size:larger;'>Message Inbox &nbsp;&nbsp;</div><div align='right' id='searchspan' class='form-group' style='padding-left:5px;padding-right:5px;'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value='' class='form-control' style='width:200px;' placeholder='Search Messages'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();' class='btn btn-primary' style='color:#ffffff;font-size:small;width:140px;height:38px;font-weight:bold;'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div></center><br><br>";
-	    html += "<center><table border='0' cellspacing='6' cellpadding='6' width='90%'>";
 	    idlist = Array();
+	    lastsearchphrase = "";
 	    for (id in messagesdict){
+	        if(id == "searchphrase"){
+	            lastsearchphrase = messagesdict['searchphrase'];
+	        }
+	        if(id == "prevpage" || id == "nextpage" || id == "searchphrase"){
+	            continue;
+	        }
 		idlist.push(id);
 	    }
       	    idlist.sort(function(a, b){return b-a});
+	    screendiv = document.getElementById("transscreens");
+	    screendiv.style = "display:;height:100%;width:100%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:0;left:0;overflow-y: scroll;";
+	    html = "<center><div class='row' style='padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;color:#0000ff;font-weight:bold;font-size:larger;'>Message Inbox &nbsp;&nbsp;</div><div align='right' id='searchspan' class='form-group' style='padding-left:5px;padding-right:5px;'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value='" + lastsearchphrase + "' class='form-control' style='width:200px;' placeholder='Search Messages'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();' class='btn btn-primary' style='color:#ffffff;font-size:small;width:140px;height:38px;font-weight:bold;'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div></center><br><br>";
+	    html += "<center><table border='0' cellspacing='6' cellpadding='6' width='90%'>";
+	    
 	    searchphrasepattern = new RegExp("searchphrase=(.*)");
 	    for (j=0;j < idlist.length;j++){
 		id = idlist[j];
@@ -2129,7 +2141,7 @@
 		    //alert(messagedata);
 		    messageparts = messagedata[0].split("##");
 		    if(messageparts[0] == 'new'){
-			if(searchphrasepattern.test(messageparts[6])){
+			if(messageparts[6] && searchphrasepattern.test(messageparts[6])){
 			    messagepartvalues = messageparts[6].split("=");
 			    document.getElementById("msgsearch").value = messagepartvalues[1];
 		    	}
@@ -2151,7 +2163,7 @@
 		    }
 		    else{
 			shortmessage = messageparts[4].substring(0, 40) + " ...";
-			if(searchphrasepattern.test(messageparts[5])){
+			if(messageparts[5] && searchphrasepattern.test(messageparts[5])){
 			    messagepartvalues = messageparts[5].split("=");
 			    //alert(messagepartvalues[1]);
 			    document.getElementById("msgsearch").value = messagepartvalues[1];
@@ -2220,12 +2232,12 @@
 	    html += "</table></center>";
 	    nextpage = pageno + 1;
 	    prevpage = pageno - 1;
-	    html += "<br/><div id='pagination' class='row' style='margin:auto;text-align:center;width:30%;padding-left:20px;'>";
+	    html += "<br/><div id='pagination' class='row' style='margin:auto;text-align:center;width:30%;padding-left:20px;'><nav aria-label='Messages Inbox Navigation'><ul class='pagination'>";
 	    if(prevpage > 0){
-	        html += "<a href='#/' onclick='javascript:getmessages(" + prevpage.toString() + ");'  style='align:center;padding-left:20px;'>< Prev</a>|";
+	        html += "<li class='page-item'><a href='#/' onclick='javascript:getmessages(" + prevpage.toString() + ");'   class='page-link' style='font-size:medium;align:center;padding-left:20px;'>< Prev</a></li>";
 	    }
-	    html += "<a href='#/' onclick='javascript:getmessages(" + nextpage.toString() + ");' style='align:center;padding-left:20px;'>Next ></a>";
-	    html += "</div>";
+	    html += "<li class='page-item'><a href='#/' onclick='javascript:getmessages(" + nextpage.toString() + ");' class='page-link' style='font-size:medium;align:center;padding-left:20px;'>Next ></a></li>";
+	    html += "</ul></nav></div>";
             html += "<br/><br/><div class='row' style='text-align:center;padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div><br/><br/>";
 	    //html += "<br><center><div id='getmorediv'><font color='#0000AA' size = -1 style='font-weight:bold;'><a href='#/' onClick=javascript:showmoreposts(messagesdict['start1'], messagesdict['start2']);>Show More</a></font></div></center>";
     	    screendiv.innerHTML = html;
