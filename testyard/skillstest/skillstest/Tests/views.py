@@ -2411,18 +2411,21 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
     testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?" + encoded_query_string
     # Now bitlyfy the testurl
     bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS
-    postdatadict = {"group_guid" : "Ba1bc23dE4F", "domain" : "bit.ly", "long_url" : testurl}
+    #postdatadict = {"group_guid" : mysettings.BITLY_APP_GROUP, "domain" : "bit.ly", "long_url" : testurl}
+    # Note: Despite mentioned in the documentation, the group_guid should actually be omitted from the request.
+    postdatadict = {"domain" : "bit.ly", "long_url" : testurl}
+    postdata = json.dumps(postdatadict)
     httpheaders = {'Authorization' : 'Bearer %s'%mysettings.BITLY_OAUTH_ACCESS_TOKEN, 'Content-type' : 'application/json'}
     try:
-        httpresponse = requests.post(bitlyapiurl, headers=httpheaders, data=json.dumps(postdatadict), allow_redirects=True)
+        httpresponse = requests.post(bitlyapiurl, headers=httpheaders, data=postdata)
         jsonstringcontent = httpresponse.content
     except:
         message = "Error: %s"%(sys.exc_info()[1].__str__())
         response = HttpResponse(message)
         return response
     jsonobj = json.loads(jsonstringcontent)
-    print(jsonobj)
-    shorttesturl = jsonobj['data']['url']
+    #print(jsonobj)
+    shorttesturl = jsonobj['link']
     return (shorttesturl, randstring)
 
 
