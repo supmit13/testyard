@@ -31,7 +31,7 @@ import cPickle
 import decimal, math
 from Crypto.Cipher import AES, DES3
 from Crypto import Random
-import base64,urllib, urllib2, httplib
+import base64,urllib, urllib2, httplib, requests
 import simplejson as json
 from openpyxl import load_workbook
 from xlrd import open_workbook
@@ -2410,16 +2410,52 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
     encoded_query_string = base64.b64encode(query_string)
     testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?" + encoded_query_string
     # Now bitlyfy the testurl
+    bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS
+    postdatadict = {"group_guid" : "Ba1bc23dE4F", "domain" : "bit.ly", "long_url" : testurl}
+    httpheaders = {'Authorization' : 'Bearer %s'%mysettings.BITLY_OAUTH_ACCESS_TOKEN, 'Content-type' : 'application/json'}
+    try:
+        httpresponse = requests.post(bitlyapiurl, headers=httpheaders, data=json.dumps(postdatadict), allow_redirects=True)
+        jsonstringcontent = httpresponse.content
+    except:
+        message = "Error: %s"%(sys.exc_info()[1].__str__())
+        response = HttpResponse(message)
+        return response
+    jsonobj = json.loads(jsonstringcontent)
+    print(jsonobj)
+    shorttesturl = jsonobj['data']['url']
+    return (shorttesturl, randstring)
+
+
+
+def gettesturlforuser_old_bitly_v3(targetuseremail, testid, baseurl):
+    testobj = None
+    targetuserid = targetuseremail # If we can't find the targetuserid, then we will use the targetuseremail.
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "Error: " + error_msg('1056')
+        response = HttpResponse(message)
+        return response
+    try:
+        targetuserobj = User.objects.filter(emailid=targetuseremail)[0]
+        targetuserid = targetuserobj.id
+    except:
+        pass
+    randstring = skillutils.randomstringgen()
+    query_string = "targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test&targetemail=" + targetuseremail + "&rand=" + randstring
+    encoded_query_string = base64.b64encode(query_string)
+    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?" + encoded_query_string
+    # Now bitlyfy the testurl
     bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS + "/v3/shorten?access_token=" + mysettings.BITLY_OAUTH_ACCESS_TOKEN + "&longUrl=" + skillutils.urlencodestring(testurl)
     try:
         httpresponsejson = urllib2.urlopen(bitlyapiurl)
         jsonstringcontent = httpresponsejson.read()
     except:
         message = "Error: %s"%(sys.exc_info()[1].__str__())
-        print message
         response = HttpResponse(message)
         return response
     jsonobj = json.loads(jsonstringcontent)
+    print(jsonobj)
     shorttesturl = jsonobj['data']['url']
     return (shorttesturl, randstring)
 
@@ -3304,7 +3340,9 @@ def sendtestinvitations(request):
                 usertestobj = UserTest()
                 usertestobj.user = uobj
                 usertestobj.emailaddr = uobj.emailid # or = email
-                (usertestobj.testurl, usertestobj.stringid) = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
+                t = gettesturlforuser(usertestobj.emailaddr, testid, baseurl)
+                #print(t)
+                usertestobj.testurl, usertestobj.stringid = t[0], t[1]
                 testlink = usertestobj.testurl
             usertestobj.test = testobj
             usertestobj.status = 0 # The test hasn't been taken as yet.
@@ -3445,11 +3483,11 @@ def manageinvitations(request):
     usertestqset = UserTest.objects.filter(test=testobj).order_by("user", "status", "-validfrom", "-active")[startctr:endctr]
     wouldbeuserqset = WouldbeUsers.objects.filter(test=testobj).order_by("-validfrom", "-active")[startctr:endctr]
     if usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0 and pageno == 1:
-        message = "<p style='color:#aa0000;font-weight:bold;font-size:medium;'>Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\" class='btn btn-primary'>Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'></p>"%testid
+        message = "<p style='color:#aa0000;font-weight:bold;font-size:medium;'>Info: You do not have any invitations sent by you to any other user.<a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\" class='btn btn-testyard1'>Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'></p>"%testid
         response = HttpResponse(message)
         return response
     elif pageno > 1 and usertestqset.__len__() == 0 and wouldbeuserqset.__len__() == 0:
-        message = "<p style='color:#aa0000;font-weight:bold;font-size:medium;'>Info: You do not have any more invitations sent by you to any other user.</p>"
+        message = "<p style='color:#aa0000;font-weight:bold;font-size:medium;'>Info: You do not have any more invitations sent by you to other users.</p>"
         message += "<div id='pagination' style='text-align:center;padding-left:10px;'><nav aria-label='Test Records Page Navigation'><ul class='pagination'><li class='page-item'><a href='#/' onclick=\"javascript:existinginvitations(%s, '%s', %s);\" class='page-link' style='font-size:medium;'>< Prev</a></li><li class='page-item'><a href='#/' onClick=\"thediv=document.getElementById('existinginvitationdiv%s');thediv.style='display:none';thediv.innerHTML='';\" class='btn btn-testyard1'>Close</a><input type='hidden' name='testsinvitecounter' id='testsinvitecounter' value='0'></li></ul></nav></div>"%(testid, csrftoken, pageno-1, testid)
         response = HttpResponse(message)
         return response
