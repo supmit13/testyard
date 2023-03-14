@@ -3203,6 +3203,70 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    }
 	    }
  	}
+ 	
+ 	function getpage(pageno, section){
+ 	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		    document.getElementById('currpage_creator').value="{{currpage_ascreator}}";
+		    document.getElementById('currpage_evaluator').value="{{currpage_asevaluator}}";
+		    document.getElementById('currpage_candidate').value="{{currpage_ascandidate}}";
+		    document.getElementById('currpage_interviewer').value="{{currpage_asinterviewer}}";
+		    document.getElementById('currpage_interviewee').value="{{currpage_asinterviewee}}";
+		    // Render the remaining page (sections). The section identified by the variable 'section' should be made active.
+		}
+	    };
+	    qs = ""; // Set up the page and section here.
+	    if(section == "creator"){
+	        qs = "pageno_creator=" + pageno.toString() + "&";
+	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
+	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
+	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
+	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
+	        qs += "pageno_evaluator=" + pageno_asevaluator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewer=" + pageno_asinterviewer + "&pageno_interviewee=" + pageno_asinterviewee;
+	    }
+	    else if(section == "evaluator"){
+	        qs = "pageno_evaluator=" + pageno.toString() + "&";
+	        pageno_ascreator = document.getElementById('currpage_creator').value;
+	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
+	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
+	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
+	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewer=" + pageno_asinterviewer + "&pageno_interviewee=" + pageno_asinterviewee;
+	    }
+	    else if(section == "candidate"){
+	        qs = "pageno_candidate=" + pageno.toString() + "&";
+	        pageno_ascreator = document.getElementById('currpage_creator').value;
+	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
+	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
+	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
+	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_evaluator=" + pageno_asevaluator + "&pageno_interviewer=" + pageno_asinterviewer + "&pageno_interviewee=" + pageno_asinterviewee;
+	    }
+	    else if(section == "interviewer"){
+	        qs = "pageno_interviewer=" + pageno.toString() + "&";
+	        pageno_ascreator = document.getElementById('currpage_creator').value;
+	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
+	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
+	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
+	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_evaluator=" + pageno_asevaluator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewee=" + pageno_asinterviewee;
+	    }
+	    else if(section == "interviewee"){
+	        qs = "pageno_interviewee=" + pageno.toString() + "&";
+	        pageno_ascreator = document.getElementById('currpage_creator').value;
+	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
+	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
+	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
+	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_evaluator=" + pageno_asevaluator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewer=" + pageno_asinterviewer;
+	    }
+	    xmlhttp.open("GET", '{{ testspageurl }}?'+qs, true);
+  	    xmlhttp.send();
+ 	}
 
 		</script>
 		{% include "inc/right_panel.html" %}
@@ -3312,6 +3376,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% endautoescape %}
 			</table>
 			<br />
+			<div id='pagination_ascreator' style='text-align:center;padding-left:10px;'>
+			<nav aria-label="Tests as Creator Page Navigation">
+			  <ul class="pagination">
+			  {% if prevpage_ascreator > 0 %}
+			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  </ul>
+			  </nav>
+			</div>
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			<br />
 			<font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>
@@ -3376,6 +3450,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% endfor %}
 			</table>
 			<br />
+			<div id='pagination_asevaluator' style='text-align:center;padding-left:10px;'>
+			<nav aria-label="Tests as Evaluator Page Navigation">
+			  <ul class="pagination">
+			  {% if prevpage_asevaluator > 0 %}
+			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  </ul>
+			  </nav>
+			</div>
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<div id='testsascandidate' style="" class="tabcontent">
@@ -3433,6 +3517,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% endfor %}
 			</table>
 			<br />
+			<div id='pagination_ascandidate' style='text-align:center;padding-left:10px;'>
+			<nav aria-label="Tests as Candidate Page Navigation">
+			  <ul class="pagination">
+			  {% if prevpage_ascandidate > 0 %}
+			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  </ul>
+			  </nav>
+			</div>
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<div id='interviewsconducted' style="" class="tabcontent">
@@ -3472,6 +3566,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</tr>
 			{% endfor %}
 			</table>
+			<br/>
+			<div id='pagination_asinterviewer' style='text-align:center;padding-left:10px;'>
+			<nav aria-label="Tests as Interviewer Page Navigation">
+			  <ul class="pagination">
+			  {% if prevpage_asinterviewer > 0 %}
+			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  </ul>
+			  </nav>
+			</div>
 			</div>
 			<div id='interviewsattended' style="" class="tabcontent">
 			<h3 class="blue">Interviews Attended</h3>
@@ -3519,7 +3624,22 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% endfor %}
 			</table>
 			<br />
+			<div id='pagination_asinterviewee' style='text-align:center;padding-left:10px;'>
+			<nav aria-label="Tests as Interview Candidate Page Navigation">
+			  <ul class="pagination">
+			  {% if prevpage_asinterviewee > 0 %}
+			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  </ul>
+			  </nav>
+			</div>
 			<!-- {{ test_tables }} -->
+			<input type='hidden' name='currpage_creator' id='currpage_creator' value='{{currpage_ascreator}}'>
+			<input type='hidden' name='currpage_evaluator' id='currpage_evaluator' value='{{currpage_asevaluator}}'>
+			<input type='hidden' name='currpage_candidate' id='currpage_candidate' value='{{currpage_ascandidate}}'>
+			<input type='hidden' name='currpage_interviewer' id='currpage_interviewer' value='{{currpage_asinterviewer}}'>
+			<input type='hidden' name='currpage_interviewee' id='currpage_interviewee' value='{{currpage_asinterviewee}}'>
 			</form>
 			</div>
 			</span>

@@ -63,9 +63,61 @@ def get_user_tests(request):
     # If request method is 'GET', then retrieve Session and User info from the DB
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
+    pageno_ascreator, pageno_asevaluator, pageno_ascandidate, pageno_asinterviewer, pageno_asinterviewee = 1, 1, 1, 1, 1
+    startctr_ascreator, startctr_asevaluator, startctr_ascandidate, startctr_asinterviewer, startctr_asinterviewee = 0, 0, 0, 0, 0
+    endctr_ascreator, endctr_asevaluator, endctr_ascandidate, endctr_asinterviewer, endctr_asinterviewee = mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE
+    # Retrieve pageno for all sections from GET query parameters
+    if request.GET.has_key('pageno_creator'):
+        try:
+            pageno_ascreator = int(request.GET.get('pageno_creator', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_evaluator'):
+        try:
+            pageno_asevaluator = int(request.GET.get('pageno_evaluator', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_candidate'):
+        try:
+            pageno_ascandidate = int(request.GET.get('pageno_candidate', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_interviewer'):
+        try:
+            pageno_asinterviewer = int(request.GET.get('pageno_interviewer', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_interviewee'):
+        try:
+            pageno_asinterviewee = int(request.GET.get('pageno_interviewee', 1))
+        except:
+            pass
+    # Compute the start and end ctr for all 5 sections
+    startctr_ascreator = pageno_ascreator * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_ascreator = pageno_ascreator * mysettings.PAGE_CHUNK_SIZE
+    startctr_asevaluator = pageno_asevaluator * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_asevaluator = pageno_asevaluator * mysettings.PAGE_CHUNK_SIZE
+    startctr_ascandidate = pageno_ascandidate * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_ascandidate = pageno_ascandidate * mysettings.PAGE_CHUNK_SIZE
+    startctr_asinterviewer = pageno_asinterviewer * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_asinterviewer = pageno_asinterviewer * mysettings.PAGE_CHUNK_SIZE
+    startctr_asinterviewee = pageno_asinterviewee * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_asinterviewee = pageno_asinterviewee * mysettings.PAGE_CHUNK_SIZE
+    # Compute nextpage and prevpage for all 5 sections.
+    nextpage_ascreator = pageno_ascreator + 1
+    prevpage_ascreator = pageno_ascreator - 1
+    nextpage_asevaluator = pageno_asevaluator + 1
+    prevpage_asevaluator = pageno_asevaluator - 1
+    nextpage_ascandidate = pageno_ascandidate + 1
+    prevpage_ascandidate = pageno_ascandidate - 1
+    nextpage_asinterviewer = pageno_asinterviewer + 1
+    prevpage_asinterviewer = pageno_asinterviewer - 1
+    nextpage_asinterviewee = pageno_asinterviewee + 1
+    prevpage_asinterviewee = pageno_asinterviewee - 1
+    # Note: the above page numbers are to be added in context at the end of the function.
     sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
     userobj = sessionobj[0].user
-    testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')
+    testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')[startctr_ascreator:endctr_ascreator]
     # Determine if the user should be shown the "Create Test" link
     createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL
     if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
@@ -115,7 +167,7 @@ def get_user_tests(request):
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
                                                 Q(groupmember10=userobj))
-    testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')
+    testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')[startctr_asevaluator:endctr_asevaluator]
     user_creator_other_evaluators_dict = {}
     tests_creator_ordered_createdate = []
     uniqevalgroups = {}
@@ -172,9 +224,9 @@ def get_user_tests(request):
         tests_evaluator_ordered_createdate.append(testname)
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
     try:
-        usertestqset = UserTest.objects.filter(user=userobj)
+        usertestqset = UserTest.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
     except: # Can't say if we will find any records...
-        usertestqset = WouldbeUsers.objects.filter(user=userobj)
+        usertestqset = WouldbeUsers.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
     testlist_ascandidate = []
     tests_candidate_ordered_createdate = []
     for usertestobj in usertestqset:
@@ -193,7 +245,7 @@ def get_user_tests(request):
         else:
             continue
         tests_candidate_ordered_createdate.append(test.testname)
-    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')
+    interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer]
     interviews_list = {}
     interviewerslist = []
     interviews_list['asinterviewer'] = {}
@@ -228,7 +280,7 @@ def get_user_tests(request):
         intlinkid = interview.interviewlinkid
         intdata = (inttitle, inttopic, inttopicname, intmedium, intlanguage, intcreatedate, intpublishdate, intstatus, intmaxscore, intmaxduration, intrealtime, intlinkid, interviewerslist)
         interviews_list['asinterviewer'][inttitle] = intdata
-    interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')
+    interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee]
     interviews_list['asinterviewee'] = {}
     asinterviewee_seq = []
     for intcandidate in interviewsasinterviewees:
@@ -344,6 +396,23 @@ def get_user_tests(request):
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
+    # pagination related vars
+    tests_user_dict['nextpage_ascreator'] = nextpage_ascreator
+    tests_user_dict['prevpage_ascreator'] = prevpage_ascreator
+    tests_user_dict['nextpage_asevaluator'] = nextpage_asevaluator
+    tests_user_dict['prevpage_asevaluator'] = prevpage_asevaluator
+    tests_user_dict['nextpage_ascandidate'] = nextpage_ascandidate
+    tests_user_dict['prevpage_ascandidate'] = prevpage_ascandidate
+    tests_user_dict['nextpage_asinterviewer'] = nextpage_asinterviewer
+    tests_user_dict['prevpage_asinterviewer'] = prevpage_asinterviewer
+    tests_user_dict['nextpage_asinterviewee'] = nextpage_asinterviewee
+    tests_user_dict['prevpage_asinterviewee'] = prevpage_asinterviewee
+    tests_user_dict['currpage_ascreator'] = pageno_ascreator
+    tests_user_dict['currpage_asevaluator'] = pageno_asevaluator
+    tests_user_dict['currpage_ascandidate'] = pageno_ascandidate
+    tests_user_dict['currpage_asinterviewer'] = pageno_asinterviewer
+    tests_user_dict['currpage_asinterviewee'] = pageno_asinterviewee
+    tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
 
 
@@ -2412,7 +2481,7 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
     # Now bitlyfy the testurl
     bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS
     #postdatadict = {"group_guid" : mysettings.BITLY_APP_GROUP, "domain" : "bit.ly", "long_url" : testurl}
-    # Note: Despite mentioned in the documentation, the group_guid should actually be omitted from the request.
+    # Note: Despite mentioned in the documentation, the group_guid should actually be omitted from the request. Wasted a lot of time.
     postdatadict = {"domain" : "bit.ly", "long_url" : testurl}
     postdata = json.dumps(postdatadict)
     httpheaders = {'Authorization' : 'Bearer %s'%mysettings.BITLY_OAUTH_ACCESS_TOKEN, 'Content-type' : 'application/json'}
