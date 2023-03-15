@@ -568,39 +568,200 @@ def getsectiondata(request):
                 response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
                 return HttpResponse(response)
         tests_user_dict['creator_tests_info'] = testnames_created_dict
-        return HttpResponse(json.dumps(tests_user_dict))
     elif section == "evaluator":
-        testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')[startctr_asevaluator:endctr_asevaluator]
-    elif section == "candidate":
-        try:
-            usertestqset = UserTest.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
-        except: # Can't say if we will find any records...
-            usertestqset = WouldbeUsers.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
-        testlist_ascandidate = []
-        tests_candidate_ordered_createdate = []
-        for usertestobj in usertestqset:
+        testnames_evaluated_list = tests_user_dict['user_evaluator_creator_other_evaluators_dict'].keys()
+        testnames_evaluated_list.sort()
+        testnames_evaluated_dict = {}
+        testlist_asevaluator = tests_user_dict['testlist_asevaluator']
+        for tobj in testlist_asevaluator:
             try:
-                testlist_ascandidate.append(usertestobj.test)
+                test_name = tobj.testname
+                test_topic = tobj.topicname
+                tid = tobj.id
+                creatorname = tobj.creator.displayname
+                fullmarks = tobj.maxscore
+                passscore = tobj.passscore
+                challenges = Challenge.objects.filter(test=tobj)
+                createdscore = 0
+                for chlng in challenges:
+                    createdscore += chlng.challengescore
+                completeness = createdscore/fullmarks
+                publishdate = tobj.publishdate
+                duration = tobj.duration
+                ruleset = tobj.ruleset
+                ruleset = re.sub(re.compile("\#\|\|\#", re.DOTALL), ", ", ruleset)
+                testtype = tobj.testtype
+                testquality = tobj.quality
+                teststandard = mysettings.SKILL_QUALITY[testquality]
+                status = tobj.status
+                progenv = tobj.progenv
+                negativescoring = tobj.negativescoreallowed
+                multipleattempts = tobj.allowmultiattempts
+                maxattemptscount = tobj.maxattemptscount
+                attemptsinterval = tobj.attemptsinterval
+                attemptsintervalunit = tobj.attemptsinterval
+                scope = tobj.scope
+                activationdate = tobj.activationdate
+                testurl = generatetesturl(tobj, userobj, tests_user_dict)
+                usertestqset = UserTest.objects.filter(test=tobj)
+                wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
+                combinedlist = []
+                for utobj in usertestqset:
+                    combinedlist.append(utobj)
+                for wbu in wouldbeusersqset:
+                    combinedlist.append(wbu)
+                testtakerscount = combinedlist.__len__()
+                passcount, failcount, notevaluated = 0, 0, 0
+                if passscore and passscore > 0:
+                    for utobj in combinedlist:
+                        if utobj.evalcommitstate == 1 and utobj.score >= passscore:
+                            passcount += 1
+                        elif utobj.evalcommitstate == 1 and utobj.score < passscore:
+                            failcount += 1
+                        else:
+                            notevaluated += 1
+                else:
+                    passcount = "No criteria specified."
+                    failcount = "No criteria specified."
+                disqualifications = 0
+                if combinedlist.__len__() > 0:
+                    disqualifications += len(usertestqset.filter(disqualified=True))
+                    disqualifications += len(wouldbeusersqset.filter(disqualified=True))
+                evaluatoruserobjs = tests_user_dict['user_evaluator_creator_other_evaluators_dict'][test_name]
+                evaluatorlinkslist = []
+                for evaluserobj in evaluatoruserobjs:
+                    if not evaluserobj:
+                        continue
+                    evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
+                    evaluatorlinkslist.append(evallink)
+                evaluatorlinks = ", ".join(evaluatorlinkslist)
+                testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness, testtakerscount, passcount, failcount, disqualifications ]
             except:
-                pass
-        user_candidate_other_creator_evaluator_dict = {}
-        for test in testlist_ascandidate:
-            testcreator = test.creator
-            creator_evaluators = ( testcreator, test.evaluator.groupmember1, test.evaluator.groupmember2, test.evaluator.groupmember3, test.evaluator.groupmember4, \
-                          test.evaluator.groupmember5, test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
-                          test.evaluator.groupmember9, test.evaluator.groupmember10 )
-            if not user_candidate_other_creator_evaluator_dict.has_key(test.testname):
-                user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
-            else:
-                continue
-            tests_candidate_ordered_createdate.append(test.testname)
+                response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
+                return HttpResponse(response)
+        tests_user_dict['evaluator_tests_info'] = testnames_evaluated_dict
+    elif section == "candidate":
+        testnames_candidature_list = tests_user_dict['user_candidate_other_creator_evaluator_dict'].keys()
+        testnames_candidature_list.sort()
+        testnames_candidature_dict = {}
+        testlist_ascandidate = tests_user_dict['testlist_ascandidate']
+        uniquedict = {}
+        for tobj in testlist_ascandidate:
+            try:
+                test_name = tobj.testname
+                test_topic = tobj.topicname
+                creatorname = tobj.creator.displayname
+                fullmarks = tobj.maxscore
+                passscore = tobj.passscore
+                challenges = Challenge.objects.filter(test=tobj)
+                createdscore = 0
+                for chlng in challenges:
+                    createdscore += chlng.challengescore
+                completeness = createdscore/fullmarks
+                publishdate = tobj.publishdate
+                tid = tobj.id
+                duration = tobj.duration
+                ruleset = tobj.ruleset
+                testtype = tobj.testtype
+                testquality = tobj.quality
+                teststandard = mysettings.SKILL_QUALITY[testquality]
+                status = tobj.status
+                progenv = tobj.progenv
+                negativescoring = tobj.negativescoreallowed
+                multipleattempts = tobj.allowmultiattempts
+                maxattemptscount = tobj.maxattemptscount
+                attemptsinterval = tobj.attemptsinterval
+                attemptsintervalunit = tobj.attemptsintervalunit
+                scope = tobj.scope
+                activationdate = tobj.activationdate
+                usertestqset = UserTest.objects.filter(test=tobj)
+                wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
+                combinedlist = []
+                for utobj in usertestqset:
+                    combinedlist.append(utobj)
+                for wbu in wouldbeusersqset:
+                    combinedlist.append(wbu)
+                testtakerscount = combinedlist.__len__()
+                userresps = UserResponse.objects.filter(test=tobj, emailaddr=userobj.emailid)
+                attainedscore = 0
+                if userresps.__len__() == 0: # User has not appeared in the test yet
+                    attainedscore = "NA"
+                utinfocusqset = UserTest.objects.filter(test=tobj, emailaddr=userobj.emailid)
+                # if we get more than one UserTest object here, we take the first one. This is a problem
+                # that will cease to exist when we allow candidates to take a test only once.
+                utinfocus = None
+                if utinfocusqset.__len__() > 0:
+                    utinfocus = utinfocusqset[0]
+                if utinfocus and not utinfocus.evalcommitstate:
+                    attainedscore = "NA"
+                if attainedscore != "NA":
+                    for uresp in userresps:
+                        if uresp.evaluation == "" or uresp.evaluation is None:
+                            uresp.evaluation = 0.0
+                        attainedscore += uresp.evaluation
+                percentilescore = ""
+                if attainedscore == "NA":
+                    percentilescore = "NA"
+                else:
+                    percentilescore = getpercentilescore(attainedscore, combinedlist)
+                evalcompleteflag = False
+                for utobj in combinedlist:
+                    if utobj.evalcommitstate == 1:
+                        evalcompleteflag = True
+                        break
+                if evalcompleteflag is False:
+                    percentilescore = "NA"
+                #testurl = generatetesturl(tobj, userobj, tests_user_dict)
+                # The above line is causing some strange issues - Needs investigation with a fresh mind
+                evaluatoruserobjs = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
+                evaluatorlinkslist = []
+                for evaluserobj in evaluatoruserobjs:
+                    if evaluserobj is None:
+                        continue
+                    evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
+                    evaluatorlinkslist.append(evallink)
+                evaluatorlinks = ", ".join(evaluatorlinkslist)
+                utqset = UserTest.objects.filter(test=tobj, emailaddr=userobj.emailid)
+                if utqset.__len__() == 0:
+                    wdqset = WouldbeUsers.objects.filter(test=tobj, emailaddr=userobj.emailid)
+                    for wdobj in wdqset:
+                        utqset.append(wdobj)
+                if utqset.__len__() == 0: # If queryset length is still 0, then there is some discrepency in code. Skip this record.
+                    continue
+                utobj = None
+                for utobj in utqset:
+                    if utobj and (utobj.score > 0 or utobj.evalcommitstate): # Find which invitation the user has used to take the test. It will have a positive score value or its evalcommitstate will be 1.
+                        break
+                if not uniquedict.has_key(test_name):
+                    uniquedict[test_name] = 1
+                else:
+                    continue
+                candidate_score = "<font color='#AA0000'>Not evaluated yet.</font>"
+                if utobj.evalcommitstate:
+                    candidate_score = utobj.score
+                test_taken_on = utobj.starttime
+                next_test_date = ""
+                if not tobj.allowmultiattempts:
+                    next_test_date = "Not Applicable"
+                else:
+                    if test_taken_on:
+                        next_test_date = get_next_date(str(test_taken_on), attemptsinterval, attemptsintervalunit)
+                    else:
+                        next_test_date = "Anytime" # If no usertest object exists then the user would be able to take the test anytime.
+                visibility = utobj.visibility
+                testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, candidate_score, test_taken_on, next_test_date, visibility, testtakerscount, percentilescore ]
+            except:
+                response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
+                return HttpResponse(response)
+        tests_user_dict['candidate_tests_info'] = testnames_candidature_dict
     elif section == "interviewer":
-        interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer]
+        interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer] # We already have the requisite data from 'get_user_tests' call
     elif section == "interviewee":
-        interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee]
+        interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee] # We already have the requisite data from 'get_user_tests' call
     else:
         pass
     # Return data as json.
+    return HttpResponse(json.dumps(tests_user_dict))
     
 
 """
