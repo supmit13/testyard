@@ -3215,56 +3215,55 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    //alert(xmlhttp.responseText);
-		    document.getElementById('currpage_creator').value="{{currpage_ascreator}}";
-		    document.getElementById('currpage_evaluator').value="{{currpage_asevaluator}}";
-		    document.getElementById('currpage_candidate').value="{{currpage_ascandidate}}";
-		    document.getElementById('currpage_interviewer').value="{{currpage_asinterviewer}}";
-		    document.getElementById('currpage_interviewee').value="{{currpage_asinterviewee}}";
-		    // Render the remaining page (sections). The section identified by the variable 'section' should be made active.
+		    // Render the selected (active) section. The section identified by the variable 'section' is the one active.
+		    affecteddiv = null;
+		    if(section == "creator"){
+		        affecteddiv = document.getElementById('testsascreator');
+		        affecteddiv.innerHTML = "";
+		    }
+		    else if(section == "evaluator"){
+		        affecteddiv = document.getElementById('testsasevaluator');
+		        affecteddiv.innerHTML = "";
+		    }
+		    else if(section == "candidate"){
+		        affecteddiv = document.getElementById('testsascandidate');
+		        affecteddiv.innerHTML = "";
+		    }
+		    else if(section == "interviewer"){
+		        affecteddiv = document.getElementById('interviewsconducted');
+		        affecteddiv.innerHTML = "";
+		    }
+		    else if(section == "interviewee"){
+		        affecteddiv = document.getElementById('interviewsattended');
+		        affecteddiv.innerHTML = "";
+		    }
+		    else{
+		        affecteddiv.innerHTML = "<p style='color:#aa0000;font-weight:bold;'>Unrecognized section '" + section + "'</p>";
+		    }
 		}
 	    };
 	    qs = ""; // Set up the page and section here.
 	    if(section == "creator"){
 	        qs = "pageno_creator=" + pageno.toString() + "&";
-	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
-	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
-	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
-	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
-	        qs += "pageno_evaluator=" + pageno_asevaluator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewer=" + pageno_asinterviewer + "&pageno_interviewee=" + pageno_asinterviewee;
+	        qs += "section=" + section;
 	    }
 	    else if(section == "evaluator"){
 	        qs = "pageno_evaluator=" + pageno.toString() + "&";
-	        pageno_ascreator = document.getElementById('currpage_creator').value;
-	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
-	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
-	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
-	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewer=" + pageno_asinterviewer + "&pageno_interviewee=" + pageno_asinterviewee;
+	        qs += "section=" + section;
 	    }
 	    else if(section == "candidate"){
 	        qs = "pageno_candidate=" + pageno.toString() + "&";
-	        pageno_ascreator = document.getElementById('currpage_creator').value;
-	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
-	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
-	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
-	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_evaluator=" + pageno_asevaluator + "&pageno_interviewer=" + pageno_asinterviewer + "&pageno_interviewee=" + pageno_asinterviewee;
+	        qs += "section=" + section;
 	    }
 	    else if(section == "interviewer"){
 	        qs = "pageno_interviewer=" + pageno.toString() + "&";
-	        pageno_ascreator = document.getElementById('currpage_creator').value;
-	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
-	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
-	        pageno_asinterviewee = document.getElementById('currpage_interviewee').value;
-	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_evaluator=" + pageno_asevaluator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewee=" + pageno_asinterviewee;
+	        qs += "section=" + section;
 	    }
 	    else if(section == "interviewee"){
 	        qs = "pageno_interviewee=" + pageno.toString() + "&";
-	        pageno_ascreator = document.getElementById('currpage_creator').value;
-	        pageno_asevaluator = document.getElementById('currpage_evaluator').value;
-	        pageno_ascandidate = document.getElementById('currpage_candidate').value;
-	        pageno_asinterviewer = document.getElementById('currpage_interviewer').value;
-	        qs += "pageno_creator=" + pageno_ascreator + "&pageno_evaluator=" + pageno_asevaluator + "&pageno_candidate=" + pageno_ascandidate + "&pageno_interviewer=" + pageno_asinterviewer;
+	        qs += "section=" + section;
 	    }
-	    xmlhttp.open("GET", '{{ testspageurl }}?'+qs, true);
+	    xmlhttp.open("GET", '{{ getsectionurl }}?'+qs, true);
   	    xmlhttp.send();
  	}
 
@@ -3287,7 +3286,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<form name='frmmaintests' id='frmmaintests' method='POST' action=''>
 			{% csrf_token %}
                         <ul class="tab testtabUl" >
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
+                          <li><a href="#/" class="tablinks active" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
                           <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
                           <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
                           <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
@@ -3635,11 +3634,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  </nav>
 			</div>
 			<!-- {{ test_tables }} -->
-			<input type='hidden' name='currpage_creator' id='currpage_creator' value='{{currpage_ascreator}}'>
-			<input type='hidden' name='currpage_evaluator' id='currpage_evaluator' value='{{currpage_asevaluator}}'>
-			<input type='hidden' name='currpage_candidate' id='currpage_candidate' value='{{currpage_ascandidate}}'>
-			<input type='hidden' name='currpage_interviewer' id='currpage_interviewer' value='{{currpage_asinterviewer}}'>
-			<input type='hidden' name='currpage_interviewee' id='currpage_interviewee' value='{{currpage_asinterviewee}}'>
 			</form>
 			</div>
 			</span>

@@ -350,6 +350,7 @@ def get_user_tests(request):
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
     tests_user_dict['createinterviewurl'] = createinterviewurl
+    tests_user_dict['getsectionurl'] = skillutils.gethosturl(request) + "/" + mysettings.GET_SECTION_URL
     tests_user_dict['addeditchallengeurl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_TEST_URL
     tests_user_dict['edittesturl'] = skillutils.gethosturl(request) + "/" + mysettings.EDIT_EXISTING_TEST_URL
     tests_user_dict['testsummaryurl'] = mysettings.TEST_SUMMARY_URL
@@ -415,6 +416,192 @@ def get_user_tests(request):
     tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
 
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def getsectiondata(request):
+    message = ''
+    if request.method != "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    pageno_ascreator, pageno_asevaluator, pageno_ascandidate, pageno_asinterviewer, pageno_asinterviewee = 1, 1, 1, 1, 1
+    startctr_ascreator, startctr_asevaluator, startctr_ascandidate, startctr_asinterviewer, startctr_asinterviewee = 0, 0, 0, 0, 0
+    endctr_ascreator, endctr_asevaluator, endctr_ascandidate, endctr_asinterviewer, endctr_asinterviewee = mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE
+    # Retrieve pageno for all sections from GET query parameters
+    section = ""
+    if request.GET.has_key('section'):
+        section = request.GET['section']
+    if request.GET.has_key('pageno_creator'):
+        try:
+            pageno_ascreator = int(request.GET.get('pageno_creator', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_evaluator'):
+        try:
+            pageno_asevaluator = int(request.GET.get('pageno_evaluator', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_candidate'):
+        try:
+            pageno_ascandidate = int(request.GET.get('pageno_candidate', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_interviewer'):
+        try:
+            pageno_asinterviewer = int(request.GET.get('pageno_interviewer', 1))
+        except:
+            pass
+    if request.GET.has_key('pageno_interviewee'):
+        try:
+            pageno_asinterviewee = int(request.GET.get('pageno_interviewee', 1))
+        except:
+            pass
+    # Compute the start and end ctr for all 5 sections
+    startctr_ascreator = pageno_ascreator * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_ascreator = pageno_ascreator * mysettings.PAGE_CHUNK_SIZE
+    startctr_asevaluator = pageno_asevaluator * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_asevaluator = pageno_asevaluator * mysettings.PAGE_CHUNK_SIZE
+    startctr_ascandidate = pageno_ascandidate * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_ascandidate = pageno_ascandidate * mysettings.PAGE_CHUNK_SIZE
+    startctr_asinterviewer = pageno_asinterviewer * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_asinterviewer = pageno_asinterviewer * mysettings.PAGE_CHUNK_SIZE
+    startctr_asinterviewee = pageno_asinterviewee * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr_asinterviewee = pageno_asinterviewee * mysettings.PAGE_CHUNK_SIZE
+    # Compute nextpage and prevpage for all 5 sections.
+    nextpage_ascreator = pageno_ascreator + 1
+    prevpage_ascreator = pageno_ascreator - 1
+    nextpage_asevaluator = pageno_asevaluator + 1
+    prevpage_asevaluator = pageno_asevaluator - 1
+    nextpage_ascandidate = pageno_ascandidate + 1
+    prevpage_ascandidate = pageno_ascandidate - 1
+    nextpage_asinterviewer = pageno_asinterviewer + 1
+    prevpage_asinterviewer = pageno_asinterviewer - 1
+    nextpage_asinterviewee = pageno_asinterviewee + 1
+    prevpage_asinterviewee = pageno_asinterviewee - 1
+    # Note: the above page numbers are to be added in context at the end of the function.
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    
+    tests_user_dict = get_user_tests(request)
+    if section == "creator":
+        testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')[startctr_ascreator:endctr_ascreator]
+        inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Tests' page for the user.
+        for inc_key in inc_context.keys():
+            tests_user_dict[inc_key] = inc_context[inc_key]
+        testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()
+        testnames_created_list.sort()
+        tests_user_dict['baseURL'] = skillutils.gethosturl(request)
+        ruleexplanataions = {}
+        for ruleshort in mysettings.RULES_DICT.keys():
+            ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+        tests_user_dict['rulenotes'] = ruleexplanataions
+        testnames_created_dict = {}
+        for test_name in testnames_created_list:
+            try:
+                tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
+                test_topic = tobj.topicname
+                fullmarks = tobj.maxscore
+                passscore = tobj.passscore
+                challenges = Challenge.objects.filter(test=tobj)
+                createdscore = 0
+                for chlng in challenges:
+                    createdscore += chlng.challengescore
+                completeness = createdscore/fullmarks
+                publishdate = tobj.publishdate
+                tid = tobj.id
+                duration = tobj.duration
+                ruleset = tobj.ruleset
+                ruleset = re.sub(re.compile("\#\|\|\#", re.DOTALL), ", ", ruleset)
+                testtype = tobj.testtype
+                testquality = tobj.quality
+                teststandard = mysettings.SKILL_QUALITY[testquality]
+                status = tobj.status
+                progenv = tobj.progenv
+                negativescoring = tobj.negativescoreallowed
+                multipleattempts = tobj.allowmultiattempts
+                maxattemptscount = tobj.maxattemptscount
+                attemptsinterval = tobj.attemptsinterval
+                attemptsintervalunit = tobj.attemptsinterval
+                scope = tobj.scope
+                activationdate = tobj.activationdate
+                testurl = generatetesturl(tobj, userobj, tests_user_dict)
+                usertestqset = UserTest.objects.filter(test=tobj)
+                wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
+                combinedlist = []
+                for utobj in usertestqset:
+                    combinedlist.append(utobj)
+                for wbu in wouldbeusersqset:
+                    combinedlist.append(wbu)
+                testtakerscount = combinedlist.__len__()
+                passcount, failcount, notevaluated = 0, 0, 0
+                if passscore and passscore > 0:
+                    for utobj in combinedlist:
+                        if utobj.evalcommitstate == 1 and utobj.score >= passscore:
+                            passcount += 1
+                        elif utobj.evalcommitstate == 1 and utobj.score < passscore:
+                            failcount += 1
+                        else:
+                            notevaluated += 1
+                else:
+                    passcount = "No criteria specified."
+                    failcount = "No criteria specified."
+                disqualifications = 0
+                if combinedlist.__len__() > 0:
+                    disqualifications += len(usertestqset.filter(disqualified=True))
+                    disqualifications += len(wouldbeusersqset.filter(disqualified=True))
+                evaluatoruserobjs = tests_user_dict['user_creator_other_evaluators_dict'][test_name]
+                evaluatorlinkslist = []
+                for evaluserobj in evaluatoruserobjs:
+                    if not evaluserobj:
+                        continue
+                    evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
+                    evaluatorlinkslist.append(evallink)
+                evaluatorlinks = ", ".join(evaluatorlinkslist)
+                testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, testtakerscount, passcount, failcount, disqualifications]
+            except:
+                response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
+                return HttpResponse(response)
+        tests_user_dict['creator_tests_info'] = testnames_created_dict
+        return HttpResponse(json.dumps(tests_user_dict))
+    elif section == "evaluator":
+        testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')[startctr_asevaluator:endctr_asevaluator]
+    elif section == "candidate":
+        try:
+            usertestqset = UserTest.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
+        except: # Can't say if we will find any records...
+            usertestqset = WouldbeUsers.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
+        testlist_ascandidate = []
+        tests_candidate_ordered_createdate = []
+        for usertestobj in usertestqset:
+            try:
+                testlist_ascandidate.append(usertestobj.test)
+            except:
+                pass
+        user_candidate_other_creator_evaluator_dict = {}
+        for test in testlist_ascandidate:
+            testcreator = test.creator
+            creator_evaluators = ( testcreator, test.evaluator.groupmember1, test.evaluator.groupmember2, test.evaluator.groupmember3, test.evaluator.groupmember4, \
+                          test.evaluator.groupmember5, test.evaluator.groupmember6, test.evaluator.groupmember7, test.evaluator.groupmember8, \
+                          test.evaluator.groupmember9, test.evaluator.groupmember10 )
+            if not user_candidate_other_creator_evaluator_dict.has_key(test.testname):
+                user_candidate_other_creator_evaluator_dict[test.testname] = creator_evaluators
+            else:
+                continue
+            tests_candidate_ordered_createdate.append(test.testname)
+    elif section == "interviewer":
+        interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer]
+    elif section == "interviewee":
+        interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee]
+    else:
+        pass
+    # Return data as json.
+    
 
 """
 Function to check if a given user is allowed to access 
