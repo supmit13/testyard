@@ -3382,6 +3382,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			testsinfo = JSON.parse(tests_user_dict['evaluator_tests_info']);
 			for(var ic=listoftests.length-1; ic >= 0; ic--){ // Reverse sequence based on test creation date
 			    testnm = listoftests[ic];
+			    //alert(testnm);
+			    if(!testsinfo[testnm]){
+			        continue;
+			    }
 			    asevaluatorhtml += "<tr>";
 			    if(testsinfo[testnm][18] == 'public' || testsinfo[testnm][18] == 'protected'){
 			        asevaluatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testnm + "</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest(" + testsinfo[testnm][0] + ");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a> --></font></td>\
@@ -3454,16 +3458,210 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    else if(section == "candidate"){
 		        affecteddiv = document.getElementById('testsascandidate');
 		        ascandidatehtml = "";
+		        ascandidatehtml += "<h3 class=\"blue\">Tests as Candidate</h3>\
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Percentile Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Taken On</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"14\">&nbsp;</td>\
+			</tr>";
+			listoftests = Object.keys(JSON.parse(tests_user_dict['candidate_tests_info']));
+			testsinfo = JSON.parse(tests_user_dict['candidate_tests_info']);
+			for(var ic=listoftests.length-1; ic >= 0; ic--){ // Reverse sequence based on test creation date
+			    testnm = listoftests[ic];
+			    if(!testsinfo[testnm]){
+			        continue;
+			    }
+			    if(testsinfo[testnm][18] == 'public'){
+			        ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testnm + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a> --></font></td>";
+			    }
+			    else{
+			        ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testnm + "</font></td>";
+			    }
+			    ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>";
+			    ascandidatehtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][3] + "</font></td>\
+			    <td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][4] + "</font></td>\
+			    <td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][22] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][26] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][27] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][23] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][13] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][10] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][8] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][24] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>";
+			    if(testsinfo[testnm][25] == 0){
+			        ascandidatehtml += "<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='0' checked onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='1'  onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='2' onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Public";
+			    }
+			    else{
+			        if(testsinfo[testnm][25] == 1){
+			            ascandidatehtml += "<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='0' onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='1' checked onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='2' onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Public";
+			        }
+			        else{
+			            ascandidatehtml += "<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='0' onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='1' onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='2' checked onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Public";
+			        }
+			    }
+			    ascandidatehtml += "</font></td>\
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick=\"javascript:postonlinkedin('" + testsinfo[testnm][0] + "', 'candidate');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png\" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
+			    </tr>";
+			}
+			ascandidatehtml += "</table>\
+			<br />\
+			<div id='pagination_ascandidate' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Candidate Page Navigation\">\
+			  <ul class=\"pagination\">";
+			if(tests_user_dict['prevpage_ascandidate'] > 0){
+			    ascandidatehtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			ascandidatehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			  </ul>\
+			  </nav>\
+			</div>\
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
+			for(var j=0; j < Object.keys(JSON.parse(tests_user_dict['rulenotes'])).length; j++){
+			    ruleshort = Object.keys(JSON.parse(tests_user_dict['rulenotes']))[j];
+			    ruleexplanation =  JSON.parse(tests_user_dict['rulenotes'])[ruleshort];
+			    ascandidatehtml += ruleshort + " : " + ruleexplanation + "<br />";
+			}
+			ascandidatehtml += "</font>";
 		        affecteddiv.innerHTML = ascandidatehtml;
 		    }
 		    else if(section == "interviewer"){
 		        affecteddiv = document.getElementById('interviewsconducted');
 		        asinterviewerhtml = "";
+		        asinterviewerhtml += "<h3 class=\"blue\">Interviews Conducted</h3>\
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"12\">&nbsp;</td>\
+			</tr>";
+			listofinterviews = Object.keys(JSON.parse(tests_user_dict['interviewlist_asinterviewer']));
+			interviewsinfo = JSON.parse(tests_user_dict['interviewlist_asinterviewer']);
+			for(var ic=listofinterviews.length-1; ic >= 0; ic--){ // Reverse sequence based on test creation date
+			    interviewtitle = listofinterviews[ic];
+			    if(!interviewsinfo[interviewtitle]){
+			        continue;
+			    }
+			    asinterviewerhtml += "<tr>\
+  			    <td><font size=-1 color='#0000AA'>" + interviewtitle + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][2] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][3] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][4] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][5] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][6] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][7] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][8] + "</font></td>\
+		  	    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][9] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][10] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][11] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = \"javascript:postonlinkedin('" +  interviewsinfo[interviewtitle][11] + "', 'interviewconductor');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
+			    </tr>";
+			}
+			asinterviewerhtml += "</table>\
+			<br/>\
+			<div id='pagination_asinterviewer' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Interviewer Page Navigation\">\
+			<ul class=\"pagination\">";
+			if(tests_user_dict['prevpage_asinterviewer'] > 0){
+			    asinterviewerhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			asinterviewerhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			  </ul>\
+			  </nav>\
+			</div>";
 		        affecteddiv.innerHTML = asinterviewerhtml;
 		    }
 		    else if(section == "interviewee"){
 		        affecteddiv = document.getElementById('interviewsattended');
-		        asintervieweehtml
+		        asintervieweehtml = "";
+		        asintervieweehtml += "<h3 class=\"blue\">Interviews Attended</h3>\
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Scheduled Time</font></td>\
+ 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Actual Start Time</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interviewer Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"16\">&nbsp;</td>\
+			</tr>";
+			listofinterviews = Object.keys(JSON.parse(tests_user_dict['interviewlist_asinterviewee']));
+			interviewsinfo = JSON.parse(tests_user_dict['interviewlist_asinterviewee']);
+			for(var ic=listofinterviews.length-1; ic >= 0; ic--){ // Reverse sequence based on test creation date
+			    interviewtitle = listofinterviews[ic];
+			    if(!interviewsinfo[interviewtitle]){
+			        continue;
+			    }
+			    asintervieweehtml += "<tr>\
+  			    <td><font size=-1 color='#0000AA'>" + interviewtitle + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][2] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][3] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][4] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][5] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][6] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][7] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][8] + "</font></td>\
+		  	    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][9] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][10] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][11] + "</font></td>\
+		   	    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][12] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][13] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][15] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + interviewsinfo[interviewtitle][14] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'><a href='#/' onClick=\"javascript:postonlinkedin('" + interviewsinfo[interviewtitle][14] + "', 'interviewattended');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
+			    </tr>";
+			}
+			asintervieweehtml += "</table>\
+			<br/>\
+			<div id='pagination_asinterviewer' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Interviewee Page Navigation\">\
+			<ul class=\"pagination\">";
+			if(tests_user_dict['prevpage_asinterviewee'] > 0){
+			    asintervieweehtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			asintervieweehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			  </ul>\
+			  </nav>\
+			</div>";
 		        affecteddiv.innerHTML = asintervieweehtml;
 		    }
 		    else{
@@ -3801,7 +3999,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% if prevpage_asinterviewer > 0 %}
 			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
 			  </ul>
 			  </nav>
 			</div>
@@ -3858,7 +4056,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% if prevpage_asinterviewee > 0 %}
 			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
 			  </ul>
 			  </nav>
 			</div>

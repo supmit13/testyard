@@ -724,7 +724,8 @@ def getsectiondata(request):
                         break
                 if evalcompleteflag is False:
                     percentilescore = "NA"
-                #testurl = generatetesturl(tobj, userobj, tests_user_dict)
+                testurl = ""
+                testurl = generatetesturl(tobj, userobj, tests_user_dict)
                 # The above line is causing some strange issues - Needs investigation with a fresh mind
                 evaluatoruserobjs = tests_user_dict['user_candidate_other_creator_evaluator_dict'][test_name]
                 evaluatorlinkslist = []
@@ -752,7 +753,7 @@ def getsectiondata(request):
                 candidate_score = "<font color='#AA0000'>Not evaluated yet.</font>"
                 if utobj.evalcommitstate:
                     candidate_score = utobj.score
-                test_taken_on = utobj.starttime
+                test_taken_on = str(utobj.starttime)
                 next_test_date = ""
                 if not tobj.allowmultiattempts:
                     next_test_date = "Not Applicable"
@@ -762,15 +763,61 @@ def getsectiondata(request):
                     else:
                         next_test_date = "Anytime" # If no usertest object exists then the user would be able to take the test anytime.
                 visibility = utobj.visibility
-                testnames_candidature_dict[test_name] = [str(tid), str(testurl), str(test_topic), str(fullmarks), str(passscore), publishdate, activationdate, str(duration), str(ruleset), str(testtype), str(teststandard), str(status), str(progenv), str(negativescoring), multipleattempts, str(maxattemptscount), str(attemptsinterval), str(attemptsintervalunit), str(scope), str(evaluatorlinks), str(createdscore), completeness, str(candidate_score), test_taken_on, next_test_date, visibility, str(testtakerscount), str(percentilescore) ]
+                testnames_candidature_dict[str(test_name)] = [ str(tid), str(testurl), str(test_topic), str(fullmarks), str(passscore), publishdate, activationdate, str(duration), str(ruleset), str(testtype), str(teststandard), str(status), str(progenv), str(negativescoring), multipleattempts, str(maxattemptscount), str(attemptsinterval), str(attemptsintervalunit), str(scope), str(evaluatorlinks), str(createdscore), completeness, str(candidate_score), test_taken_on, next_test_date, visibility, str(testtakerscount), str(percentilescore) ]
             except:
                 response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
                 return HttpResponse(response)
         tests_user_dict['candidate_tests_info'] = json.dumps(testnames_candidature_dict)
     elif section == "interviewer":
-        interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer] # We already have the requisite data from 'get_user_tests' call
+        tests_user_dict['baseURL'] = skillutils.gethosturl(request)
+        ruleexplanataions = {}
+        for ruleshort in mysettings.RULES_DICT.keys():
+            ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+        tests_user_dict['rulenotes'] = json.dumps(ruleexplanataions)
+        asinterviewerdict = tests_user_dict['interviewlist_asinterviewer']
+        newinterviewerdict = {}
+        for intname in asinterviewerdict.keys():
+            intvals = asinterviewerdict[intname]
+            intname = str(intname)
+            valueslist = []
+            for intval in intvals:
+                if intval is None:
+                    intval = ""
+                if type(intval) == datetime.datetime:
+                    intval = intval.strftime("%d %b, %Y %H:%M:%S")
+                elif type(intval) == bool:
+                    pass
+                else:
+                    intval = str(intval)
+                valueslist.append(intval)
+            newinterviewerdict[intname] = valueslist
+        tests_user_dict['interviewlist_asinterviewer'] = json.dumps(newinterviewerdict)
+        #interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer] # We already have the requisite data from 'get_user_tests' call
     elif section == "interviewee":
-        interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee] # We already have the requisite data from 'get_user_tests' call
+        tests_user_dict['baseURL'] = skillutils.gethosturl(request)
+        ruleexplanataions = {}
+        for ruleshort in mysettings.RULES_DICT.keys():
+            ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+        tests_user_dict['rulenotes'] = json.dumps(ruleexplanataions)
+        asintervieweedict = tests_user_dict['interviewlist_asinterviewee']
+        newintervieweedict = {}
+        for intname in asintervieweedict.keys():
+            intvals = asintervieweedict[intname]
+            intname = str(intname)
+            valueslist = []
+            for intval in intvals:
+                if intval is None:
+                    intval = ""
+                if type(intval) == datetime.datetime:
+                    intval = intval.strftime("%d %b, %Y %H:%M:%S")
+                elif type(intval) == bool:
+                    pass
+                else:
+                    intval = str(intval)
+                valueslist.append(intval)
+            newintervieweedict[intname] = valueslist
+        tests_user_dict['interviewlist_asinterviewee'] = json.dumps(newintervieweedict)
+        #interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee] # We already have the requisite data from 'get_user_tests' call
     else:
         pass
     for testkey in tests_user_dict.keys():
