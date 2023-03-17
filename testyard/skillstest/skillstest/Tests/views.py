@@ -167,7 +167,7 @@ def get_user_tests(request):
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
                                                 Q(groupmember10=userobj))
-    testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('createdate')[startctr_asevaluator:endctr_asevaluator]
+    testlist_asevaluator = Test.objects.filter(evaluator__in=evaluator_groups).order_by('-createdate')[startctr_asevaluator:endctr_asevaluator]
     user_creator_other_evaluators_dict = {}
     tests_creator_ordered_createdate = []
     uniqevalgroups = {}
@@ -490,7 +490,7 @@ def getsectiondata(request):
     
     tests_user_dict = get_user_tests(request)
     if section == "creator":
-        testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')[startctr_ascreator:endctr_ascreator]
+        testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')[startctr_ascreator:endctr_ascreator]
         inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Tests' page for the user.
         for inc_key in inc_context.keys():
             tests_user_dict[inc_key] = inc_context[inc_key]
@@ -500,12 +500,13 @@ def getsectiondata(request):
         ruleexplanataions = {}
         for ruleshort in mysettings.RULES_DICT.keys():
             ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
-        tests_user_dict['rulenotes'] = ruleexplanataions
+        tests_user_dict['rulenotes'] = json.dumps(ruleexplanataions)
         testnames_created_dict = {}
         for test_name in testnames_created_list:
+            test_name = str(test_name)
             try:
                 tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
-                test_topic = tobj.topicname
+                test_topic = str(tobj.topicname)
                 fullmarks = tobj.maxscore
                 passscore = tobj.passscore
                 challenges = Challenge.objects.filter(test=tobj)
@@ -513,7 +514,7 @@ def getsectiondata(request):
                 for chlng in challenges:
                     createdscore += chlng.challengescore
                 completeness = createdscore/fullmarks
-                publishdate = tobj.publishdate
+                publishdate = tobj.publishdate.strftime("%d %b, %Y %H:%M:%S")
                 tid = tobj.id
                 duration = tobj.duration
                 ruleset = tobj.ruleset
@@ -529,7 +530,7 @@ def getsectiondata(request):
                 attemptsinterval = tobj.attemptsinterval
                 attemptsintervalunit = tobj.attemptsinterval
                 scope = tobj.scope
-                activationdate = tobj.activationdate
+                activationdate = tobj.activationdate.strftime("%d %b, %Y %H:%M:%S")
                 testurl = generatetesturl(tobj, userobj, tests_user_dict)
                 usertestqset = UserTest.objects.filter(test=tobj)
                 wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
@@ -555,7 +556,7 @@ def getsectiondata(request):
                 if combinedlist.__len__() > 0:
                     disqualifications += len(usertestqset.filter(disqualified=True))
                     disqualifications += len(wouldbeusersqset.filter(disqualified=True))
-                evaluatoruserobjs = tests_user_dict['user_creator_other_evaluators_dict'][test_name]
+                evaluatoruserobjs = tests_user_dict['user_creator_other_evaluators_dict'][str(test_name)]
                 evaluatorlinkslist = []
                 for evaluserobj in evaluatoruserobjs:
                     if not evaluserobj:
@@ -563,15 +564,22 @@ def getsectiondata(request):
                     evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                     evaluatorlinkslist.append(evallink)
                 evaluatorlinks = ", ".join(evaluatorlinkslist)
-                testnames_created_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, testtakerscount, passcount, failcount, disqualifications]
+                testnames_created_dict[str(test_name)] = [str(tid), str(testurl), str(test_topic), str(fullmarks), str(passscore), str(publishdate), activationdate, str(duration), str(ruleset), str(testtype), str(teststandard), str(status), str(progenv), str(negativescoring), str(multipleattempts), str(maxattemptscount), str(attemptsinterval), str(attemptsintervalunit), str(scope), str(evaluatorlinks), str(createdscore), str(completeness), str(testtakerscount), str(passcount), str(failcount), disqualifications]
             except:
                 response = "Error Retrieving Tests Where User As Creator: %s"%sys.exc_info()[1].__str__()
                 return HttpResponse(response)
-        tests_user_dict['creator_tests_info'] = testnames_created_dict
+        tests_user_dict['creator_tests_info'] = json.dumps(testnames_created_dict)
+        tests_user_dict['nextpage_ascreator'] = nextpage_ascreator
+        tests_user_dict['prevpage_ascreator'] = prevpage_ascreator
     elif section == "evaluator":
         testnames_evaluated_list = tests_user_dict['user_evaluator_creator_other_evaluators_dict'].keys()
         testnames_evaluated_list.sort()
         testnames_evaluated_dict = {}
+        tests_user_dict['baseURL'] = skillutils.gethosturl(request)
+        ruleexplanataions = {}
+        for ruleshort in mysettings.RULES_DICT.keys():
+            ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+        tests_user_dict['rulenotes'] = json.dumps(ruleexplanataions)
         testlist_asevaluator = tests_user_dict['testlist_asevaluator']
         for tobj in testlist_asevaluator:
             try:
@@ -586,7 +594,7 @@ def getsectiondata(request):
                 for chlng in challenges:
                     createdscore += chlng.challengescore
                 completeness = createdscore/fullmarks
-                publishdate = tobj.publishdate
+                publishdate = tobj.publishdate.strftime("%d %b, %Y %H:%M:%S")
                 duration = tobj.duration
                 ruleset = tobj.ruleset
                 ruleset = re.sub(re.compile("\#\|\|\#", re.DOTALL), ", ", ruleset)
@@ -601,7 +609,7 @@ def getsectiondata(request):
                 attemptsinterval = tobj.attemptsinterval
                 attemptsintervalunit = tobj.attemptsinterval
                 scope = tobj.scope
-                activationdate = tobj.activationdate
+                activationdate = tobj.activationdate.strftime("%d %b, %Y %H:%M:%S")
                 testurl = generatetesturl(tobj, userobj, tests_user_dict)
                 usertestqset = UserTest.objects.filter(test=tobj)
                 wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
@@ -635,15 +643,20 @@ def getsectiondata(request):
                     evallink = "<a href='%s'>%s</s>"%(evaluserobj.id, evaluserobj.emailid)
                     evaluatorlinkslist.append(evallink)
                 evaluatorlinks = ", ".join(evaluatorlinkslist)
-                testnames_evaluated_dict[test_name] = [ tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, tobj.creator.emailid, tobj.creator.displayname, createdscore, completeness, testtakerscount, passcount, failcount, disqualifications ]
+                testnames_evaluated_dict[str(test_name)] = [ str(tid), str(testurl), str(test_topic), str(fullmarks), str(passscore), publishdate, activationdate, str(duration), str(ruleset), str(testtype), str(teststandard), str(status), str(progenv), str(negativescoring), multipleattempts, maxattemptscount, str(attemptsinterval), str(attemptsintervalunit), str(scope), str(evaluatorlinks), str(tobj.creator.emailid), str(tobj.creator.displayname), str(createdscore), completeness, str(testtakerscount), str(passcount), str(failcount), str(disqualifications) ]
             except:
                 response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
                 return HttpResponse(response)
-        tests_user_dict['evaluator_tests_info'] = testnames_evaluated_dict
+        tests_user_dict['evaluator_tests_info'] = json.dumps(testnames_evaluated_dict)
     elif section == "candidate":
         testnames_candidature_list = tests_user_dict['user_candidate_other_creator_evaluator_dict'].keys()
         testnames_candidature_list.sort()
         testnames_candidature_dict = {}
+        tests_user_dict['baseURL'] = skillutils.gethosturl(request)
+        ruleexplanataions = {}
+        for ruleshort in mysettings.RULES_DICT.keys():
+            ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+        tests_user_dict['rulenotes'] = json.dumps(ruleexplanataions)
         testlist_ascandidate = tests_user_dict['testlist_ascandidate']
         uniquedict = {}
         for tobj in testlist_ascandidate:
@@ -658,7 +671,7 @@ def getsectiondata(request):
                 for chlng in challenges:
                     createdscore += chlng.challengescore
                 completeness = createdscore/fullmarks
-                publishdate = tobj.publishdate
+                publishdate = tobj.publishdate.strftime("%d %b, %Y %H:%M:%S")
                 tid = tobj.id
                 duration = tobj.duration
                 ruleset = tobj.ruleset
@@ -673,7 +686,7 @@ def getsectiondata(request):
                 attemptsinterval = tobj.attemptsinterval
                 attemptsintervalunit = tobj.attemptsintervalunit
                 scope = tobj.scope
-                activationdate = tobj.activationdate
+                activationdate = tobj.activationdate.strftime("%d %b, %Y %H:%M:%S")
                 usertestqset = UserTest.objects.filter(test=tobj)
                 wouldbeusersqset = WouldbeUsers.objects.filter(test=tobj)
                 combinedlist = []
@@ -749,17 +762,22 @@ def getsectiondata(request):
                     else:
                         next_test_date = "Anytime" # If no usertest object exists then the user would be able to take the test anytime.
                 visibility = utobj.visibility
-                testnames_candidature_dict[test_name] = [tid, testurl, test_topic, fullmarks, passscore, publishdate, activationdate, duration, ruleset, testtype, teststandard, status, progenv, negativescoring, multipleattempts, maxattemptscount, attemptsinterval, attemptsintervalunit, scope, evaluatorlinks, createdscore, completeness, candidate_score, test_taken_on, next_test_date, visibility, testtakerscount, percentilescore ]
+                testnames_candidature_dict[test_name] = [str(tid), str(testurl), str(test_topic), str(fullmarks), str(passscore), publishdate, activationdate, str(duration), str(ruleset), str(testtype), str(teststandard), str(status), str(progenv), str(negativescoring), multipleattempts, str(maxattemptscount), str(attemptsinterval), str(attemptsintervalunit), str(scope), str(evaluatorlinks), str(createdscore), completeness, str(candidate_score), test_taken_on, next_test_date, visibility, str(testtakerscount), str(percentilescore) ]
             except:
                 response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
                 return HttpResponse(response)
-        tests_user_dict['candidate_tests_info'] = testnames_candidature_dict
+        tests_user_dict['candidate_tests_info'] = json.dumps(testnames_candidature_dict)
     elif section == "interviewer":
         interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer] # We already have the requisite data from 'get_user_tests' call
     elif section == "interviewee":
         interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee] # We already have the requisite data from 'get_user_tests' call
     else:
         pass
+    for testkey in tests_user_dict.keys():
+        try:
+            tests_user_dict[testkey] = str(tests_user_dict[testkey]) # stringify it
+        except:
+            tests_user_dict.pop(testkey, '') # Remove key if it cannot be stringified
     # Return data as json.
     return HttpResponse(json.dumps(tests_user_dict))
     

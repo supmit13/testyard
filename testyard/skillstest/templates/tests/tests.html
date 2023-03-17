@@ -3215,27 +3215,256 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    //alert(xmlhttp.responseText);
+		    tests_user_dict = JSON.parse(xmlhttp.responseText);
 		    // Render the selected (active) section. The section identified by the variable 'section' is the one active.
 		    affecteddiv = null;
+		    ascreatorhtml = "";
 		    if(section == "creator"){
 		        affecteddiv = document.getElementById('testsascreator');
-		        affecteddiv.innerHTML = "";
+		        ascreatorhtml = "<h3 class=\"blue\">Tests as Creator</h3>\
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>\
+                          <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"23\">&nbsp;</td>\
+			</tr>";			
+			listoftests = Object.keys(JSON.parse(tests_user_dict['creator_tests_info']));
+			testsinfo = JSON.parse(tests_user_dict['creator_tests_info']);
+			//alert(listoftests[0]);
+			for(var ic=listoftests.length-1; ic >= 0; ic--){ // Reverse sequence based on test creation date
+			    testnm = listoftests[ic];
+			    //alert(testnm);
+			    if(!testsinfo[testnm]){
+			        continue;
+			    }
+			    if(testsinfo[testnm] && testsinfo[testnm][11] == 0){
+			        ascreatorhtml += "<tr bgcolor='#f56e62'>";
+			    }
+			    else{
+			        ascreatorhtml += "<tr>";
+			    }
+			    ascreatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testnm + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a> --></font></td>\
+			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(\"" + testsinfo[testnm][0] + "\");'>" + testnm + "</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a></font></td> -->";
+			    ascreatorhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates(\"" + testsinfo[testnm][0] + "\");'>Invite</a></font><div id='invitationdiv" + testsinfo[testnm][0] + "' style='display:none'></div></td>\
+			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations(\"" + testsinfo[testnm][0] + "\");'>Manage Invitations</a></font><div id='existinginvitationdiv" + testsinfo[testnm][0] + "' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>\
+			  <td nowrap align='right'><font size=-1 color='#0000AA'>" + testsinfo[testnm][3] + "</font></td>";
+			    if (testsinfo[testnm] && testsinfo[testnm][21] < 1){
+			      ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testsinfo[testnm][21] + " (" + testsinfo[testnm][20] + " out of " + testsinfo[testnm][3] + ")</font></td>";
+			    }
+			    else{
+			      ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][21] + " (" + testsinfo[testnm][20] + " out of " + testsinfo[testnm][3] + ")</font></td>"
+			    }
+			    ascreatorhtml += "<td><font size=-1 color='#0000AA'>" + testsinfo[testnm][19] + "</font></td> \
+			    <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][5] + "</font></td> \
+			    <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][6] + "</font></td>";
+			    if( !testsinfo[testnm][4]){
+			        ascreatorhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td>";
+			    }
+			    else{ 
+			        ascreatorhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testsinfo[testnm][4] + "</font></td>";
+			    }
+			    if (!testsinfo[testnm][13]){
+			        ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    else{
+			        ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    ascreatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][10] + "</font></td>\
+			    <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][8] + "*</font></td>";
+			    if (!testsinfo[testnm][14]){
+			        ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    else{
+			        ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    ascreatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][22] + "</font></td>\
+			    <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][23] + "</font></td> \
+			    <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][24] + "</font></td> \
+			    <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][25] + "</font></td> \
+			    <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testsinfo[testnm][0] + ");'>Edit Interface</a></font></td> \
+			    <td nowrap><font size=-1 color='#0000AA'>";
+			    if (testsinfo[testnm][18] == 'private'){
+			        ascreatorhtml += "<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='0' checked onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='1'  onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='2' onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Public";
+			    }
+			    else{
+			        if (testsinfo[testnm][18] == 'protected'){
+			            ascreatorhtml += "<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='0' onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='1' checked onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='2' onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Public";
+			        }
+			        else{
+			            ascreatorhtml += "<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='0' onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='1' onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testsinfo[testnm][0] + "' id='creator_visibility_" + testsinfo[testnm][0] + "' value='2' checked onChange='javascript:setvisibility(\"test\", " + testsinfo[testnm][0] + ");'>Public";
+			        }
+			    }
+			    ascreatorhtml += "</font></td>";
+			    ascreatorhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('" + testsinfo[testnm][0] + "');>Schedule Test</a></font></td>";
+			    if (testsinfo[testnm][11] == 0 ){
+			        ascreatorhtml += "<td nowrap align='right' id='teststatus_" + testsinfo[testnm][0] + "'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('" + testsinfo[testnm][0] + "');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_" + testsinfo[testnm][0] + "'><a href='#/' onclick=\"javascript:postonlinkedin('" + testsinfo[testnm][0] + "', 'creator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png\" alt=\"LinkedIn Add to Profile button\"></a><!-- <span class=\"semitrans2\" id='linkedinauth_creator_" + testsinfo[testnm][0] + "' style='display:none;height:30%;width:30%;'></span> --></td>";
+			    }
+			    else {
+			        ascreatorhtml += "<td nowrap align='right' id='teststatus_" + testsinfo[testnm][0] + "'><a href='#/' onclick=javascript:deactivatestatusnow('" + testsinfo[testnm][0] + "');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_" + testsinfo[testnm][0] + "'><a href='#/' onclick=\"javascript:postonlinkedin('" + testsinfo[testnm][0] + "', 'creator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png\" alt=\"LinkedIn Add to Profile button\"></a><!-- <span class=\"semitrans2\" id='linkedinauth_creator_" + testsinfo[testnm][0] + "' style='display:none;height:30%;width:30%;'></span> --></td>";
+			    }
+			    ascreatorhtml += "</tr> ";
+			}
+			ascreatorhtml += "</table><br /><div id='pagination_ascreator' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Creator Page Navigation\">\
+			  <ul class=\"pagination\">";
+			if(tests_user_dict['prevpage_ascreator'] > 0){
+			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>&nbsp;&nbsp;";
+			}
+			ascreatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			  </ul>\
+			  </nav>\
+			</div>\
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
+			for(var j=0; j < Object.keys(JSON.parse(tests_user_dict['rulenotes'])).length; j++){
+			    ruleshort = Object.keys(JSON.parse(tests_user_dict['rulenotes']))[j];
+			    ruleexplanation =  JSON.parse(tests_user_dict['rulenotes'])[ruleshort];
+			    ascreatorhtml += ruleshort + " : " + ruleexplanation + "<br />";
+			}
+			ascreatorhtml += "</font>\
+			<br />\
+			<font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>";
+			//affecteddiv.innerHTML = "";
+			affecteddiv.innerHTML = ascreatorhtml;
 		    }
 		    else if(section == "evaluator"){
 		        affecteddiv = document.getElementById('testsasevaluator');
-		        affecteddiv.innerHTML = "";
+		        asevaluatorhtml = "";
+		        asevaluatorhtml += "<h3 class=\"blue\">Tests as Evaluator</h3>\
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"18\">&nbsp;</td>\
+			</tr>";
+			listoftests = Object.keys(JSON.parse(tests_user_dict['evaluator_tests_info']));
+			testsinfo = JSON.parse(tests_user_dict['evaluator_tests_info']);
+			for(var ic=listoftests.length-1; ic >= 0; ic--){ // Reverse sequence based on test creation date
+			    testnm = listoftests[ic];
+			    asevaluatorhtml += "<tr>";
+			    if(testsinfo[testnm][18] == 'public' || testsinfo[testnm][18] == 'protected'){
+			        asevaluatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testnm + "</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest(" + testsinfo[testnm][0] + ");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a> --></font></td>\
+			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(" + testsinfo[testnm][0] + ");'>" + testnm + "</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest(" + testsinfo[testnm][0] + ");'>(Evaluate)</a></b>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a></font></td> -->";
+			  }
+			  else{
+			      asevaluatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testnm + "</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest(" + testsinfo[testnm][0] + ");'>(Evaluate)</a></b></font></td>\
+			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(" + testsinfo[testnm][0] + ");'>" + testnm + "</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest(" + testsinfo[testnm][0] + ");'>(Evaluate)</a></b></font></td> -->";
+			  }
+			  asevaluatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>\
+			  <td nowrap align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][3] + "</font></td>";
+			  if(testsinfo[testnm][23] < 1){
+			      asevaluatorhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testsinfo[testnm][23] + " (" + testsinfo[testnm][22] + " out of " + testsinfo[testnm][3] + ")</font></td>";
+			  }
+			  else{
+			      asevaluatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][23] + " (" + testsinfo[testnm][22] + " out of " + testsinfo[testnm][3] + ")</font></td>";
+			  }
+			  asevaluatorhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'><a href='" + testsinfo[testnm][0] + "'>" + testsinfo[testnm][20] + " (username=" + testsinfo[testnm][21] + ")</a></font></td>\
+			  <td align='left'><font size=-1 color='#0000AA'>" + testsinfo[testnm][19] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][5] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][6] + "</font></td>";
+			  if(!testsinfo[testnm][4]){
+			      asevaluatorhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td>";
+			  }
+			  else{
+			      asevaluatorhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testsinfo[testnm][4] + "</font></td>";
+			  }
+			  if (!testsinfo[testnm][13]){
+			      asevaluatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			  }
+			  else{
+			      asevaluatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			  }
+			  asevaluatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][10] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][8] + "*</font></td>";
+			  if(!testsinfo[testnm][14]){
+			      asevaluatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			  }
+			  else{
+			      asevaluatorhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			  }
+			  asevaluatorhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][24] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][25] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][26] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testsinfo[testnm][27] + "</font></td>\
+			  <td align='right' id='postlinkedin_" + testsinfo[testnm][0] + "'><font color='#00BB00' size=-1><a href='#/' onclick=\"javascript:postonlinkedin('" + testsinfo[testnm][0] + "', 'evaluator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
+			  </tr>";
+			}
+			asevaluatorhtml += "</table>\
+			<br />\
+			<div id='pagination_asevaluator' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Evaluator Page Navigation\">\
+			  <ul class=\"pagination\">";
+			if(tests_user_dict['prevpage_asevaluator'] > 0){
+			    asevaluatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			asevaluatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			  </ul>\
+			  </nav>\
+			</div>\
+			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
+			for(var j=0; j < Object.keys(JSON.parse(tests_user_dict['rulenotes'])).length; j++){
+			    ruleshort = Object.keys(JSON.parse(tests_user_dict['rulenotes']))[j];
+			    ruleexplanation =  JSON.parse(tests_user_dict['rulenotes'])[ruleshort];
+			    asevaluatorhtml += ruleshort + " : " + ruleexplanation + "<br />";
+			}
+			asevaluatorhtml += "</font>";
+		        affecteddiv.innerHTML = asevaluatorhtml;
 		    }
 		    else if(section == "candidate"){
 		        affecteddiv = document.getElementById('testsascandidate');
-		        affecteddiv.innerHTML = "";
+		        ascandidatehtml = "";
+		        affecteddiv.innerHTML = ascandidatehtml;
 		    }
 		    else if(section == "interviewer"){
 		        affecteddiv = document.getElementById('interviewsconducted');
-		        affecteddiv.innerHTML = "";
+		        asinterviewerhtml = "";
+		        affecteddiv.innerHTML = asinterviewerhtml;
 		    }
 		    else if(section == "interviewee"){
 		        affecteddiv = document.getElementById('interviewsattended');
-		        affecteddiv.innerHTML = "";
+		        asintervieweehtml
+		        affecteddiv.innerHTML = asintervieweehtml;
 		    }
 		    else{
 		        affecteddiv.innerHTML = "<p style='color:#aa0000;font-weight:bold;'>Unrecognized section '" + section + "'</p>";
@@ -3381,7 +3610,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% if prevpage_ascreator > 0 %}
 			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
 			  </ul>
 			  </nav>
 			</div>
@@ -3455,7 +3684,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% if prevpage_asevaluator > 0 %}
 			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
 			  </ul>
 			  </nav>
 			</div>
@@ -3522,7 +3751,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% if prevpage_ascandidate > 0 %}
 			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#' onclick="javascript:getpage({{nextpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
 			  </ul>
 			  </nav>
 			</div>
