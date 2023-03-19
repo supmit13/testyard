@@ -65,6 +65,7 @@ def get_user_tests(request):
     usertype = request.COOKIES['usertype']
     pageno_ascreator, pageno_asevaluator, pageno_ascandidate, pageno_asinterviewer, pageno_asinterviewee = 1, 1, 1, 1, 1
     startctr_ascreator, startctr_asevaluator, startctr_ascandidate, startctr_asinterviewer, startctr_asinterviewee = 0, 0, 0, 0, 0
+    first_ascreator, last_ascreator, first_asevaluator, last_asevaluator, first_ascandidate, last_ascandidate, first_asinterviewer, last_asinterviewer, first_asinterviewee, last_asinterviewee = 1, 100, 1, 100, 1, 100, 1, 100, 1, 100
     endctr_ascreator, endctr_asevaluator, endctr_ascandidate, endctr_asinterviewer, endctr_asinterviewee = mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE
     # Retrieve pageno for all sections from GET query parameters
     if request.GET.has_key('pageno_creator'):
@@ -120,7 +121,8 @@ def get_user_tests(request):
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')[startctr_ascreator:endctr_ascreator]
     # Determine if the user should be shown the "Create Test" link
     createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL
-    if testlist_ascreator.__len__() <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
+    test_created_count = Test.objects.filter(creator=userobj).count()
+    if test_created_count <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
         interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Create an Interview</a>"%userobj.id
@@ -162,7 +164,7 @@ def get_user_tests(request):
         progenv += "<option value=&quot;0&quot; selected>None</option>"
         for proglang in mysettings.COMPILER_LOCATIONS.keys():
             progenv += "<option value=&quot;%s&quot;>Yes - %s</option>"%(proglang, proglang)
-    
+    last_ascreator = (Test.objects.filter(creator=userobj).count()/mysettings.PAGE_CHUNK_SIZE) + 1
     evaluator_groups = Evaluator.objects.filter(Q(groupmember1=userobj)|Q(groupmember2=userobj)|Q(groupmember3=userobj)| \
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
@@ -215,6 +217,7 @@ def get_user_tests(request):
     user_evaluator_creator_other_evaluators_dict = {}
     tests_evaluator_ordered_createdate = []
     test = None
+    last_asevaluator = (Test.objects.filter(evaluator__in=evaluator_groups).count()/mysettings.PAGE_CHUNK_SIZE) + 1
     for test in testlist_asevaluator:
         testcreator = test.creator
         testname = test.testname
@@ -235,6 +238,16 @@ def get_user_tests(request):
         except:
             pass
     user_candidate_other_creator_evaluator_dict = {}
+    candidatescount = 0
+    try:
+        candidatescount += UserTest.objects.filter(user=userobj).count()
+    except:
+        pass
+    try:
+        candidatescount += WouldbeUsers.objects.filter(user=userobj).count()
+    except:
+        pass
+    last_ascandidate = (candidatescount/mysettings.PAGE_CHUNK_SIZE) + 1
     for test in testlist_ascandidate:
         testcreator = test.creator
         creator_evaluators = ( testcreator, test.evaluator.groupmember1, test.evaluator.groupmember2, test.evaluator.groupmember3, test.evaluator.groupmember4, \
@@ -250,6 +263,7 @@ def get_user_tests(request):
     interviewerslist = []
     interviews_list['asinterviewer'] = {}
     asinterviewer_seq = []
+    last_asinterviewer = (Interview.objects.filter(interviewer=userobj).count()/mysettings.PAGE_CHUNK_SIZE) + 1
     for interview in interviewsasinterviewer:
         inttitle = interview.title
         asinterviewer_seq.append(inttitle)
@@ -283,6 +297,7 @@ def get_user_tests(request):
     interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee]
     interviews_list['asinterviewee'] = {}
     asinterviewee_seq = []
+    last_asinterviewee = (InterviewCandidates.objects.filter(emailaddr=userobj.emailid).count()/mysettings.PAGE_CHUNK_SIZE) + 1
     for intcandidate in interviewsasinterviewees:
         interviewname = intcandidate.interview.title
         asinterviewee_seq.append(interviewname)
@@ -400,14 +415,24 @@ def get_user_tests(request):
     # pagination related vars
     tests_user_dict['nextpage_ascreator'] = nextpage_ascreator
     tests_user_dict['prevpage_ascreator'] = prevpage_ascreator
+    tests_user_dict['first_ascreator'] = first_ascreator
+    tests_user_dict['last_ascreator'] = last_ascreator
     tests_user_dict['nextpage_asevaluator'] = nextpage_asevaluator
     tests_user_dict['prevpage_asevaluator'] = prevpage_asevaluator
+    tests_user_dict['first_asevaluator'] = first_asevaluator
+    tests_user_dict['last_asevaluator'] = last_asevaluator
     tests_user_dict['nextpage_ascandidate'] = nextpage_ascandidate
     tests_user_dict['prevpage_ascandidate'] = prevpage_ascandidate
+    tests_user_dict['first_ascandidate'] = first_ascandidate
+    tests_user_dict['last_ascandidate'] = last_ascandidate
     tests_user_dict['nextpage_asinterviewer'] = nextpage_asinterviewer
     tests_user_dict['prevpage_asinterviewer'] = prevpage_asinterviewer
+    tests_user_dict['first_asinterviewer'] = first_asinterviewer
+    tests_user_dict['last_asinterviewer'] = last_asinterviewer
     tests_user_dict['nextpage_asinterviewee'] = nextpage_asinterviewee
     tests_user_dict['prevpage_asinterviewee'] = prevpage_asinterviewee
+    tests_user_dict['first_asinterviewee'] = first_asinterviewee
+    tests_user_dict['last_asinterviewee'] = last_asinterviewee
     tests_user_dict['currpage_ascreator'] = pageno_ascreator
     tests_user_dict['currpage_asevaluator'] = pageno_asevaluator
     tests_user_dict['currpage_ascandidate'] = pageno_ascandidate
@@ -433,6 +458,7 @@ def getsectiondata(request):
     pageno_ascreator, pageno_asevaluator, pageno_ascandidate, pageno_asinterviewer, pageno_asinterviewee = 1, 1, 1, 1, 1
     startctr_ascreator, startctr_asevaluator, startctr_ascandidate, startctr_asinterviewer, startctr_asinterviewee = 0, 0, 0, 0, 0
     endctr_ascreator, endctr_asevaluator, endctr_ascandidate, endctr_asinterviewer, endctr_asinterviewee = mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE, mysettings.PAGE_CHUNK_SIZE
+    currpage_ascreator, first_ascreator, last_ascreator = pageno_ascreator, 1, 100
     # Retrieve pageno for all sections from GET query parameters
     section = ""
     if request.GET.has_key('section'):
@@ -474,14 +500,24 @@ def getsectiondata(request):
     startctr_asinterviewee = pageno_asinterviewee * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
     endctr_asinterviewee = pageno_asinterviewee * mysettings.PAGE_CHUNK_SIZE
     # Compute nextpage and prevpage for all 5 sections.
+    currpage_ascreator = pageno_ascreator
+    first_ascreator = 1
     nextpage_ascreator = pageno_ascreator + 1
     prevpage_ascreator = pageno_ascreator - 1
+    currpage_asevaluator = pageno_asevaluator
+    first_asevaluator = 1
     nextpage_asevaluator = pageno_asevaluator + 1
     prevpage_asevaluator = pageno_asevaluator - 1
+    currpage_ascandidate = pageno_ascandidate
+    first_ascandidate = 1
     nextpage_ascandidate = pageno_ascandidate + 1
     prevpage_ascandidate = pageno_ascandidate - 1
+    currpage_asinterviewer = pageno_asinterviewer
+    first_asinterviewer = 1
     nextpage_asinterviewer = pageno_asinterviewer + 1
     prevpage_asinterviewer = pageno_asinterviewer - 1
+    currpage_asinterviewee = pageno_asinterviewee
+    first_asinterviewee = 1
     nextpage_asinterviewee = pageno_asinterviewee + 1
     prevpage_asinterviewee = pageno_asinterviewee - 1
     # Note: the above page numbers are to be added in context at the end of the function.
@@ -490,11 +526,11 @@ def getsectiondata(request):
     
     tests_user_dict = get_user_tests(request)
     if section == "creator":
-        testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')[startctr_ascreator:endctr_ascreator]
+        testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')
         inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Tests' page for the user.
         for inc_key in inc_context.keys():
             tests_user_dict[inc_key] = inc_context[inc_key]
-        testnames_created_list = tests_user_dict['user_creator_other_evaluators_dict'].keys()
+        testnames_created_list = list(tests_user_dict['user_creator_other_evaluators_dict'].keys())[startctr_ascreator:endctr_ascreator]
         testnames_created_list.sort()
         tests_user_dict['baseURL'] = skillutils.gethosturl(request)
         ruleexplanataions = {}
@@ -571,6 +607,8 @@ def getsectiondata(request):
         tests_user_dict['creator_tests_info'] = json.dumps(testnames_created_dict)
         tests_user_dict['nextpage_ascreator'] = nextpage_ascreator
         tests_user_dict['prevpage_ascreator'] = prevpage_ascreator
+        tests_user_dict['currpage_ascreator'] = currpage_ascreator
+        tests_user_dict['first_ascreator'] = first_ascreator
     elif section == "evaluator":
         testnames_evaluated_list = tests_user_dict['user_evaluator_creator_other_evaluators_dict'].keys()
         testnames_evaluated_list.sort()
@@ -646,10 +684,13 @@ def getsectiondata(request):
                 testnames_evaluated_dict[str(test_name)] = [ str(tid), str(testurl), str(test_topic), str(fullmarks), str(passscore), publishdate, activationdate, str(duration), str(ruleset), str(testtype), str(teststandard), str(status), str(progenv), str(negativescoring), multipleattempts, maxattemptscount, str(attemptsinterval), str(attemptsintervalunit), str(scope), str(evaluatorlinks), str(tobj.creator.emailid), str(tobj.creator.displayname), str(createdscore), completeness, str(testtakerscount), str(passcount), str(failcount), str(disqualifications) ]
             except:
                 response = "Error Retrieving Tests Where User As Evaluator: %s"%sys.exc_info()[1].__str__()
-                return HttpResponse(response)
+                continue
+                #return HttpResponse(response)
         tests_user_dict['evaluator_tests_info'] = json.dumps(testnames_evaluated_dict)
+        tests_user_dict['currpage_asevaluator'] = currpage_asevaluator
+        tests_user_dict['first_asevaluator'] = first_asevaluator
     elif section == "candidate":
-        testnames_candidature_list = tests_user_dict['user_candidate_other_creator_evaluator_dict'].keys()
+        testnames_candidature_list = list(tests_user_dict['user_candidate_other_creator_evaluator_dict'].keys())
         testnames_candidature_list.sort()
         testnames_candidature_dict = {}
         tests_user_dict['baseURL'] = skillutils.gethosturl(request)
@@ -768,6 +809,8 @@ def getsectiondata(request):
                 response = "Error Retrieving Tests Where User As Candidate: %s"%(sys.exc_info()[1].__str__())
                 return HttpResponse(response)
         tests_user_dict['candidate_tests_info'] = json.dumps(testnames_candidature_dict)
+        tests_user_dict['currpage_ascandidate'] = currpage_ascandidate
+        tests_user_dict['first_ascandidate'] = first_ascandidate
     elif section == "interviewer":
         tests_user_dict['baseURL'] = skillutils.gethosturl(request)
         ruleexplanataions = {}
@@ -792,6 +835,8 @@ def getsectiondata(request):
                 valueslist.append(intval)
             newinterviewerdict[intname] = valueslist
         tests_user_dict['interviewlist_asinterviewer'] = json.dumps(newinterviewerdict)
+        tests_user_dict['currpage_asinterviewer'] = currpage_asinterviewer
+        tests_user_dict['first_asinterviewer'] = first_asinterviewer
         #interviewsasinterviewer = Interview.objects.filter(interviewer=userobj).order_by('-createdate')[startctr_asinterviewer:endctr_asinterviewer] # We already have the requisite data from 'get_user_tests' call
     elif section == "interviewee":
         tests_user_dict['baseURL'] = skillutils.gethosturl(request)
@@ -817,6 +862,8 @@ def getsectiondata(request):
                 valueslist.append(intval)
             newintervieweedict[intname] = valueslist
         tests_user_dict['interviewlist_asinterviewee'] = json.dumps(newintervieweedict)
+        tests_user_dict['currpage_asinterviewee'] = currpage_asinterviewee
+        tests_user_dict['first_asinterviewee'] = first_asinterviewee
         #interviewsasinterviewees = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).order_by('-scheduledtime')[startctr_asinterviewee:endctr_asinterviewee] # We already have the requisite data from 'get_user_tests' call
     else:
         pass

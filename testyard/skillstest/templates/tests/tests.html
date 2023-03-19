@@ -3331,10 +3331,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			ascreatorhtml += "</table><br /><div id='pagination_ascreator' style='text-align:center;padding-left:10px;'>\
 			<nav aria-label=\"Tests as Creator Page Navigation\">\
 			  <ul class=\"pagination\">";
-			if(tests_user_dict['prevpage_ascreator'] > 0){
-			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>&nbsp;&nbsp;";
+			if(tests_user_dict['currpage_ascreator'] > 1){
+			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(1,'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>&nbsp;&nbsp;";
 			}
-			ascreatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			if(tests_user_dict['prevpage_ascreator'] > 0){
+			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>&nbsp;&nbsp;";
+			}
+			ascreatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
+			if(tests_user_dict['currpage_ascreator'] < tests_user_dict['last_ascreator']){
+			    ascreatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
+			}
+			ascreatorhtml += "\
 			  </ul>\
 			  </nav>\
 			</div>\
@@ -3439,10 +3446,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_asevaluator' style='text-align:center;padding-left:10px;'>\
 			<nav aria-label=\"Tests as Evaluator Page Navigation\">\
 			  <ul class=\"pagination\">";
-			if(tests_user_dict['prevpage_asevaluator'] > 0){
-			    asevaluatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			if(tests_user_dict['currpage_asevaluator'] > 1){
+			    asevaluatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(1,'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>&nbsp;&nbsp;";
 			}
-			asevaluatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			if(tests_user_dict['prevpage_asevaluator'] > 0){
+			    asevaluatorhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			asevaluatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
+			if(tests_user_dict['currpage_asevaluator'] < tests_user_dict['last_asevaluator']){
+			    asevaluatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
+			}
+			asevaluatorhtml += "\
 			  </ul>\
 			  </nav>\
 			</div>\
@@ -3524,10 +3538,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_ascandidate' style='text-align:center;padding-left:10px;'>\
 			<nav aria-label=\"Tests as Candidate Page Navigation\">\
 			  <ul class=\"pagination\">";
-			if(tests_user_dict['prevpage_ascandidate'] > 0){
-			    ascandidatehtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			if(tests_user_dict['currpage_ascandidate'] > 1){
+			    ascandidatehtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(1,'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>&nbsp;&nbsp;";
 			}
-			ascandidatehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			if(tests_user_dict['prevpage_ascandidate'] > 0){
+			    ascandidatehtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			ascandidatehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
+			if(tests_user_dict['currpage_ascandidate'] < tests_user_dict['last_ascandidate']){
+			    ascandidatehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
+			}
+			ascandidatehtml += "\
 			  </ul>\
 			  </nav>\
 			</div>\
@@ -3589,10 +3610,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_asinterviewer' style='text-align:center;padding-left:10px;'>\
 			<nav aria-label=\"Tests as Interviewer Page Navigation\">\
 			<ul class=\"pagination\">";
-			if(tests_user_dict['prevpage_asinterviewer'] > 0){
-			    asinterviewerhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			if(tests_user_dict['currpage_asinterviewer'] > 1){
+			    asinterviewerhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(1,'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>&nbsp;&nbsp;";
 			}
-			asinterviewerhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			if(tests_user_dict['prevpage_asinterviewer'] > 0){
+			    asinterviewerhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			asinterviewerhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
+			if(tests_user_dict['currpage_asinterviewer'] < tests_user_dict['last_asinterviewer']){
+			    asinterviewerhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
+			}
+			asinterviewerhtml += "\
 			  </ul>\
 			  </nav>\
 			</div>";
@@ -3655,10 +3683,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_asinterviewer' style='text-align:center;padding-left:10px;'>\
 			<nav aria-label=\"Tests as Interviewee Page Navigation\">\
 			<ul class=\"pagination\">";
-			if(tests_user_dict['prevpage_asinterviewee'] > 0){
-			    asintervieweehtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			if(tests_user_dict['currpage_asinterviewee'] > 1){
+			    asintervieweehtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(1,'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>&nbsp;&nbsp;";
 			}
-			asintervieweehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>\
+			if(tests_user_dict['prevpage_asinterviewee'] > 0){
+			    asintervieweehtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
+			}
+			asintervieweehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
+			if(tests_user_dict['currpage_asinterviewee'] < tests_user_dict['last_asinterviewee']){
+			    asintervieweehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
+			}
+			asintervieweehtml += "\
 			  </ul>\
 			  </nav>\
 			</div>";
@@ -3805,10 +3840,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_ascreator' style='text-align:center;padding-left:10px;'>
 			<nav aria-label="Tests as Creator Page Navigation">
 			  <ul class="pagination">
-			  {% if prevpage_ascreator > 0 %}
-			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% if currpage_ascreator > 1 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage(1,'creator');" class="btn btn-testyard1" style='font-size:medium;'><< First</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  {% if prevpage_ascreator > 0 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{prevpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{nextpage_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>
+			  {% if currpage_ascreator < last_ascreator %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{last_ascreator}},'creator');" class="btn btn-testyard1" style='font-size:medium;padding-left:5px;'>Last >></a></li>
+			  {% endif %}
 			  </ul>
 			  </nav>
 			</div>
@@ -3879,10 +3920,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_asevaluator' style='text-align:center;padding-left:10px;'>
 			<nav aria-label="Tests as Evaluator Page Navigation">
 			  <ul class="pagination">
-			  {% if prevpage_asevaluator > 0 %}
-			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% if currpage_asevaluator > 1 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage(1,'evaluator');" class="btn btn-testyard1" style='font-size:medium;'><< First</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  {% if prevpage_asevaluator > 0 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{prevpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{nextpage_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>
+			  {% if currpage_asevaluator < last_asevaluator %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{last_asevaluator}},'evaluator');" class="btn btn-testyard1" style='font-size:medium;padding-left:5px;'>Last >></a></li>
+			  {% endif %}
 			  </ul>
 			  </nav>
 			</div>
@@ -3946,10 +3993,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_ascandidate' style='text-align:center;padding-left:10px;'>
 			<nav aria-label="Tests as Candidate Page Navigation">
 			  <ul class="pagination">
-			  {% if prevpage_ascandidate > 0 %}
-			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% if currpage_ascandidate > 1 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage(1,'candidate');" class="btn btn-testyard1" style='font-size:medium;'><< First</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  {% if prevpage_ascandidate > 0 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{prevpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{nextpage_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>
+			  {% if currpage_ascandidate < last_ascandidate %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{last_ascandidate}},'candidate');" class="btn btn-testyard1" style='font-size:medium;padding-left:5px;'>Last >></a></li>
+			  {% endif %}
 			  </ul>
 			  </nav>
 			</div>
@@ -3996,10 +4049,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_asinterviewer' style='text-align:center;padding-left:10px;'>
 			<nav aria-label="Tests as Interviewer Page Navigation">
 			  <ul class="pagination">
-			  {% if prevpage_asinterviewer > 0 %}
-			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% if currpage_asinterviewer > 1 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage(1,'interviewer');" class="btn btn-testyard1" style='font-size:medium;'><< First</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  {% if prevpage_asinterviewer > 0 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{nextpage_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>
+			  {% if currpage_asinterviewer < last_asinterviewer %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{last_asinterviewer}},'interviewer');" class="btn btn-testyard1" style='font-size:medium;padding-left:5px;'>Last >></a></li>
+			  {% endif %}
 			  </ul>
 			  </nav>
 			</div>
@@ -4053,10 +4112,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='pagination_asinterviewee' style='text-align:center;padding-left:10px;'>
 			<nav aria-label="Tests as Interview Candidate Page Navigation">
 			  <ul class="pagination">
-			  {% if prevpage_asinterviewee > 0 %}
-			  <li class='page-item'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>< Prev</a></li>
+			  {% if currpage_asinterviewee > 1 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage(1,'interviewee');" class="btn btn-testyard1" style='font-size:medium;'><< First</a></li>
 			  {% endif %}
-			  <li class="page-item"><a href='#/' onclick="javascript:getpage({{nextpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;'>Next ></a></li>
+			  {% if prevpage_asinterviewee > 0 %}
+			  <li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{prevpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>
+			  {% endif %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{nextpage_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>
+			  {% if currpage_asinterviewee < last_asinterviewee %}
+			  <li class="page-item" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick="javascript:getpage({{last_asinterviewee}},'interviewee');" class="btn btn-testyard1" style='font-size:medium;padding-left:5px;'>Last >></a></li>
+			  {% endif %}
 			  </ul>
 			  </nav>
 			</div>
