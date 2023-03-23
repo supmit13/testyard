@@ -3337,8 +3337,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_ascreator'] > 0){
 			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>&nbsp;&nbsp;";
 			}
-			ascreatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			if(tests_user_dict['currpage_ascreator'] < tests_user_dict['last_ascreator']){
+			    ascreatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    ascreatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
 			ascreatorhtml += "\
@@ -3452,8 +3452,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_asevaluator'] > 0){
 			    asevaluatorhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}
-			asevaluatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			if(tests_user_dict['currpage_asevaluator'] < tests_user_dict['last_asevaluator']){
+			    asevaluatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    asevaluatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
 			asevaluatorhtml += "\
@@ -3544,8 +3544,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_ascandidate'] > 0){
 			    ascandidatehtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}
-			ascandidatehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			if(tests_user_dict['currpage_ascandidate'] < tests_user_dict['last_ascandidate']){
+			    ascandidatehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    ascandidatehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
 			ascandidatehtml += "\
@@ -3616,8 +3616,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_asinterviewer'] > 0){
 			    asinterviewerhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}
-			asinterviewerhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
-			if(tests_user_dict['currpage_asinterviewer'] < tests_user_dict['last_asinterviewer']){
+			if(parseInt(tests_user_dict['currpage_asinterviewer']) < parseInt(tests_user_dict['last_asinterviewer'])){
+			    asinterviewerhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    asinterviewerhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
 			asinterviewerhtml += "\
@@ -3688,9 +3688,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			}
 			if(tests_user_dict['prevpage_asinterviewee'] > 0){
 			    asintervieweehtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
-			}
-			asintervieweehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
-			if(tests_user_dict['currpage_asinterviewee'] < tests_user_dict['last_asinterviewee']){
+			}			
+			if(parseInt(tests_user_dict['currpage_asinterviewee']) < parseInt(tests_user_dict['last_asinterviewee'])){
+			    asintervieweehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    asintervieweehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
 			asintervieweehtml += "\

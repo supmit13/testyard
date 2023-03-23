@@ -278,6 +278,7 @@ def get_user_tests(request):
         intmaxscore = interview.maxscore
         interviewerslist = []
         intmaxduration_min = interview.maxduration/60
+        intmaxduration_hr = 0
         if intmaxduration_min >= 60:
             intmaxduration_hr = intmaxduration_min/60
         if intmaxduration_hr >= 1:
