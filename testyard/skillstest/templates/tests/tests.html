@@ -30,7 +30,7 @@
 	</script>
 	<!-- Math keyboard and resources from Mathlive library -->
 	<link rel="stylesheet" href="https://unpkg.com/mathlive/dist/mathlive-static.css" />
-	<script src="https://unpkg.com/mathlive"></script>
+	<script defer src="https://unpkg.com/mathlive"></script>
          <!-- Datetime Picker for Start and End activities -->
 	<link rel="stylesheet" type="text/css" href="static/css/jquery.datetimepicker.css">
 
@@ -191,7 +191,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
             margin-right: 10px;
 	}
 </style>
-	<script language='javascript'>
+
+	<script language='JavaScript'>
         function openTab(evt, dataName){
           var i, tabcontent, tablinks;
           tabcontent = document.getElementsByClassName("tabcontent");
@@ -237,7 +238,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	}
 	</script> 
 	
-	{% include "inc/html_head.html" %}	
+	{% include "inc/html_head.html" %}
 
 	{% include "inc/mission_statement.html" %}
 
@@ -474,7 +475,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    mathfieldctrl.className = statementctrl.className;
 		    document.body.style.setProperty("--keyboard-background", "#0080ff");
 		    document.body.style.setProperty("--keyboard-zindex", "12000");
+		    mathfieldctrl.mathVirtualKeyboardPolicy = 'auto';
 		    mathfieldctrl.virtualKeyboardMode = 'onfocus';
+		    //alert(mathfieldctrl.mathVirtualKeyboardPolicy);
 		    mathfieldctrl.style.height = '100px';
 		    statementctrl.parentNode.replaceChild(mathfieldctrl, statementctrl);
 		    mathfieldctrl.focus();
