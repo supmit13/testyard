@@ -461,24 +461,27 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var statementctrl = document.getElementById('statement');
 		    var mathfieldctrl = document.createElement('math-field');
 		    mathfieldctrl.name = statementctrl.name;
-		    //alert(mathfieldctrl.name);
 		    mathfieldctrl.id = statementctrl.id;
 		    txtContents = statementctrl.value;
 		    doubledollarpattern = /\$\$/g;
 		    txtContents = txtContents.replace(doubledollarpattern, '');
 		    //alert(txtContents);
-		    tdparts = txtContents.split(/\s+/);
-		    consecutivewords = "";
-		    newcontent = "";
-		    for(var i=0; i < tdparts.length;i++){
-			if(tdparts[i].match(/^\\+/g)){
-			    newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
-			    consecutivewords = "";
-			    continue;
-			}
-			consecutivewords += tdparts[i] + " ";
-		    }
-		    mathfieldctrl.value = newcontent;
+		    //tdparts = txtContents.split(/\s+/);
+		    //consecutivewords = "";
+		    //newcontent = "";
+		    //for(var i=0; i < tdparts.length;i++){
+		    //	if(tdparts[i].match(/^\\+/g) && !tdparts[i].match(/^\\+text\{\s*\}/g)){
+		    //	    if(consecutivewords != ""){
+		    //	        newcontent += " \\text{ " + consecutivewords + " } " + tdparts[i];
+		    //	    }
+		    //	    consecutivewords = "";
+		    //	    continue;
+		    //	}
+		    //	consecutivewords += tdparts[i] + " ";
+		    //}
+		    //mathfieldctrl.value = newcontent;
+		    mathfieldctrl.smartMode = true;
+		    mathfieldctrl.value = txtContents;
 		    mathfieldctrl.className = statementctrl.className;
 		    document.body.style.setProperty("--keyboard-background", "#0080ff");
 		    document.body.style.setProperty("--keyboard-zindex", "12000");
@@ -498,7 +501,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    //	  "alphabetic"
 		    //];
 		    mathfieldctrl.virtualKeyboardMode = 'onfocus';
-		    //alert(mathfieldctrl.mathVirtualKeyboardPolicy);
+		    //mathfieldctrl.addEventListener("focus", () =>  mathVirtualKeyboard.show());
 		    mathfieldctrl.style.height = '100px';
 		    statementctrl.parentNode.replaceChild(mathfieldctrl, statementctrl);
 		    mathfieldctrl.focus();
