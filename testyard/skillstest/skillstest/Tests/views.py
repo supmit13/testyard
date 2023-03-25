@@ -339,6 +339,7 @@ def get_user_tests(request):
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     tests_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     tests_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
+    tests_user_dict['testlist_ascreator'] = testlist_ascreator
     tests_user_dict['testlist_asevaluator'] = testlist_asevaluator
     tests_user_dict['testlist_ascandidate'] = testlist_ascandidate
     tests_user_dict['interviewlist_asinterviewer'] = interviews_list['asinterviewer']
@@ -528,7 +529,8 @@ def getsectiondata(request):
     
     tests_user_dict = get_user_tests(request)
     if section == "creator":
-        testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')
+        testlist_ascreator = tests_user_dict['testlist_ascreator']
+        #testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')
         inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Tests' page for the user.
         for inc_key in inc_context.keys():
             tests_user_dict[inc_key] = inc_context[inc_key]
@@ -540,10 +542,12 @@ def getsectiondata(request):
             ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
         tests_user_dict['rulenotes'] = json.dumps(ruleexplanataions)
         testnames_created_dict = {}
-        for test_name in testnames_created_list:
-            test_name = str(test_name)
+        #for test_name in testnames_created_list:
+        for tobj in testlist_ascreator:
+            test_name = str(tobj.testname)
+            #test_name = str(test_name)
             try:
-                tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
+                #tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
                 test_topic = str(tobj.topicname)
                 fullmarks = tobj.maxscore
                 passscore = tobj.passscore
@@ -1038,9 +1042,12 @@ def manage(request):
         ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
     tests_user_dict['rulenotes'] = ruleexplanataions
     testnames_created_dict = {}
-    for test_name in testnames_created_list:
+    testlist_ascreator = tests_user_dict['testlist_ascreator']
+    #for test_name in testnames_created_list:
+    for tobj in testlist_ascreator:
         try:
-            tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
+            test_name = tobj.testname
+            #tobj = Test.objects.filter(testname=test_name, creator=userobj)[0]
             test_topic = tobj.topicname
             fullmarks = tobj.maxscore
             passscore = tobj.passscore
