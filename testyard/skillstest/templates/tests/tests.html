@@ -3239,6 +3239,22 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    else{
     		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   	    }
+  	    searchqval = "";
+  	    if(section == "creator"){
+  	        searchqval = document.getElementById('creatorsearchq').value;
+  	    }
+  	    else if(section == "evaluator"){
+  	        searchqval = document.getElementById('evaluatorsearchq').value;
+  	    }
+  	    else if(section == "candidate"){
+  	        searchqval = document.getElementById('candidatesearchq').value;
+  	    }
+  	    else if(section == "interviewer"){
+  	        searchqval = document.getElementById('interviewersearchq').value;
+  	    }
+  	    else if(section == "interviewer"){
+  	        searchqval = document.getElementById('intervieweesearchq').value;
+  	    }
 	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    //alert(xmlhttp.responseText);
@@ -3248,7 +3264,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    ascreatorhtml = "";
 		    if(section == "creator"){
 		        affecteddiv = document.getElementById('testsascreator');
-		        ascreatorhtml = "<h3 class=\"blue\">Tests as Creator</h3>\
+		        ascreatorhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class=\"blue\">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='" + searchqval + "' placeholder='Test name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
@@ -3358,13 +3374,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			ascreatorhtml += "</table><br /><div id='pagination_ascreator' style='text-align:center;padding-left:10px;'>\
 			<nav aria-label=\"Tests as Creator Page Navigation\">\
 			  <ul class=\"pagination\">";
-			if(tests_user_dict['currpage_ascreator'] > 1){
+			if(parseInt(tests_user_dict['currpage_ascreator']) > 1){
 			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;'><a href='#/' onclick=\"javascript:getpage(1,'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>&nbsp;&nbsp;";
 			}
 			if(tests_user_dict['prevpage_ascreator'] > 0){
 			    ascreatorhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>&nbsp;&nbsp;";
 			}
-			if(tests_user_dict['currpage_ascreator'] < tests_user_dict['last_ascreator']){
+			if(tests_user_dict['currpage_ascreator'] <= tests_user_dict['last_ascreator']){
 			    ascreatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    ascreatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_ascreator'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
@@ -3387,7 +3403,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    else if(section == "evaluator"){
 		        affecteddiv = document.getElementById('testsasevaluator');
 		        asevaluatorhtml = "";
-		        asevaluatorhtml += "<h3 class=\"blue\">Tests as Evaluator</h3>\
+		        asevaluatorhtml += "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class=\"blue\">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='" + searchqval + "' placeholder='Test name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
@@ -3479,7 +3495,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_asevaluator'] > 0){
 			    asevaluatorhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}
-			if(tests_user_dict['currpage_asevaluator'] < tests_user_dict['last_asevaluator']){
+			if(tests_user_dict['currpage_asevaluator'] <= tests_user_dict['last_asevaluator']){
 			    asevaluatorhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    asevaluatorhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asevaluator'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
@@ -3499,7 +3515,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    else if(section == "candidate"){
 		        affecteddiv = document.getElementById('testsascandidate');
 		        ascandidatehtml = "";
-		        ascandidatehtml += "<h3 class=\"blue\">Tests as Candidate</h3>\
+		        ascandidatehtml += "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class=\"blue\">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='" + searchqval + "' placeholder='Test name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
@@ -3571,7 +3587,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_ascandidate'] > 0){
 			    ascandidatehtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}
-			if(tests_user_dict['currpage_ascandidate'] < tests_user_dict['last_ascandidate']){
+			if(tests_user_dict['currpage_ascandidate'] <= tests_user_dict['last_ascandidate']){
 			    ascandidatehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    ascandidatehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_ascandidate'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
@@ -3591,7 +3607,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    else if(section == "interviewer"){
 		        affecteddiv = document.getElementById('interviewsconducted');
 		        asinterviewerhtml = "";
-		        asinterviewerhtml += "<h3 class=\"blue\">Interviews Conducted</h3>\
+		        asinterviewerhtml += "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class=\"blue\">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='" + searchqval + "' placeholder='Interview name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
@@ -3643,7 +3659,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_asinterviewer'] > 0){
 			    asinterviewerhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}
-			if(parseInt(tests_user_dict['currpage_asinterviewer']) < parseInt(tests_user_dict['last_asinterviewer'])){
+			if(parseInt(tests_user_dict['currpage_asinterviewer']) <= parseInt(tests_user_dict['last_asinterviewer'])){
 			    asinterviewerhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    asinterviewerhtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asinterviewer'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
@@ -3656,7 +3672,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    else if(section == "interviewee"){
 		        affecteddiv = document.getElementById('interviewsattended');
 		        asintervieweehtml = "";
-		        asintervieweehtml += "<h3 class=\"blue\">Interviews Attended</h3>\
+		        asintervieweehtml += "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class=\"blue\">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='" + searchqval + "' placeholder='Interview name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
@@ -3716,7 +3732,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			if(tests_user_dict['prevpage_asinterviewee'] > 0){
 			    asintervieweehtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['prevpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>< Prev</a></li>";
 			}			
-			if(parseInt(tests_user_dict['currpage_asinterviewee']) < parseInt(tests_user_dict['last_asinterviewee'])){
+			if(parseInt(tests_user_dict['currpage_asinterviewee']) <= parseInt(tests_user_dict['last_asinterviewee'])){
 			    asintervieweehtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['nextpage_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Next ></a></li>";
 			    asintervieweehtml += "<li class=\"page-item\" style='padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + tests_user_dict['last_asinterviewee'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'>Last >></a></li>";
 			}
@@ -3758,26 +3774,106 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 
 	function searchcreators(){
-	
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+  	    searchqval = document.getElementById('creatorsearchq').value;
+  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=creator&pageno=1";
+  	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		}
+            };
+            xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
+  	    xmlhttp.send(postdata);
 	}
 	
 	function searchevaluators(){
-	
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+  	    searchqval = document.getElementById('evaluatorsearchq').value;
+  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=evaluator&pageno=1";
+  	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		}
+            };
+            xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
+  	    xmlhttp.send(postdata);
 	}
 	
 	function searchcandidates(){
-	
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+  	    searchqval = document.getElementById('candidatesearchq').value;
+  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=candidate&pageno=1";
+  	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		}
+            };
+            xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
+  	    xmlhttp.send(postdata);
 	}
 	
 	function searchinterviewers(){
-	
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+  	    searchqval = document.getElementById('interviewersearchq').value;
+  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewer&pageno=1";
+  	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		}
+            };
+            xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
+  	    xmlhttp.send(postdata);
 	}
 	
 	function searchinterviewees(){
-	
+	    var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+  	    searchqval = document.getElementById('intervieweesearchq').value;
+  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewee&pageno=1";
+  	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+		    //alert(xmlhttp.responseText);
+		}
+            };
+            xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
+  	    xmlhttp.send(postdata);
 	}
 	
-		</script>
+	</script>
 		{% include "inc/right_panel.html" %}
 		<div class="post">
 			<span class="meta">
@@ -4059,7 +4155,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<div id='interviewsconducted' style="" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='' placeholder='Test name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>			
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='' placeholder='Interview name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
@@ -4114,7 +4210,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</div>
 			</div>
 			<div id='interviewsattended' style="" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class="blue">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='' placeholder='Test name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='inline-form'><h3 class="blue">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:250px;height:40px;padding-right:10px;padding-bottom:8px;' value='' placeholder='Interview name or topic'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;'>Search</a></span><br/><br/>
 			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">

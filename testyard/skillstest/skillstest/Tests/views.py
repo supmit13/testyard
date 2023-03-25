@@ -393,6 +393,7 @@ def get_user_tests(request):
     tests_user_dict['getevaluationdetailsurl'] = skillutils.gethosturl(request) + "/" + getevaluationdetailsurl
     tests_user_dict['settestvisibilityurl'] = skillutils.gethosturl(request) + "/" + settestvisibilityurl
     tests_user_dict['getcanvasurl'] = skillutils.gethosturl(request) + "/" + getcanvasurl
+    tests_user_dict['searchbyroleurl'] = skillutils.gethosturl(request) + "/" + mysettings.ROLE_BASED_SEARCH_URL
     tests_user_dict['activatetestbycreator'] = skillutils.gethosturl(request) + "/" + activatetestbycreator
     tests_user_dict['deactivatetestbycreator'] = skillutils.gethosturl(request) + "/" + deactivatetestbycreator
     tests_user_dict['savedrawingurl'] = skillutils.gethosturl(request) + "/" + savedrawingurl
@@ -876,6 +877,21 @@ def getsectiondata(request):
     # Return data as json.
     return HttpResponse(json.dumps(tests_user_dict))
     
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def searchbyrole(request):
+    message = ''
+    if request.method != "POST": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    # Expected params: q, role, pageno (and csrfmiddlewaretoken) TODO: Implementation pending
 
 """
 Function to check if a given user is allowed to access 
