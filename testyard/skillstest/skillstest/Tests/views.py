@@ -59,6 +59,77 @@ from skillstest.utils import Logger
 from skillstest.Tests.tasks import send_emails
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+def getautocompletelists(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.DASHBOARD_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
+    asrole = ""
+    asrole = request.GET.get("asrole", "")
+    if asrole == "":
+        message = "Critical parameter missing"
+        return HttpResponse(json.dumps([message,]))
+    testnameslist = []
+    testobjects = []
+    uniquenames = {}
+    if asrole == "ascreator":
+        testobjects = Test.objects.filter(creator=userobj)
+        for t in testobjects:
+            if uniquenames.has_key(t.testname):
+                continue
+            uniquenames[t.testname] = 1
+            testnameslist.append(str(t.testname))
+    elif asrole == "asevaluator":
+        evaluator_groups = Evaluator.objects.filter(Q(groupmember1=userobj)|Q(groupmember2=userobj)|Q(groupmember3=userobj)| \
+                                                Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
+                                                Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
+                                                Q(groupmember10=userobj))
+        testobjects = Test.objects.filter(evaluator__in=evaluator_groups)
+        for t in testobjects:
+            if uniquenames.has_key(t.testname):
+                continue
+            uniquenames[t.testname] = 1
+            testnameslist.append(str(t.testname))
+    elif asrole == "ascandidate":
+        try:
+            usertestqset = UserTest.objects.filter(user=userobj)
+            wouldbeqset = WouldbeUsers.objects.filter(emailaddr=userobj.emailid)
+        except: # Can't say if we will find any records...
+            pass
+        for usertestobj in usertestqset:
+            testobjects.append(usertestobj.test)
+        for wbtestobj in wouldbeqset:
+            testobjects.append(wbtestobj.test)
+        for t in testobjects:
+            if uniquenames.has_key(t.testname):
+                continue
+            uniquenames[t.testname] = 1
+            testnameslist.append(str(t.testname))
+    elif asrole == "asinterviewer":
+        testobjects = Interview.objects.filter(interviewer=userobj) # these would be Interview objects
+        for t in testobjects:
+            if uniquenames.has_key(t.title):
+                continue
+            uniquenames[t.title] = 1
+            testnameslist.append(str(t.title)) 
+    elif asrole == "asinterviewee":
+        testobjects = InterviewCandidates.objects.filter(emailaddr=userobj.emailid) # these would be InterviewCandidate objects
+        for t in testobjects:
+            if uniquenames.has_key(t.interview.title):
+                continue
+            uniquenames[t.interview.title] = 1
+            testnameslist.append(str(t.interview.title)) 
+    return HttpResponse(json.dumps(testnameslist))
+
+
 def get_user_tests(request):
     # If request method is 'GET', then retrieve Session and User info from the DB
     sesscode = request.COOKIES['sessioncode']
@@ -229,7 +300,7 @@ def get_user_tests(request):
     try:
         usertestqset = UserTest.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
     except: # Can't say if we will find any records...
-        usertestqset = WouldbeUsers.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
+        usertestqset = WouldbeUsers.objects.filter(emailaddr=userobj.emailid)[startctr_ascandidate:endctr_ascandidate]
     testlist_ascandidate = []
     tests_candidate_ordered_createdate = []
     for usertestobj in usertestqset:
@@ -244,7 +315,7 @@ def get_user_tests(request):
     except:
         pass
     try:
-        candidatescount += WouldbeUsers.objects.filter(user=userobj).count()
+        candidatescount += WouldbeUsers.objects.filter(emailaddr=userobj.emailid).count()
     except:
         pass
     last_ascandidate = (candidatescount/mysettings.PAGE_CHUNK_SIZE) + 1
@@ -363,6 +434,7 @@ def get_user_tests(request):
     tests_user_dict['creatoremail'] = userobj.emailid
     tests_user_dict['existingtestnames'] = "','".join(user_creator_other_evaluators_dict.keys())
     tests_user_dict['existingtestnames'] = "'" + tests_user_dict['existingtestnames'] + "'"
+    tests_user_dict['getautocompletelisturl'] = skillutils.gethosturl(request) + "/" + mysettings.GET_AUTOCOMPLETE_LIST_URL
     tests_user_dict['assocevalgrps'] = assocevalgrps
     tests_user_dict['evalgroupslitags'] = evalgroupslitags
     tests_user_dict['createtesturl'] = createtesturl
@@ -534,7 +606,7 @@ def getsectiondata(request):
         inc_context = skillutils.includedtemplatevars("Tests", request) # Since this is the 'Tests' page for the user.
         for inc_key in inc_context.keys():
             tests_user_dict[inc_key] = inc_context[inc_key]
-        testnames_created_list = list(tests_user_dict['user_creator_other_evaluators_dict'].keys())[startctr_ascreator:endctr_ascreator]
+        testnames_created_list = list(tests_user_dict['user_creator_other_evaluators_dict'].keys())
         testnames_created_list.sort()
         tests_user_dict['baseURL'] = skillutils.gethosturl(request)
         ruleexplanataions = {}
