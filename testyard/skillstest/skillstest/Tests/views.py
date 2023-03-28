@@ -1018,7 +1018,22 @@ def searchbyrole(request):
         testsqset = Test.objects.filter(evaluator__in=evaluator_groups, testname__icontains=q)
         for test in testsqset:
             d = {}
-            d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate, test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality]
+            challenges = Challenge.objects.filter(test=test)
+            createdscore = 0
+            for chlng in challenges:
+                createdscore += chlng.challengescore
+            completeness = createdscore/test.maxscore
+            usertestsqset = UserTest.objects.filter(test=test)
+            passcount, failcount, disqualifiedcount = 0, 0, 0
+            for utobj in usertestsqset:
+                if utobj.outcome:
+                    if utobj.score < utobj.test.passscore:
+                        failcount += 1
+                    else:
+                        passcount += 1
+                if utobj.disqualified:
+                    disqualifiedcount += 1
+            d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality, createdscore, completeness, test.negativescoreallowed, test.allowmultiattempts, usertestsqset.count(), passcount, failcount, disqualifiedcount]
             testslist.append(d)
     elif role == "candidate":
         usertestsqset = UserTest.objects.filter(user=userobj)
@@ -1062,11 +1077,13 @@ def searchbyrole(request):
     context['currpage'] = pageno
     context['nextpage'] = pageno + 1
     context['prevpage'] = pageno - 1
+    context['lastpage'] = ""
     context['q'] = q
     context['role'] = role
     jsondata = json.dumps(context)
     return HttpResponse(jsondata)
-        
+
+
 
 """
 Function to check if a given user is allowed to access 

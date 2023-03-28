@@ -4044,8 +4044,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  }
 			  searchhtml += "</font>\
 			  <br /> \
-			  <font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>\
-			  </div>";
+			  <font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>"
                     targetdiv.innerHTML = searchhtml;
 		}
             };
@@ -4065,11 +4064,116 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    searchqval = document.getElementById('evaluatorsearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
   	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=evaluator&pageno=1";
+  	    targetdiv = document.getElementById('testsasevaluator');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsondict = JSON.parse(xmlhttp.responseText);
 		    targetdiv.innerHTML = "";
-		    searchhtml = "";
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
+			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"18\">&nbsp;</td>\
+			</tr>";
+		    testslist = jsondict['tests'];
+		    for(var i=0; i < testslist.length; i++){
+		        d = testslist[i];
+		        keyvals = Object.keys(d);
+		        for(k = 0; k < keyvals.length; k++){ // We are expecting only one key
+		            testname = keyvals[k];
+		            testvals = d[testname];
+		            searchhtml += "<tr>";
+		            if(testvals[17] == 'public' || testvals[17] == 'protected'){
+		                searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testname + "</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest(\"" + testvals[0] + "\");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a> --></font></td>\
+			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(\"" + testvals[0] + "\");'>" + testname + "</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest(\"" + testvals[0] + "\");'>(Evaluate)</a></b>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a></font></td> -->";
+		            }
+		            else{
+		                searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testname + "</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest(\"" + testvals[0] + "\");'>(Evaluate)</a></b></font></td>\
+			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(\"" + testvals[0] + "\");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest(\"" + testvals[0] + "\");'>(Evaluate)</a></b></font></td> -->";
+		            }
+		            searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
+			        <td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>";
+			    if(testvals[20] < 1){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testvals[20] + " (" + testvals[19] + " out of " + testvals[7] + ")</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[20] + " (" + testvals[19] + " out of " + testvals[7] + ")</font></td>";
+			    }
+			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'><a href='" + testvals[0] + "'>" + testvals[2] + "</a></font></td>\
+			    <td align='left'><font size=-1 color='#0000AA'>" + testvals[21] + "</font></td>\
+			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
+			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>";
+			    if(!testvals[8]){
+			        searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> ";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td> ";
+			    }
+			    if(!testvals[21]){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
+			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[9] + "*</font></td>";
+			    if(testvals[22]){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testvals[24] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testvals[25] + "</font></td>\
+			  <td nowrap><font size=-1 color='#0000AA'>" + testvals[26] + "</font></td>\
+			  <td align='right' id='postlinkedin_" + testvals[0] + "'><font color='#00BB00' size=-1><a href='#/' onclick=\"javascript:postonlinkedin('" + testvals[0] + "', 'evaluator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
+			</tr>";
+		        }
+		    }
+		    searchhtml += "</table>\
+			<br />\
+			<div id='pagination_asevaluator' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Evaluator Page Navigation\">\
+			  <ul class=\"pagination\">";
+	 	    if(jsondict['currpage'] > 1){
+			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+		    }
+		    if(jsondict['prevpage'] > 0){
+			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+		    }
+		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+		    if(jsondict['currpage'] < jsondict['lastpage']){
+			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage({{last_asevaluator}},'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+		    }
+		    searchhtml += "</ul></nav></div>";
+		    searchhtml += "<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
+		    for (const [ruleshort, ruleexplanation] of Object.entries(jsondict['rulenotes'])){
+			searchhtml += ruleshort + " : " + ruleexplanation + "<br />";
+		    }
+		    searchhtml += "</font>\
+			  <br /> \
+			  <font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>";
+		    targetdiv.innerHTML = searchhtml;
 		}
             };
             xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
