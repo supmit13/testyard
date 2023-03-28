@@ -14,6 +14,7 @@ import base64
 import socket
 import simplejson as json
 import razorpay
+import MySQLdb
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -1000,7 +1001,16 @@ def initrazorpay():
     client = razorpay.Client(auth=(mysettings.RAZORPAY_KEY, mysettings.RAZORPAY_SECRET))
     return client
 
-
+def connectdb(user='root', passwd='Spmprx13@', dbname='testyard', host='localhost', port=3306):
+    dbconn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname, port=port)
+    cursor = dbconn.cursor()
+    return (dbconn, cursor)
+    
+    
+def disconnectdb(dbconn, cursor):
+    cursor.close()
+    dbconn.close()
+    
 
 
 

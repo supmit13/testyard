@@ -3916,14 +3916,143 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    searchqval = document.getElementById('creatorsearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
   	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=creator&pageno=1";
+  	    targetdiv = document.getElementById('testsascreator');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    //alert(xmlhttp.responseText);
+		    jsondict = JSON.parse(xmlhttp.responseText);
+		    targetdiv.innerHTML = "";
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + jsondict['q'] + "' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>";
+		    searchhtml += "<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
+			<tr class=\"th\">\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>\
+                          <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
+			</tr>\
+			<tr>\
+			  <td colspan=\"23\">&nbsp;</td>\
+			</tr>";
+		    testslist = jsondict['tests'];
+		    for(var i=0; i < testslist.length; i++){
+		        d = testslist[i];
+		        keyvals = Object.keys(d);
+		        for(k = 0; k < keyvals.length; k++){ // We are expecting only one key
+		            testname = keyvals[k];
+		            testvals = d[testname];
+		            if(!testvals[15]){
+		                searchhtml += "<tr bgcolor='#f56e62'>";
+		            }
+		            else{
+		                searchhtml += "<tr>";
+		            }
+		            searchhtml += "<td nowrap style='color:#0000AA;font-size:smaller;'>" + testvals[1] + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a> --></font></td>";
+			    searchhtml += "<!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(" + testvals[0] + ");'>" + testvals[1] + "</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a></font></td> -->";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates(" + testvals[0] + ");'>Invite</a></font><div id='invitationdiv" + testvals[0] + "' style='display:none'></div></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations(\"" + testvals[0] + "\");'>Manage Invitations</a></font><div id='existinginvitationdiv" + testvals[0] + "' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>";
+			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>";
+			    if(testvals[19] < 1){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testvals[19] + "  (" + testvals[20] + " out of " + testvals[7] + ")</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[19] + "  (" + testvals[20] + " out of " + testvals[7] + ")</font></td>";
+			    }
+			    searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>";
+			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>";
+			    if(testvals[21]){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
+			      <td nowrap><font size=-1 color='#0000AA'>" + testvals[9] + "*</font></td>";
+			    if (testvals[22]){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[24] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[25] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[26] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testvals[0] + ");'>Edit Interface</a></font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>";
+			    if(testvals[17] == 'private'){
+			        searchhtml += "<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='0' checked onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='1'  onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='2' onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Public";
+			    }
+			    else{
+			        if(testvals[17] == 'protected'){
+			            searchhtml += "<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='0' onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='1' checked onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='2' onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Public";
+			        }
+			        else{
+			            searchhtml += "<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='0' onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='1' onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='2' checked onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Public";
+			        }
+			    }
+			    searchhtml += "</font></td>";
+			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('" + testvals[0] + "');>Schedule Test</a></font></td>";
+			    if(testvals[15] == 0){
+			        searchhtml += "<td nowrap align='right' id='teststatus_" + testvals[0] + "'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('" + testvals[0] + "');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_" + testvals[0] + "'><a href='#/' onclick=\"javascript:postonlinkedin('" + testvals[0] + "', 'creator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png\" alt=\"LinkedIn Add to Profile button\"></a><!-- <span class=\"semitrans2\" id='linkedinauth_creator_" + testvals[0] + "' style='display:none;height:30%;width:30%;'></span> --></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='right' id='teststatus_" + testvals[0] + "'><a href='#/' onclick=javascript:deactivatestatusnow('" + testvals[0] + "');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_" + testvals[0] + "'><a href='#/' onclick=\"javascript:postonlinkedin('" + testvals[0] + "', 'creator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png\" alt=\"LinkedIn Add to Profile button\"></a><!-- <span class=\"semitrans2\" id='linkedinauth_creator_" + testvals[0] + "' style='display:none;height:30%;width:30%;'></span> --></td>";
+			    }
+			    searchhtml += "</tr> ";
+		        }
+		    }
+		    searchhtml += "</table>";
+		    searchhtml += "<br />\
+			<div id='pagination_ascreator' style='text-align:center;padding-left:10px;'>\
+			<nav aria-label=\"Tests as Creator Page Navigation\">\
+			  <ul class=\"pagination\">";
+			  if (jsondict['currpage'] > 1){
+			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+			  }
+			  if(jsondict['prevpage'] > 0){
+			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+			  }
+			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+			  if(jsondict['currpage'] < jsondict['last']){
+			      searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['last'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+			  }
+			  searchhtml += "</ul></nav></div>";
+			  searchhtml += "<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
+			  for (const [ruleshort, ruleexplanation] of Object.entries(jsondict['rulenotes'])){
+			      searchhtml += ruleshort + " : " + ruleexplanation + "<br />";
+			  }
+			  searchhtml += "</font>\
+			  <br /> \
+			  <font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>\
+			  </div>";
+                    targetdiv.innerHTML = searchhtml;
 		}
             };
             xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
   	    xmlhttp.send(postdata);
 	}
+	
 	
 	function searchevaluators(){
 	    var xmlhttp;
@@ -3938,7 +4067,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=evaluator&pageno=1";
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    //alert(xmlhttp.responseText);
+		    jsondict = JSON.parse(xmlhttp.responseText);
+		    targetdiv.innerHTML = "";
+		    searchhtml = "";
 		}
             };
             xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
@@ -3958,7 +4089,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=candidate&pageno=1";
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    //alert(xmlhttp.responseText);
+		    jsondict = JSON.parse(xmlhttp.responseText);
+		    targetdiv.innerHTML = "";
 		}
             };
             xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
@@ -3978,7 +4110,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewer&pageno=1";
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    //alert(xmlhttp.responseText);
+		    jsondict = JSON.parse(xmlhttp.responseText);
+		    targetdiv.innerHTML = "";
 		}
             };
             xmlhttp.open("POST", '{{ searchbyroleurl }}', true);
@@ -3998,7 +4131,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewee&pageno=1";
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-		    //alert(xmlhttp.responseText);
+		    jsondict = JSON.parse(xmlhttp.responseText);
+		    targetdiv.innerHTML = "";
 		}
             };
             xmlhttp.open("POST", '{{ searchbyroleurl }}', true);

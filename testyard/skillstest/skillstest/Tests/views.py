@@ -55,7 +55,7 @@ from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, 
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
-from skillstest.utils import Logger
+from skillstest.utils import Logger, connectdb, disconnectdb
 from skillstest.Tests.tasks import send_emails
 
 
@@ -967,7 +967,106 @@ def searchbyrole(request):
         return response
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode) # 'sessionobj' is a QuerySet object...
+    userobj = sessionobj[0].user
     # Expected params: q, role, pageno (and csrfmiddlewaretoken) TODO: Implementation pending
+    q, role, pageno = "", "", 1
+    if request.POST.has_key('q'):
+        q = request.POST['q']
+    if request.POST.has_key('role'):
+        role = request.POST['role']
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    startctr, endctr = 1, mysettings.PAGE_CHUNK_SIZE
+    startctr = mysettings.PAGE_CHUNK_SIZE * pageno - mysettings.PAGE_CHUNK_SIZE
+    endctr = mysettings.PAGE_CHUNK_SIZE * pageno
+    testslist = []
+    dbconn, cursor = None, None
+    connutils = connectdb()
+    dbconn = connutils[0]
+    cursor = connutils[1]
+    if role == "creator":
+        testsqset = Test.objects.filter(creator=userobj, testname__icontains=q)        
+        for test in testsqset:
+            d = {}
+            evaluator = test.evaluator.evalgroupname
+            challenges = Challenge.objects.filter(test=test)
+            createdscore = 0
+            for chlng in challenges:
+                createdscore += chlng.challengescore
+            completeness = createdscore/test.maxscore
+            usertestsqset = UserTest.objects.filter(test=test)
+            passcount, failcount, disqualifiedcount = 0, 0, 0
+            for utobj in usertestsqset:
+                if utobj.outcome:
+                    if utobj.score < utobj.test.passscore:
+                        failcount += 1
+                    else:
+                        passcount += 1
+                if utobj.disqualified:
+                    disqualifiedcount += 1
+            d[test.testname] = [test.id, test.testname, test.topic.topicname, test.creatorisevaluator, evaluator, test.testtype, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality, completeness, createdscore, test.negativescoreallowed, test.allowmultiattempts, usertestsqset.count(), passcount, failcount, disqualifiedcount]
+            testslist.append(d)
+    elif role == "evaluator":
+        evaluator_groups = Evaluator.objects.filter(Q(groupmember1=userobj)|Q(groupmember2=userobj)|Q(groupmember3=userobj)| \
+                                                Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
+                                                Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
+                                                Q(groupmember10=userobj))
+        testsqset = Test.objects.filter(evaluator__in=evaluator_groups, testname__icontains=q)
+        for test in testsqset:
+            d = {}
+            d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate, test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality]
+            testslist.append(d)
+    elif role == "candidate":
+        usertestsqset = UserTest.objects.filter(user=userobj)
+        testsqset = []
+        qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
+        for usertest in usertestsqset:
+            if re.search(qregex, usertest.test.testname):
+                testsqset.append(usertest.test)
+        for test in testsqset:
+            d = {}
+            d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate, test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality]
+            testslist.append(d)
+    elif role == "interviewer":
+        testsqset = Interview.objects.filter(interviewer=userobj, title__icontains=q)
+        for test in testsqset: # Remember these are actually Interview objects.
+            d = {}
+            d[test.title] = [test.id, test.title, test.topicname, test.medium, test.language, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.maxscore, test.maxduration, test.realtime]
+            testslist.append(d)
+    elif role == "interviewee":
+        candidatesqset = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)
+        testsqset = []
+        qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
+        for candidateinterview in candidatesqset:
+            if re.search(qregex, candidateinterview.interview.title):
+                testsqset.append(candidateinterview.interview)
+        for test in testsqset:
+            d = {}
+            d[test.title] = [test.id, test.title, test.topicname, test.medium, test.language, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.maxscore, test.maxduration, test.realtime, test.interviewlinkid]
+            testslist.append(d)
+    else:
+        message = "Could not identify the type of object requested."
+        respdict = {'err' : message}
+        response = HttpResponse(json.dumps(respdict))
+        return response
+    context = {}
+    ruleexplanataions = {}
+    for ruleshort in mysettings.RULES_DICT.keys():
+        ruleexplanataions[ruleshort] = mysettings.RULES_DICT[ruleshort]
+    context['rulenotes'] = ruleexplanataions
+    context['tests'] = testslist
+    context['currpage'] = pageno
+    context['nextpage'] = pageno + 1
+    context['prevpage'] = pageno - 1
+    context['q'] = q
+    context['role'] = role
+    jsondata = json.dumps(context)
+    return HttpResponse(jsondata)
+        
 
 """
 Function to check if a given user is allowed to access 
