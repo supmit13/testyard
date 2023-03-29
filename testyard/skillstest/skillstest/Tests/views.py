@@ -7539,9 +7539,7 @@ def attendinterview(request):
         return response
     interviewlinkid = request.GET['lid']
     hashtoken = request.GET['hash']
-    intobjqset = Interview.objects.filter(interviewlinkid=interviewlinkid)
-    #fp = open("/tmp/interviewstarttime.txt", "w")
-    #fp.write(interviewlinkid)
+    intobjqset = Interview.objects.filter(interviewlinkid=interviewlinkid)    
     if intobjqset.__len__() > 0:
         intobj = intobjqset[0]
     else:
@@ -7614,6 +7612,7 @@ def attendinterview(request):
         int_user_dict['email'] = intcandobj.emailaddr
     int_user_dict['hashtoken'] = hashtoken
     int_user_dict['curdatetime'] = curdatetime
+    int_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
     intcandscreen = tmpl.render(cxt)
