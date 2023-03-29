@@ -1070,7 +1070,9 @@ def searchbyrole(request):
             negativescoreallowed = "No";
             if test.negativescoreallowed:
                 negativescoreallowed = "Yes"
-            nexttestdate = ""
+            nexttestdate = "NA"
+            if test.attemptsintervalunit is not None:
+                nexttestdate = get_next_date(testtakendates[ctr], test.attemptsinterval, test.attemptsintervalunit)
             d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality, myscoreslist[ctr], utqset.count(), percentilescore, testtakendates[ctr], negativescoreallowed, nexttestdate, visibilitylist[ctr]]
             testslist.append(d)
             ctr += 1
