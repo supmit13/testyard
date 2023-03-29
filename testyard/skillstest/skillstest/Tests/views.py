@@ -1039,13 +1039,41 @@ def searchbyrole(request):
         usertestsqset = UserTest.objects.filter(user=userobj)
         testsqset = []
         qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
+        myscoreslist = []
+        testtakendates = []
+        visibilitylist = []
+        uniquetests = {}
         for usertest in usertestsqset:
+            if usertest.test.testname in uniquetests.keys():
+                continue
+            uniquetests[usertest.test.testname] = 1
             if re.search(qregex, usertest.test.testname):
                 testsqset.append(usertest.test)
+                myscoreslist.append(usertest.score)
+                testtakendates.append(usertest.starttime.strftime("%d-%m-%Y %H:%M:%S"))
+                visibilitylist.append(usertest.visibility)
+        ctr = 0
         for test in testsqset:
             d = {}
-            d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate, test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality]
+            utqset = UserTest.objects.filter(test=test)
+            wouldbeusersqset = WouldbeUsers.objects.filter(test=test)
+            combinedlist = []
+            for utobj in utqset:
+                combinedlist.append(utobj)
+            for wbu in wouldbeusersqset:
+                combinedlist.append(wbu)
+            percentilescore = ""
+            if myscoreslist[ctr] == "NA":
+                percentilescore = "NA"
+            else:
+                percentilescore = getpercentilescore(myscoreslist[ctr], combinedlist)
+            negativescoreallowed = "No";
+            if test.negativescoreallowed:
+                negativescoreallowed = "Yes"
+            nexttestdate = ""
+            d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality, myscoreslist[ctr], utqset.count(), percentilescore, testtakendates[ctr], negativescoreallowed, nexttestdate, visibilitylist[ctr]]
             testslist.append(d)
+            ctr += 1
     elif role == "interviewer":
         testsqset = Interview.objects.filter(interviewer=userobj, title__icontains=q)
         for test in testsqset: # Remember these are actually Interview objects.
