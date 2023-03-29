@@ -3905,7 +3905,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
  	}
 
 
-	function searchcreators(){
+	function searchcreators(pageno=1){
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
@@ -3915,7 +3915,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    }
   	    searchqval = document.getElementById('creatorsearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
-  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=creator&pageno=1";
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=creator&pageno=" + pageno.toString();
   	    targetdiv = document.getElementById('testsascreator');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -4028,14 +4028,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<nav aria-label=\"Tests as Creator Page Navigation\">\
 			  <ul class=\"pagination\">";
 			  if (jsondict['currpage'] > 1){
-			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(1);\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
 			  }
 			  if(jsondict['prevpage'] > 0){
-			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 			  }
-			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
 			  if(jsondict['currpage'] < jsondict['last']){
-			      searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['last'] + ",'creator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+			      searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(" + jsondict['last'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 			  }
 			  searchhtml += "</ul></nav></div>";
 			  searchhtml += "<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
@@ -4053,7 +4053,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	}
 	
 	
-	function searchevaluators(){
+	function searchevaluators(pageno=1){
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
@@ -4063,7 +4063,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    }
   	    searchqval = document.getElementById('evaluatorsearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
-  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=evaluator&pageno=1";
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=evaluator&pageno=" + pageno.toString();
   	    targetdiv = document.getElementById('testsasevaluator');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -4156,14 +4156,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<nav aria-label=\"Tests as Evaluator Page Navigation\">\
 			  <ul class=\"pagination\">";
 	 	    if(jsondict['currpage'] > 1){
-			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(1);\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
 		    }
 		    if(jsondict['prevpage'] > 0){
-			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
-		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
 		    if(jsondict['currpage'] < jsondict['lastpage']){
-			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage({{last_asevaluator}},'evaluator');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul></nav></div>";
 		    searchhtml += "<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
@@ -4180,7 +4180,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    xmlhttp.send(postdata);
 	}
 	
-	function searchcandidates(){
+	function searchcandidates(pageno=1){
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
@@ -4190,7 +4190,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    }
   	    searchqval = document.getElementById('candidatesearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
-  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=candidate&pageno=1";
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=candidate&pageno=" + pageno.toString();
   	    targetdiv = document.getElementById('testsascandidate');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -4265,14 +4265,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<nav aria-label=\"Tests as Candidate Page Navigation\">\
 			  <ul class=\"pagination\">";
 	 	    if(jsondict['currpage'] > 1){
-			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(1);\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
 		    }
 		    if(jsondict['prevpage'] > 0){
-			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
-		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
 		    if(jsondict['currpage'] < jsondict['lastpage']){
-			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['lastpage'] + ",'candidate');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul></nav></div>";
 		    searchhtml += "<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
@@ -4289,7 +4289,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    xmlhttp.send(postdata);
 	}
 	
-	function searchinterviewers(){
+	function searchinterviewers(pageno=1){
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
@@ -4299,7 +4299,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    }
   	    searchqval = document.getElementById('interviewersearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
-  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewer&pageno=1";
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewer&pageno=" + pageno.toString();
   	    targetdiv = document.getElementById('interviewsconducted');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -4353,14 +4353,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<nav aria-label=\"Tests as Interviewer Page Navigation\">\
 			  <ul class=\"pagination\">";
 		    if(jsondict['currpage'] > 1){
-			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(1);\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
 		    }
 		    if(jsondict['prevpage'] > 0){
-			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
-		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
 		    if(jsondict['currpage'] < jsondict['lastpage']){
-			searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['lastpage'] + ",'interviewer');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+			searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul></nav></div>";
 		    searchhtml += "<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />";
@@ -4377,7 +4377,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    xmlhttp.send(postdata);
 	}
 	
-	function searchinterviewees(){
+	function searchinterviewees(pageno=1){
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
@@ -4387,7 +4387,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    }
   	    searchqval = document.getElementById('intervieweesearchq').value;
   	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
-  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewee&pageno=1";
+  	    postdata = "q=" + searchqval + "&csrfmiddlewaretoken=" + csrf + "&role=interviewee&pageno=" + pageno.toString();
   	    targetdiv = document.getElementById('interviewsattended');
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
@@ -4445,17 +4445,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    searchhtml += "</table><br />";
 		    searchhtml += "<div id='pagination_asinterviewee' style='text-align:center;padding-left:10px;'>\
-			<nav aria-label=\"Tests as Interview Candidate Page Navigation\">\
+			<nav aria-label=\"Interviews as Interview Candidate Page Navigation\">\
 			  <ul class=\"pagination\">";
 		    if(jsondict['currpage'] > 1){
-			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(1,'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
+			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewees(1);\" class=\"btn btn-testyard1\" style='font-size:medium;'><< First</a></li>";
 		    }
 		    if(jsondict['prevpage'] > 0){
-			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['prevpage'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
+			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewees(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
-		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['nextpage'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
+		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewees(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
 		    if(jsondict['currpage'] < jsondict['lastpage']){
-			searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:getpage(" + jsondict['lastpage'] + ",'interviewee');\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
+			searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewees(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul>\
 			  </nav>\

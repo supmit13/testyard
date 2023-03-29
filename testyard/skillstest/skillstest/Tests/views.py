@@ -988,8 +988,10 @@ def searchbyrole(request):
     connutils = connectdb()
     dbconn = connutils[0]
     cursor = connutils[1]
+    totalcount = 0
     if role == "creator":
         testsqset = Test.objects.filter(creator=userobj, testname__icontains=q)[startctr:endctr]
+        totalcount = Test.objects.filter(creator=userobj, testname__icontains=q).count()
         for test in testsqset:
             d = {}
             evaluator = test.evaluator.evalgroupname
@@ -1016,6 +1018,7 @@ def searchbyrole(request):
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
                                                 Q(groupmember10=userobj))
         testsqset = Test.objects.filter(evaluator__in=evaluator_groups, testname__icontains=q)[startctr:endctr]
+        totalcount = Test.objects.filter(evaluator__in=evaluator_groups, testname__icontains=q).count()
         for test in testsqset:
             d = {}
             challenges = Challenge.objects.filter(test=test)
@@ -1037,6 +1040,7 @@ def searchbyrole(request):
             testslist.append(d)
     elif role == "candidate":
         usertestsqset = UserTest.objects.filter(user=userobj)[startctr:endctr]
+        totalcount = UserTest.objects.filter(user=userobj).count()
         testsqset = []
         qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
         myscoreslist = []
@@ -1078,12 +1082,14 @@ def searchbyrole(request):
             ctr += 1
     elif role == "interviewer":
         testsqset = Interview.objects.filter(interviewer=userobj, title__icontains=q)[startctr:endctr]
+        totalcount = Interview.objects.filter(interviewer=userobj, title__icontains=q).count()
         for test in testsqset: # Remember these are actually Interview objects.
             d = {}
             d[test.title] = [test.id, test.title, test.topicname, test.medium, test.language, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.maxscore, test.maxduration, test.realtime, test.interviewlinkid]
             testslist.append(d)
     elif role == "interviewee":
         candidatesqset = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)[startctr:endctr]
+        totalcount = InterviewCandidates.objects.filter(emailaddr=userobj.emailid).count()
         testsqset = []
         qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
         actualtimes = []
@@ -1123,7 +1129,7 @@ def searchbyrole(request):
     context['currpage'] = pageno
     context['nextpage'] = pageno + 1
     context['prevpage'] = pageno - 1
-    context['lastpage'] = ""
+    context['lastpage'] = int(totalcount/mysettings.PAGE_CHUNK_SIZE) + 1
     context['q'] = q
     context['role'] = role
     jsondata = json.dumps(context)
