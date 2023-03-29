@@ -989,7 +989,7 @@ def searchbyrole(request):
     dbconn = connutils[0]
     cursor = connutils[1]
     if role == "creator":
-        testsqset = Test.objects.filter(creator=userobj, testname__icontains=q)        
+        testsqset = Test.objects.filter(creator=userobj, testname__icontains=q)[startctr:endctr]
         for test in testsqset:
             d = {}
             evaluator = test.evaluator.evalgroupname
@@ -1015,7 +1015,7 @@ def searchbyrole(request):
                                                 Q(groupmember4=userobj)|Q(groupmember5=userobj)|Q(groupmember6=userobj)| \
                                                 Q(groupmember7=userobj)|Q(groupmember8=userobj)|Q(groupmember9=userobj)| \
                                                 Q(groupmember10=userobj))
-        testsqset = Test.objects.filter(evaluator__in=evaluator_groups, testname__icontains=q)
+        testsqset = Test.objects.filter(evaluator__in=evaluator_groups, testname__icontains=q)[startctr:endctr]
         for test in testsqset:
             d = {}
             challenges = Challenge.objects.filter(test=test)
@@ -1036,7 +1036,7 @@ def searchbyrole(request):
             d[test.testname] = [test.id, test.testname, test.creator.displayname, test.topic.topicname, test.creatorisevaluator, test.testtype, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.maxscore, test.passscore, test.ruleset, test.duration, test.allowedlanguages, test.challengecount, test.activationdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.progenv, test.scope, test.quality, createdscore, completeness, test.negativescoreallowed, test.allowmultiattempts, usertestsqset.count(), passcount, failcount, disqualifiedcount]
             testslist.append(d)
     elif role == "candidate":
-        usertestsqset = UserTest.objects.filter(user=userobj)
+        usertestsqset = UserTest.objects.filter(user=userobj)[startctr:endctr]
         testsqset = []
         qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
         myscoreslist = []
@@ -1077,22 +1077,38 @@ def searchbyrole(request):
             testslist.append(d)
             ctr += 1
     elif role == "interviewer":
-        testsqset = Interview.objects.filter(interviewer=userobj, title__icontains=q)
+        testsqset = Interview.objects.filter(interviewer=userobj, title__icontains=q)[startctr:endctr]
         for test in testsqset: # Remember these are actually Interview objects.
-            d = {}
-            d[test.title] = [test.id, test.title, test.topicname, test.medium, test.language, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.maxscore, test.maxduration, test.realtime]
-            testslist.append(d)
-    elif role == "interviewee":
-        candidatesqset = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)
-        testsqset = []
-        qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
-        for candidateinterview in candidatesqset:
-            if re.search(qregex, candidateinterview.interview.title):
-                testsqset.append(candidateinterview.interview)
-        for test in testsqset:
             d = {}
             d[test.title] = [test.id, test.title, test.topicname, test.medium, test.language, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.maxscore, test.maxduration, test.realtime, test.interviewlinkid]
             testslist.append(d)
+    elif role == "interviewee":
+        candidatesqset = InterviewCandidates.objects.filter(emailaddr=userobj.emailid)[startctr:endctr]
+        testsqset = []
+        qregex = re.compile(q, re.IGNORECASE|re.DOTALL)
+        actualtimes = []
+        scheduledtimes = []
+        timetakenlist = []
+        interviewurlslist = []
+        for candidateinterview in candidatesqset:
+            if re.search(qregex, candidateinterview.interview.title):
+                testsqset.append(candidateinterview.interview)
+                if candidateinterview.actualstarttime is not None:
+                    actualtimes.append(candidateinterview.actualstarttime.strftime("%d-%m-%Y %H:%M:%S"))
+                else:
+                    actualtimes.append("NA")
+                if candidateinterview.scheduledtime is not None:
+                    scheduledtimes.append(candidateinterview.scheduledtime.strftime("%d-%m-%Y %H:%M:%S"))
+                else:
+                    scheduledtimes.append("NA")
+                timetakenlist.append(candidateinterview.totaltimetaken)
+                interviewurlslist.append(candidateinterview.interviewurl)
+        ctr = 0
+        for test in testsqset:
+            d = {}
+            d[test.title] = [test.id, test.title, test.topicname, test.medium, test.language, test.createdate.strftime("%d-%m-%Y %H:%M:%S"), test.publishdate.strftime("%d-%m-%Y %H:%M:%S"), test.status, test.maxscore, test.maxduration, test.realtime, test.interviewlinkid, actualtimes[ctr], scheduledtimes[ctr], timetakenlist[ctr], test.interviewer.displayname, interviewurlslist[ctr]]
+            testslist.append(d)
+            ctr += 1
     else:
         message = "Could not identify the type of object requested."
         respdict = {'err' : message}
