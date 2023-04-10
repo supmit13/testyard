@@ -6951,6 +6951,7 @@ def captureaudiovisual(request):
     tests_user_dict['interviewlinkid'] = request.POST['interviewlinkid']
     tests_user_dict['realtime'] = '1'
     tests_user_dict['updateinterviewmetaurl'] = mysettings.UPDATE_INTERVIEW_META_URL
+    tests_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     tests_user_dict.update(csrf(request))
     cxt = Context(tests_user_dict)
     audiovisualhtml = tmpl.render(cxt)
@@ -6998,6 +6999,7 @@ def askquestion(request):
     int_questions_dict['question_num'] = current_question_num
     int_questions_dict['updateinterviewmetaurl'] = mysettings.UPDATE_INTERVIEW_META_URL
     int_questions_dict['answerfilename'] = ""
+    int_questions_dict['signal_server'] = mysettings.SIGNAL_SERVER
     if medium == "audiovisual":
         #tmpl = get_template("tests/interview_candidate_screen.html")
         tmpl = get_template("tests/audiovisual.html")
@@ -7379,6 +7381,7 @@ def createinterview(request):
     int_user_dict['interview_data_upload_url'] = mysettings.INTERVIEW_DATA_UPLOAD_URL
     int_user_dict['hashtoken'] = hashtoken
     int_user_dict['interviewtitle'] = interviewtitle
+    int_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     interviewfilename = interviewtitle
     interviewfilename = interviewfilename.replace("-", "_")
     interviewfilename = interviewfilename.replace(" ", "_")
@@ -7554,6 +7557,7 @@ def attendinterview(request):
     #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
     intcandobj.save()
     int_user_dict = {}
+    int_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     if intobj is not None:
         interviewschedulestart = intobj.scheduledtime
         #fp.write(str(time.strptime(interviewschedulestart, "%Y-%m-%d %H:%M:%S")))
@@ -7612,7 +7616,6 @@ def attendinterview(request):
         int_user_dict['email'] = intcandobj.emailaddr
     int_user_dict['hashtoken'] = hashtoken
     int_user_dict['curdatetime'] = curdatetime
-    int_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
     intcandscreen = tmpl.render(cxt)

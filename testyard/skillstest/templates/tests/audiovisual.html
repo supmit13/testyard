@@ -49,6 +49,7 @@ else {
   alert("This browser does not support WebRTC - visit WebRTC.org for more info");
   webrtc_capable = false;
 }
+
 </script>
 <script>
 /*
@@ -189,12 +190,12 @@ function start() {
       signaling_server.onmessage = callee_signal_handler;
 
       // tell the signaling server you have joined the call 
-      signaling_server.send(
+      /*signaling_server.send(
         JSON.stringify({ 
           token:call_token,
           type:"join",
         })
-      );
+      ); */
 
       // let the caller know you have arrived so they can start the call
       signaling_server.send(
@@ -235,7 +236,7 @@ function new_description_created(description) {
 // handle signals as a caller
 function caller_signal_handler(event) {
   var signal = JSON.parse(event.data);
-  
+  //alert(signal.type);
   if (signal.type === "callee_arrived") {
     alert("Callee arrived. Please click ok to continue");
     peer_connection.createOffer(
@@ -255,6 +256,8 @@ function caller_signal_handler(event) {
       new rtc_session_description(signal.sdp), 
       function () {
          // extend with your own custom answer handling here - Testing.
+         canvasel = document.getElementById('snapshot');
+         canvasel.srcObject = event.stream;
       },
       log_error
     );
