@@ -4200,7 +4200,7 @@ def sendtestinvitations(request):
         <br/><br/>
         Regards,<br/>
         The TestYard Team.<br/><br/>
-        """%(testlink, testlink, testyardhosturl, urllib.urlencode(testlink))
+        """%(testlink, testlink, testyardhosturl, urllib.quote_plus(testlink))
         fromaddr = "testyardteam@testyard.in"
         retval = 0
         try:
@@ -6731,7 +6731,7 @@ def setschedule(request):
 
             Regards,<br/>
             The TestYard Team.
-            """%(utobj.testurl, utobj.testurl, testyardhosturl, urllib.urlencode(utobj.testurl))
+            """%(utobj.testurl, utobj.testurl, testyardhosturl, urllib.quote_plus(utobj.testurl))
             fromaddr = "testyardteam@testyard.com"
             #str(emailmessage).content_subtype = 'html'
             retval = 0
