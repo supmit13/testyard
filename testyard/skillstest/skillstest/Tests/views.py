@@ -191,7 +191,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('createdate')[startctr_ascreator:endctr_ascreator]
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl, addtogooglecalendarurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL, mysettings.GOOGLE_CALENDAR_URL
     test_created_count = Test.objects.filter(creator=userobj).count()
     if test_created_count <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
@@ -484,6 +484,7 @@ def get_user_tests(request):
     tests_user_dict['postonlinkedinurl'] = skillutils.gethosturl(request) + "/" + postonlinkedinurl
     tests_user_dict['linkedinpostsessionurl'] = skillutils.gethosturl(request) + "/" + linkedinpostsessionurl
     tests_user_dict['maxinvitationspersession'] = mysettings.MAX_INVITES_PER_SESSION
+    tests_user_dict['addtogooglecalendarurl'] = skillutils.gethosturl(request) + "/" + addtogooglecalendarurl
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
@@ -3218,7 +3219,11 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
         return response
     jsonobj = json.loads(jsonstringcontent)
     #print(jsonobj)
-    shorttesturl = jsonobj['link']
+    try:
+        shorttesturl = jsonobj['link']
+    except:
+        print("Error generating short URL from Bitly: %s"%json.dumps(jsonobj))
+        shorttesturl = ""
     return (shorttesturl, randstring)
 
 
@@ -4172,27 +4177,30 @@ def sendtestinvitations(request):
         # Now send the email... save the above records only when email has been sent successfully
         emailsubject = "A test has been scheduled for you on testyard"
         emailmessage = """Dear %s,
-
-    A test with the name '%s' has been scheduled for you by %s. 
+        <br/><br/>
+    A test with the name '%s' has been scheduled for you by %s. <br/><br/>
         """%(candidatename, testobj.testname, userobj.displayname)
         if validtill == 'onwards':
             emailmessage += """ This test will remain valid from %s %s, """%(validfrom, validtill)
         else:
             emailmessage += """ This test will remain valid from %s till %s, """%(validfrom, validtill)
-        emailmessage += """and hence you are kindly requested to take the test
+        testyardhosturl = skillutils.gethosturl(request)
+        emailmessage += """and hence you are kindly requested to take the test<br/>
         within that interval. You would be able to access the test by clicking
-        on the following link: %s.
-
+        on the following link: <a href='%s'>%s</a>. 
+        <br/><br/>
+        You may add this test to your <a href='%s/skillstest/test/addtocalendar/?turl=%s'>google calendar</a>.
+	<br/><br/>
         If clicking on the above link doesn't work for you, please copy it and 
-        paste it in your browser's address bar and hit enter. Do please feel
+        paste it in your browser's address bar and hit enter. Do please feel <br/>
         free to let us know in case of any issues. We would do our best to
         resolve it at the earliest.
-
+        <br/><br/>
         We wish you all the best for the test.
-
-        Regards,
-        The TestYard Team.
-        """%(testlink)
+        <br/><br/>
+        Regards,<br/>
+        The TestYard Team.<br/><br/>
+        """%(testlink, testlink, testyardhosturl, urllib.urlencode(testlink))
         fromaddr = "testyardteam@testyard.in"
         retval = 0
         try:
@@ -9011,7 +9019,47 @@ def latexkeyboard(request):
     # Implement accessing the answer data and putting it in text files.
 
 
-
-
-
-
+def addtogooglecalendar(request):
+    message = ""
+    if request.method == 'GET':
+        testurl = ""
+        context = {}
+        if 'turl' in request.GET.keys():
+            testurl = request.GET['turl']
+        if testurl == "":
+            msgdict = {"Error" : "Nothing to add to calendar"}
+            message = json.dumps(msgdict)
+            response = HttpResponse(message)
+            return response
+        utqset = None
+        try:
+            utqset = UserTest.objects.filter(testurl=testurl)
+        except:
+            utqset = WouldbeUsers.objects.filter(testurl=testurl)
+        if utqset is not None and utqset.__len__() > 0:
+            utobj = utqset[0]
+            testname = utobj.test.testname
+            validfrom = utobj.validfrom
+            validto = utobj.validfrom + datetime.timedelta(seconds=utobj.test.duration)
+            context = {'testurl' : testurl, 'calendarurl' : skillutils.gethosturl(request) + '/skillstest/test/addtocalendar/', 'clientid' : mysettings.GOOGLE_CALENDAR_CLIENT_ID, 'apikey' : mysettings.GOOGLE_CALENDAR_API_KEY, 'testname' : testname, 'start' : validfrom.isoformat(), 'end' : validto.isoformat()}
+        else:
+            msgdict = {"Error" : "Nothing to add to calendar"}
+            message = json.dumps(msgdict)
+            response = HttpResponse(message)
+            return response
+        tmpl = get_template("tests/gcalendar.html")
+        context.update(csrf(request))
+        cxt = Context(context)
+        gcalendar = tmpl.render(cxt)
+        return HttpResponse(gcalendar)
+    else: # Weed out all other call methods
+        msgdict = {"Error" : "Invalid method of call"}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
+        
+"""
+@csrf_protect
+def addtogooglecalendar(request):
+    pass
+"""    

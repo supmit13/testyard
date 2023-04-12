@@ -228,7 +228,11 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.MOBILE_OPEN_TEST_URL, 'skillstest.Tests.views.mobile_opentest', name='mobile_opentest'),
     url(r'%s$'%mysettings.MOBILE_CREATE_INTERVIEW_URL, 'skillstest.Tests.views.mobile_createinterview', name='mobile_createinterview'),
     url(r'%s$'%mysettings.MOBILE_LIST_INTERVIEW_URL, 'skillstest.Tests.views.mobile_listinterviews', name='mobile_listinterviews'),
+    
+    url(r'%s$'%mysettings.GOOGLE_CALENDAR_URL, 'skillstest.Tests.views.addtogooglecalendar', name='addtogooglecalendar'),
 
     url(r'^.*$', 'skillstest.views.returnRedirect', name='returnRedirectHttp'), # All other URLs are handled here...
 )
+# https://testyard.in/skillstest/tests/calendarinterview/
+# https://testyard.in/skillstest/tests/calendartest/
 

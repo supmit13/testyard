@@ -16,6 +16,10 @@ from celery import Celery
 from celery import shared_task
 from django.core.mail import send_mail
 
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+
 
 
 hex_to_ascii = {'%20' : ' ', '%21' : '!', '%22' : '"', '%23' : '#', '%24' : '$', '%25' : '%', '%26' : '&', \
@@ -243,7 +247,10 @@ Set up as per: https://realpython.com/asynchronous-tasks-with-django-and-celery/
 """
 @emailqueueapp.task
 def send_emails(subject, messagebody, fromaddr, toaddress, b=False):
-    retval = send_mail(subject, messagebody, fromaddr, [toaddress,], b)
+    msg = EmailMultiAlternatives(subject, messagebody, fromaddr, [toaddress])
+    msg.attach_alternative(messagebody, "text/html")
+    retval = msg.send()
+    #retval = send_mail(subject, messagebody, fromaddr, [toaddress,], b)
     return retval
 
 # Run celery command inside testyard/skillstest: python -m celery -A skillstest.Tests.tasks worker --broker=redis://127.0.0.1:6379
