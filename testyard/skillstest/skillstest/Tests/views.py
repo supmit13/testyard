@@ -7266,7 +7266,7 @@ def createinterview(request):
 
                      Good Luck!<br/>
                      The TestYard Interview Team.
-    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget, testyardhosturl, urllib.quote_plus(str(testyardhosturl + "/" + mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)))
+    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         #str(message).content_subtype = 'html'
@@ -7332,7 +7332,7 @@ def createinterview(request):
                      
                      Good Luck!
                      The TestYard Interview Team.
-    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, urllib.quote_plus(str(intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)))
+    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, urllib.quote_plus(str(interviewlinkid)))
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
             #str(message).content_subtype = 'html'
@@ -9038,9 +9038,9 @@ def addtogooglecalendar(request):
             return response
         utqset = None
         try:
-            utqset = UserTest.objects.filter(testurl=testurl)
+            utqset = UserTest.objects.filter(testurl=urllib.unquote_plus(testurl))
         except:
-            utqset = WouldbeUsers.objects.filter(testurl=testurl)
+            utqset = WouldbeUsers.objects.filter(testurl=urllib.unquote_plus(testurl))
         if utqset is not None and utqset.__len__() > 0:
             utobj = utqset[0]
             testname = utobj.test.testname
@@ -9071,13 +9071,13 @@ def addinterviewtogooglecalendar(request):
         interviewurl = ""
         context = {}
         if 'inturl' in request.GET.keys():
-            interviewurl = request.GET['inturl']
+            interviewurl = request.GET['inturl'] # Actually, this would be the interviewlinkid
         if interviewurl == "":
             msgdict = {"Error" : "Nothing to add to calendar"}
             message = json.dumps(msgdict)
             response = HttpResponse(message)
             return response
-        intcandidateqset = InterviewCandidates.objects.filter(interviewurl=interviewurl)
+        intcandidateqset = InterviewCandidates.objects.filter(interviewlinkid=urllib.unquote_plus(interviewurl))
         if not intcandidateqset or intcandidateqset.__len__() == 0:
             msgdict = {"Error" : "Nothing to add to calendar"}
             message = json.dumps(msgdict)
