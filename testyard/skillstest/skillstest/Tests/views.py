@@ -31,7 +31,7 @@ import cPickle
 import decimal, math
 from Crypto.Cipher import AES, DES3
 from Crypto import Random
-import base64,urllib, urllib2, httplib, requests
+import base64, urllib, urllib2, httplib, requests
 import simplejson as json
 from openpyxl import load_workbook
 from xlrd import open_workbook
@@ -6707,29 +6707,31 @@ def setschedule(request):
             baseurl = skillutils.gethosturl(request)
             (utobj.testurl, utobj.stringid) = gettesturlforuser(utobj.emailaddr, testid, baseurl)
             error_emails_list = []
+            testyardhosturl = skillutils.gethosturl(request)
             candidatename = "candidate"
             emailsubject = "A test has been scheduled for you on testyard"
-            emailmessage = """Dear %s,
+            emailmessage = """Dear %s,<br/><br/>
 
-         A test with the name '%s' has been scheduled for you by <i>%s</i>.
+         A test with the name '%s' has been scheduled for you by <i>%s</i>.<br/><br/>
 
              """%(candidatename, testobj.testname, userobj.displayname)
             emailmessage += """
 	    The test will start from %s and end at %s."""%(validfrom, validtill)
             emailmessage += """ and hence you are kindly requested to take the test
-            within that interval. You would be able to access the test by clicking
-            on the following link: %s.
-
+            within that interval. You would be able to access the test by clicking<br/>
+            on the following link: <a href='%s'>%s</a>.<br/>
+	    You may add this test to your <a href='%s/skillstest/test/addtocalendar/?turl=%s'>google calendar</a>.
+	<br/><br/>
             If clicking on the above link doesn't work for you, please copy it and 
-            paste it in your browser's address bar and hit enter. Do please feel
+            paste it in your browser's address bar and hit enter. Do please feel<br/>
             free to let us know in case of any issues. We would do our best to
-            resolve it at the earliest.
+            resolve it at the earliest.<br/><br/>
 
-            We wish you all the best for the test.
+            We wish you all the best for the test.<br/><br/>
 
-            Regards,
+            Regards,<br/>
             The TestYard Team.
-            """%(utobj.testurl)
+            """%(utobj.testurl, utobj.testurl, testyardhosturl, urllib.urlencode(utobj.testurl))
             fromaddr = "testyardteam@testyard.com"
             #str(emailmessage).content_subtype = 'html'
             retval = 0
@@ -7246,23 +7248,25 @@ def createinterview(request):
     interviewobj.introfilepath = introfilename
     interviewobj.scheduledtime = interviewdatetime
     hashtoken = binascii.hexlify(os.urandom(16))
+    testyardhosturl = skillutils.gethosturl(request)
     if emailinvitationtarget: # Send an email invitation link to the email address.
         message = """Dear Candidate,
-                     
-
+                     <br/><br/>
                      This is an invitation to attend an interview with %s on %s hours. Please click on the 
-                     link below to load the interview interface. If it doesn't work, then copy
-                     the link and paste it in your browser's address bar and hit <enter>.
+                     link below to load the interview interface. If it doesn't work, then copy <br/>
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     %s/%s
+                     %s/%s <br/><br/>
+                     
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      
                      Important Note: Please use Chrome, Firefox or Opera to attend the interview.
                      Browsers other than these 3 may not support every feature used by the inter-
-                     view application.
+                     view application.<br/><br/>
 
-                     Good Luck!
+                     Good Luck!<br/>
                      The TestYard Interview Team.
-    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)
+    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget, testyardhosturl, urllib.quote_plus(str(testyardhosturl + "/" + mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         #str(message).content_subtype = 'html'
@@ -7313,21 +7317,22 @@ def createinterview(request):
             scheduledatetime_dt = scheduledatetime
         #if datetime.datetime.strptime(scheduledatetime_dt, "%Y-%m-%d %H:%M:%S") > currentdatetime:
         if scheduledatetime_dt > currentdatetime:
-            message = """Dear Candidate,
+            message = """Dear Candidate,<br/><br/>
                      
 
                      This is an invitation to attend an interview named '%s' with %s on %s.  Please click on the 
                      link below to load the interview interface. If it doesn't work, then copy
-                     the link and paste it in your browser's address bar and hit <enter>.
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     %s
+                     %s<br/><br/>
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.<br/><br/>
                      
-                     Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview.
-                     Browsers other than these 3 may not support every feature used by the interview application.
+                     Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the interview application.<br/>
                      
                      Good Luck!
                      The TestYard Interview Team.
-    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)
+    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, urllib.quote_plus(str(intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget)))
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
             #str(message).content_subtype = 'html'
@@ -9057,9 +9062,42 @@ def addtogooglecalendar(request):
         message = json.dumps(msgdict)
         response = HttpResponse(message)
         return response
+
+
+
+def addinterviewtogooglecalendar(request):
+    message = ""
+    if request.method == 'GET':
+        interviewurl = ""
+        context = {}
+        if 'inturl' in request.GET.keys():
+            interviewurl = request.GET['inturl']
+        if interviewurl == "":
+            msgdict = {"Error" : "Nothing to add to calendar"}
+            message = json.dumps(msgdict)
+            response = HttpResponse(message)
+            return response
+        intcandidateqset = InterviewCandidates.objects.filter(interviewurl=interviewurl)
+        if not intcandidateqset or intcandidateqset.__len__() == 0:
+            msgdict = {"Error" : "Nothing to add to calendar"}
+            message = json.dumps(msgdict)
+            response = HttpResponse(message)
+            return response
+        interviewname = intcandidateqset[0].interview.title
+        validfrom = intcandidateqset[0].scheduledtime
+        validto = validfrom + datetime.timedelta(hours=1)
+        context = {'testurl' : interviewurl, 'clientid' : mysettings.GOOGLE_CALENDAR_CLIENT_ID, 'apikey' : mysettings.GOOGLE_CALENDAR_API_KEY, 'testname' : interviewname, 'start' : validfrom.isoformat(), 'end' : validto.isoformat()}
+        tmpl = get_template("tests/gcalendar.html")
+        context.update(csrf(request))
+        cxt = Context(context)
+        gcalendar = tmpl.render(cxt)
+        return HttpResponse(gcalendar)
+    else:
+        msgdict = {"Error" : "Invalid method of call"}
+        message = json.dumps(msgdict)
+        response = HttpResponse(message)
+        return response
         
-"""
-@csrf_protect
-def addtogooglecalendar(request):
-    pass
-"""    
+
+
+
