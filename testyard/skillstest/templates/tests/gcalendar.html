@@ -1,18 +1,37 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Google Calendar API Quickstart</title>
+    <title>Google Calendar</title>
     <meta charset="utf-8" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.0/jquery-ui.min.js"></script>
+	<link rel="stylesheet" href="static/css/newiface.css" />
+	<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
   </head>
   <body>
-    <p>Add schedule to Google Calendar</p>
+  	<div id="container" style="padding-left:40px;padding-top:40px;background:#0000FF;">
 
+	<div id="header">	
+		<h1><a href="/skillstest/test/" style="color:#FFFFFF;font-weight:bold;font-face:'cursive, Parkavenue';">TEST<span>YARD</span></a></h1>
+	<!--	<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Committed to identifying the best professionals for your business...</p> -->
+		<p style="color:#FFFFFF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p> 
+
+
+	</div>
+	</div>
+	<br/>
+	<div class="container">
+    	<p style="text-align:center;color:#0000FF;font-weight:bold;"><u>Add '{{testname}}' Schedule to Google Calendar</u></p>
+	<br/><br/>
     <!--Add buttons to initiate auth sequence and sign out-->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
+    <p style="text-align:center;color:#0000FF;">
+    <button id="authorize_button" onclick="handleAuthClick();" class="btn btn-primary" style="width:150px;padding-right:10px;">Authorize</button> &nbsp;&nbsp;<button id="signout_button" onclick="handleSignoutClick();" class="btn btn-testyard1" style="width:150px;padding-left:10px;visibility:visible;display:;">Sign Out</button></p>
 
-    <pre id="content" style="white-space: pre-wrap;"></pre>
-
+    <!-- <pre id="content" style="white-space: pre-wrap;"></pre> -->
+	
+	</div>
     <script type="text/javascript">
       /* exported gapiLoaded */
       /* exported gisLoaded */
@@ -34,8 +53,8 @@
       let gapiInited = false;
       let gisInited = false;
 
-      document.getElementById('authorize_button').style.visibility = 'hidden';
-      document.getElementById('signout_button').style.visibility = 'hidden';
+      //document.getElementById('authorize_button').style.visibility = 'hidden';
+      //document.getElementById('signout_button').style.visibility = 'hidden';
 
       /**
        * Callback after api.js is loaded.

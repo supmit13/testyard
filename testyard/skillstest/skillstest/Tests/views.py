@@ -9033,7 +9033,7 @@ def addtogooglecalendar(request):
         testurl = ""
         context = {}
         if 'turl' in request.GET.keys():
-            testurl = request.GET['turl']
+            testurl = urllib.unquote_plus(request.GET['turl'])
         if testurl == "":
             msgdict = {"Error" : "Nothing to add to calendar"}
             message = json.dumps(msgdict)
@@ -9041,9 +9041,9 @@ def addtogooglecalendar(request):
             return response
         utqset = None
         try:
-            utqset = UserTest.objects.filter(testurl=urllib.unquote_plus(testurl))
+            utqset = UserTest.objects.filter(testurl=testurl)
         except:
-            utqset = WouldbeUsers.objects.filter(testurl=urllib.unquote_plus(testurl))
+            utqset = WouldbeUsers.objects.filter(testurl=testurl)
         if utqset is not None and utqset.__len__() > 0:
             utobj = utqset[0]
             testname = utobj.test.testname
@@ -9074,13 +9074,13 @@ def addinterviewtogooglecalendar(request):
         interviewurl = ""
         context = {}
         if 'inturl' in request.GET.keys():
-            interviewurl = request.GET['inturl'] # Actually, this would be the interviewlinkid
+            interviewurl = urllib.unquote_plus(request.GET['inturl']) # Actually, this would be the interviewlinkid
         if interviewurl == "":
             msgdict = {"Error" : "Nothing to add to calendar"}
             message = json.dumps(msgdict)
             response = HttpResponse(message)
             return response
-        intcandidateqset = InterviewCandidates.objects.filter(interviewlinkid=urllib.unquote_plus(interviewurl))
+        intcandidateqset = InterviewCandidates.objects.filter(interviewlinkid=interviewurl)
         if not intcandidateqset or intcandidateqset.__len__() == 0:
             msgdict = {"Error" : "Nothing to add to calendar"}
             message = json.dumps(msgdict)
@@ -9089,7 +9089,8 @@ def addinterviewtogooglecalendar(request):
         interviewname = intcandidateqset[0].interview.title
         validfrom = intcandidateqset[0].scheduledtime
         validto = validfrom + datetime.timedelta(hours=1)
-        context = {'testurl' : interviewurl, 'clientid' : mysettings.GOOGLE_CALENDAR_CLIENT_ID, 'apikey' : mysettings.GOOGLE_CALENDAR_API_KEY, 'testname' : interviewname, 'start' : validfrom.isoformat(), 'end' : validto.isoformat()}
+        inturl = intcandidateqset[0].interviewurl
+        context = {'testurl' : inturl, 'clientid' : mysettings.GOOGLE_CALENDAR_CLIENT_ID, 'apikey' : mysettings.GOOGLE_CALENDAR_API_KEY, 'testname' : interviewname, 'start' : validfrom.isoformat(), 'end' : validto.isoformat(), 'calendarurl' : skillutils.gethosturl(request) + '/skillstest/interview/addtocalendar/',}
         tmpl = get_template("tests/gcalendar.html")
         context.update(csrf(request))
         cxt = Context(context)
