@@ -7328,11 +7328,11 @@ def createinterview(request):
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.<br/><br/>
                      
                      Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview.<br/>
-                     Browsers other than these 3 may not support every feature used by the interview application.<br/>
+                     Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
                      
                      Good Luck!
                      The TestYard Interview Team.
-    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, urllib.quote_plus(str(interviewlinkid)))
+    """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
             #str(message).content_subtype = 'html'
@@ -7345,16 +7345,18 @@ def createinterview(request):
                     retmsg = "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
                     return HttpResponse(retmsg)
             # Now, send a similar email to the creator/conductor of the interview with the appropriate interview URL.
-            message = """Dear Interviewer,
-        You have successfully set up an interview titled '%s' for %s at %s hours. You may click on the following link to access the interview application
-        that will assist you in conducting the interview at the aforementioned time.
+            message = """Dear Interviewer,<br/><br/>
+        You have successfully set up an interview titled '%s' for %s at %s hours. You may click on the following link to access the interview application<br/>
+        that will assist you in conducting the interview at the aforementioned time.<br/><br/>
 
-        %s
+        %s <br/><br/>
+        
+        You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.<br/><br/>
 
         Good Luck!
 
         The TestYard Team.
-        """%(interviewobj.title, emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl)
+        """%(interviewobj.title, emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
             #str(message).content_subtype = 'html'
             subject = "Interview Scheduled"
             fromaddr = userobj.emailid
@@ -8469,26 +8471,27 @@ def mobile_setschedule(request):
         error_emails_list = []
         candidatename = "candidate"
         emailsubject = "A test has been scheduled for you on testyard"
-        emailmessage = """Dear %s,
+        emailmessage = """Dear %s,<br/><br/>
 
-         A test with the name '%s' has been scheduled for you by <i>%s</i>. 
+         A test with the name '%s' has been scheduled for you by <i>%s</i>. <br/><br/>
 
              """%(candidatename, testobj.testname, userobj.displayname)
         emailmessage += """The test will start from %s and end at %s, """%(validfrom, validtill)
-        emailmessage += """and hence you are kindly requested to take the test
+        emailmessage += """and hence you are kindly requested to take the test<br/>
             within that interval. You would be able to access the test by clicking
-            on the following link: <a href='%s' target=_blank>%s</a>.
-            
+            on the following link: <a href='%s' target=_blank>%s</a>.<br/><br/>
+            You may add this test to your <a href='%s/skillstest/test/addtocalendar/?turl=%s'>google calendar</a>.
+	<br/><br/>
             If clicking on the above link doesn't work for you, please copy it and 
-            paste it in your browser's address bar and hit enter. Do please feel
+            paste it in your browser's address bar and hit enter. Do please feel<br/>
             free to let us know in case of any issues. We would do our best to
-            resolve it at the earliest.
+            resolve it at the earliest.<br/><br/>
             
-            We wish you all the best for the test.
+            We wish you all the best for the test.<br/><br/>
             
-            Regards,
+            Regards,<br/>
             The TestYard Team.
-            """%(utobj.testurl, utobj.testurl)
+            """%(utobj.testurl, utobj.testurl, baseurl, urllib.quote_plus(utobj.testurl))
         fromaddr = "testyardteam@testyard.com"
         retval = 0
         try:
