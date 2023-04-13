@@ -11,7 +11,7 @@
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
   </head>
   <body>
-  	<div id="container" style="padding-left:40px;padding-top:40px;background:#0000FF;">
+  	<div id="container" style="padding-left:40px;padding-top:50px;background:#0000FF;">
 
 	<div id="header">	
 		<h1><a href="/skillstest/test/" style="color:#FFFFFF;font-weight:bold;font-face:'cursive, Parkavenue';">TEST<span>YARD</span></a></h1>
@@ -27,7 +27,7 @@
 	<br/><br/>
     <!--Add buttons to initiate auth sequence and sign out-->
     <p style="text-align:center;color:#0000FF;">
-    <button id="authorize_button" onclick="handleAuthClick();" class="btn btn-primary" style="width:150px;padding-right:10px;">Authorize</button> &nbsp;&nbsp;<button id="signout_button" onclick="handleSignoutClick();" class="btn btn-testyard1" style="width:150px;padding-left:10px;visibility:visible;display:;">Sign Out</button></p>
+    <button id="authorize_button" onclick="handleAuthClick();" class="btn btn-primary" style="width:150px;padding-right:10px;font-weight:bold;">Add / Authorize</button> &nbsp;&nbsp;<button id="signout_button" onclick="handleSignoutClick();" class="btn btn-testyard1" style="width:150px;padding-left:10px;visibility:visible;display:;font-weight:bold;">Sign Out</button></p>
 
     <!-- <pre id="content" style="white-space: pre-wrap;"></pre> -->
 	
@@ -69,7 +69,7 @@
        */
       async function initializeGapiClient() {
         await gapi.client.init({
-          apiKey: API_KEY,
+          apiKey: "{{apikey}}",
           discoveryDocs: [DISCOVERY_DOC],
         });
         gapiInited = true;
@@ -81,7 +81,7 @@
        */
       function gisLoaded() {
         tokenClient = google.accounts.oauth2.initTokenClient({
-          client_id: CLIENT_ID,
+          client_id: "{{clientid}}",
           scope: SCOPES,
           callback: '', // defined later
         });

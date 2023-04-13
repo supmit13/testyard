@@ -7252,16 +7252,16 @@ def createinterview(request):
     if emailinvitationtarget: # Send an email invitation link to the email address.
         message = """Dear Candidate,
                      <br/><br/>
-                     This is an invitation to attend an interview with %s on %s hours. Please click on the 
+                     This is an invitation to attend an interview with %s on %s hours. Please click on the<br/> 
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
                      %s/%s <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
-                     
-                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.
-                     Browsers other than these 3 may not support every feature used by the inter-
+                     <br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the inter-<br/>
                      view application.<br/><br/>
 
                      Good Luck!<br/>
@@ -9043,6 +9043,8 @@ def addtogooglecalendar(request):
         try:
             utqset = UserTest.objects.filter(testurl=testurl)
         except:
+            pass
+        if utqset.__len__() == 0:
             utqset = WouldbeUsers.objects.filter(testurl=testurl)
         if utqset is not None and utqset.__len__() > 0:
             utobj = utqset[0]
