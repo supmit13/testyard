@@ -22,6 +22,14 @@
 	</div>
 	</div>
 	<br/>
+	{% if Error and Error != "" %}
+	    <div class="container">
+    	    <p style="text-align:center;color:#FF0000;font-weight:bold;">Error Occurred while processing: {{Error}}</p>
+    	    <p style="text-align:center;color:#0000FF;">
+    <button id="close_button" onclick="window.close();" class="btn btn-primary" style="width:150px;padding-right:10px;font-weight:bold;">Close</button> </p>
+    	    </div>
+    	{% else %}
+    	
 	<div class="container">
     	<p style="text-align:center;color:#0000FF;font-weight:bold;"><u>Add '{{testname}}' Schedule to Google Calendar</u></p>
 	<br/><br/>
@@ -32,6 +40,7 @@
     <!-- <pre id="content" style="white-space: pre-wrap;"></pre> -->
 	
 	</div>
+	{% endif %}
     <script type="text/javascript">
       /* exported gapiLoaded */
       /* exported gisLoaded */

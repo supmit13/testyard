@@ -9036,9 +9036,11 @@ def addtogooglecalendar(request):
             testurl = urllib.unquote_plus(request.GET['turl'])
         if testurl == "":
             msgdict = {"Error" : "Nothing to add to calendar"}
-            message = json.dumps(msgdict)
-            response = HttpResponse(message)
-            return response
+            tmpl = get_template("tests/gcalendar.html")
+            msgdict.update(csrf(request))
+            cxt = Context(msgdict)
+            gcalendar = tmpl.render(cxt)
+            return HttpResponse(gcalendar)
         utqset = None
         try:
             utqset = UserTest.objects.filter(testurl=testurl)
@@ -9054,9 +9056,11 @@ def addtogooglecalendar(request):
             context = {'testurl' : testurl, 'calendarurl' : skillutils.gethosturl(request) + '/skillstest/test/addtocalendar/', 'clientid' : mysettings.GOOGLE_CALENDAR_CLIENT_ID, 'apikey' : mysettings.GOOGLE_CALENDAR_API_KEY, 'testname' : testname, 'start' : validfrom.isoformat(), 'end' : validto.isoformat()}
         else:
             msgdict = {"Error" : "Nothing to add to calendar"}
-            message = json.dumps(msgdict)
-            response = HttpResponse(message)
-            return response
+            tmpl = get_template("tests/gcalendar.html")
+            msgdict.update(csrf(request))
+            cxt = Context(msgdict)
+            gcalendar = tmpl.render(cxt)
+            return HttpResponse(gcalendar)
         tmpl = get_template("tests/gcalendar.html")
         context.update(csrf(request))
         cxt = Context(context)
@@ -9064,9 +9068,11 @@ def addtogooglecalendar(request):
         return HttpResponse(gcalendar)
     else: # Weed out all other call methods
         msgdict = {"Error" : "Invalid method of call"}
-        message = json.dumps(msgdict)
-        response = HttpResponse(message)
-        return response
+        tmpl = get_template("tests/gcalendar.html")
+        msgdict.update(csrf(request))
+        cxt = Context(msgdict)
+        gcalendar = tmpl.render(cxt)
+        return HttpResponse(gcalendar)
 
 
 
@@ -9079,9 +9085,11 @@ def addinterviewtogooglecalendar(request):
             interviewurl = urllib.unquote_plus(request.GET['inturl']) # Actually, this would be the interviewlinkid
         if interviewurl == "":
             msgdict = {"Error" : "Nothing to add to calendar"}
-            message = json.dumps(msgdict)
-            response = HttpResponse(message)
-            return response
+            tmpl = get_template("tests/gcalendar.html")
+            msgdict.update(csrf(request))
+            cxt = Context(msgdict)
+            gcalendar = tmpl.render(cxt)
+            return HttpResponse(gcalendar)
         intcandidateqset = InterviewCandidates.objects.filter(interviewlinkid=interviewurl)
         if not intcandidateqset or intcandidateqset.__len__() == 0:
             msgdict = {"Error" : "Nothing to add to calendar"}
@@ -9100,9 +9108,11 @@ def addinterviewtogooglecalendar(request):
         return HttpResponse(gcalendar)
     else:
         msgdict = {"Error" : "Invalid method of call"}
-        message = json.dumps(msgdict)
-        response = HttpResponse(message)
-        return response
+        tmpl = get_template("tests/gcalendar.html")
+        msgdict.update(csrf(request))
+        cxt = Context(msgdict)
+        gcalendar = tmpl.render(cxt)
+        return HttpResponse(gcalendar)
         
 
 
