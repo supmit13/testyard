@@ -8476,7 +8476,7 @@ def mobile_setschedule(request):
          A test with the name '%s' has been scheduled for you by <i>%s</i>. <br/><br/>
 
              """%(candidatename, testobj.testname, userobj.displayname)
-        emailmessage += """The test will start from %s and end at %s, """%(validfrom, validtill)
+        emailmessage += """The test will start from %s IST and end at %s IST, """%(validfrom, validtill)
         emailmessage += """and hence you are kindly requested to take the test<br/>
             within that interval. You would be able to access the test by clicking
             on the following link: <a href='%s' target=_blank>%s</a>.<br/><br/>
