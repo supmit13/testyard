@@ -53,6 +53,92 @@ Items 'a' through 'f' should be presented with an icon, and the text labels shou
 10. The table in the "Manage Invitations" overlay should be made presentable. The overlay may be modified to make the opacity higher and the text in the table should have more contrast with the color of the overlay. The only condition for all this is that everything in the table should be in some shade of blue. Also, please modify the look of the "Close Invitations View" button to blend with the overlay's design. Suggestions pertaining to the presentation of this overlay are most welcome.
 
 
+Immediate Plans:
+----------------
+21-12-2022:
+1. Check out and fix interview creation (UI and Backend). [Done]
+2. Check out and fix interview scheduling (UI and Backend).
+3. Check out and fix interview process (UI and Backend).
+4. Configure TURN server on AWS and set it up to be used with TestYard.
+5. Check out and fix Test creation using test markup upload.
+6. Restructure Test Creation Screen. (Apply bootstrap and jquery libraries) [Done]
+7. Check out and fix Test taking process.
+8. Check out the test taking screen and restructure it appropriately (Apply bootstrap and jquery libraries)
+9. Restructure Profile page (Apply bootstrap and jquery libraries) [Done]
+10. Add Analytics functionality for Interviews Conducted and Interviews Attended.
+11. Restructure Analytics Page. [Done]
+12. Restructure Advanced Search Screen. (Apply bootstrap and jquery libraries) [Done]
+13. Restructure Advanced Search -> Tests -> Challenges List [Done]
+14. Restructure Advanced Search -> Users -> User Test Info [Done]
+15. Pagination of following screens:
+	a) Tests/Interviews listing [Done]
+	b) Advanced Search listings (both tests and users) [Done]
+	c) Network -> Manage Owned Groups [Done]
+	d) Network -> Messages Inbox [Done]
+	e) Network -> Groups Subscribed By You -> Group Posts [Done]
+	f) Advanced Search -> Users -> User Test Info. [Done]
+	g) Advanced Search -> Tests -> Challenges List. [Done]
+16. Tests => Tests As Evaluator => Evaluate => Evaluate Responses Screen restructuring. [Done]
+17. Mathjax expressions are not working - Fix needed. [Done]
+18. Implement a queue for sending email invitations to test/interview candidates. This queue should be accessible from all scheduling screens. [Done]
+19. Restructure Network -> Create Group screen [Done]
+20. Restructure Network -> Join a Group Screen [Done]
+21. Restructure Network -> Add a Contact Screen [Done]
+22. Restructure Network -> Post a Message Screen [Done]
+23. Restructure Network -> Manage Owned Groups Screen [Done]
+24. Restructure Network -> Give a test to one or more groups Screen [Done]
+25. Pagination of postslist screen: Network -> Manage Owned Groups -> Manage Posts [Done]
+26. Fix bug in Network -> Manage Owned Groups -> Settings and Join Requests -> Join Requests Screen. The removed and blocked checkboxes are not saved correctly when trying to save multiple rows at a time. [Not a bug, nothing to fix]
+27. Restructure screens of Network right panel links (Groups Subscribed by You, Invitations, Inbox and Connections). [Done]
+28. Add "Search Groups" in Advanced Search section. [Done]
+29. Coding questions failing to capture answers. Also, editor is not working as per expectation.
+30. Render math expressions on evaluate_responses.html. [Done]
+31. Verify and fix math expressions rendering using Mathlive. [Done]
+32. Occasional Gateway Timeout issue with nginx/uwsgi stack.
+33. Allow user to search a test/interview in the Tests section for all 5 roles separately. [Done]
+34. Bugs in Evaluation Screen: #6. Needs to be identified and fixed.
+35. Create a ChatGPT based automated support assistant that will dispatch issues from users to support staff members automatically. This will include the following functionalities: i) Engaging with a user requesting support, ii) Classifying/Categorizing the type of support required by the user, iii) Get a description of the issue/help required by the user, iv) Docketing it in a "task management system" or "issue tracker system", v) Assigning it to a support staff member (with some load balancing logic), vi) Tracking down an issue given its ID, vii) Send a resolution success/failure email to the user once an issue is resolved by a support staff member. viii) Maintain a log of every issue created (possibly, this will be a feature of the issue tracker or task manager system.)
+36. Sign in with Google, Facebook, Apple. 
+
+
+50. Pagination of Test, Network and Search Apps. [Done]										
+100. Optimization of entire application.
+150. Hardening with inappropriate inputs.
+200. TURN server (using coturn). (https://github.com/muaz-khan/MultiRTC/tree/master/MultiRTC-websocket) [WIP]
+250. Testing all Apps. (Load + Functional).
+300. Create drawing toolbar using fabric.js (Low priority)
+350. Google Calendar Integration with test scheduling. [Done, needs testing with correct domain (testyard.in)]
+400. Export tests created by user to a google sheet/doc. (Low priority)
+410. Reimplement Bitly for v4. (https://dev.bitly.com/)  [Done]
+450. Debug code running mechanisms.
+500. Licensing and Plans. [WIP]
+550. Integrating ChatGPT based support assistant and an issue tracker system.
+600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether.
+650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot)
+700. Interface Refinement (Add/Edit Challenges, Add/Edit Tests, Interviews, etc)
+
+
+Scope of #50 - Pagination:
+--------------------------
+51. Tests -> Tests as Creator [Done]
+52. Tests -> Tests as Evaluator [Done]
+53. Tests -> Tests as Candidate [Done]
+54. Tests -> Interviews Conducted [Done]
+55. Tests -> Interviews Attended [Done]
+56. Tests -> Tests as Creator -> Manage Invitations [Done]
+57. Search -> Search Results (Tests/Challenges, Users, Groups) [Done]
+58. Network -> Join a Group -> Search results [Done]
+59. Network -> Add a Contact -> Search results [Done]
+60. Network -> Manage Owned Groups [Done]
+61. Network -> Groups Subscribed By You -> Group Posts [Already handled using 'Display More']
+62. Network -> Groups Subscribed By You -> Join Requests -> Open/Closed/Refused/Accepted [Done]
+63. Network -> Inbox [Done] [Bug pertaining to email search - needs fixing]
+
+Scope of 'More' (Part of #50):
+------------------------------
+64. Network -> Your Connections [Done]
+65. Network -> Groups Subscribed By You [Done]
+
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'spmprx';
 
 
