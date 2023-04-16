@@ -144,7 +144,7 @@ function start() {
     connect_stream_to_src(event.stream, document.getElementById("remote_video"));
     // hide placeholder and show remote video
     //document.getElementById("loading_state").style.display = "none";
-    //document.getElementById("open_call_state").style.display = "block";
+    document.getElementById("open_call_state").style.display = "block";
   };
 
   // setup stream from the local camera 
@@ -168,12 +168,12 @@ function start() {
         })
       );
       /* Code below is not required */
-      /*signaling_server.send(
+      signaling_server.send(
         JSON.stringify({ 
           token:call_token,
           type:"callee_arrived",
         })
-      );*/
+      );
     }
 
     document.title = "Calling target... Please wait";
@@ -181,21 +181,20 @@ function start() {
   
   attendpattern = new RegExp("attend=");
   matchres = attendpattern.exec(document.location);
-  //alert(matchres);
   if(matchres){
     
     call_token = document.location.hash;
     signaling_server.onopen = function() {
-      // setup caller signal handler
+      // setup callee signal handler
       signaling_server.onmessage = callee_signal_handler;
 
       // tell the signaling server you have joined the call 
-      /*signaling_server.send(
+      signaling_server.send(
         JSON.stringify({ 
           token:call_token,
           type:"join",
         })
-      ); */
+      ); 
 
       // let the caller know you have arrived so they can start the call
       signaling_server.send(
@@ -237,43 +236,47 @@ function new_description_created(description) {
 function caller_signal_handler(event) {
   var signal = JSON.parse(event.data);
   //alert(signal.type);
-  if (signal.type === "callee_arrived") {
+  if (signal != null && signal.type === "callee_arrived") {
     alert("Callee arrived. Please click ok to continue");
     peer_connection.createOffer(
       new_description_created, 
       log_error
     );
   } 
-  else if (signal.type === "new_ice_candidate") {
+  else if (signal != null && signal.type === "new_ice_candidate") {
     //alert("Click OK to continue. You need to do this a few times till the connection gets established.");
     peer_connection.addIceCandidate(
       new RTCIceCandidate(signal.candidate)
     );
   } 
-  else if (signal.type === "new_description") {
+  else if (signal != null && signal.type === "new_description") {
     //alert("Click OK to continue.");
     peer_connection.setRemoteDescription(
       new rtc_session_description(signal.sdp), 
       function () {
          // extend with your own custom answer handling here - Testing.
-         canvasel = document.getElementById('snapshot');
-         canvasel.srcObject = event.stream;
+         //canvasel = document.getElementById('snapshot');
+         //canvasel.srcObject = event.stream;
+         
       },
       log_error
     );
     if (peer_connection.remoteDescription.type == "answer") {
 	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
+	  document.getElementById("remote_video").play();
     }
   } 
   else {
     // extend with your own signal types here
-    alert(signal.type); 
+    //alert(signal.type); 
   }
 }
 
 // handle signals as a callee
 function callee_signal_handler(event) {
+  //alert("HIII");
   var signal = JSON.parse(event.data);
+  
   if (signal.type === "new_ice_candidate") {
     peer_connection.addIceCandidate(
       new RTCIceCandidate(signal.candidate)
@@ -366,8 +369,8 @@ function startCapture(){
   if (recordingPayerlist.length > 0){
     recordingPlayer = recordingPayerlist[0];
   }
-  var mimeType = 'video/webm';
-  //var mimeType = 'video/mp4';
+  //var mimeType = 'video/webm';
+  var mimeType = 'video/mp4';
   var button = document.captureinterview.btnstartcapture;
   
   if(button.innerHTML == "Start Recording"){
@@ -395,6 +398,7 @@ function startCapture(){
       alert("Media Capturing Failed: " + err);
     }
   };
+
 
 function captureAudioPlusVideo(config) {
   //alert("In captureAudio+Video");

@@ -3247,7 +3247,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		namewarn = document.getElementById('namewarning');
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    if(xmlhttp.responseText == '1'){
-			namewarn.innerHTML = "<font color='#AAAAAA' size=-1 face='verdana'>Available</font>";
+			namewarn.innerHTML = "<font color='#0000AA' size=-1 face='verdana'>Available</font>";
 		    }
 		    else{
 			namewarn.innerHTML = "<font color='#AA0000' size=-1 face='verdana'>NOT Available</font>";
@@ -4034,7 +4034,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			      searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 			  }
 			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
-			  if(jsondict['currpage'] < jsondict['last']){
+			  if(parseInt(jsondict['currpage']) < parseInt(jsondict['lastpage'])){
 			      searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcreators(" + jsondict['last'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 			  }
 			  searchhtml += "</ul></nav></div>";
@@ -4162,7 +4162,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
 		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
-		    if(jsondict['currpage'] < jsondict['lastpage']){
+		    if(parseInt(jsondict['currpage']) < parseInt(jsondict['lastpage'])){
 			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchevaluators(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul></nav></div>";
@@ -4271,7 +4271,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
 		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
-		    if(jsondict['currpage'] < jsondict['lastpage']){
+		    if(parseInt(jsondict['currpage']) < parseInt(jsondict['lastpage'])){
 			  searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchcandidates(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul></nav></div>";
@@ -4359,7 +4359,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			searchhtml += "<li class='page-item' style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(" + jsondict['prevpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>< Prev</a></li>";
 		    }
 		    searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(" + jsondict['nextpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-right:5px;padding-left:5px;'>Next ></a></li>";
-		    if(jsondict['currpage'] < jsondict['lastpage']){
+		    if(parseInt(jsondict['currpage']) < parseInt(jsondict['lastpage'])){
 			searchhtml += "<li class=\"page-item\" style='padding-right:5px;padding-left:5px;'><a href='#/' onclick=\"javascript:searchinterviewers(" + jsondict['lastpage'] + ");\" class=\"btn btn-testyard1\" style='font-size:medium;padding-left:5px;'>Last >></a></li>";
 		    }
 		    searchhtml += "</ul></nav></div>";
@@ -4486,11 +4486,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<form name='frmmaintests' id='frmmaintests' method='POST' action=''>
 			{% csrf_token %}
                         <ul class="tab testtabUl" >
-                          <li><a href="#/" class="tablinks active" onclick="openTab(event, 'testsascreator')" id="creatortab">Tests as Creator</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsasevaluator')" id="evaluatortab">Tests as Evaluator</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascandidate')" id="candidatetab">Tests as Candidate</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsconducted')" id="interviewertab">Interviews Conducted</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsattended')" id="intervieweetab">Interviews Attended</a></li>
+                          <li><a href="#/" class="tablinks active" onclick="openTab(event, 'testsascreator')" id="creatortab" style="color:#ffffff;">Tests as Creator</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsasevaluator')" id="evaluatortab" style="color:#ffffff;">Tests as Evaluator</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascandidate')" id="candidatetab" style="color:#ffffff;">Tests as Candidate</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsconducted')" id="interviewertab" style="color:#ffffff;">Interviews Conducted</a></li>
+                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsattended')" id="intervieweetab" style="color:#ffffff;">Interviews Attended</a></li>
                         </ul>
 			<div id='testsascreator' style="display:block" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
@@ -4871,6 +4871,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</div>
 			</span>
 		</div>
+
 		<script language='Javascript'>
 		// Making sure openTab is called on creatortab when the window loads.
 		 var evt = document.createEvent('Event');  
