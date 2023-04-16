@@ -209,6 +209,9 @@ function start() {
     //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
     document.captureinterview.btnstartcapture.disabled= true;
     //document.captureinterview.btnstopcapture.disabled= true;
+    document.getElementById("allow-webcam").enabled = true;
+    document.getElementById("allow-mic").enabled = true;
+    document.getElementById("allow-screen").enabled = true;
   }
 
 }
@@ -237,7 +240,9 @@ function caller_signal_handler(event) {
   var signal = JSON.parse(event.data);
   //alert(signal.type);
   if (signal != null && signal.type === "callee_arrived") {
-    alert("Callee arrived. Please click ok to continue");
+    //alert("Callee arrived. Please click ok to continue");
+    yn = confirm("Callee has arrived. Allow callee to join the call?");
+    if(!yn){ return (False); }
     peer_connection.createOffer(
       new_description_created, 
       log_error
@@ -262,6 +267,9 @@ function caller_signal_handler(event) {
       log_error
     );
     if (peer_connection.remoteDescription.type == "answer") {
+          document.getElementById("allow-webcam").enabled = true;
+          document.getElementById("allow-mic").enabled = true;
+          document.getElementById("allow-screen").enabled = true;
 	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
 	  document.getElementById("remote_video").play();
     }
@@ -299,6 +307,79 @@ function callee_signal_handler(event) {
 }
 
 </script>
+
+<style>
+.icon {
+    width: 50px;
+    height: 50px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+#allow-cam {
+    background-image: url('static/webrtc/images/webcam.png');
+}
+
+#allow-mic {
+    background-image: url('static/webrtc/images/microphone.png');
+}
+
+#allow-screen {
+    background-image: url('static/webrtc/images/screen.png');
+}
+</style>
+<!--
+<script>
+document.getElementById('#allow-webcam').onclick = function() {
+    this.disabled = true;
+
+    var session = { audio: true, video: true };
+
+    peer_connection.captureUserMedia(function(stream) {
+        var streamid = rtcMultiConnection.token();
+        rtcMultiConnection.customStreams[streamid] = stream;
+
+        rtcMultiConnection.sendMessage({
+            hasCamera: true,
+            streamid: streamid,
+            session: session
+        });
+    }, session);
+};
+
+document.getElementById('#allow-mic').onclick = function() {
+    this.disabled = true;
+    var session = { audio: true };
+
+    peer_connection.captureUserMedia(function(stream) {
+        var streamid = rtcMultiConnection.token();
+        rtcMultiConnection.customStreams[streamid] = stream;
+
+        rtcMultiConnection.sendMessage({
+            hasMic: true,
+            streamid: streamid,
+            session: session
+        });
+    }, session);
+};
+
+document.getElementById('#allow-screen').onclick = function() {
+    this.disabled = true;
+    var session = { screen: true };
+
+    peer_connection.captureUserMedia(function(stream) {
+        var streamid = rtcMultiConnection.token();
+        rtcMultiConnection.customStreams[streamid] = stream;
+
+        rtcMultiConnection.sendMessage({
+            hasScreen: true,
+            streamid: streamid,
+            session: session
+        });
+    }, session);
+};
+</script>
+-->
 <!--
 <script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
 <script src="https://cdn.webrtc-experiment.com/getScreenId.js"></script>
@@ -308,6 +389,12 @@ function callee_signal_handler(event) {
 <script src="static/webaudiovisual/webrtc/RecordRTC.js"></script>
 <script src="static/webaudiovisual/webrtc/getScreenId.js"></script>
 <script src="static/webaudiovisual/webrtc/gumadapter.js"></script>
+
+<!-- New interface code starts here -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!-- New interface code ends here -->
 
 <script>
 	    var params = {},r = /([^&=]+)=?([^&]*)/g;
@@ -784,6 +871,13 @@ html, body {
   </div>
   <div class="center">
     <input type='button' id="stopme" name= 'stopme' value='Stop Me' onclick="javascript:closewindow();" />
+  </div>
+  <br/>
+  <div class="controls">
+	<button id="allow-cam" class="icon" disabled title="Enable Your Webcam"></button>
+	<button id="allow-mic" class="icon" disabled title="Enable Your Microphone"></button>
+	<button id="allow-screen" class="icon" disabled title="Enable Your Screen"></button>
+	<!-- <button id="share-files" class="icon" disabled title="Select and Share Your Files"></button> -->
   </div>
   </form>
   </div>
