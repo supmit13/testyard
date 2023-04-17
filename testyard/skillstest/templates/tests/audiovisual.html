@@ -209,9 +209,9 @@ function start() {
     //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
     document.captureinterview.btnstartcapture.disabled= true;
     //document.captureinterview.btnstopcapture.disabled= true;
-    document.getElementById("allow-webcam").enabled = true;
-    document.getElementById("allow-mic").enabled = true;
-    document.getElementById("allow-screen").enabled = true;
+    document.getElementById("allow-webcam").disabled = false;
+    document.getElementById("allow-mic").disabled = false;
+    document.getElementById("allow-screen").disabled = false;
   }
 
 }
@@ -267,9 +267,9 @@ function caller_signal_handler(event) {
       log_error
     );
     if (peer_connection.remoteDescription.type == "answer") {
-          document.getElementById("allow-webcam").enabled = true;
-          document.getElementById("allow-mic").enabled = true;
-          document.getElementById("allow-screen").enabled = true;
+          document.getElementById("allow-webcam").disabled = false;
+          document.getElementById("allow-mic").disabled = false;
+          document.getElementById("allow-screen").disabled = false;
 	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
 	  document.getElementById("remote_video").play();
     }
@@ -800,6 +800,27 @@ margin: 0 auto;
 }
 </script>
 <style>
+
+@media screen and (min-width: 320px) and (max-width: 480px) { /* mobile phone screens */
+  #local_video {
+  position: absolute;
+  top: 100px;
+  left: 200px;
+  width: 160px;
+  height: 120px;
+  background: #333333;
+  }
+  #remote_video {
+  position: absolute;
+  top: 100px;
+  left: 200px;
+  width: 100%;
+  height: 50%;
+  background: #999999;
+  }
+}
+
+@media screen and (min-width: 768px) and (max-width: 1200px) { 
 html, body {
   padding: 0px;
   margin: 0px;
@@ -814,11 +835,12 @@ html, body {
   text-align: center;
 }
 #open_call_state {
+  display:block;
 }
 #local_video {
   position: absolute;
   top: 100px;
-  left: 100px;
+  left: 200px;
   width: 160px;
   height: 120px;
   background: #333333;
@@ -826,10 +848,11 @@ html, body {
 #remote_video {
   position: absolute;
   top: 100px;
-  left: 100px;
-  width: 70%;
+  left: 200px;
+  width: 60%;
   height: 70%;
   background: #999999;
+}
 }
 </style>
 <style>
@@ -856,8 +879,8 @@ html, body {
   <div id='msg'>
   </div>
   <div id="open_call_state" class="center">
-    <video id="remote_video"></video>
-    <video id="local_video" controls muted></video> 
+    <video id="remote_video" controls></video>
+    <video id="local_video" controls muted></video>
   </div>
   <br />
   <div align='center'>
@@ -869,16 +892,18 @@ html, body {
   <div class="center">
     <img id="photo" style="display:none;"/>
   </div>
+  <!--
+  <br/><hr style="top:750px;padding-bottom:120px;"><br/>
+  <div class="controls">
+	<button id="allow-cam" class="icon" title="Enable Your Webcam" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
+	<button id="allow-mic" class="icon" title="Enable Your Microphone" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
+	<button id="allow-screen" class="icon" title="Enable Your Screen" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
+  </div>
+  -->
   <div class="center">
     <input type='button' id="stopme" name= 'stopme' value='Stop Me' onclick="javascript:closewindow();" />
   </div>
-  <br/>
-  <div class="controls">
-	<button id="allow-cam" class="icon" disabled title="Enable Your Webcam"></button>
-	<button id="allow-mic" class="icon" disabled title="Enable Your Microphone"></button>
-	<button id="allow-screen" class="icon" disabled title="Enable Your Screen"></button>
-	<!-- <button id="share-files" class="icon" disabled title="Select and Share Your Files"></button> -->
-  </div>
+  
   </form>
   </div>
 </body>
