@@ -325,7 +325,7 @@ function callee_signal_handler(event) {
 }
 
 #allow-screen {
-    background-image: url('static/webrtc/images/screen.png');
+    background-image: url('static/webrtc/images/screen.svg');
 }
 </style>
 <!--
@@ -856,9 +856,6 @@ html, body {
 }
 </style>
 <style>
-.recordrtc button {
-    font-size: inherit;
-}
 
 .recordrtc button {
     vertical-align: middle;
@@ -867,6 +864,16 @@ html, body {
     height: auto;
     font-size: inherit;
     margin: 0;
+}
+
+.video-controls {
+  position: absolute;
+  left: 200px;
+  top: 65px;
+  font-weight: bold;
+  font-size: inherit;
+  white-space: no-wrap;
+  vertical-align:bottom;
 }
 </style>
 </head>
@@ -878,17 +885,22 @@ html, body {
   </div>
   <div id='msg'>
   </div>
+  
   <div id="open_call_state" class="center">
+    <div>
+    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;">&nbsp;&nbsp;<button id="allow-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"></button><button name='btnstartcapture' type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();'>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;" onclick="javascript:closewindow();" /></span>
+  </div>
+  <br/>
     <video id="remote_video" controls></video>
     <video id="local_video" controls muted></video>
   </div>
   <br />
   <div align='center'>
   <form name='captureinterview' id='captureinterview' method='POST'>
-  <button name='btnstartcapture' type='button' onClick='javascript:startCapture();'>Start Recording</button>
+  
   {% csrf_token %}
   <canvas id='snapshot' style="display:none;"></canvas>
-  <br /><hr><br />
+  <br /><br />
   <div class="center">
     <img id="photo" style="display:none;"/>
   </div>
@@ -900,10 +912,7 @@ html, body {
 	<button id="allow-screen" class="icon" title="Enable Your Screen" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
   </div>
   -->
-  <div class="center">
-    <input type='button' id="stopme" name= 'stopme' value='Stop Me' onclick="javascript:closewindow();" />
-  </div>
-  
+    
   </form>
   </div>
 </body>
