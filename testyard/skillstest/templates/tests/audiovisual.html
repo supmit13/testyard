@@ -135,8 +135,13 @@ function log_error(error) {
   console.log(error);
 }
 
-function enablestartcallbtn(){
-  document.getElementById('stopme').disabled = false;
+function enablestartcallbtn(elem){
+  if(elem.value.length > 0){
+    document.getElementById('stopme').disabled = false;
+  }
+  else{
+    document.getElementById('stopme').disabled = true;
+  }
 }
 
 function start() {
@@ -1004,7 +1009,7 @@ html, body {
   
   <div id="open_call_state" class="center">
     <div>
-    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn();">&nbsp;&nbsp;<button id="allow-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"></button><button name='btnstartcapture' type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();'>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
+    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="allow-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"></button><button name='btnstartcapture' type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();'>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
   </div>
   <br/>
     <video id="remote_video" controls></video>
