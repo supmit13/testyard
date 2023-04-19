@@ -17,7 +17,7 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
       rtc_peer_connection = webkitRTCPeerConnection;
   }
   else {
-  rtc_peer_connection = RTCPeerConnection;
+    rtc_peer_connection = RTCPeerConnection;
   }
   rtc_session_description = RTCSessionDescription;
   get_user_media = navigator.getUserMedia.bind(navigator);
@@ -230,6 +230,7 @@ function start() {
           document.getElementById('stopme').value = "Stop Me"
           document.getElementById('stopme').addEventListener( 'click', closewindow, false);
           document.getElementById('joinstatus').value = '1';
+          document.getElementById('btnstartcapture').disabled = false;
           start();
         }, false);
         return (false);
@@ -322,9 +323,6 @@ function start() {
       //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
       document.captureinterview.btnstartcapture.disabled= true;
       //document.captureinterview.btnstopcapture.disabled= true;
-      document.getElementById("allow-webcam").disabled = false;
-      document.getElementById("allow-mic").disabled = false;
-      document.getElementById("allow-screen").disabled = false;
     }
   }
 }
@@ -340,7 +338,8 @@ function new_description_created(description) {
         JSON.stringify({
           token:call_token,
           type:"new_description",
-          sdp:description 
+          sdp:description,
+          chatmessage: ""
         })
       );
     }, 
@@ -380,9 +379,6 @@ function caller_signal_handler(event) {
       log_error
     );
     if (peer_connection.remoteDescription.type == "answer") {
-          document.getElementById("allow-webcam").disabled = false;
-          document.getElementById("allow-mic").disabled = false;
-          document.getElementById("allow-screen").disabled = false;
 	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
 	  var isplaying = event.stream.currentTime > 0 && !event.stream.paused && !event.stream.ended && event.stream.readyState > event.stream.HAVE_CURRENT_DATA;
 	  if(!isplaying){
@@ -394,7 +390,20 @@ function caller_signal_handler(event) {
 	    }
 	  }
     }
-  } 
+  }
+  else if (signal != null && signal.type === "chat_message"){
+    //alert("Click OK to continue.");
+    chatlogdiv = document.getElementById("chatlogs");
+    chatmsglog = chatlogdiv.innerHTML;
+    chatmsglog = chatmsglog.replace("</ul>", "");
+    chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+    if(chatmsglogwithoutnl == ""){
+      chatmsglog = "<ul>\n";
+    }
+    chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
+    chatmsglog += "</ul>\n";
+    chatlogdiv.innerHTML = chatmsglog;
+  }
   else {
     // extend with your own signal types here
     //alert(signal.type); 
@@ -421,12 +430,67 @@ function callee_signal_handler(event) {
       },
       log_error
     );
+  }
+  else if (signal.type === "chat_message") {    
+        chatlogdiv = document.getElementById("chatlogs");
+        chatmsglog = chatlogdiv.innerHTML;
+        chatmsglog = chatmsglog.replace("</ul>", "");
+        chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+        if(chatmsglogwithoutnl == ""){
+          chatmsglog = "<ul>\n";
+        }
+        chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
+        chatmsglog += "</ul>\n";
+        chatlogdiv.innerHTML = chatmsglog;
   } 
   else {
     // extend with your own signal types here
   }
 }
 
+
+function sendchat(){
+  chattext = document.getElementById("chatbox").value;
+  //alert(chattext);
+  try{
+    signaling_server.send(
+      JSON.stringify({
+        token: call_token,
+        type: "chat_message",
+        chatmessage: chattext
+      })
+    );
+  }
+  catch(err){
+    console.log(err.message);
+  }
+  chatmsglog = document.getElementById("chatlogs").innerHTML;
+  document.getElementById("chatbox").value = "";
+  chatmsglog = chatmsglog.replace("</ul>", "");
+  chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+  if(chatmsglogwithoutnl == ""){
+    chatmsglog = "<ul>\n";
+  }
+  chatmsglog += "<li>" + chattext + "</li>\n";
+  chatmsglog += "</ul>\n";
+  document.getElementById("chatlogs").innerHTML = chatmsglog;
+}
+
+/* https://gist.github.com/Dornhoth/7560fb8ab49dc7cd1ac591839b22d066
+ document.getElementById('share-screen').addEventListener('click', async () => {
+    if (!displayMediaStream) {
+      displayMediaStream = await navigator.mediaDevices.getDisplayMedia();
+    }
+    connect_stream_to_src(displayMediaStream, document.getElementById("local_video"));
+    // add local camera stream to peer_connection ready to be sent to the remote peer
+    peer_connection.addStream(displayMediaStream);
+    //senders.find(sender => sender.track.kind === 'video').replaceTrack(displayMediaStream.getTracks()[0]);
+    
+    //hide the share button and display the "stop-sharing" one
+    document.getElementById('share-screen').style.display = 'none';
+    //document.getElementById('stop-share-screen').style.display = 'inline';
+  });
+*/
 </script>
 
 <style>
@@ -435,18 +499,6 @@ function callee_signal_handler(event) {
     height: 50px;
     background-repeat: no-repeat;
     background-position: center center;
-}
-
-#allow-cam {
-    background-image: url('static/webrtc/images/webcam.png');
-}
-
-#allow-mic {
-    background-image: url('static/webrtc/images/microphone.png');
-}
-
-#allow-screen {
-    background-image: url('static/webrtc/images/screen.svg');
 }
 </style>
 <!--
@@ -1009,12 +1061,12 @@ html, body {
   
   <div id="open_call_state" class="center">
     <div>
-    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="allow-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"></button><button name='btnstartcapture' type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();'>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
-  </div>
-  <br/>
+    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
+   </div>
+   <br/>
     <video id="remote_video" controls></video>
     <video id="local_video" controls muted></video>
-  </div>
+ </div>
   <br />
   <div align='center'>
   <form name='captureinterview' id='captureinterview' method='POST'>
@@ -1025,17 +1077,23 @@ html, body {
   <div class="center">
     <img id="photo" style="display:none;"/>
   </div>
-  <!--
-  <br/><hr style="top:750px;padding-bottom:120px;"><br/>
-  <div class="controls">
-	<button id="allow-cam" class="icon" title="Enable Your Webcam" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
-	<button id="allow-mic" class="icon" title="Enable Your Microphone" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
-	<button id="allow-screen" class="icon" title="Enable Your Screen" style="width:30px;height:30px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;"></button>
+  <fieldset style="position:absolute;border:2px solid #00a;color:#0000aa;background:#ccffff;left:200px;top:95%;width:65%;height:180px;text-align:left;padding-left:20px;vertical-align:bottom;overflow:auto;">
+  <legend style="font-weight:bold;font-size:medium;width:11%;">Chat Box</legend>
+  <div id="chatlogs">
+  <!-- Space for log of chat conversation -->
   </div>
-  -->
+  <div>
+  <textarea style="width:95%;background:#fff;" name='chatbox' id='chatbox' numrows=2 class="form-control"></textarea><br/>
+  <input type="button" name='chatsend' id='chatsend' value="Send" style="width:100px;color:#0000aa;" class="btn btn-testyard1" onclick="javascript:sendchat();">
+  </div>
+  </fieldset>
     <input type="hidden" name="joinstatus" id="joinstatus" value='0'>
   </form>
   </div>
+  <br/><center><hr style="position:absolute;top:140%;width:100%;height:5px;margin-left:auto;margin-right:auto;"></center><br/>
+  <footer style="position:absolute;top:150%;left:200px;">
+  Footer goes here.
+  </footer>
 </body>
 </html>
 
