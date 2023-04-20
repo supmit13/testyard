@@ -103,6 +103,10 @@ var call_token; // unique token for this call
 var signaling_server; // signaling server for this call
 var peer_connection; // peer connection object
 var okstatus = false;
+var datachannel;
+var rchannel;
+var callerflag = 0;
+var calleeflag = 0;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -197,6 +201,7 @@ function start() {
         return (false);
       }
     }
+    calleeflag = 1;
   }
   else{ // This is for the caller - "Stop Me" is initially called "Start Call"
     scrname = document.getElementById('screen_name').value;
@@ -236,6 +241,7 @@ function start() {
         return (false);
       }
     }
+    callerflag = 1;
   }
   // display remote video streams when they arrive using local <video> MediaElement
   peer_connection.onaddstream = function (event) {
@@ -260,6 +266,8 @@ function start() {
       var token = "{{hashtoken}}";
       call_token = "#"+token;
       document.location.hash = token;
+      datachannel = peer_connection.createDataChannel("send_data_channel", {reliable : true}); // Data channel is created by the caller only
+      datachannel.onmessage = caller_data_handler;
       //alert(document.location.hash);
       signaling_server.onopen = function() {
         signaling_server.onmessage = caller_signal_handler;
@@ -284,17 +292,14 @@ function start() {
           return (false);
         }
       }
-
       document.title = "Calling target... Please wait";
     }
   
-    if(matchres){
-    
+    if(matchres){ // This is callee
       call_token = document.location.hash;
       signaling_server.onopen = function() {
         // setup callee signal handler
         signaling_server.onmessage = callee_signal_handler;
-
         // tell the signaling server you have joined the call 
         try{
           signaling_server.send(
@@ -318,6 +323,7 @@ function start() {
           return (false);
         }
       }
+      peer_connection.ondatachannel = receivechannel;
 
       document.title = "Receiving the call...";
       //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
@@ -378,7 +384,8 @@ function caller_signal_handler(event) {
       },
       log_error
     );
-    if (peer_connection.remoteDescription.type == "answer") {
+    try{
+      if (peer_connection.remoteDescription.type == "answer") {
 	  connect_stream_to_src(event.stream, document.getElementById("remote_video"));
 	  var isplaying = event.stream.currentTime > 0 && !event.stream.paused && !event.stream.ended && event.stream.readyState > event.stream.HAVE_CURRENT_DATA;
 	  if(!isplaying){
@@ -389,20 +396,11 @@ function caller_signal_handler(event) {
 	      document.getElementById("remote_video").play(); // Just retry playing it
 	    }
 	  }
+      }
     }
-  }
-  else if (signal != null && signal.type === "chat_message"){
-    //alert("Click OK to continue.");
-    chatlogdiv = document.getElementById("chatlogs");
-    chatmsglog = chatlogdiv.innerHTML;
-    chatmsglog = chatmsglog.replace("</ul>", "");
-    chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
-    if(chatmsglogwithoutnl == ""){
-      chatmsglog = "<ul>\n";
+    catch(err){
+      console.log(err.message);
     }
-    chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
-    chatmsglog += "</ul>\n";
-    chatlogdiv.innerHTML = chatmsglog;
   }
   else {
     // extend with your own signal types here
@@ -431,35 +429,72 @@ function callee_signal_handler(event) {
       log_error
     );
   }
-  else if (signal.type === "chat_message") {    
-        chatlogdiv = document.getElementById("chatlogs");
-        chatmsglog = chatlogdiv.innerHTML;
-        chatmsglog = chatmsglog.replace("</ul>", "");
-        chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
-        if(chatmsglogwithoutnl == ""){
-          chatmsglog = "<ul>\n";
-        }
-        chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
-        chatmsglog += "</ul>\n";
-        chatlogdiv.innerHTML = chatmsglog;
-  } 
   else {
     // extend with your own signal types here
   }
 }
 
+function caller_data_handler(event){
+  var signal = JSON.parse(event.data);
+  //alert("caller " + signal.type);
+  if (signal.type === "chat_message"){
+    chatlogdiv = document.getElementById("chatlogs");
+    chatmsglog = chatlogdiv.innerHTML;
+    chatmsglog = chatmsglog.replace("</ul>", "");
+    chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+    if(chatmsglogwithoutnl == ""){
+      chatmsglog = "<ul>\n";
+    }
+    chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
+    chatmsglog += "</ul>\n";
+    chatlogdiv.innerHTML = chatmsglog;
+  }
+}
+
+function receivechannel(event){
+  rchannel = event.channel;
+  rchannel.onmessage = callee_data_handler;
+}
+
+function callee_data_handler(event){
+  var signal = JSON.parse(event.data);
+  //alert("callee " + signal.type)
+  if (signal.type === "chat_message"){
+    chatlogdiv = document.getElementById("chatlogs");
+    chatmsglog = chatlogdiv.innerHTML;
+    chatmsglog = chatmsglog.replace("</ul>", "");
+    chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+    if(chatmsglogwithoutnl == ""){
+      chatmsglog = "<ul>\n";
+    }
+    chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
+    chatmsglog += "</ul>\n";
+    chatlogdiv.innerHTML = chatmsglog;
+  }
+}
 
 function sendchat(){
   chattext = document.getElementById("chatbox").value;
-  //alert(chattext);
+  description = peer_connection.setLocalDescription();
   try{
-    signaling_server.send(
-      JSON.stringify({
-        token: call_token,
-        type: "chat_message",
-        chatmessage: chattext
-      })
-    );
+    if(callerflag == 1){
+      datachannel.send(
+        JSON.stringify({
+          token: call_token,
+          type: "chat_message",
+          chatmessage: chattext
+        })
+      );
+    }
+    else if(calleeflag == 1){
+      rchannel.send(
+        JSON.stringify({
+          token: call_token,
+          type: "chat_message",
+          chatmessage: chattext
+        })
+      );
+    }
   }
   catch(err){
     console.log(err.message);
