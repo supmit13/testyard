@@ -434,7 +434,6 @@ function callee_signal_handler(event) {
 
 function caller_data_handler(event){
   var signal = JSON.parse(event.data);
-  //alert("caller " + signal.type);
   if (signal.type === "chat_message"){
     sendername = signal.name;
     chatlogdiv = document.getElementById("chatlogs");
@@ -457,7 +456,6 @@ function receivechannel(event){
 
 function callee_data_handler(event){
   var signal = JSON.parse(event.data);
-  //alert("callee " + signal.type)
   if (signal.type === "chat_message"){
     sendername = signal.name;
     chatlogdiv = document.getElementById("chatlogs");
@@ -1121,7 +1119,7 @@ html, body {
   <!-- Space for log of chat conversation -->
   </div>
   <div>
-  <textarea style="width:95%;background:#fff;" name='chatbox' id='chatbox' numrows=2 class="form-control"></textarea><br/>
+  <textarea style="width:95%;background:#fff;" name='chatbox' id='chatbox' numrows=2 class="form-control"></textarea><span style="white-space: nowrap;"><input type="file" name="fileattachment" id="fileattachment" value="" style="padding-right:10px;padding-top:5px;padding-bottom:5px;" multiple><span style="color:#aa0000;font-size:small;text-align:left;">Upto 10 files and a max limit of 25MB may be chosen.</span></span><br/>
   <input type="button" name='chatsend' id='chatsend' value="Send" style="width:100px;color:#0000aa;" class="btn btn-testyard1" onclick="javascript:sendchat();">
   </div>
   </fieldset>
