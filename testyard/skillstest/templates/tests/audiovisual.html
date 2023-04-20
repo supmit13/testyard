@@ -22,7 +22,6 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
   rtc_session_description = RTCSessionDescription;
   get_user_media = navigator.getUserMedia.bind(navigator);
   connect_stream_to_src = function(media_stream, media_element) {
-    // https://www.w3.org/Bugs/Public/show_bug.cgi?id=21606
     media_element.srcObject = media_stream;
     var isplaying = media_stream.currentTime > 0 && !media_stream.paused && !media_stream.ended && media_stream.readyState > media_stream.HAVE_CURRENT_DATA;
     if(!isplaying){
@@ -250,8 +249,7 @@ function start() {
   peer_connection.onaddstream = function (event) {
     if(scrname.trim() != ""){
       connect_stream_to_src(event.stream, document.getElementById("remote_video"));
-      // hide placeholder and show remote video
-      //document.getElementById("loading_state").style.display = "none";
+      // show remote video
       document.getElementById("open_call_state").style.display = "block";
     }
   };
@@ -261,8 +259,6 @@ function start() {
     setup_video();
     document.getElementById('stopme').value = "Stop Me"
     document.getElementById('stopme').addEventListener( 'click', closewindow, false);
-    //signaling_server = new WebSocket("wss://54.201.126.160:8888");
-    //signaling_server = new WebSocket("wss://122.161.84.190:8888"); // My system IP on the internet.
     signaling_server = new WebSocket("wss://{{signal_server}}");
     //signaling_server = new WebSocket("wss://testyard.in:8888");
     if (document.location.hash === "" || document.location.hash === undefined || document.location.hash === "#/") { // you are the Caller
@@ -271,7 +267,6 @@ function start() {
       document.location.hash = token;
       datachannel = peer_connection.createDataChannel("send_data_channel", {reliable : true}); // Data channel is created by the caller only
       datachannel.onmessage = caller_data_handler;
-      //alert(document.location.hash);
       signaling_server.onopen = function() {
         signaling_server.onmessage = caller_signal_handler;
         try{
@@ -329,7 +324,6 @@ function start() {
       peer_connection.ondatachannel = receivechannel;
 
       document.title = "Receiving the call...";
-      //document.getElementById("loading_state").innerHTML = "One moment please...connecting your call...";
       document.captureinterview.btnstartcapture.disabled= true;
       //document.captureinterview.btnstopcapture.disabled= true;
     }
@@ -446,7 +440,6 @@ function attachfiles(event){
     };
     readslice(0);
   } // forloop ends here.
-    
 }
 
 function sendfile(fname, fid, fsize, evresult){
@@ -505,9 +498,7 @@ function new_description_created(description) {
 // handle signals as a caller
 function caller_signal_handler(event) {
   var signal = JSON.parse(event.data);
-  //alert(signal.type);
   if (signal != null && signal.type === "callee_arrived") {
-    //alert("Callee arrived. Please click ok to continue");
     yn = confirm(signal.name + " has arrived. Allow " + signal.name + " to join the call?");
     if(!yn){ return (False); }
     peer_connection.createOffer(
@@ -516,20 +507,17 @@ function caller_signal_handler(event) {
     );
   } 
   else if (signal != null && signal.type === "new_ice_candidate") {
-    //alert("Click OK to continue. You need to do this a few times till the connection gets established.");
     peer_connection.addIceCandidate(
       new RTCIceCandidate(signal.candidate)
     );
   } 
   else if (signal != null && signal.type === "new_description") {
-    //alert("Click OK to continue.");
     peer_connection.setRemoteDescription(
       new rtc_session_description(signal.sdp), 
       function () {
-         // extend with your own custom answer handling here - Testing.
+         // extend with own custom answer handling here - Testing.
          //canvasel = document.getElementById('snapshot');
          //canvasel.srcObject = event.stream;
-         
       },
       log_error
     );
@@ -553,7 +541,6 @@ function caller_signal_handler(event) {
   }
   else {
     // extend other signal types here
-    //alert(signal.type); 
   }
 }
 
@@ -733,61 +720,7 @@ function sendchat(){
     background-repeat: no-repeat;
     background-position: center center;
 }
-
-
 </style>
-<!--
-<script>
-document.getElementById('#allow-webcam').onclick = function() {
-    this.disabled = true;
-
-    var session = { audio: true, video: true };
-
-    peer_connection.captureUserMedia(function(stream) {
-        var streamid = rtcMultiConnection.token();
-        rtcMultiConnection.customStreams[streamid] = stream;
-
-        rtcMultiConnection.sendMessage({
-            hasCamera: true,
-            streamid: streamid,
-            session: session
-        });
-    }, session);
-};
-
-document.getElementById('#allow-mic').onclick = function() {
-    this.disabled = true;
-    var session = { audio: true };
-
-    peer_connection.captureUserMedia(function(stream) {
-        var streamid = rtcMultiConnection.token();
-        rtcMultiConnection.customStreams[streamid] = stream;
-
-        rtcMultiConnection.sendMessage({
-            hasMic: true,
-            streamid: streamid,
-            session: session
-        });
-    }, session);
-};
-
-document.getElementById('#allow-screen').onclick = function() {
-    this.disabled = true;
-    var session = { screen: true };
-
-    peer_connection.captureUserMedia(function(stream) {
-        var streamid = rtcMultiConnection.token();
-        rtcMultiConnection.customStreams[streamid] = stream;
-
-        rtcMultiConnection.sendMessage({
-            hasScreen: true,
-            streamid: streamid,
-            session: session
-        });
-    }, session);
-};
-</script>
--->
 
 <script src="static/webaudiovisual/webrtc/RecordRTC.js"></script>
 <script src="static/webaudiovisual/webrtc/getScreenId.js"></script>
@@ -1162,7 +1095,6 @@ function uploadInterviewData(data, type){
     if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 	upload_record_div = document.getElementById('upload_record');
 	upload_record_div.innerHTML = "";
-        //alert(xmlhttp.responseText);
     }
 	win = window.open("","evaluationwindow", "width=400, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=yes, resizable=no, toolbar=no, status=no");
 	win.document.write(xmlhttp.responseText);
@@ -1202,6 +1134,7 @@ function takepicture(canvas) {
 margin: 0 auto;
 }
 </script>
+
 <style>
 
 @media screen and (min-width: 320px) and (max-width: 480px) { /* mobile phone screens */
