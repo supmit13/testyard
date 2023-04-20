@@ -107,6 +107,9 @@ var datachannel;
 var rchannel;
 var callerflag = 0;
 var calleeflag = 0;
+var file_store = [];
+var receivebuffer = [];
+var receivedsize = 0;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -331,9 +334,155 @@ function start() {
       //document.captureinterview.btnstopcapture.disabled= true;
     }
   }
+  
+  if(!(window.File && window.FileReader && window.FileList && window.Blob)){
+    document.getElementById('attachlink').style.display = "none";
+    document.getElementById('limitmg').innerHTML = "File sharing is not supported on this system";
+    document.getElementById('limitmg').style.color = "#aa0000";
+  }
+  else{ // Initialize file sharing vars and register the event handlers
+    document.getElementById('fileattachment').addEventListener("change", attachfiles, false);
+    document.getElementById('chatcontrols').addEventListener("dragover", drag_over, false);
+    document.getElementById('chatcontrols').addEventListener("drop", attachfiles, false);
+  }
 }
 
 /* functions used above are defined below */
+// Clicking on the file attach link will cause a click to happen on the file input button. 
+function click_fileattachment(event){
+  document.getElementById('fileattachment').click();
+}
+
+function attachfiles(event){
+  // Check whether user drag-dropped the files
+  event.stopPropagation(); 
+  event.preventDefault();
+  fileslist = undefined;
+  if (event.dataTransfer != undefined && event.dataTransfer.files !== undefined){
+    fileslist = event.dataTransfer.files; // User drag-dropped files.
+  }
+  else{ // User selected the files from the file dialog box.
+    fileslist = event.target.files;
+  }
+  sendprogress = document.getElementById('sendprogressbar');
+  if(fileslist.length > 10){
+    document.getElementById('limitmsg').innerHTML = "You may upload 10 files only at a time";
+    document.getElementById('limitmsg').style.color = "#aa0000";
+    return (false);
+  }
+  maxsize = 25000000; // 25 MB max size allowed
+  fsize = 0;
+  fnames = "";
+  for(var i=0; i < fileslist.length; i++){
+    fsize += fileslist[i].size;
+    fnames += fileslist[i].name + ",";
+  }
+  fnames = fnames.replace(/\,$/g, "");
+  if(fsize > maxsize){
+    document.getElementById('limitmsg').innerHTML = "Size exceeded the max size limit of 25 MB";
+    document.getElementById('limitmsg').style.color = "#aa0000";
+    return (false);
+  }
+  // All restrictions have been enforced now. So we will process the files now.
+  scrname = document.getElementById('screen_name').value;
+  filemessage = "Sending files - " + fnames + "\nTotal Size (KB): " + (fsize/1024).toFixed(1);
+  if(callerflag == 1){
+    datachannel.send(
+      JSON.stringify({
+        token: call_token,
+        type: "chat_message",
+        chatmessage: filemessage,
+        name: scrname
+      })
+    );
+  }
+  else if(calleeflag == 1){
+    rchannel.send(
+      JSON.stringify({
+        token: call_token,
+        type: "chat_message",
+        chatmessage: filemessage,
+        name: scrname
+      })
+    );
+  }
+  // Add this message to the local chat log
+  chatmsglog = document.getElementById("chatlogs").innerHTML;
+  document.getElementById("chatbox").value = "";
+  chatmsglog = chatmsglog.replace("</ul>", "");
+  chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+  if(chatmsglogwithoutnl == ""){
+    chatmsglog = "<ul>\n";
+  }
+  chatmsglog += "<li style='color:#0000aa;'>" + filemessage + "</li>\n";
+  chatmsglog += "</ul>\n";
+  document.getElementById("chatlogs").innerHTML = chatmsglog;
+  // Next, we send the files
+  idlist = new Array();
+  for(var j=0;j < fileslist.length; j++){
+    idlist.push(j);
+  }
+  let offset = 0;
+  sendprogress.max = fsize;
+  const chunksize = 16384;
+  for(var i=0; i < fileslist.length; i++){
+    fileobj = fileslist[i];
+    id = idlist[i];
+    var reader = new FileReader();
+    reader.onload = (function (fileobj, id){
+      return function(e){
+        filesize = fileobj.size;
+        sendfile(fileobj.name, id, filesize, e.target.result);
+        offset += e.target.result.byteLength;
+        sendprogress.value = offset;
+        if(offset < fileobj.size){
+          readslice(offset);
+        }
+      }
+    })(fileobj, id);
+    const readslice = o => {
+      const slice = fileobj.slice(offset, o + chunksize);
+      reader.readAsArrayBuffer(slice);
+    };
+    readslice(0);
+  } // forloop ends here.
+    
+}
+
+function sendfile(fname, fid, fsize, evresult){
+  scrname = document.getElementById('screen_name').value;
+  if(callerflag == 1){
+    datachannel.send(
+      JSON.stringify({
+        token: call_token,
+        type: "file_chunk",
+        filechunk: evresult,
+        name: scrname,
+        filename: fname,
+        chunklength: evresult.byteLength,
+        filesize: fsize
+      })
+    );
+  }
+  else if(calleeflag == 1){
+    rchannel.send(
+      JSON.stringify({
+        token: call_token,
+        type: "file_chunk",
+        filechunk: evresult,
+        name: scrname,
+        filename: fname,
+        chunklength: evresult.byteLength,
+        filesize: fsize
+      })
+    );
+  }
+}
+
+function drag_over(event){
+  event.stopPropagation();
+  event.preventDefault(); // Should not load the file in the window.
+}
 
 // handler to process new descriptions
 function new_description_created(description) {
@@ -403,7 +552,7 @@ function caller_signal_handler(event) {
     }
   }
   else {
-    // extend with your own signal types here
+    // extend other signal types here
     //alert(signal.type); 
   }
 }
@@ -428,7 +577,7 @@ function callee_signal_handler(event) {
     );
   }
   else {
-    // extend with your own signal types here
+    // extend other signal types here
   }
 }
 
@@ -446,6 +595,30 @@ function caller_data_handler(event){
     chatmsglog += "<li style='color:#00aa00;'>" + sendername + ": " + signal.chatmessage + "</li>\n";
     chatmsglog += "</ul>\n";
     chatlogdiv.innerHTML = chatmsglog;
+  }
+  else if(signal.type === "file_chunk"){
+    filename = signal.filename;
+    filesize = signal.filesize;
+    sendername = signal.name;
+    receivebuffer.push(signal.filechunk);
+    receivedsize += signal.chunklength;
+    if(receivedsize === filesize){ // We have received the entire file.
+      const received = new Blob(receivebuffer);
+      receivebuffer = [];
+      receivedsize = 0;
+      href = URL.createObjectURL(received);
+      download = filename;
+      chatlogdiv = document.getElementById("chatlogs");
+      chatmsglog = chatlogdiv.innerHTML;
+      chatmsglog = chatmsglog.replace("</ul>", "");
+      chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+      if(chatmsglogwithoutnl == ""){
+        chatmsglog = "<ul>\n";
+      }
+      chatmsglog += "<li style='color:#00aa00;'>" + sendername + ": <a href='" + href + "' download='" + download + "'> Click to download '" + filename + "' (" + filesize + " bytes)</a></li>\n";
+      chatmsglog += "</ul>\n";
+      chatlogdiv.innerHTML = chatmsglog;
+    }
   }
 }
 
@@ -468,6 +641,30 @@ function callee_data_handler(event){
     chatmsglog += "<li style='color:#00aa00;'>" + sendername + ": " + signal.chatmessage + "</li>\n";
     chatmsglog += "</ul>\n";
     chatlogdiv.innerHTML = chatmsglog;
+  }
+  else if(signal.type === "file_chunk"){
+    filename = signal.filename;
+    filesize = signal.filesize;
+    sendername = signal.name;
+    receivebuffer.push(signal.filechunk);
+    receivedsize += signal.chunklength;
+    if(receivedsize === filesize){ // We have received the entire file.
+      const received = new Blob(receivebuffer);
+      receivebuffer = [];
+      receivedsize = 0;
+      href = URL.createObjectURL(received);
+      download = filename;
+      chatlogdiv = document.getElementById("chatlogs");
+      chatmsglog = chatlogdiv.innerHTML;
+      chatmsglog = chatmsglog.replace("</ul>", "");
+      chatmsglogwithoutnl = chatmsglog.replace(/\\n/g, "");
+      if(chatmsglogwithoutnl == ""){
+        chatmsglog = "<ul>\n";
+      }
+      chatmsglog += "<li style='color:#00aa00;'>" + sendername + ": <a href='" + href + "' download='" + download + "'> Click to download '" + filename + "' (" + filesize + " bytes)</a></li>\n";
+      chatmsglog += "</ul>\n";
+      chatlogdiv.innerHTML = chatmsglog;
+    }
   }
 }
 
@@ -536,6 +733,8 @@ function sendchat(){
     background-repeat: no-repeat;
     background-position: center center;
 }
+
+
 </style>
 <!--
 <script>
@@ -588,11 +787,6 @@ document.getElementById('#allow-screen').onclick = function() {
     }, session);
 };
 </script>
--->
-<!--
-<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
-<script src="https://cdn.webrtc-experiment.com/getScreenId.js"></script>
-<script src="https://cdn.webrtc-experiment.com/gumadapter.js"></script>
 -->
 
 <script src="static/webaudiovisual/webrtc/RecordRTC.js"></script>
@@ -1084,6 +1278,20 @@ html, body {
   white-space: no-wrap;
   vertical-align:bottom;
 }
+
+.button {
+    display: block;
+    width: 165px;
+    height: 35px;
+    background: #4E9CAF;
+    padding-left: 5px;
+    padding-right: 5px;
+    text-align: center;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+    line-height: 25px;
+}
 </style>
 </head>
 <body onload="start()" onbeforeunload="stopCapture();"> 
@@ -1119,8 +1327,8 @@ html, body {
   <!-- Space for log of chat conversation -->
   </div>
   <div>
-  <textarea style="width:95%;background:#fff;" name='chatbox' id='chatbox' numrows=2 class="form-control"></textarea><span style="white-space: nowrap;"><input type="file" name="fileattachment" id="fileattachment" value="" style="padding-right:10px;padding-top:5px;padding-bottom:5px;" multiple><span style="color:#aa0000;font-size:small;text-align:left;">Upto 10 files and a max limit of 25MB may be chosen.</span></span><br/>
-  <input type="button" name='chatsend' id='chatsend' value="Send" style="width:100px;color:#0000aa;" class="btn btn-testyard1" onclick="javascript:sendchat();">
+  <span  style="padding-bottom:5px;width:100%;" id="chatcontrols"><textarea style="width:95%;background:#fff;border:1px solid #aaa;border-radius:5px;" name='chatbox' id='chatbox' numrows=2 class="form-control"></textarea></span><span style="white-space:nowrap;padding-top:5px;padding-left:15px;padding-right:10px;font-size:small;width:100%;" class="row" id="filesharing"><input type="file" name="fileattachment" id="fileattachment" value="" style="padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;display:none;" multiple><input type="button" name='chatsend' id='chatsend' value="Send" style="width:100px;color:#ffffff;font-size:small;font-weight:bold;padding-left:5px;padding-right:10px;" class="btn btn-primary" onclick="javascript:sendchat();">&nbsp;&nbsp;<a href="#/" class="button" style="white-space: nowrap;color:#0000aa;font-size:small;text-align:left;padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;text-align:center;" id="attachlink" onclick="javascript:click_fileattachment();">Click or Drag to Attach</a>&nbsp;&nbsp;<span style="vertical-align:middle;padding-top:8px;" id="limitmsg">Upto 10 files and a max total size limit of 25 MB may be chosen.</span></span><br/>
+   <progress id="sendprogressbar" max="0" value="0"></progress>
   </div>
   </fieldset>
     <input type="hidden" name="joinstatus" id="joinstatus" value='0'>
