@@ -410,9 +410,7 @@ function caller_signal_handler(event) {
 
 // handle signals as a callee
 function callee_signal_handler(event) {
-  //alert("HIII");
   var signal = JSON.parse(event.data);
-  
   if (signal.type === "new_ice_candidate") {
     peer_connection.addIceCandidate(
       new RTCIceCandidate(signal.candidate)
@@ -438,6 +436,7 @@ function caller_data_handler(event){
   var signal = JSON.parse(event.data);
   //alert("caller " + signal.type);
   if (signal.type === "chat_message"){
+    sendername = signal.name;
     chatlogdiv = document.getElementById("chatlogs");
     chatmsglog = chatlogdiv.innerHTML;
     chatmsglog = chatmsglog.replace("</ul>", "");
@@ -445,7 +444,7 @@ function caller_data_handler(event){
     if(chatmsglogwithoutnl == ""){
       chatmsglog = "<ul>\n";
     }
-    chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
+    chatmsglog += "<li style='color:#00aa00;'>" + sendername + ": " + signal.chatmessage + "</li>\n";
     chatmsglog += "</ul>\n";
     chatlogdiv.innerHTML = chatmsglog;
   }
@@ -460,6 +459,7 @@ function callee_data_handler(event){
   var signal = JSON.parse(event.data);
   //alert("callee " + signal.type)
   if (signal.type === "chat_message"){
+    sendername = signal.name;
     chatlogdiv = document.getElementById("chatlogs");
     chatmsglog = chatlogdiv.innerHTML;
     chatmsglog = chatmsglog.replace("</ul>", "");
@@ -467,7 +467,7 @@ function callee_data_handler(event){
     if(chatmsglogwithoutnl == ""){
       chatmsglog = "<ul>\n";
     }
-    chatmsglog += "<li>" + signal.chatmessage + "</li>\n";
+    chatmsglog += "<li style='color:#00aa00;'>" + sendername + ": " + signal.chatmessage + "</li>\n";
     chatmsglog += "</ul>\n";
     chatlogdiv.innerHTML = chatmsglog;
   }
@@ -475,6 +475,7 @@ function callee_data_handler(event){
 
 function sendchat(){
   chattext = document.getElementById("chatbox").value;
+  scrname = document.getElementById("screen_name").value;
   description = peer_connection.setLocalDescription();
   try{
     if(callerflag == 1){
@@ -482,7 +483,8 @@ function sendchat(){
         JSON.stringify({
           token: call_token,
           type: "chat_message",
-          chatmessage: chattext
+          chatmessage: chattext,
+          name: scrname
         })
       );
     }
@@ -491,7 +493,8 @@ function sendchat(){
         JSON.stringify({
           token: call_token,
           type: "chat_message",
-          chatmessage: chattext
+          chatmessage: chattext,
+          name: scrname
         })
       );
     }
@@ -506,7 +509,7 @@ function sendchat(){
   if(chatmsglogwithoutnl == ""){
     chatmsglog = "<ul>\n";
   }
-  chatmsglog += "<li>" + chattext + "</li>\n";
+  chatmsglog += "<li style='color:#0000aa;'>" + chattext + "</li>\n";
   chatmsglog += "</ul>\n";
   document.getElementById("chatlogs").innerHTML = chatmsglog;
 }
