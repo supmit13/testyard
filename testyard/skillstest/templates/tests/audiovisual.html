@@ -2,6 +2,7 @@
 <html>
 <head>
 <script src='/static/javascript/pageutils.js' type='text/javascript'></script>
+
 <script>
 
 var webrtc_capable = true;
@@ -696,6 +697,11 @@ function sendchat(){
   document.getElementById("chatlogs").innerHTML = chatmsglog;
 }
 
+
+function sharescreen(){
+  //alert("hhhhh");
+}
+
 /* https://gist.github.com/Dornhoth/7560fb8ab49dc7cd1ac591839b22d066
  document.getElementById('share-screen').addEventListener('click', async () => {
     if (!displayMediaStream) {
@@ -824,13 +830,11 @@ function startCapture(){
 
 
 function captureAudioPlusVideo(config) {
-  //alert("In captureAudio+Video");
   captureUserMedia({video: true, audio: true}, function() {
   remote_player = document.getElementById('remote_video');
   audioVideoStream = remote_player.srcObject;
   remote_player.play();
   config.onMediaCaptured(audioVideoStream);
-  //alert("audioVideoStream = " + audioVideoStream);
   addStreamStopListener(audioVideoStream, function() {
     config.onMediaStopped();
   });
@@ -1191,6 +1195,7 @@ html, body {
 }
 }
 </style>
+
 <style>
 
 .recordrtc button {
@@ -1228,17 +1233,19 @@ html, body {
 </style>
 </head>
 <body onload="start()" onbeforeunload="stopCapture();"> 
+  
+  <p style="text-align:center;display:block;background-color:#17a2b8;color:#ffffff;font-size:large;font-weight:bold;height:30px;">TestYard Audiovisual Interview - {{interviewtitle}}</p> 
+
   <div id="loading_state">
     loading... 
   </div>
   <div id='upload_record'>
   </div>
   <div id='msg'>
-  </div>
-  
+  </div>  
   <div id="open_call_state" class="center">
     <div>
-    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
+    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;" onclick="javascript:sharescreen();"><img src="/static/webrtc/images/screen.svg" style="width:20px;height:20px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
    </div>
    <br/>
     <video id="remote_video" controls></video>
