@@ -110,6 +110,7 @@ var calleeflag = 0;
 var file_store = [];
 var receivebuffer = [];
 var receivedsize = 0;
+var displaymediastream = null;
 
 function sleep(milliseconds) {
   var start = new Date().getTime();
@@ -346,6 +347,8 @@ function start() {
     document.getElementById('chatcontrols').addEventListener("dragover", drag_over, false);
     document.getElementById('chatcontrols').addEventListener("drop", attachfiles, false);
   }
+  // Screen share related code
+  document.getElementById('share-screen').onclick = sharescreen;
 }
 
 /* functions used above are defined below */
@@ -710,8 +713,40 @@ function sendchat(){
 }
 
 
-function sharescreen(){
-  //alert("hhhhh");
+async function sharescreen(event){
+  // First, we need to request access from the  user
+  if (!displaymediastream) {
+    displaymediastream = await navigator.mediaDevices.getDisplayMedia({ video:true, audio: true, cursor: 'always' });
+  }
+  // Need to replace the video channel with the stream for the screen. Audio remains unchanged.
+  document.getElementById("local_video").srcObject = displaymediastream;
+  peer_connection.addStream(displaymediastream);
+  try{
+    document.getElementById("local_video").play();
+  }
+  catch(err){
+    console.log(err.message);
+    document.getElementById("local_video").play();
+  }
+  
+  /*
+  videotrack = displaymediastream.getTracks()[0];
+  for(trctr=0; trctr < event.stream.getTracks().length; trctr++){
+    if(event.stream.track.kind === 'video'){
+      event.stream.track.replaceTrack(videotrack);
+      break;
+    }
+  }
+  */
+  document.getElementById('share-screen').onclick = stopscreenshare;
+  document.getElementById('share-screen').innerHTML = "<img src='/static/webrtc/images/stop-screen-share-01.svg'>";
+}
+
+
+async function stopscreenshare(){
+  
+  document.getElementById('share-screen').onclick = sharescreen;
+  document.getElementById('share-screen').innerHTML = "<img src='/static/webrtc/images/screen.svg'>";
 }
 
 /* https://gist.github.com/Dornhoth/7560fb8ab49dc7cd1ac591839b22d066
@@ -1257,7 +1292,7 @@ html, body {
   </div>  
   <div id="open_call_state" class="center">
     <div>
-    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;" onclick="javascript:sharescreen();"><img src="/static/webrtc/images/screen.svg" style="width:20px;height:20px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
+    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;"><img src="/static/webrtc/images/screen.svg" style="width:20px;height:20px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;radius:4px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;radius:4px;"/></span>
    </div>
    <br/>
     <video id="remote_video" controls></video>
