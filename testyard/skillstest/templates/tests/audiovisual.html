@@ -209,24 +209,7 @@ function start() {
   else{ // This is for the caller - "Stop Me" is initially called "Start Call"
     scrname = document.getElementById('screen_name').value;
     if(document.getElementById('joinstatus').value == '0'){
-      document.getElementById('stopme').value = "Start Call";
-      if(scrname == ""){
-        document.getElementById('stopme').disabled = true;
-      }
-      else{
-        document.getElementById('stopme').disabled = false;
-      }
-      document.getElementById('stopme').addEventListener( 'click', function ( event ) {
-        document.getElementById('joinstatus').value = '1';
-        start();
-      }, false);
-      return (false);
-    }
-    else{
-      scrname = document.getElementById('screen_name').value;
-      if(document.getElementById('joinstatus').value == '1' && scrname.trim() == ""){
-        alert("Screen name cannot be empty");
-        document.getElementById('joinstatus').value = '0'; // Make it 0 again
+      if(document.getElementById('stopme') !== undefined){
         document.getElementById('stopme').value = "Start Call";
         if(scrname == ""){
           document.getElementById('stopme').disabled = true;
@@ -235,12 +218,33 @@ function start() {
           document.getElementById('stopme').disabled = false;
         }
         document.getElementById('stopme').addEventListener( 'click', function ( event ) {
-          document.getElementById('stopme').value = "Stop Me"
-          document.getElementById('stopme').addEventListener( 'click', closewindow, false);
           document.getElementById('joinstatus').value = '1';
-          document.getElementById('btnstartcapture').disabled = false;
           start();
         }, false);
+      }
+      return (false);
+    }
+    else{
+      scrname = document.getElementById('screen_name').value;
+      if(document.getElementById('joinstatus').value == '1' && scrname.trim() == ""){
+        alert("Screen name cannot be empty");
+        document.getElementById('joinstatus').value = '0'; // Make it 0 again
+        if(document.getElementById('stopme') !== undefined){
+          document.getElementById('stopme').value = "Start Call";
+          if(scrname == ""){
+            document.getElementById('stopme').disabled = true;
+          }
+          else{
+            document.getElementById('stopme').disabled = false;
+          }
+          document.getElementById('stopme').addEventListener( 'click', function ( event ) {
+            document.getElementById('stopme').value = "Stop Me"
+            document.getElementById('stopme').addEventListener( 'click', closewindow, false);
+            document.getElementById('joinstatus').value = '1';
+            document.getElementById('btnstartcapture').disabled = false;
+            start();
+          }, false);
+        }
         return (false);
       }
     }
@@ -325,7 +329,9 @@ function start() {
       peer_connection.ondatachannel = receivechannel;
 
       document.title = "Receiving the call...";
-      document.captureinterview.btnstartcapture.disabled= true;
+      if(document.captureinterview.btnstartcapture !== undefined){
+        document.captureinterview.btnstartcapture.disabled= true;
+      }
       //document.captureinterview.btnstopcapture.disabled= true;
     }
   }
@@ -436,8 +442,14 @@ function attachfiles(event){
       }
     })(fileobj, id);
     const readslice = o => {
-      const slice = fileobj.slice(offset, o + chunksize);
-      reader.readAsArrayBuffer(slice);
+      if(o + chunksize > fileobj.size){
+        const slice = fileobj.slice(offset, fileobj.size);
+        reader.readAsArrayBuffer(slice);
+      }
+      else{
+        const slice = fileobj.slice(offset, o + chunksize);
+        reader.readAsArrayBuffer(slice);
+      }      
     };
     readslice(0);
   } // forloop ends here.
