@@ -728,12 +728,11 @@ async function sharescreen(event){
     console.log(err.message);
     document.getElementById("local_video").play();
   }
-  
   /*
   videotrack = displaymediastream.getTracks()[0];
   for(trctr=0; trctr < event.stream.getTracks().length; trctr++){
-    if(event.stream.track.kind === 'video'){
-      event.stream.track.replaceTrack(videotrack);
+    if(event.stream.getTracks()[trctr].kind === 'video'){
+      event.stream.getTracks()[trctr].replaceTrack(videotrack);
       break;
     }
   }
@@ -744,7 +743,7 @@ async function sharescreen(event){
 
 
 async function stopscreenshare(){
-  
+  setup_video(); // Revert back to webcam stream
   document.getElementById('share-screen').onclick = sharescreen;
   document.getElementById('share-screen').innerHTML = "<img src='/static/webrtc/images/screen.svg'>";
 }
