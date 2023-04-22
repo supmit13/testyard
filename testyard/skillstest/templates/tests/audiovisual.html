@@ -259,7 +259,6 @@ function start() {
       document.getElementById("open_call_state").style.display = "block";
     }
   };
-
   // setup stream from the local camera 
   if(scrname.trim() != ""){
     setup_video();
@@ -728,15 +727,6 @@ async function sharescreen(event){
     console.log(err.message);
     document.getElementById("local_video").play();
   }
-  /*
-  videotrack = displaymediastream.getTracks()[0];
-  for(trctr=0; trctr < event.stream.getTracks().length; trctr++){
-    if(event.stream.getTracks()[trctr].kind === 'video'){
-      event.stream.getTracks()[trctr].replaceTrack(videotrack);
-      break;
-    }
-  }
-  */
   document.getElementById('share-screen').onclick = stopscreenshare;
   document.getElementById('share-screen').innerHTML = "<img src='/static/webrtc/images/stop-screen-share-01.svg'>";
 }
@@ -746,6 +736,26 @@ async function stopscreenshare(){
   setup_video(); // Revert back to webcam stream
   document.getElementById('share-screen').onclick = sharescreen;
   document.getElementById('share-screen').innerHTML = "<img src='/static/webrtc/images/screen.svg'>";
+}
+
+
+function webcamstatechange(){
+  if(document.getElementById("togglewebcam").checked == true){ // Switched on webcam
+    
+  }
+  else{ // Switched off webcam
+    
+  }
+}
+
+
+function microphonestatechange(){
+  if(document.getElementById("togglemic").checked == true){ // Switched on mic
+    
+  }
+  else{ // Switched off mic
+    
+  }
 }
 
 /* https://gist.github.com/Dornhoth/7560fb8ab49dc7cd1ac591839b22d066
@@ -1297,6 +1307,7 @@ html, body {
     <video id="remote_video" controls></video>
     <video id="local_video" controls muted></video>
  </div>
+ <div class="row" style="position:absolute;top:86%;left:210px;font-size:small;width:80%;padding-top:8px;padding-left:5px;"><span style="font-size:small;width:50%;padding-top:8px;padding-left:5px;text-align:left;white-space:nowrap;color:#0000aa;">Enable/Disable Webcam:&nbsp;&nbsp;<input type="checkbox" id='togglewebcam' name='togglewebcam' class="form-control" style="align:left;vertical-align:top;position:absolute;top:20px;left:160px;width:20px;" value="0" onchange="javascript:webcamstatechange();" checked></span><span style="font-size:small;width:50%;padding-top:8px;padding-left:5px;text-align:left;color:#0000aa;">Enable/Disable Mic:&nbsp;&nbsp;<input type="checkbox" id='togglemic' name='togglemic' class="form-control" style="vertical-align:top;position:absolute;top:20px;left:520px;width:20px;" value="0" onchange="javascript:microphonestatechange();" checked></span></div>
   <br />
   <div align='center'>
   <form name='captureinterview' id='captureinterview' method='POST'>
