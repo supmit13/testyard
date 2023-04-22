@@ -741,38 +741,31 @@ async function stopscreenshare(){
 
 function webcamstatechange(){
   if(document.getElementById("togglewebcam").checked == true){ // Switched on webcam
-    
+    let local_stream = document.getElementById("local_video").srcObject;
+    let vidtrack = local_stream.getVideoTracks();
+    vidtrack.forEach(track => track.enabled = true);
   }
   else{ // Switched off webcam
-    
+    let local_stream = document.getElementById("local_video").srcObject;
+    let vidtrack = local_stream.getVideoTracks();
+    vidtrack.forEach(track => track.enabled = false);
   }
 }
 
 
 function microphonestatechange(){
   if(document.getElementById("togglemic").checked == true){ // Switched on mic
-    
+    let local_stream = document.getElementById("local_video").srcObject;
+    let audtrack = local_stream.getAudioTracks();
+    audtrack.forEach(track => track.enabled = true);
   }
   else{ // Switched off mic
-    
+    let local_stream = document.getElementById("local_video").srcObject;
+    let audtrack = local_stream.getAudioTracks();
+    audtrack.forEach(track => track.enabled = false);
   }
 }
 
-/* https://gist.github.com/Dornhoth/7560fb8ab49dc7cd1ac591839b22d066
- document.getElementById('share-screen').addEventListener('click', async () => {
-    if (!displayMediaStream) {
-      displayMediaStream = await navigator.mediaDevices.getDisplayMedia();
-    }
-    connect_stream_to_src(displayMediaStream, document.getElementById("local_video"));
-    // add local camera stream to peer_connection ready to be sent to the remote peer
-    peer_connection.addStream(displayMediaStream);
-    //senders.find(sender => sender.track.kind === 'video').replaceTrack(displayMediaStream.getTracks()[0]);
-    
-    //hide the share button and display the "stop-sharing" one
-    document.getElementById('share-screen').style.display = 'none';
-    //document.getElementById('stop-share-screen').style.display = 'inline';
-  });
-*/
 </script>
 
 <style>
