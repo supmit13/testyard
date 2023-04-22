@@ -99,6 +99,7 @@ Immediate Plans:
 34. Bugs in Evaluation Screen: #6. Needs to be identified and fixed.
 35. Create a ChatGPT based automated support assistant that will dispatch issues from users to support staff members automatically. This will include the following functionalities: i) Engaging with a user requesting support, ii) Classifying/Categorizing the type of support required by the user, iii) Get a description of the issue/help required by the user, iv) Docketing it in a "task management system" or "issue tracker system", v) Assigning it to a support staff member (with some load balancing logic), vi) Tracking down an issue given its ID, vii) Send a resolution success/failure email to the user once an issue is resolved by a support staff member. viii) Maintain a log of every issue created (possibly, this will be a feature of the issue tracker or task manager system.)
 36. Sign in with Google, Facebook, Apple. 
+37. Test/Fix "Add to LinkedIn" feature for tests and interviews.
 
 
 50. Pagination of Test, Network and Search Apps. [Done]										
@@ -141,5 +142,14 @@ Scope of 'More' (Part of #50):
 
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'spmprx';
 
+Scope of #200 - WebRTC Interviews:
+----------------------------------
+201. Add enable/disable webcam and microphone [Done]
+202. Implement screen sharing [Done]
+203. Set up coturn (stun/turn) service on AWS instance, and make use of it in interview functionality
+204. Error handling - make it robust.
+205. Implement text chat during webrtc calls. [Done]
+206. Implement file transfer and emoticons transfer during text chat sessions.[File transfer Done, emoticons not needed]
+207. Load testing of signaling server
 
 
