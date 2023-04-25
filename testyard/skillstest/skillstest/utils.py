@@ -1014,7 +1014,7 @@ def disconnectdb(dbconn, cursor):
 
 
 def createopener():
-    opener = urllib.request.build_opener(urllib.request.HTTPHandler(), urllib.request.HTTPSHandler())
+    opener = urllib2.build_opener(urllib2.HTTPHandler(), urllib2.HTTPSHandler())
     return opener
 
 def getshorturl(url):
@@ -1023,7 +1023,7 @@ def getshorturl(url):
     requestdict = { 'target_url' : url}
     requestdata = json.dumps(requestdict).encode("utf-8")
     httpheaders['content-length'] = requestdata.__len__()
-    requestobj = urllib.request.Request(requesturl, data=requestdata, headers=httpheaders)
+    requestobj = urllib2.Request(requesturl, data=requestdata, headers=httpheaders)
     opener = createopener()
     responseobj = None
     try:
@@ -1039,7 +1039,7 @@ def gettargeturl(key):
     httpheaders = { 'User-Agent' : r'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.10) Gecko/20111103 Firefox/3.6.24',  'Accept' : 'application/json', 'Accept-Language' : 'en-us,en;q=0.5', 'Accept-Encoding' : 'gzip,deflate', 'Accept-Charset' : 'ISO-8859-1,utf-8;q=0.7,*;q=0.7', 'Keep-Alive' : '115', 'Connection' : 'keep-alive', }
     #print(key)
     requesturl = "http://192.168.1.6:8080/%s"%key
-    requestobj = urllib.request.Request(requesturl, headers=httpheaders)
+    requestobj = urllib2.Request(requesturl, headers=httpheaders)
     opener = createopener()
     responseobj = None
     try:
