@@ -3203,6 +3203,36 @@ def gettesturlforuser(targetuseremail, testid, baseurl):
     query_string = "targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test&targetemail=" + targetuseremail + "&rand=" + randstring
     encoded_query_string = base64.b64encode(query_string)
     testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?" + encoded_query_string
+    jsonstringcontent = skillutils.getshorturl(testurl)
+    jsonobj = json.loads(jsonstringcontent)
+    try:
+        shorttesturl = jsonobj['url']
+    except:
+        print("Error generating short URL from URL Shortener Service: %s"%json.dumps(jsonobj))
+        shorttesturl = ""
+    return (shorttesturl, randstring)
+
+
+
+
+def gettesturlforuser_bitly_latest(targetuseremail, testid, baseurl):
+    testobj = None
+    targetuserid = targetuseremail # If we can't find the targetuserid, then we will use the targetuseremail.
+    try:
+        testobj = Test.objects.filter(id=testid)[0]
+    except:
+        message = "Error: " + error_msg('1056')
+        response = HttpResponse(message)
+        return response
+    try:
+        targetuserobj = User.objects.filter(emailid=targetuseremail)[0]
+        targetuserid = targetuserobj.id
+    except:
+        pass
+    randstring = skillutils.randomstringgen()
+    query_string = "targetuser=" + str(targetuserid) + "&testid=" + str(testobj.id) + "&mode=test&targetemail=" + targetuseremail + "&rand=" + randstring
+    encoded_query_string = base64.b64encode(query_string)
+    testurl = baseurl + "/" + mysettings.SHOW_TEST_CANDIDATE_MODE_URL + "?" + encoded_query_string
     # Now bitlyfy the testurl
     bitlyapiurl = mysettings.BITLY_LINK_API_ADDRESS
     #postdatadict = {"group_guid" : mysettings.BITLY_APP_GROUP, "domain" : "bit.ly", "long_url" : testurl}
@@ -3300,7 +3330,7 @@ def showtestcandidatemode(request):
     if request.method != "POST" and request.method != 'GET': # If it is not a
         # POST or GET request, shoot it down. POST request comes when an
         # evaluator or creator tries to view the test as shown to the
-        # candidates. GET comes when the user clicks on the bitly test link.
+        # candidates. GET comes when the user clicks on the bitly/urlshortener test link.
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL + "?msg=%s"%message)
         return response
@@ -3339,7 +3369,7 @@ def showtestcandidatemode(request):
     testtakeruserqset = UserTest.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
     tabtype = 'usertest'
     testtakeruserobj = None
-    print targetemail
+    #print targetemail
     if testtakeruserqset.__len__() == 0:
         testtakeruserqset = WouldbeUsers.objects.filter(emailaddr=targetemail).filter(test=testobj).filter(active=True).filter(cancelled=False).filter(stringid=rand)
         tabtype = 'wouldbeusers'
@@ -3751,7 +3781,7 @@ def gettestdata(request):
         message = "Failed to store the answer script due to the following reason: %s\n\nPlease contact the administrator or the support personnel at 'support@testyard.com'."%sys.exc_info()[1].__str__()
     response = HttpResponse(message)
     return response
-    
+
 
 """
 @csrf_protect
