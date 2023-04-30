@@ -181,7 +181,7 @@ function showallemailids(schedid, page=1, newwin=true){
             if(prevpage < 1){
 		prevpage=1;
 	    }
-            emailids_str = "\<html\>\<head\>\<title\>Email Ids\<\/title\>\<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='NO-CACHE'\>\<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'\>\<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'\>\<script src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'\>\<\/script\>\<\/head\>\<body style='background:#669999;color:#0000AA;margin:auto;text-align:center;'>" + emailidslist.join("<br/>") + "<br/><br/><input type='button' name='closebtn' id='closebtn' value='Close' class='btn btn-testyard1' onclick='window.close();'><br/><br/><label style='margin:auto;text-align:center;color:#0000AA;'><a href='#/' onclick='javascript:showallemailids(" + schedid.toString() + ", " + prevpage.toString() + ", false);'>Prev</a>|<a href='#/' onclick='javascript:showallemailids(" + schedid.toString() + ", " + nextpage.toString() + ", false);'>Next</a></label><br/><br/></body></html>";
+            emailids_str = "\<html\>\<head\>\<title\>Email Ids\<\/title\>\<META HTTP-EQUIV='CACHE-CONTROL' CONTENT='NO-CACHE'\>\<META HTTP-EQUIV='PRAGMA' CONTENT='NO-CACHE'\>\<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'\>\<script src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'\>\<\/script\>\<\/head\>\<body style='background:#ccffff;color:#0000AA;margin:auto;text-align:center;'>" + emailidslist.join("<br/>") + "<br/><br/><input type='button' name='closebtn' id='closebtn' value='Close' class='btn btn-testyard1' onclick='window.close();'><br/><br/><label style='margin:auto;text-align:center;color:#0000AA;'><a href='#/' onclick='javascript:showallemailids(" + schedid.toString() + ", " + prevpage.toString() + ", false);'>Prev</a>|<a href='#/' onclick='javascript:showallemailids(" + schedid.toString() + ", " + nextpage.toString() + ", false);'>Next</a></label><br/><br/></body></html>";
 	    waittag.style= "display:none";
 	    waittag.innerHTML = "";
             height = "600";
@@ -214,7 +214,7 @@ function showallemailids(schedid, page=1, newwin=true){
 </script>
 <title>Schedule the Test</title>
 </head>
-<body style='background:#669999;color:#0000AA;'>
+<body style='background:#ccffff;color:#0000AA;'>
 <br/><br/>
 <div class='container'>
 <center><h3>Add/Edit Schedule Information ('{{testname}}')</h3></center>
