@@ -1097,6 +1097,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		        return (false);
 		      }
 		      var thediv=document.getElementById('createtestdiv');
+		      thediv.className = "";
 		      thediv.style = "height:1200px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
                       if(challengetype == "Multiple Choice"){
 			thediv.style = "height:2100px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
@@ -1449,7 +1450,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // alert(xmlhttp.responseText);
   		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		    var thediv=document.getElementById('createtestdiv');
-		    thediv.style = "height:800px;width:900px;padding-left:20px;padding-top:20px;display:;";
+    		    thediv.className = "";
+		    thediv.style = "height:800px;width:900px;padding-left:20px;padding-top:20px;padding-right:20px;display:;";
 		    thediv.innerHTML = xmlhttp.responseText;
   		  }
   		  };
@@ -1599,7 +1601,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      resdiv = document.getElementById('maincontainer');
-		      resdiv.style = "";
+		      resdiv.style = "opacity:1;";
 		      resdiv.innerHTML = xmlhttp.responseText;
 		      return (true);
   		    }
@@ -1623,7 +1625,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		      resdiv = document.getElementById('maincontainer');
-		      resdiv.style = "";
+		      resdiv.style = "opacity:1;";
 		      resdiv.innerHTML = "<pre>" + xmlhttp.responseText + "</pre>";
 		      return (true);
   		    }

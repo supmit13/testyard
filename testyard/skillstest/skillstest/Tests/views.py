@@ -3087,7 +3087,7 @@ def editchallenge(request):
                 challengetypeslist += "<option value=%s>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
         challengetypeslist += "</select></div></span><br />"
         if challengeobj.challengetype == 'SUBJ':
-            challengetypeslist += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Answer Length (characters, leave empty for no limit)</font></div><div class='float-right' style='width:50%%;color:#0000AA;'><input type='text' name='maxsizewords' value='%s' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span>"%(challenge_dict['maxsizeallowable'].__str__())
+            challengetypeslist += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Answer Length (characters, leave empty for no limit)</font></div><div class='float-right' style='width:50%%;color:#0000AA;'><input type='text' name='maxsizewords' value='%s' size='6' maxlength='6' class='form-control input-ty-tiny' style='width:300px;'> </div></span>"%(challenge_dict['maxsizeallowable'].__str__())
         elif challengeobj.challengetype == 'CODN' or challengeobj.challengetype == 'ALGO':
             challengetypeslist += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Answer Length (lines, leave empty for no limit)</font></div><div class='float-right' style='width:50%%;color:#0000AA;'> <input type='text' name='maxsizelines' value='%s' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span>"%(challenge_dict['maxsizeallowable'].__str__())
         else:
