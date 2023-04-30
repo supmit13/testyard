@@ -59,7 +59,7 @@ Immediate Plans:
 1. Check out and fix interview creation (UI and Backend). [Done]
 2. Check out and fix interview scheduling (UI and Backend).
 3. Check out and fix interview process (UI and Backend).
-4. Configure TURN server on AWS and set it up to be used with TestYard.
+4. Configure TURN server on AWS and set it up to be used with TestYard. [Done]
 5. Check out and fix Test creation using test markup upload.
 6. Restructure Test Creation Screen. (Apply bootstrap and jquery libraries) [Done]
 7. Check out and fix Test taking process.
@@ -94,18 +94,18 @@ Immediate Plans:
 29. Coding questions failing to capture answers. Also, editor is not working as per expectation.
 30. Render math expressions on evaluate_responses.html. [Done]
 31. Verify and fix math expressions rendering using Mathlive. [Done]
-32. Occasional Gateway Timeout issue with nginx/uwsgi stack.
+32. Occasional Gateway Timeout issue with nginx/uwsgi stack. 
 33. Allow user to search a test/interview in the Tests section for all 5 roles separately. [Done]
 34. Bugs in Evaluation Screen: #6. Needs to be identified and fixed.
 35. Create a ChatGPT based automated support assistant that will dispatch issues from users to support staff members automatically. This will include the following functionalities: i) Engaging with a user requesting support, ii) Classifying/Categorizing the type of support required by the user, iii) Get a description of the issue/help required by the user, iv) Docketing it in a "task management system" or "issue tracker system", v) Assigning it to a support staff member (with some load balancing logic), vi) Tracking down an issue given its ID, vii) Send a resolution success/failure email to the user once an issue is resolved by a support staff member. viii) Maintain a log of every issue created (possibly, this will be a feature of the issue tracker or task manager system.)
 36. Sign in with Google, Facebook, Apple. 
-37. Test/Fix "Add to LinkedIn" feature for tests and interviews.
+37. Test/Fix "Add to LinkedIn" feature for tests and interviews. 
 
 
 50. Pagination of Test, Network and Search Apps. [Done]										
 100. Optimization of entire application.
-150. Hardening with inappropriate inputs.
-200. TURN server (using coturn). (https://github.com/muaz-khan/MultiRTC/tree/master/MultiRTC-websocket) [WIP]
+150. Hardening with inappropriate inputs. [WIP]
+200. TURN server (using coturn). (https://github.com/muaz-khan/MultiRTC/tree/master/MultiRTC-websocket) [Done]
 250. Testing all Apps. (Load + Functional).
 300. Create drawing toolbar using fabric.js (Low priority)
 350. Google Calendar Integration with test scheduling. [Done, needs testing with correct domain (testyard.in)]
@@ -114,9 +114,9 @@ Immediate Plans:
 450. Debug code running mechanisms.
 500. Licensing and Plans. [WIP]
 550. Integrating ChatGPT based support assistant and an issue tracker system.
-600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether.
+600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether. [Done]
 650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot)
-700. Interface Refinement (Add/Edit Challenges, Add/Edit Tests, Interviews, etc)
+700. Interface Refinement (Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
 
 
 Scope of #50 - Pagination:
@@ -146,10 +146,34 @@ Scope of #200 - WebRTC Interviews:
 ----------------------------------
 201. Add enable/disable webcam and microphone [Done]
 202. Implement screen sharing [Done]
-203. Set up coturn (stun/turn) service on AWS instance, and make use of it in interview functionality
-204. Error handling - make it robust.
+203. Set up coturn (stun/turn) service on AWS instance, and make use of it in interview functionality [Done]
+204. Error handling - make it robust. [Done]
 205. Implement text chat during webrtc calls. [Done]
 206. Implement file transfer and emoticons transfer during text chat sessions.[File transfer Done, emoticons not needed]
-207. Load testing of signaling server
+207. Load testing of signaling server [WIP]
+
+Scope of #150 - Hardening with Inappropriate Inputs:
+----------------------------------------------------
+151. Create/Edit Test Screen (Tests app)
+152. Add/Edit Challenge Screen (Tests app)
+153. Create Interview Screen (Tests app)
+154. Test Evaluation Screen (Tests app)
+155. Test User Screen (for candidates to take the test) (Tests app)
+156. Test Invite Screen (Tests app)
+157. Schedule Test Screen (Tests app)
+158. Upload New Test Screen (Tests app)
+159. Search Tests Input Control (Tests app)
+160. User Profile Screen (Profile app)
+161. Tests/Users/Groups Search Screen (Search app)
+162. Create Group Screen (Network app)
+163. Join a Group Screen (Network app)
+164. Add Contact Screen (Network app)
+165. Post a Message Screen (Network app)
+166. Manage Owned Groups (Network app)
+167. Give a test to one or more Groups Screen (Network app)
+168. Group Settings Screen (Network app)
+169. Send a Mesage Screen (Network app)
+170. Analytics Screen (Analytics app)
+171. Image Upload in Manage Owned Groups Screen - should render error message if image upload fails.
 
 
