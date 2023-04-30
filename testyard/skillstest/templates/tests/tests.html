@@ -854,7 +854,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'FILB'){
 		      responsekeydiv.style.display = "";
-		      responsekeydiv.innerHTML = "<span class='slide-container'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</div><div class='float-right' style='width:50%;'><input type='text' name='responsekey' value='' size='10' maxlength='250' class='form-control input-ty-tiny'></div></span></br>";
+		      responsekeydiv.innerHTML = "<span class='slide-container'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Enter the correct response<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);'>[why should I do this?]</a></font>:</div><div class='float-right' style='width:50%;'><input type='text' name='responsekey' value='' size='10' maxlength='250' class='form-control input-ty-tiny' style='width:300px;'></div></span></br>";
 		    }
 		  }
 		}
@@ -1213,7 +1213,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		  }
   		  };
   		  xmlhttp.open("POST", '{{ addeditchallengeurl }}', true);
-  		xmlhttp.send(postdata);
+  		  xmlhttp.send(postdata);
   		// document.getElementById('uploadbox').style.display = '';
   		// document.getElementById('uploadbox').innerHTML += "<br><img src='static/images/loading_small.gif'>";
 		return true;
