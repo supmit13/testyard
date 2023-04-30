@@ -93,7 +93,8 @@
 
 	</script>
         
-        <!-- Math related keyboard ends here -->
+        <!-- Math related keyboard ends here  -->
+        <!-- Previous: ;background-color:#669999; -->
 	<style>
 	.semitrans {
 	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
@@ -101,7 +102,7 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
+	  background-color:#ccffff;
 	  color:#FFFFFF;
 	  position:absolute; top:250px; left:0px; width:275%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
@@ -112,7 +113,7 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
+	  background-color:#ccffff;
 	  color:#FFFFFF;
 	  position:absolute; top:150px; left:100px; width:75%; height:50%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
@@ -929,6 +930,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      catch(err1){
 			try{
 			  themaindiv = document.getElementById('createtestdiv');
+			  themaindiv.className = "";
 			}
 			catch(err2){ 
 			// Write an error message to inform the user that the page hasn't loaded entirely.
@@ -1968,7 +1970,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
                             rowcount = parseInt(eval_elements[1]);
 			    testdiv.className = "register";
 			    testdiv.style='padding-left:20px;padding-right:20px;';
-                            testdiv.style.background = '#669999'; // -webkit-linear-gradient(left, #3931af, #00c6ff);
+                            testdiv.style.background = '#ccffff'; // -webkit-linear-gradient(left, #3931af, #00c6ff);
                             testdiv.style.height = "150px";
                             testdiv.style.width = "125%";
                             if (rowcount < 10){
@@ -2202,9 +2204,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    html += "\n\n";
 		    html += "</scr" + "ipt>\n";
                    html += "</head>";
-		    html += "<body bgcolor=\"#669999\"><br />";
+		    html += "<body bgcolor=\"#ccffff\"><br />";
 		    html += "<div style='color:#CC0000;font-style:italic;font-weight:bold;padding-left:20px;padding-right:10px;padding-top:10px;padding-bottom:10px;font-size:14px;'>Note for evaluator: Candidate has deviated from the test screen " + responsedata.windowchangeattempts + " times during the course of the test. Total integrity is upon the discretion of the evaluator.</div><br />";
-		    html += "<div style='color:#0000AA;background:#669999;padding-left:20px;padding-right:10px;padding-bottom:10px;padding-top:10px;'><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
+		    html += "<div style='color:#0000AA;background:#ccffff;padding-left:20px;padding-right:10px;padding-bottom:10px;padding-top:10px;'><h3>User's Responses</h3><br /><br /><form name=\"frmevalresp\" method=\"POST\" onmousemove=\"javascript:displayMathExprEvalRespView(" + challengecounter + ");\">";
 		    html += "<input type='hidden' name='testid' id='testid' value='" + testid + "'>";
 		    html += "<input type='hidden' name='emailid' id='emailid' value='" + emailid + "'>";
 		    html += "<input type='hidden' name='tabref' id='tabref' value='" + responsedata.tabref + "'>";
