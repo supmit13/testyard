@@ -16,7 +16,7 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
+	  background-color:#ccffff;
 	  color:#FFFFFF;
 	  position:absolute; top:250px; left:100px; width:80%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
@@ -27,7 +27,7 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
+	  background-color:#ccffff;
 	  color:#FFFFFF;
 	  position:absolute; top:250px; left:100px; width:80%; height:25%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
@@ -150,7 +150,7 @@
 		    // Open popup (disgusting!) and show data.
 		    testinfowin = window.open("", "testinfowindow", "width=400, height=400, location=no, menubar=no, scrollbars=yes,toolbar=no,  titlebar=no, resizable=no, toolbar=no, status=no");
 		    jsondata = JSON.parse(xmlhttp.responseText);
-		    html = "<html><head><title>Test Info</title></head><body bgcolor='#669999'>";
+		    html = "<html><head><title>Test Info</title></head><body bgcolor='#ccffff'>";
 		    if(jsondata['warning'] == ""){
 			html += "<center><h3>" + jsondata['testname'] + "</h3></center>";
 			html += "<font color='#0000AA' style='font-weight:bold' size=-1>Topic: " + jsondata['topicname'] + "</font><br>";
@@ -1466,7 +1466,7 @@
 	    childisborn = 0;
 	    html = "<html><head><title>Join Requests to '" + grpname + "'</title>";
 	    html += "\n<link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'><scr" + "ipt src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'></scr" + "ipt>\n";
-	    html += "</head><body style='background-color:#669999;'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
+	    html += "</head><body style='background-color:#ccffff;'><form name='frmjoingroupaction' id='frmjoingroupaction' method='POST' action='{{savegroupjoinstatusurl}}'>";
 	    html += "<div><font color='#550000' style='font-weight:bold'><i><center>Note: Reloading the parent window will automatically close this window. <br>You are strongly suggested to save your changes on this window before attempting to reload the parent window.<br>You may save  all your changes on this window by clicking on the 'Save Changes' button.</center></i></font></div><br><br>";
 	    html += "<div id='contentspace' style=''>";
   	    html += joinpopupcontent(grpname, joinrequestsinfo_strb64, state, pageno);
