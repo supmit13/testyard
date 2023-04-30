@@ -113,9 +113,9 @@ import('https://unpkg.com/mathlive?module');
 			<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1' checked=true disabled=true><br /><br />
 		    {% endif %}
 		    {% if evalcommitstate == false %}
-		        <input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>
+		        <input type='button' name='btnsave' value='Save' onClick='javascript:window.opener.saveassessment();' class='btn btn-primary'>&nbsp;&nbsp;&nbsp;&nbsp;<div id='waitdiv' style=''></div>
 		    {% endif %}
-		    <input type='button' name='btnclose' value='Close' onClick='javascript:window.close();'>
+		    <input type='button' name='btnclose' value='Close' onClick='javascript:window.close();' class='btn btn-primary'>
 		    </form>
                     </div>
 		    </body></html>
