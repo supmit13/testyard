@@ -628,7 +628,7 @@ def getsectiondata(request):
                 createdscore = 0
                 for chlng in challenges:
                     createdscore += chlng.challengescore
-                completeness = createdscore/fullmarks
+                completeness = format(createdscore/fullmarks, ".2f")
                 publishdate = tobj.publishdate.strftime("%d %b, %Y %H:%M:%S")
                 tid = tobj.id
                 duration = tobj.duration
@@ -710,7 +710,7 @@ def getsectiondata(request):
                 createdscore = 0
                 for chlng in challenges:
                     createdscore += chlng.challengescore
-                completeness = createdscore/fullmarks
+                completeness = format(createdscore/fullmarks, ".2f")
                 publishdate = tobj.publishdate.strftime("%d %b, %Y %H:%M:%S")
                 duration = tobj.duration
                 ruleset = tobj.ruleset
@@ -790,7 +790,7 @@ def getsectiondata(request):
                 createdscore = 0
                 for chlng in challenges:
                     createdscore += chlng.challengescore
-                completeness = createdscore/fullmarks
+                completeness = format(createdscore/fullmarks, ".2f")
                 publishdate = tobj.publishdate.strftime("%d %b, %Y %H:%M:%S")
                 tid = tobj.id
                 duration = tobj.duration
@@ -1000,7 +1000,7 @@ def searchbyrole(request):
             createdscore = 0
             for chlng in challenges:
                 createdscore += chlng.challengescore
-            completeness = createdscore/test.maxscore
+            completeness = format(createdscore/test.maxscore, ".2f")
             usertestsqset = UserTest.objects.filter(test=test)
             passcount, failcount, disqualifiedcount = 0, 0, 0
             for utobj in usertestsqset:
@@ -1026,7 +1026,7 @@ def searchbyrole(request):
             createdscore = 0
             for chlng in challenges:
                 createdscore += chlng.challengescore
-            completeness = createdscore/test.maxscore
+            completeness = format(createdscore/test.maxscore, ".2f")
             usertestsqset = UserTest.objects.filter(test=test)
             passcount, failcount, disqualifiedcount = 0, 0, 0
             for utobj in usertestsqset:
@@ -1296,7 +1296,7 @@ def manage(request):
             createdscore = 0
             for chlng in challenges:
                 createdscore += chlng.challengescore
-            completeness = createdscore/fullmarks
+            completeness = format(createdscore/fullmarks, ".2f")
             publishdate = tobj.publishdate
             tid = tobj.id
             duration = tobj.duration
@@ -1368,7 +1368,7 @@ def manage(request):
             createdscore = 0
             for chlng in challenges:
                 createdscore += chlng.challengescore
-            completeness = createdscore/fullmarks
+            completeness = format(createdscore/fullmarks, ".2f")
             publishdate = tobj.publishdate
             duration = tobj.duration
             ruleset = tobj.ruleset
@@ -1439,7 +1439,7 @@ def manage(request):
             createdscore = 0
             for chlng in challenges:
                 createdscore += chlng.challengescore
-            completeness = createdscore/fullmarks
+            completeness = format(createdscore/fullmarks, ".2f")
             publishdate = tobj.publishdate
             tid = tobj.id
             duration = tobj.duration
