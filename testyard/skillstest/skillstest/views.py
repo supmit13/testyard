@@ -261,23 +261,46 @@ def saveoptionalinfo(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
+    countrieslist = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Austrian Empire", "Azerbaijan", "Baden", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Bavaria", "Belarus", "Belgium", "Belize", "Benin", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Brunswick and Luneburg", "Bulgaria", "Burkina Faso", "Burma", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Cote d'Ivoire (Ivory Coast)", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominican Republic", "Duchy of Parma", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "The Gambia", "Georgia", "Germany", "Ghana", "The Grand Duchy of Tuscany", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Hanover", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "North Korea", "South Korea", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Lew Chew", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mecklenburg-Schwerin", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nassau", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway", "Oldenburg", "Oman", "Orange Free State", "Pakistan", "Palau", "Panama", "Papal States", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Piedmont-Sardinia", "Poland", "Portugal", "Qatar", "Republic of Genoa", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Schaumburg-Lippe", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "The Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Two Sicilies", "Uganda", "Ukraine", "The United Arab Emirates", "The United Kingdom", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Wurttemberg", "Yemen", "Zambia", "Zimbabwe" ]
     houseno_and_street_address, city, pin_or_zip_code, country, profession, age, reasonforuse, selfdescription, highestqualification, fieldofstudy, presentemployer_or_institution = "", "", "", "", "", 0, "", "", "", "", "" 
     if request.POST.has_key('houseno_and_street_address'):
         houseno_and_street_address = request.POST['houseno_and_street_address']
+        if houseno_and_street_address.__len__() > 500:
+            message = "Error: Too many characters in 'House No. and Street Address' field. Please limit it to 500 characters only. Could not save information."
+            return HttpResponse(message)
     if request.POST.has_key('city'):
         city = request.POST['city']
     if request.POST.has_key('pin_or_zip_code'):
         pin_or_zip_code = request.POST['pin_or_zip_code']
     if request.POST.has_key('country'):
         country = request.POST['country']
+        if country.title() not in countrieslist:
+            response = HttpResponse("Error: Invalid country name. Could not save information.")
+            return response
     if request.POST.has_key('profession'):
         profession = request.POST['profession']
     if request.POST.has_key('age'):
         age = request.POST['age']
+        try:
+            age = int(age)
+            if age < 0 or age > 100:
+                message = "Error: Invalid age. Could not save information"
+                response = HttpResponse(message)
+                return response
+        except:
+            message = "Error: Invalid non-integer age. Could not save information"
+            response = HttpResponse(message)
+            return response
     if request.POST.has_key('reasonforuse'):
         reasonforuse = request.POST['reasonforuse']
+        if reasonforuse.__len__() > 500:
+            message = "Error: Too many characters in 'Reason for Use' field. Please limit it to 500 characters only. Could not save information."
+            return HttpResponse(message)
     if request.POST.has_key('selfdescription'):
         selfdescription = request.POST['selfdescription']
+        if selfdescription.__len__() > 500:
+            message = "Error: Too many characters in 'Self Description' field. Please limit it to 500 characters only. Could not save information."
+            return HttpResponse(message)
     if request.POST.has_key('highestqualification'):
         highestqualification = request.POST['highestqualification']
     if request.POST.has_key('fieldofstudy'):

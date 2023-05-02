@@ -13,10 +13,14 @@
 
 	<!-- Autocomplete suggestions while searching for tests -->
 	<script src="static/javascript/autocomplete_startchars.js"></script>
-	<link rel="stylesheet" href="/static/css/autocomplete.css">
+	<link rel="stylesheet" href="/static/css/autocomplete_startchars.css">
 	
 	<script type='text/javascript'>
 	countrieslist = new Array();
+	
+	function totitlecase(str) {
+	  return str.replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+	}
 	
 	function country_autocomplete(){
 	  var xmlhttp;
@@ -43,6 +47,46 @@
 	    var xmlhttp;
 	    postdata = "";
 	    for(var i=0; i < document.forms[0].elements.length; i++){
+	        if(document.forms[0].elements[i].name == "country"){
+	            if(!countrieslist.includes(totitlecase(document.forms[0].elements[i].value))){
+	                alert("Please enter a valid country name");
+	                return(false);
+	            }
+	        }
+	        else if(document.forms[0].elements[i].name == "age"){ // check if the value is an integer between 0 and 110.
+	          try{
+	              intage = parseInt(document.forms[0].elements[i].value);
+	              if(intage < 0 || intage > 100){
+	                  alert("Age should be an integer between 1 and 100");
+	                  return (false);
+	              }
+	          }
+	          catch(err){
+	              alert("Age should be an integer between 1 and 100");
+	              return (false);
+	          }
+	        }
+	        else if(document.forms[0].elements[i].name == "reasonforuse"){
+	            reasonforusecontent = document.forms[0].elements[i].value;
+	            if(reasonforusecontent.length > 500){
+	                alert("Please limit the 'Reason for Use' content to 500 characters only.");
+	                return (false);
+	            }
+	        }
+	        else if(document.forms[0].elements[i].name == "selfdescription"){
+	            selfdescriptioncontent = document.forms[0].elements[i].value;
+	            if(selfdescriptioncontent.length > 500){
+	                alert("Please limit the 'Self Description' content to 500 characters only.");
+	                return (false);
+	            }
+	        }
+	        else if(document.forms[0].elements[i].name == "houseno_and_street_address"){
+	            housestreetcontent = document.forms[0].elements[i].value;
+	            if(housestreetcontent.length > 500){
+	                alert("Please limit the 'House No. and Street Address' content to 500 characters only.");
+	                return (false);
+	            }
+	        }
 		postdata += document.forms[0].elements[i].name + "=" + encodeURI(document.forms[0].elements[i].value) + "&";
 	    }
 	    postdatalen = postdata.length;
