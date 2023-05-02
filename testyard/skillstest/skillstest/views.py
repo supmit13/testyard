@@ -146,6 +146,21 @@ def dashboard(request):
 
 @skillutils.is_session_valid
 @skillutils.session_location_match
+def getcountrieslist(request):
+    message = ''
+    if request.method != "GET": # Illegal bad request... 
+        message = error_msg('1004')
+        # A logging mechanism may be used to track how many and from where
+        # such requests come and that may, sometimes, tell a curious story.
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    countrieslist = ["Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Antigua and Barbuda", "Argentina", "Armenia", "Australia", "Austria", "Austrian Empire", "Azerbaijan", "Baden", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Bavaria", "Belarus", "Belgium", "Belize", "Benin", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Brunswick and Luneburg", "Bulgaria", "Burkina Faso", "Burma", "Burundi", "Cabo Verde", "Cambodia", "Cameroon", "Canada", "Cayman Islands", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Cote d'Ivoire (Ivory Coast)", "Croatia", "Cuba", "Cyprus", "Czech Republic", "Democratic Republic of the Congo", "Denmark", "Djibouti", "Dominican Republic", "Duchy of Parma", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "The Gambia", "Georgia", "Germany", "Ghana", "The Grand Duchy of Tuscany", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Hanover", "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy", "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "North Korea", "South Korea", "Kosovo", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Lew Chew", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mecklenburg-Schwerin", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nassau", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway", "Oldenburg", "Oman", "Orange Free State", "Pakistan", "Palau", "Panama", "Papal States", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Piedmont-Sardinia", "Poland", "Portugal", "Qatar", "Republic of Genoa", "Romania", "Russia", "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Schaumburg-Lippe", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "The Solomon Islands", "Somalia", "South Africa", "South Sudan", "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Tajikistan", "Tanzania", "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Two Sicilies", "Uganda", "Ukraine", "The United Arab Emirates", "The United Kingdom", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Wurttemberg", "Yemen", "Zambia", "Zimbabwe" ]
+    return HttpResponse(simplejson.dumps(countrieslist))
+
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
 @csrf_protect
 def profile(request):
     message = ''
@@ -225,6 +240,7 @@ def profile(request):
     profile_data_dict['saveoptionalinfourl'] = mysettings.SAVE_OPTIONAL_INFO_URL
     tmpl = get_template("user/profile.html")
     profile_data_dict.update(csrf(request))
+    profile_data_dict['getautocompletecountriesurl'] = mysettings.AUTOCOMPLETE_COUNTRIES_URL
     cxt = Context(profile_data_dict)
     profilehtml = tmpl.render(cxt)
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():

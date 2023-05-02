@@ -11,7 +11,34 @@
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 	<!-- New interface code ends here -->
 
+	<!-- Autocomplete suggestions while searching for tests -->
+	<script src="static/javascript/autocomplete_startchars.js"></script>
+	<link rel="stylesheet" href="/static/css/autocomplete.css">
+	
 	<script type='text/javascript'>
+	countrieslist = new Array();
+	
+	function country_autocomplete(){
+	  var xmlhttp;
+	  if (window.XMLHttpRequest){
+	    xmlhttp=new XMLHttpRequest();
+	  }
+	  else{
+	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	  }
+	  xmlhttp.onreadystatechange = function(){
+	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	        countrieslist = JSON.parse(xmlhttp.responseText);
+	        //alert(countrieslist);
+	        autocomplete(document.getElementById('country'), countrieslist);
+	    }
+	  }
+	  xmlhttp.open("GET", '{{ getautocompletecountriesurl }}', true);
+   	  xmlhttp.send();
+	}
+	
+	window.document.onload = country_autocomplete();
+	
 	function saveoptionalinfo(uid){
 	    var xmlhttp;
 	    postdata = "";
