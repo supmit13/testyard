@@ -3992,7 +3992,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsondict = JSON.parse(xmlhttp.responseText);
 		    targetdiv.innerHTML = "";
-		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + jsondict['q'] + "' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>";
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + jsondict['q'] + "' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>";
 		    searchhtml += "<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
@@ -4140,7 +4140,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsondict = JSON.parse(xmlhttp.responseText);
 		    targetdiv.innerHTML = "";
-		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
@@ -4267,7 +4267,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsondict = JSON.parse(xmlhttp.responseText);
 		    targetdiv.innerHTML = "";
-		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
@@ -4376,7 +4376,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsondict = JSON.parse(xmlhttp.responseText);
 		    targetdiv.innerHTML = "";
-		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Interview name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
@@ -4464,7 +4464,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 		    jsondict = JSON.parse(xmlhttp.responseText);
 		    targetdiv.innerHTML = "";
-		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Interview name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
+		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
@@ -4564,7 +4564,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
                           <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsattended')" id="intervieweetab" style="color:#ffffff;">Interviews Attended</a></li>
                         </ul>
 			<div id='testsascreator' style="display:block" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
@@ -4667,7 +4667,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<font color='#0000AA' size=-1><i>** Completeness shows how much a test has been created compared to the total marks. For a test to be ready for taking by users, the value of this should be 1.0</i></font>
 			</div>
 			<div id='testsasevaluator' style="" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
@@ -4746,7 +4746,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<div id='testsascandidate' style="" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
@@ -4820,7 +4820,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<font size=-1 style='font-style:italic;'  color='#0000BB'>* Note:<br />{% for ruleshort, ruleexplanation in rulenotes.items %} {{ ruleshort }} : {{ ruleexplanation }}<br />{% endfor %}</font>
 			</div>
 			<div id='interviewsconducted' style="" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>			
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
@@ -4875,7 +4875,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</div>
 			</div>
 			<div id='interviewsattended' style="" class="tabcontent">
-			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
+			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
