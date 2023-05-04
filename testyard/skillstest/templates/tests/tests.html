@@ -413,16 +413,25 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  // 2. Publishdate and activedate cannot be set as past date.
 		  var months = {'JAN':'01', 'FEB': '02', 'MAR':'03', 'APR':'04', 'MAY':'05', 'JUN':'06', 'JUL':'07', 'AUG':'08', 'SEP': '09', 'OCT':'10', 'NOV':'11', 'DEC':'12'};
 		  alphanumericpattern = new RegExp("^([\\w\\d]+)$");
-		  publishdate = document.createtestform.publishdate.value;
+		  datepattern = new RegExp("^[\\d]{1,2}\\-[a-zA-Z]{3,12}\\-[\\d]{4}$");
+		  publishdate = document.createtestform.publishdate.value.trim();
 		  if(publishdate.trim() == ''){
 		    alert("Publish date cannot be empty. Please enter a date in dd-Mon-yyyy format");
 		    document.createtestform.publishdate.focus();
 		    return false;
 		  }
-		  activedate = document.createtestform.activedate.value;
+		  if(!datepattern.test(publishdate.toString())){
+		    alert("Publish Date is not in correct format.");
+		    return false;
+		  }
+		  activedate = document.createtestform.activedate.value.trim();
 		  if(activedate.trim() == ''){
 		    alert("Activation date cannot be left empty. Please enter a date after the publish date in 'dd-MON-yyyy' format");
 		    document.createtestform.activedate.focus();
+		    return false;
+		  }
+		  if(!datepattern.test(activedate.toString())){
+		    alert("Activation Date is not in correct format.");
 		    return false;
 		  }
 		  //alert(activedate);
@@ -568,6 +577,25 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    document.createtestform.passscore.focus();
 		    return(false);
 		  }
+		  if(document.getElementById('testtype').value == ''){
+		    document.getElementById('testtype').options.selectedIndex = 2; // composite test
+		  }
+		  if(document.getElementById('testtopic').value == ''){
+		    alert("Please select a test topic");
+		    document.getElementById('testtopic').focus();
+		    return (false);
+		  }
+		  if(document.getElementById('testrules').value == ''){
+		    alert("Please select Rules for the  test");
+		    document.getElementById('testrules').focus();
+		    return (false);
+		  }
+		  if(document.getElementById('skilltarget').value == ''){
+		    document.getElementById('skilltarget').options.selectedIndex = 1; // Intermediate skill level
+		  }
+		  if(document.getElementById('testscope').value == ''){
+		    document.getElementById('testscope').options.selectedIndex = 1; // Public test
+		  }
 		  return(true);
 		}
 
@@ -637,6 +665,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    textareactrl.focus();
 		  }
 		}
+		
 
 		function createtest(usrid, createtesturl, editflag){
 		  editflag = editflag || 0;
@@ -849,7 +878,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      responsekeydiv.innerHTML = "";
 		    }
 		    else if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'SUBJ'){
-		      ansoptsdiv.innerHTML += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Characters in Answer (leave empty for no limit) </font></div><div class='float-right' style='width:50%;'><input type='text' name='maxsizewords' value='' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span><br />";
+		      ansoptsdiv.innerHTML += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Max Characters in Answer (leave empty for no limit) </font></div><div class='float-right' style='width:50%;color:#0000AA;'><input type='text' name='maxsizewords' value='' size='6' maxlength='6' class='form-control input-ty-tiny' style='width:300px;'> </div></span><br />";
 		      responsekeydiv.style.display = "none";
 		      responsekeydiv.innerHTML = "";
 		    }

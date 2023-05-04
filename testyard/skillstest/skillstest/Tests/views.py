@@ -1952,7 +1952,7 @@ def _challenge_edit_form(request, testobj, lastchallengectr, evendistribution, c
     elif testtype == 'CODN' or testtype == 'ALGO': # For these testtypes user may want some constraints on the size of the response.
         edit_challenge_dict['answeringoptions'] += "<span class='slide-container'><div class='slide'><font color='#0000AA' style='font-style:italic;justify:left;'>Max Lines in Answer (leave empty for no limit.) </font></div> <div class='float-right' style='width:50%;color:#0000AA;'><input type='text' name='maxsizelines' value='' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span><br />"
     elif testtype == 'SUBJ':
-        edit_challenge_dict['answeringoptions'] += "<span class='slide-container'><div class='slide'><font color='#0000AA' style='font-style:italic;justify:left;'>Max Characters in Answer (leave empty for no limit)</font></div> <div class='float-right' style='width:50%;color:#0000AA;'><input type='text' name='maxsizewords' value='' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span><br />"
+        edit_challenge_dict['answeringoptions'] += "<span class='slide-container'><div class='slide' id='ansopts'><font color='#0000AA' style='font-style:italic;justify:left;'>Max Characters in Answer (leave empty for no limit)</font></div> <div class='float-right' style='width:50%;color:#0000AA;'><input type='text' name='maxsizewords' value='' size='6' maxlength='6' class='form-control input-ty-tiny'> </div></span><br />"
     lastchallengectr = int(lastchallengectr) + 1
     edit_challenge_dict['testlinkid'] = testlinkid
     edit_challenge_dict['test_id'] = testobj.id
