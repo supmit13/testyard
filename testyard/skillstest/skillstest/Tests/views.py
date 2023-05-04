@@ -2638,6 +2638,45 @@ def editexistingtest(request):
     # actually holds the comma separated email ids of all evaluators as 
     # well as the email id of the creator.
     create_test_dict['creatoremail'] = re.sub(re.compile(r",\s*$"), "", create_test_dict['creatoremail']) # Removes all trailing comma's
+    testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')
+    uniqevalgroups = {}
+    evalgroupslitags, assocevalgrps = "", ""
+    for test in testlist_ascreator:
+        evalgrpemaillist = []
+        if test.evaluator.groupmember1 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember1.emailid)
+        if test.evaluator.groupmember2 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember2.emailid)
+        if test.evaluator.groupmember3 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember3.emailid)
+        if test.evaluator.groupmember4 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember4.emailid)
+        if test.evaluator.groupmember5 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember5.emailid)
+        if test.evaluator.groupmember6 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember6.emailid)
+        if test.evaluator.groupmember7 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember7.emailid)
+        if test.evaluator.groupmember8 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember8.emailid)
+        if test.evaluator.groupmember9 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember9.emailid)
+        if test.evaluator.groupmember10 is not None:
+            evalgrpemaillist.append(test.evaluator.groupmember10.emailid)
+        evalgrpemails = ",".join(evalgrpemaillist)
+        test.evaluator.evalgroupname = test.evaluator.evalgroupname.replace("@", "__")
+        test.evaluator.evalgroupname = test.evaluator.evalgroupname.replace(".", "__")
+        assocevalgrps += "evalgrpsdict.%s = '%s';"%(test.evaluator.evalgroupname, evalgrpemails)
+        #evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, test.evaluator.evalgroupname)
+        if not uniqevalgroups.has_key(test.evaluator.evalgroupname):
+            shortevalgrpname = test.evaluator.evalgroupname
+            if shortevalgrpname.__len__() > 20:
+                shortevalgrpname = shortevalgrpname[:20] + "..."
+            #evalgroupslitags += "<li id=&quot;%s&quot; title=&quot;%s&quot; draggable=&quot;true&quot;>%s</li>"%(test.evaluator.evalgroupname, evalgrpemails, shortevalgrpname)
+            evalgroupslitags += "<option value=&quot;%s&quot; title=&quot;%s&quot; draggable=&quot;true&quot;>%s</option>"%(test.evaluator.evalgroupname, evalgrpemails, shortevalgrpname)
+            evalgroupslitags = evalgroupslitags.replace('&quot;', '\\"')
+            uniqevalgroups[test.evaluator.evalgroupname] = test.evaluator.evalgroupname
+
     publishdatetime = testobj.publishdate.__str__()
     publishdateparts = publishdatetime.split(" ")
     publishdate, publishtime = publishdateparts[0], publishdateparts[1]
@@ -2695,6 +2734,7 @@ def editexistingtest(request):
     create_test_dict['exist_test_id'] = testid
     create_test_dict['numchallenges'] = testobj.challengecount
     create_test_dict['createtesturl'] = skillutils.gethosturl(request) + '/' + mysettings.CREATE_TEST_URL
+    create_test_dict['evalgroupslitags'] = evalgroupslitags
     #create_test_dict['datepickercode'] = "<link rel='stylesheet' type='text/css' media='all' href='static/datepick/jsDatePick_ltr.min.css' /><script type='text/javascript' src='static/datepick/jsDatePick.min.1.3.js'></script><script>new JsDatePick({ useMode:2, target:'publishdate', dateFormat:'%d-%M-%Y', limitToToday : false });  new JsDatePick({ useMode:2, target:'activedate', dateFormat:'%d-%M-%Y', limitToToday : false });</script>"
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
