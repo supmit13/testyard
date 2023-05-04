@@ -1178,6 +1178,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    statementcontrol.focus();
 		    return false;
 		  }
+		  if(statementcontrol.value.trim().length > 500){
+		    alert("Please restrict the length of the Challenge Statement to 500 characters.");
+		    return false;
+		  }
 		  if(document.challengeform.challengescore.type == 'text' && document.challengeform.evendistribution.value != 1){
 		    if(!numericpattern.test(document.challengeform.challengescore.value.trim())){
 		      alert("Since the total is not evenly distributed over all the challenges, you must enter a valid score for this challenge");
@@ -1211,6 +1215,15 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    document.challengeform.maxsizelines.value = "";
 		    document.challengeform.maxsizelines.focus();
 		    return false;
+		  }
+		  try{
+		    if(document.challengeform.negativescore && parseInt(document.challengeform.negativescore.value.trim()) > 0){
+		      alert("Score to deduct on errant response should be 0 or less than 0");
+		      return false;
+		    }
+		  }
+		  catch(err){
+		    alert("Score to deduct on errant response should be 0 or less than 0");
 		  }
 		  // If 'challengedurationseconds' doesn't contain any numeric
 		  // entity, then put 0 in it. Saves some trouble...
