@@ -165,6 +165,18 @@ function showworking(){
   workstatusdiv.innerHTML = "<img src='static/images/loading_small.gif'>";
 }
 
+function hideworking(){
+  var workstatusdiv = document.getElementById('workstatus');
+  workstatusdiv.innerHTML = "";
+  workstatusdiv.style.display = "none";
+}
+
+function showerror(msg){
+  var workstatusdiv = document.getElementById('workstatus');
+  workstatusdiv.style.display = "";
+  workstatusdiv.innerHTML = msg;
+}
+
 
 function checkbrowser(){
     var nVer = navigator.appVersion;

@@ -727,12 +727,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  opresdiv.innerHTML = "<font color='#FF0000'>" + xmlhttp.responseText  + "</font>";
 			  return (false);
 			}
+			showerror("<font color='#FF0000'>" + xmlhttp.responseText  + "</font>");
 		      }
 		      var thediv=document.getElementById('createtestdiv');
 		      thediv.style.display = "";
 		      thediv.className = "";
 		      thediv.style = "height:1200px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
 		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      hideworking();
 		      return(false);
 		    }
 		  };
