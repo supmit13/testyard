@@ -730,6 +730,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      }
 		      var thediv=document.getElementById('createtestdiv');
 		      thediv.style.display = "";
+		      thediv.className = "";
+		      thediv.style = "height:1200px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
 		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
 		      return(false);
 		    }
@@ -1340,14 +1342,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  }
 		}
 
-		function closediv(){
+		function closediv(v=0){
 		  var thediv=document.getElementById('createtestdiv');
 		  if(!thediv){
 		    thediv=document.getElementById('maincontainer');
 		  }
 		  thediv.style.display = "none";
 		  thediv.innerHTML = '';
-		  window.location.reload();
+		  if(v == 1){
+		    window.location.reload();
+		  }
 		}
 
 		function showcreatetestform(uid){
@@ -1355,7 +1359,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var thediv=document.getElementById('createtestdiv');
 		  if(thediv.style.display == "none"){
 		    thediv.style.display = "";
-		    thediv.style='height:1550px;width:1000px;padding-left:20px;padding-right:20px;';
+		    thediv.className = "container register align-items-center justify-content-center";
+		    thediv.style='height:1550px;width:1200px;padding-left:20px;padding-right:20px;display:;';
 		    thediv.innerHTML = "{% include 'tests/create_test_form.html' %}";
 		  }
 		  else{

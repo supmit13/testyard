@@ -199,7 +199,7 @@ def get_user_tests(request):
         interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Create an Interview</a>"%userobj.id
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
-            if ttcode == 'MULT':
+            if ttcode == 'COMP':
                 testtypes += "<option value=&quot;%s&quot; selected>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
             else:
                 testtypes += "<option value=&quot;%s&quot;>%s</option>"%(ttcodeval, mysettings.TEST_TYPES[ttcode])
@@ -1591,7 +1591,7 @@ def create(request):
     progenv, multimediareqd, randomsequencing, multipleattemptsallowed, \
     maxattemptscount, attemptsinterval, attemptsintervalunit, testlinkid, \
     csrfmiddlewaretoken  = "", "", "", "", "", "", "", "", "", "", "", "", "", \
-     "", "", "", "", "", "", "", "", "", False, False, False, "", "", "", "", ""
+     "", "", "", "", "", "", "", "", "", False, True, False, "", "", "", "", ""
     lastchallengectr, challengenumbersstr, passscore = "", "", "" # \
     # 'lastchallengectr' is the counter of the last challenge entered. \
     # 'challengenumbersstr' is a string consisting of all the created \
