@@ -1547,9 +1547,22 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    else{
 		      var thediv=document.getElementById('maincontainer');
+		      createtestdiv = document.getElementById('createtestdiv');
+		      createtestdiv.className = "";
+		      createtestdiv.style = "height:1400px;width:1200px;padding-left:20px;padding-top:20px;display:;background-color:#ffffff;"
                       thediv.style = "height:800px;width:900px;padding-left:20px;padding-top:20px;display:;";
+                      parenttag = thediv.parentNode;
+                      parenttag.style.verticalAlign = "top";
+                      siblingtd = parenttag.previousSibling;
+                      //alert(siblingtd.tagName);
 		      uid = userid;
-		      thediv.innerHTML = "'" + xmlhttp.responseText + "'";
+		      createtestform = xmlhttp.responseText;
+		      createtestform = createtestform.replace("Create Test Form", "");
+		      lastslashpattern = /\<\/form\>\<\/div\> \\/g;
+		      createtestform = createtestform.replace(lastslashpattern, "</form></div>");
+		      thediv.innerHTML = createtestform;
+		      siblingtd.style.height = "1350px";
+		      siblingtd.previousSibling.style.height = "1350px";
 		      return (false);
 		    }
   		  }
