@@ -2759,6 +2759,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  //alert(emailslist.value);
   	 	  validfrom = document.getElementById('validfrom' + testid.toString());
 		  validtill = document.getElementById('validtill' + testid.toString());
+		  //alert(validtill.value);
+		  if(validtill.value == ""){
+		    alert("Valid Till should not be empty");
+		    return (0);
+		  }
 		  validfromvalue = validfrom.value;
 		  validfromvalues = validfromvalue.split("T");
 		  validfromvalueparts = validfromvalues[0].split("-");
