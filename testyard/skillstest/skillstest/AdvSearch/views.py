@@ -612,7 +612,10 @@ def displaychallenges(request):
                 continue
             validtillstr = str(validtill)
             validtillstrlist = validtillstr.split("+")
-            validtilldd = datetime.datetime.strptime(validtillstrlist[0], "%Y-%m-%d %H:%M:%S") #This will make this offset-naive
+            try:
+                validtilldd = datetime.datetime.strptime(validtillstrlist[0], "%Y-%m-%d %H:%M:%S") #This will make this offset-naive
+            except:
+                validtilldd = datetime.datetime.now()
             if validtilldd > curdatetime:
                 showable = False
                 break
@@ -626,12 +629,15 @@ def displaychallenges(request):
             validfrom, validtill = slot.split("#||#")
             if not validtill or validtill == "":
                 continue
-            validtilldd = datetime.datetime.strptime(validtill, "%Y-%m-%d %H:%M:%S")
+            try:
+                validtilldd = datetime.datetime.strptime(validtill, "%Y-%m-%d %H:%M:%S")
+            except:
+                validtilldd = datetime.datetime.now()
             if validtilldd > curdatetime:
                 showable = False
                 break
     if not showable:
-        message = "The test identified by name '%s' has an existing schedule in the future. Hence, the challenges are not accessible to the logged in user."%testobj.testname
+        message = "The test identified by name '%s' has an existing schedule in the future. Hence, the challenges are not accessible to the logged in user.<a href='#/' onclick='javascript:closescreen();'>Close</a>"%testobj.testname
         response = HttpResponse(message)
         return response
     # Display the challenges...
