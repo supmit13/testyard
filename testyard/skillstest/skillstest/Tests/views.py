@@ -1677,6 +1677,9 @@ def create(request):
         if exist_test_id and exist_test_id != "":
             testobj = Test.objects.filter(id=exist_test_id)[0]
     testobj.testname = testname
+    if testname.__len__() > 100:
+        message = "Error: Couldn't create test as the test name is too long. Please keep it within 100 characters."
+        return HttpResponse(message)
     if testtopic == "Other": # Topic is custom, so testobj.topicname will be "".
         topic = Topic()
         topic.topicname = othertopicname
@@ -5110,6 +5113,9 @@ def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
                 testobj = Test()
                 testobj.createdate = datetime.datetime.now()
                 testobj.testname = row[0].value.decode('utf-8', "replace")
+                if testobj.testname.__len__() > 100:
+                    message = "Error: Couldn't create test as the testname exceeds 100 characters."
+                    return message
                 testobj.testtype = row[1].value.decode('utf-8', "replace")
                 testobj.ruleset = row[2].value.decode('utf-8', "replace")
                 testobj.topicname = ""
@@ -5306,6 +5312,9 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
                     testobj = Test()
                     testobj.createdate = datetime.datetime.now()
                     testobj.testname = sheet.cell(row,0).value.decode('utf-8', "replace")
+                    if testobj.testname.__len__() > 100:
+                        message = "Error: Couldn't create test as the testname exceeds 100 characters."
+                        break
                     testobj.testtype = sheet.cell(row,1).value.decode('utf-8', "replace")
                     testobj.ruleset = sheet.cell(row,2).value.decode('utf-8', "replace")
                     if sheet.cell(row,3).value != "" and sheet.cell(row,3).value is not None:
@@ -5506,6 +5515,9 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                     testobj = Test()
                     testobj.createdate = datetime.datetime.now()
                     testobj.testname = row[0].decode('utf-8', 'replace')
+                    if testobj.testname.__len__() > 100:
+                        message = "Error: Couldn't create test as the testname exceeds 100 characters."
+                        return message
                     testobj.testtype = row[1]
                     testobj.testtype = testobj.testtype.replace('"', '')
                     testobj.testtype = testobj.testtype.strip()
@@ -5747,7 +5759,7 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
                 rowctr += 1
     except:
         message = "Exception occurred while creating test from file '%s': %s\n"%(os.path.basename(filepath), sys.exc_info()[1].__str__())
-        print message
+        #print message
         return message
     return 1
 
@@ -5770,6 +5782,9 @@ def create_test_from_xml(uploadedfile, filepath, testlinkid, userobj):
                 for infond in infonodes:
                     if infond.tag == 'testname':
                         testobj.testname = infond.text
+                        if testobj.testname.__len__() > 100:
+                            message = "Error: Couldn't create test as the testname exceeds 100 characters."
+                            return message
                     elif infond.tag == 'testtype':
                         testobj.testtype = infond.text
                     elif infond.tag == 'testrules':
