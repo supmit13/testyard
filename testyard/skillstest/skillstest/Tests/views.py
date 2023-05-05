@@ -6738,7 +6738,10 @@ def setschedule(request):
         schedule.slot = timeslot
         schedule.save()
         # Now fetch all emails from emails_new
-        emails_new = request.POST['emails_new']
+        try:
+            emails_new = request.POST['emails_new']
+        except:
+            emails_new = ""
         validfrom, validtill = start_new, end_new
         new_emails_list = emails_new.split(",")
         for new_email in new_emails_list:
@@ -6921,9 +6924,6 @@ def setschedule(request):
                 message += "Error: %s Making ammends to rectify the situation... All will be well.\n"%sys.exc_info()[1].__str__()
                 wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
                 wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
-                #fp = open("/home/supriyo/work/dddd2.txt", "w")
-                #fp.write(message)
-                #fp.close()
                 wbuobj.save() 
     message += " Updated existing schedules."
     response = HttpResponse(message)
