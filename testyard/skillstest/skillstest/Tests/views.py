@@ -5052,17 +5052,21 @@ def createtestbulkupload(request):
     for postparam in request.FILES.keys():
         uploadfilename = None
         #print request.FILES[postparam].name
+        fsz = request.FILES[postparam].size
+        if fsz > mysettings.MAX_FILE_SIZE_ALLOWED:
+            message += "Error: Couldn't upload file %s as it is larger than %s"%(request.FILES[postparam].name, str(mysettings.MAX_FILE_SIZE_ALLOWED/1000000) + " MB")
+            continue
         if request.FILES.has_key(postparam) and request.FILES[postparam].name != "" and uploadPattern.search(postparam):
             uploadfilename = request.FILES[postparam].name.split(".")[0]
         else:
             continue
         uploadedext = skillutils.get_extension2(request.FILES[postparam].name)
         if uploadedext.lower() != 'csv' and uploadedext.lower() != 'xls' and uploadedext.lower() != 'xlsx' and uploadedext.lower() != 'xml':
-            message = "Invalid test file format for POST parameter '%s'. Please upload 'csv' or 'xls(x)' or 'xml' files only."%postparam
+            message += "Error: Invalid test file format for POST parameter '%s'. Please upload 'csv' or 'xls(x)' or 'xml' files only."%postparam
             continue
         fpath, message, testmedia = skillutils.handleuploadedfile2(request.FILES[postparam], mysettings.MEDIA_ROOT + os.path.sep + username + os.path.sep + "bulkupload", uploadfilename)
         uploadedfile = request.FILES[postparam].name
-    uploaddict[uploadedfile] = [fpath, uploadedext]
+        uploaddict[uploadedfile] = [fpath, uploadedext]
     # At this point, all files have been uploaded. So we are ready to start creating the tests and their challenges.
     # Note: We will delete the entire 'bulkupload' folder (along with its contents) once all tests from those files have been created.
     testcount = 0

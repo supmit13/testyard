@@ -1407,7 +1407,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    var thediv=document.getElementById('createtestdiv');
 		    if(thediv.style.display == "none"){
 		        thediv.style.display = "";
-			//thediv.class = "semitrans";
+		        thediv.style='height:950px;width:700px;padding-left:10px;padding-top:10px;background-color:#ccffff;color:#0000aa;';
+			thediv.className = "container align-items-center justify-content-center";
 		        thediv.innerHTML = "{% include 'tests/upload_test_form.html' %}";
 		    }
 		    else{
