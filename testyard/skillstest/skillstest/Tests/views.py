@@ -6818,12 +6818,9 @@ def setschedule(request):
                     print "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message = "Error: sendemail failed for %s - %s\n"%(new_email, sys.exc_info()[1].__str__())
                 message += "Making ammends to rectify the situation... all will be well.\n"
-                #fp = open("/home/supriyo/work/dddd1.txt", "w")
-                #fp.write(message)
-                #fp.close()
-                utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second))
-                utobj.validtill = datetime.datetime(int(end_new_year), int(end_new_month), int(end_new_day), int(end_new_hour), int(end_new_minute), int(end_new_second))
-                utobj.save()
+                #utobj.validfrom = datetime.datetime(int(start_new_year), int(start_new_month), int(start_new_day), int(start_new_hour), int(start_new_minute), int(start_new_second))
+                #utobj.validtill = datetime.datetime(int(end_new_year), int(end_new_month), int(end_new_day), int(end_new_hour), int(end_new_minute), int(end_new_second))
+                #utobj.save()
                 error_emails_list.append(new_email)
                 continue # Continue processing the rest of the emails in the list.
         message = "Success! All candidates have been queued for email with the link."
@@ -6865,6 +6862,8 @@ def setschedule(request):
     for scheduleid in existing_schedules.keys():
         scheduleobj = Schedule.objects.get(id=scheduleid)
         starttime, endtime = existing_schedules[scheduleid]
+        if starttime == "" or endtime == "":
+            continue
         scheduleobj.slot = starttime + "#||#" + endtime
         scheduleobj.save()
         usertestqset = UserTest.objects.filter(schedule=scheduleobj)
@@ -6925,7 +6924,7 @@ def setschedule(request):
                 wbuobj.validfrom = datetime.datetime(int(starttime_year), int(starttime_month), int(starttime_day), int(starttime_hour), int(starttime_minute), int(starttime_second))
                 wbuobj.validtill = datetime.datetime(int(endtime_year), int(endtime_month), int(endtime_day), int(endtime_hour), int(endtime_minute), int(endtime_second))
                 wbuobj.save() 
-    message += " Updated existing schedules."
+    message += " Updated existing schedules. However, the following email Ids couldn't be handled: " + ", ".join(error_emails_list) 
     response = HttpResponse(message)
     return response
 
