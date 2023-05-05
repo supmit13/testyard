@@ -2327,8 +2327,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			correctanswer = correctanswer.replace("#||#", ", ");
 			html += "<br /><br /><b>Correct Answer: </b>" + correctanswer;
 			if(evalcommitstate == false){
-			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' class='form-control'>";
-			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 class='form-control'>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
+			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' class='form-control' maxlength='5'>";
+			    html += "<br /><br /><b>Comment/Feedback: </b><textarea name='evalcomment_" + cctr + "' id='evalcomment_" + cctr + "' rows=10 cols=40 maxlength='200' class='form-control'>" + decodeURIComponent(candidateresponse[challenge].evaluatorremarks) + "</textarea>";
 			}
 			else{
 			    html += "<br /><br /><b>Assessment: </b><input type='text' name='assessment_" + cctr + "' id='assessment_" + cctr + "' value='" + candidateresponse[challenge].evaluation + "' class='form-control' disabled>";
@@ -2340,7 +2340,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    }
 		    
 		    html += "<input type='hidden' name='maxcctr' id='maxcctr' value='" + cctr + "'>";
-		    html += "<b>Evaluator's Notes: </b><textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40 class='form-control'>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
+		    html += "<b>Evaluator's Notes: </b><textarea name='evaltestcomment' id='evaltestcomment' rows=10 cols=40 maxlength='200' class='form-control'>" + decodeURIComponent(responsedata.evaltestcomment) +"</textarea><br /><br />";
 		    if(evalcommitstate == false){
 		        html += "<b>Commit Evaluation:</b> <input type='checkbox' name='evalcommitstate' id='evalcommitstate' value='1'><br /><br />";
 		    }

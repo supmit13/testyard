@@ -4873,6 +4873,10 @@ def evaluateresponses(request):
         tabref = postdict['tabref']
     if postdict.has_key('evaltestcomment'):
         evaltestcomment = postdict['evaltestcomment']
+        if evaltestcomment.__len__() > 200:
+            message = "The comment for the entire evaluation cannot be stored as it is more than 200 characters long."
+            response = HttpResponse(message)
+            return response
     if postdict.has_key('evalcommitstate'):
         evalcommitstate = postdict['evalcommitstate']
     if testid:
@@ -4921,7 +4925,14 @@ def evaluateresponses(request):
             continue # no use retrieving other elements with same id as we won't be able to store those values against a challenge.
         if postdict.has_key('assessment_' + cctr.__str__()):
             assessment = postdict['assessment_' + cctr.__str__()]
-            if not testobj.negativescoreallowed and assessment == '-1':
+            try:
+                assessment = float(assessment)
+            except:
+                if assessment != '': # In case of '' value, we will not commit the evaluation later.
+                    message = "One of the assessment values is not numeric. Please rectify it and try again."
+                    response = HttpResponse(message)
+                    return response
+            if not testobj.negativescoreallowed and assessment == -1.0:
                 commitable = False
             elif testobj.negativescoreallowed == True and assessment == '':
                 commitable = False
@@ -4930,6 +4941,9 @@ def evaluateresponses(request):
             maxscore = postdict['maxscore_' + cctr.__str__()]
         if postdict.has_key('comments_' + cctr.__str__()):
             comments = postdict['comments_' + cctr.__str__()]
+            if comments.__len__() > 200:
+                message += "Warning: Comment # %s is greater than 200 characters long. Only part of the comment will be saved."%cctr
+                comments = comments[:200]
         if float(assessment) > float(maxscore):
             message += "Error: assessment greater than maxscore in challenge with Id %s<br />"%challengeid
             continue
