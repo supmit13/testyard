@@ -58,7 +58,7 @@
 		ul.tab li a:hover {background-color: #ddd;}
 
 		/* Create an active/current tablink class */
-		ul.tab li a:focus, .active {background-color: #ccc;}
+		ul.tab li a:focus, .active {background-color: #005680;}
 
 		/* Style the tab content */
 		.tabcontent {
@@ -84,14 +84,89 @@
 		  }
 		  document.getElementById(dataName).style.display = "block";
 		  evt.currentTarget.className += " active";
+		  document.getElementById("anal_technique_tab").value = dataName;
 	       }
-
-
+		
 	        google.charts.load('current', {'packages':['bar', 'scatterchart', 'calendar']});
 
-		function showStatHelp(){
-		    examplediv = document.getElementById('example');
+		function showstathelp(){
+		    statsanchor = document.getElementById('statshelp');
 		    // Display help explanation and example for every statistic served on this page.
+		    tabselected = document.getElementById("anal_technique_tab").value;
+		    stat_technique = "";
+		    if(tabselected == "testsascandidate"){
+		      stat_technique = document.getElementById("analytic_technique").options[document.getElementById("analytic_technique").options.selectedIndex].value;
+		    }
+		    else if(tabselected == "testsascreator"){
+		      stat_technique = document.getElementById("creator_analytic_technique").options[document.getElementById("creator_analytic_technique").options.selectedIndex].value;
+		    }
+		    else if(tabselected == "testsasevaluator"){
+		      stat_technique = document.getElementById("evaluator_analytic_technique").options[document.getElementById("evaluator_analytic_technique").options.selectedIndex].value;
+		    }
+		    /* else if(tabselected == "interviewsconducted"){
+		      stat_technique = document.getElementById("evaluator_analytic_technique").options[document.getElementById("evaluator_analytic_technique").options.selectedIndex].value;
+		    }
+		    else if(tabselected == "interviewsattended"){
+		      stat_technique = document.getElementById("evaluator_analytic_technique").options[document.getElementById("evaluator_analytic_technique").options.selectedIndex].value;
+		    } */
+		    // Display help text for each of the statistical techniques.		    
+		    if(stat_technique == "comp_topper"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_all"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_cats"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_chlg"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_mmm"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_cohort"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_sbt"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_ppt"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_ttperf"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "comp_passfail"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "creator_comp_scores"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "creator_comp_testpop"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "creator_show_testtimes"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "creator_comp_mmm"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "creator_comp_testusage"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "creator_comp_cohort"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "evaluator_ratio_pass_total"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "evaluator_count_evaluated_tests"){ 
+		      statsanchor.title = "Help text here...";
+		    }
+		    else if(stat_technique == "evaluator_ans_evaluated_by_time"){ 
+		      statsanchor.title = "Help text here...";
+		    }
 		}
 
 		function display_tests(){
@@ -107,6 +182,7 @@
 		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+  		        testsdiv.style = "";
 			testsdiv.innerHTML = xmlhttp.responseText;
 			document.frmanalytics.btndisplay.disabled= false;
   		      }
@@ -132,7 +208,7 @@
 		   postdata += "&role=creator";
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-  		        testsdiv.style = "";
+  		        testsdiv.style = "text-align:left;";
 			testsdiv.innerHTML = xmlhttp.responseText;
 			document.frmanalytics.creator_btndisplay.disabled= false;
   		      }
@@ -157,7 +233,7 @@
 		   postdata += "&role=evaluator";
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-  		        testsdiv.style = "";
+  		        testsdiv.style = "text-align:left;";
 			testsdiv.innerHTML = xmlhttp.responseText;
 			document.frmanalytics.evaluator_btndisplay.disabled= false;
   		      }
@@ -873,27 +949,27 @@
 			<div class="entry">
 			<form name='frmanalytics'>
 			<ul class="tab testtabUl" style="white-space:nowrap;width:1000px">
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
-			  <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
-                          <li><a href="#/" class="tablinks" onclick="openTab(event, 'interviewsattended')">Interviews Attended</a></li>
+                          <li><a href="#/" class="tablinks" id="candidatestab" onclick="openTab(event, 'testsascandidate')">Tests as Candidate</a></li>
+			  <li><a href="#/" class="tablinks" id="creatorstab" onclick="openTab(event, 'testsascreator')">Tests as Creator</a></li>
+                          <li><a href="#/" class="tablinks" id="evaluatorstab" onclick="openTab(event, 'testsasevaluator')">Tests as Evaluator</a></li>
+                          <li><a href="#/" class="tablinks" id="interviewerstab" onclick="openTab(event, 'interviewsconducted')">Interviews Conducted</a></li>
+                          <li><a href="#/" class="tablinks" id="intervieweestab" onclick="openTab(event, 'interviewsattended')">Interviews Attended</a></li>
                         </ul>
 			<br/><br/>
 			<span id='testsascandidate' style="display:block" class="tabcontent">
 			<div class='form-group'>
 			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Comparison Technique:</b></label>
-			    <select name='analytic_technique' onchange='javascript:displaynote();' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
-				<option value='comp_topper'>Compare with toppers (should select a single test topic)</option>
-				<option value='comp_all'>Compare with all (should select a single test after selecting topic)</option>
-				<option value='comp_cats'>Compare your scores on a topic (should select a single test topic)</option>
-				<option value='comp_chlg'>Compare your scores by challenge with topper(should select a single test)</option>
-				<option value='comp_mmm'>Compare mean, median and mode of all scores in a test (select a test)</option>
-				<option value='comp_cohort'>Other tests taken by users who took the selected test (select a test)</option>
-				<option value='comp_sbt'>Tests scores (under selected topic) against time (select a topic)</option>
-				<option value='comp_ppt'>Scores in percentage over time (under a selected topic)</option>
-				<option value='comp_ttperf'>Performance on different challenge types (under a topic)</option>
-				<option value='comp_passfail'>Pass and Fail in tests under a given topic against time (select topic)</option>
+			    <select name='analytic_technique' id='analytic_technique' onchange='javascript:displaynote();' class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
+				<option value='comp_topper'>Compare with toppers (should select a Skill Topic)</option>
+				<option value='comp_all'>Compare with all (should select a test after selecting a Skill Topic)</option>
+				<option value='comp_cats'>Compare your scores on a topic (should select a Skill Topic)</option>
+				<option value='comp_chlg'>Compare your scores by challenge with topper(should select a Test)</option>
+				<option value='comp_mmm'>Compare mean, median and mode of all scores in a test (select a Test)</option>
+				<option value='comp_cohort'>Other tests taken by users who took the selected test (select a Test)</option>
+				<option value='comp_sbt'>Tests scores (under selected topic) against time (select a Skill Topic)</option>
+				<option value='comp_ppt'>Scores in percentage over time (under a selected Skill Topic)</option>
+				<option value='comp_ttperf'>Performance on different challenge types (under a Skill Topic)</option>
+				<option value='comp_passfail'>Pass and Fail in tests under a given topic against time (select Skill Topic)</option>
 			    </select>
 			    </div>
 			    <div id='notes'></div>
@@ -921,7 +997,7 @@
 			 
 			<div class='form-group'>
 			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Comparison Technique:</b></label>
-			    <select name='creator_analytic_technique' onchange='javascript:displaynote();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
+			    <select name='creator_analytic_technique' id='creator_analytic_technique' onchange='javascript:displaynote();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='creator_comp_scores'>Display scores of candidates in selected test</option>
 				<option value='creator_comp_testpop'>Compare test popularity in selected topic</option>
 				<option value='creator_show_testtimes'>Times at which selected test has been taken by candidates</option>
@@ -956,7 +1032,7 @@
 			<span id='testsasevaluator' style="" class="tabcontent">
 			  <div class='form-group'>
 			    <label color='#0000AA' style='width:300px;padding-left:5px;display:inline-block;'><b>Select a Comparison Technique:</b></label>
-			    <select name='evaluator_analytic_technique' onchange='javascript:displaynote();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
+			    <select name='evaluator_analytic_technique' id='evaluator_analytic_technique' onchange='javascript:displaynote();' class='form-control input-lg' style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'>
 				<option value='evaluator_ratio_pass_total'>Ratio of number of pass grades to number of evaluated answers for a selected test.</option>
 				<option value='evaluator_count_evaluated_tests'>Count of distinct tests evaluated under a selected topic.(Select a topic only).</option>
 				<option value='evaluator_ans_evaluated_by_time'>Plot of answer scripts evaluated for a given topic over a span of time.(Select a topic only).</option>
@@ -991,10 +1067,16 @@
 			{% csrf_token %}
 			</form>
 			</div>
-			<div id='example'><font color='#00AA00' size=-1><a href='#' onClick='javascript:showStatHelp();'>What does this statistic mean?</a></font></div>
+			<div id='example'><font color='#00AA00' size=-1><a href='#' id="statshelp" onmouseover='javascript:showstathelp();'>What does this statistic mean?</a></font></div>
+			<input type='hidden' name='anal_technique_tab' id='anal_technique_tab' value=''>
 
 		</div>
-		
+		<script language='Javascript'>
+		// Making sure openTab is called on creatortab when the window loads.
+		 var evt = document.createEvent('Event');  
+		 evt.initEvent('click', false, false);  
+		 document.getElementById("candidatestab").dispatchEvent(evt);
+		</script>
 		<!-- ### Post Entry End ###  -->
 		
 	{% include "inc/html_foot.html" %}
