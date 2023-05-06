@@ -4664,7 +4664,12 @@ def groupimagechange(request):
         response = HttpResponse(message)
         return response
     grpname = grpobj.groupname
-    if request.FILES.has_key('grouppic'):
+    allowed_extensions = ['gif', 'jpg', 'jpeg', 'png', 'svg', 'tiff', 'bmp']
+    if request.FILES.has_key('grouppic') and request.FILES['grouppic'] is not None:
+        fext = request.FILES['grouppic'].name.split(".")[-1]
+        if fext not in allowed_extensions:
+            message = "Error: File should be one of the following types: %s"%", ".join(allowed_extensions)
+            return HttpResponse(message)
         fpath, message, grouppic = skillutils.handleuploadedfile(request.FILES['grouppic'], mysettings.MEDIA_ROOT + os.path.sep + grpobj.owner.displayname + "/groups/" + grpname, grpname)
         errorpattern = re.compile("^error\:", re.IGNORECASE)
         if re.search(errorpattern, message):
