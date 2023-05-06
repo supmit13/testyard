@@ -222,12 +222,21 @@
 				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>Subscription Fee *: </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;word-wrap:break-word;'>" + jsoncontent[fieldname] + "</div></div>";
 				}
 				else{
-				    htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent[fieldname] + "</div></div>";
+				    if(fieldname != 'showjoinbutton' && fieldname != 'showmanagebutton' && fieldname != 'groupid'){
+				        htmlcontent += "<div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>" + fieldname + ": </div><div class='column' style='padding-left:10px;padding-right:10px;color:#0000AA;'>" + jsoncontent[fieldname] + "</div></div>";
+				    }
 				}
 				htmlcontent += "<div class='row'><hr></div>";
 			    }
 			  }
-			  htmlcontent += "<br/><div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'><input type='button' name='closegroupdata' id='closegroupdata' value='Close' class='btn btn-primary' style='width:80px;' onclick='javascript:closescreen();'></div><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>&nbsp;</div></div>";
+			  htmlcontent += "<br/><div class='row'><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'><input type='button' name='closegroupdata' id='closegroupdata' value='Close' class='btn btn-primary' style='width:80px;' onclick='javascript:closescreen();'>";
+			  if(jsoncontent['showjoinbutton'] == true){
+			      htmlcontent += "&nbsp;&nbsp;<input type='button' name='joingroupbtn' id='joingroupbtn' value='Join Group' class='btn btn-primary' style='width:80px;' onclick='javascript:joingroup(" + jsoncontent['groupid'] + ");'>"
+			  }
+			  if(jsoncontent['showmanagebutton'] == true){
+			      htmlcontent += "&nbsp;&nbsp;<input type='button' name='managegroupbtn' id='managegroupbtn' value='Manage Group' class='btn btn-primary' style='width:80px;' onclick='javascript:managegroup(" + jsoncontent['groupid'] + ");'>"
+			  }
+			  htmlcontent += "</div><div class='column' style='padding-left:10px;padding-right:10px;font-weight:bold;color:#0000AA;'>&nbsp;</div></div>";
 			  htmlcontent += "</div>"; //container div ends here.
 			  divscr.innerHTML = htmlcontent;
 			  return (true);
@@ -236,8 +245,17 @@
 		    xmlhttp.open("POST", '{{ groupdataurl }}', true);
 		    xmlhttp.send(postdata);
 		}
-
-
+		
+		
+		function joingroup(gid){
+		    
+		}
+		
+		function managegroup(gid){
+		    
+		}
+		
+		
 		function displaytestsdata(displayname){
 		    var xmlhttp;
 		    if (window.XMLHttpRequest){
@@ -365,7 +383,7 @@
 		  opacity: 0.9;
 		  -moz-opacity: .90; 
 		  -khtml-opacity: 0.9;
-		  background-color:#669999;
+		  background-color:#ccffff;
 		  color:#FFFFFF;
 		  position:absolute; top:250px; left:0px; width:125%; height:250%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 		}
@@ -394,12 +412,21 @@
 			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Enter Username:</label></td><td><input type='text' name='username' value='' id='username'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
 			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Search Phrase:</label></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
 			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchuser' id='searchuser' onClick='javascript:conductsearchuser();' value='Search Users'  class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr>
-
+		<!-- 
+		Groups Search can be done from Network app, so it is not made functional here. 
+		In order to make this functional, 2 functions - 'joingroup' and 'managegroup',
+		need to be defined here so that such activity may be performed from the 
+		AdvSearch app. That implies all UI logic pertaining to payment gateway need
+		to be implemented here in the context of AdvSearch app. That doesn't add any 
+		value to the entire application as of now, and hence it is disabled on AdvSearch
+		app for now.
+		
 			<tr><td colspan=3><hr></td></tr>
 			<tr><td align='center' colspan=3><font color='#0000AA' style='font-weight:bold'>Search Groups</font></td></tr>
 			<tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Enter Group Name:</label></td><td><input type='text' name='grpname' value='' id='grpname'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr>
-			<!-- <tr><td align='right' nowrap><label style='width:300px;padding-left:5px;display:inline-block;color:#0000AA;'>Search Phrase:</label></td><td><input type='text' name='usr_searchphrase' value='' id='usr_searchphrase'  class="form-control input-lg" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td><td>&nbsp;</td></tr> -->
-			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchgroup' id='searchgroup' onClick='javascript:conductsearchgroup();' value='Search Groups' class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr>
+			<tr><td align='center'>&nbsp;</td><td align='center' colspan=2><input type='button' name='searchgroup' id='searchgroup' onClick='javascript:conductsearchgroup();' value='Search Groups' class="btn btn-primary" style='width:300px;margin-bottom:5px;padding-left:5px;display:inline-block;justify:right;align:right;'></td></tr> 
+		-->	
+			
 			</table>
 
 			{% csrf_token %}

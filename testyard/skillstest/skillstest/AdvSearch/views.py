@@ -316,7 +316,18 @@ def getgroupdata(request):
         message = sys.exc_info()[1].__str__()
         response = HttpResponse(json.dumps({'err' : message}))
         return response
-    groupdict = {'groupname' : grpobj.groupname, 'owner' : grpobj.owner.displayname, 'tagline' : grpobj.tagline, 'memberscount' : str(grpobj.memberscount), 'topic' : grpobj.basedontopic, 'status' : grpobj.status, 'createdon' : str(grpobj.creationdate.year) + '-' + str(grpobj.creationdate.month) + '-' + str(grpobj.creationdate.day) + ' ' + str(grpobj.creationdate.hour) + ':' + str(grpobj.creationdate.minute) + ':' + str(grpobj.creationdate.second) + ' ' + str(grpobj.creationdate.tzinfo), 'groupimage' : "/media/%s/groups/%s/"%(grpobj.owner.displayname, grpobj.groupname) + str(grpobj.groupimagefile), 'ispaid' : grpobj.ispaid, 'entryfee' : grpobj.currency + " " + str(grpobj.entryfee), 'subscriptionfee' : grpobj.currency + " " + str(grpobj.subscription_fee), 'subscriptionperiod' : str(grpobj.subscriptionperiod), 'description' : grpobj.description}
+    groupdict = {'groupid' : grpobj.id, 'groupname' : grpobj.groupname, 'owner' : grpobj.owner.displayname, 'tagline' : grpobj.tagline, 'memberscount' : str(grpobj.memberscount), 'topic' : grpobj.basedontopic, 'status' : grpobj.status, 'createdon' : str(grpobj.creationdate.year) + '-' + str(grpobj.creationdate.month) + '-' + str(grpobj.creationdate.day) + ' ' + str(grpobj.creationdate.hour) + ':' + str(grpobj.creationdate.minute) + ':' + str(grpobj.creationdate.second) + ' ' + str(grpobj.creationdate.tzinfo), 'groupimage' : "/media/%s/groups/%s/"%(grpobj.owner.displayname, grpobj.groupname) + str(grpobj.groupimagefile), 'ispaid' : grpobj.ispaid, 'entryfee' : grpobj.currency + " " + str(grpobj.entryfee), 'subscriptionfee' : grpobj.currency + " " + str(grpobj.subscription_fee), 'subscriptionperiod' : str(grpobj.subscriptionperiod), 'description' : grpobj.description}
+    # If user is not a member of this group (and also not the owner of the group), then allow the display of a join button.
+    allgroupmembersqset = GroupMember.objects.filter(group=grpobj)
+    allmembers = []
+    for grpmember in allgroupmembersqset:
+        allmembers.append(grpmember.member)
+    groupdict['showjoinbutton'] = False
+    groupdict['showmanagebutton'] = False
+    if userobj != grpobj.owner and userobj not in allmembers:
+        groupdict['showjoinbutton'] = True
+    elif userobj == grpobj.owner:
+        groupdict['showmanagebutton'] = True
     jsoncontent = json.dumps(groupdict)
     response = HttpResponse(jsoncontent)
     return response
