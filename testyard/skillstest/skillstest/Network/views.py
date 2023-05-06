@@ -1500,10 +1500,18 @@ def groupimgupload(request):
             response = HttpResponse(message)
             return response
         groupobj = groupqset[0]
-    if request.FILES.has_key('profpic'):
+    if request.FILES.has_key('profpic') and request.FILES['profpic'] is not None:
+        errorpattern = re.compile("^error\:", re.IGNORECASE)
+        fext = request.FILES['profpic'].name.split(".")[-1]
+        if fext not in mysettings.ALLOWED_IMAGE_EXTENSIONS:
+            message = "Error: File should be one of the following types: %s"%", ".join(mysettings.ALLOWED_IMAGE_EXTENSIONS)
+            return HttpResponse(message)
         grpimgpath = mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "groups" + os.path.sep + groupname
         imagefilename = request.FILES['profpic'].name.split(".")[0]
         fpath, message, profpic = skillutils.handleuploadedfile2(request.FILES['profpic'], grpimgpath, imagefilename)
+        if re.search(errorpattern, message):
+            message = errorpattern.sub("", message)
+            return HttpResponse(message)
         groupobj.groupimagefile = profpic
         try:
             groupobj.save()
