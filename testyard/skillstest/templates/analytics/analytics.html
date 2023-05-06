@@ -102,17 +102,19 @@
 		   else{
 		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		   }
+		   testsdiv = document.getElementById('testnames');
 		   ttopic = document.frmanalytics.test_cat.options[document.frmanalytics.test_cat.options.selectedIndex].value;
 		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value; 
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-    		        testsdiv = document.getElementById('testnames');
 			testsdiv.innerHTML = xmlhttp.responseText;
 			document.frmanalytics.btndisplay.disabled= false;
   		      }
   		    };
   		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
   		    xmlhttp.send(postdata);
+  		    testsdiv.style = "text-align:center;";
+  		    testsdiv.innerHTML = "<img src='/static/images/loading_small.gif'>";
 		}
 
 
@@ -124,18 +126,21 @@
 		   else{
 		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		   }
+		   testsdiv = document.getElementById('creator_testnames');
 		   ttopic = document.frmanalytics.creator_test_cat.options[document.frmanalytics.creator_test_cat.options.selectedIndex].value;
 		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
 		   postdata += "&role=creator";
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-    		        testsdiv = document.getElementById('creator_testnames');
+  		        testsdiv.style = "";
 			testsdiv.innerHTML = xmlhttp.responseText;
 			document.frmanalytics.creator_btndisplay.disabled= false;
   		      }
   		    };
   		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
   		    xmlhttp.send(postdata);
+  		    testsdiv.style = "text-align:center;";
+  		    testsdiv.innerHTML = "<img src='/static/images/loading_small.gif'>";
 		}
 
 		function evaluator_display_tests(){
@@ -146,18 +151,21 @@
 		   else{
 		      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 		   }
+		   testsdiv = document.getElementById('evaluator_testnames');
 		   ttopic = document.frmanalytics.evaluator_test_cat.options[document.frmanalytics.evaluator_test_cat.options.selectedIndex].value;
 		   postdata = "test_topic=" + ttopic + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
 		   postdata += "&role=evaluator";
 		    xmlhttp.onreadystatechange = function(){
   		      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-    		        testsdiv = document.getElementById('evaluator_testnames');
+  		        testsdiv.style = "";
 			testsdiv.innerHTML = xmlhttp.responseText;
 			document.frmanalytics.evaluator_btndisplay.disabled= false;
   		      }
   		    };
   		    xmlhttp.open("POST", '{{ gettestsbytopicurl }}', true); 
   		    xmlhttp.send(postdata);
+  		    testsdiv.style = "text-align:center;";
+  		    testsdiv.innerHTML = "<img src='/static/images/loading_small.gif'>";
 		}
 
 
@@ -317,7 +325,7 @@
 			    i = 1;
 		    	    for (testname in chartdataobj){
    			        if (chartdataobj.hasOwnProperty(testname)){
-       			            scores = chartdataobj[testname];
+       			    scores = chartdataobj[testname];
 			            myscore = scores[0];
 			            maxscore = scores[1];
 			            scoredata = [testname, parseFloat(myscore), parseFloat(maxscore) ];
@@ -647,7 +655,8 @@
 			    i = 1;
 		    	    for (statname in chartdataobj){
    			        if (chartdataobj.hasOwnProperty(statname)){
-       			            count = chartdataobj[statname];
+       			    count = chartdataobj[statname];
+       			    //alert("Stat: " + statname + ", Value: " + parseFloat(count));
 			            scoredata = [statname, parseFloat(count) ];
 			            chartdata[i] = scoredata;
 				    //nodataflag = 0;

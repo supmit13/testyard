@@ -529,7 +529,9 @@ def comparescoresmmm(request):
     smean = scoresum/testscoreslist.__len__()
     mindx = 0
     if testscoreslist.__len__() % 2 == 1:
-        mindx = int(testscoreslist.__len__())/2 + 1
+        mindx = int(testscoreslist.__len__()/2) + 1
+    else:
+        mindx = testscoreslist.__len__()/2
     testscoreslist.sort()
     smedian = testscoreslist[mindx]
     scoresdict = {}
@@ -1393,7 +1395,9 @@ def creatortestmmm(request):
     smean = scoresum/testscoreslist.__len__()
     mindx = 0
     if testscoreslist.__len__() % 2 == 1:
-        mindx = int(testscoreslist.__len__())/2 + 1
+        mindx = int(testscoreslist.__len__()/2) + 1
+    else:
+        mindx = testscoreslist.__len__()/2
     testscoreslist.sort()
     smedian = testscoreslist[mindx]
     scoresdict = {}
