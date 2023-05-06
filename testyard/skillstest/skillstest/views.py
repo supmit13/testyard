@@ -533,7 +533,11 @@ def profileimagechange(request):
     userobj = sessionobj[0].user
     message = ""
     errorpattern = re.compile("^error\:", re.IGNORECASE)
-    if request.FILES.has_key('profpic'):
+    if request.FILES.has_key('profpic') and request.FILES['profpic'] is not None:
+        fext = request.FILES['profpic'].name.split(".")[-1]
+        if fext not in mysettings.ALLOWED_IMAGE_EXTENSIONS:
+            message = "Error: File should be one of the following types: %s"%", ".join(mysettings.ALLOWED_IMAGE_EXTENSIONS)
+            return HttpResponse(message)
         fpath, message, profpic = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "images")
         if re.search(errorpattern, message):
             message = errorpattern.sub("", message)
