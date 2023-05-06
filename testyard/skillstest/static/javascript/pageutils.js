@@ -94,8 +94,8 @@ function generateuuid(){
 function uploader(viewurl, csrftoken){
   var thediv=document.getElementById('uploadbox');
   if(thediv.style.display == "none"){
-    thediv.style.display = "";
-    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><center><input type='file' name='profpic' value=''><input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();'><input type='button' name='btnclose' value='Close' onClick='javascript:closeimgscreen();'></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'></form>";
+    thediv.style = "opacity:1.0;display:;background-color:#ccffff;height:125px;";
+    thediv.innerHTML = "<form name='profimageuploadform' action='" + viewurl + "' enctype='multipart/form-data' method='POST'><div class='row' style='text-align:center;display:flex;position:relative;top:20px;left:40px;border-radius:3px;border-style:groove;border-color:#aaaacc;width:450px;padding:5px;'><input type='file' name='profpic' value='' class='form-control' style='width:200px;'>&nbsp;&nbsp;<input type='button' name='btnupload' value='Go' onClick='javascript:uploadimage();' class='btn btn-primary' style='width:100px;'>&nbsp;&nbsp;<input type='button' name='btnclose' value='Close' onClick='javascript:closeimgscreen();' class='btn btn-testyard1' style='width:100px;'></div><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'></form>";
   }
   else{
     thediv.style.display = "none";
@@ -137,7 +137,9 @@ function uploadimage(){
     document.getElementById('uploadbox').innerHTML = '';
   }
   else if(xmlhttp.readyState == 3 && xmlhttp.status==413){
-    alert("The uploaded image is larger than the allowed size (in bytes). Please select a smaller image to upload. Kindly keep the size below 1 MB.");
+    alert("The uploaded image is larger than the allowed size (5 MB). Please select a smaller image to upload.");
+    document.getElementById('uploadbox').style.display = 'none';
+    document.getElementById('uploadbox').innerHTML = '';
     return(0);
   }
   };
@@ -145,7 +147,7 @@ function uploadimage(){
   xmlhttp.send(postdata);
   // Display the rotating activity small icon
   document.getElementById('uploadbox').style.display = '';
-  document.getElementById('uploadbox').innerHTML += "<br /><img src='static/images/loading_small.gif'>";
+  document.getElementById('uploadbox').innerHTML += "<br/><img src='static/images/loading_small.gif'>";
 }
 
 function checknumeric(field){

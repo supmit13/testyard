@@ -185,6 +185,7 @@ error_codes = { \
         '1185' : 'Required parameter schedule Id missing.',\
         '1186' : 'Could not find schedule object matching the given Id.',\
         '1187' : 'Could not find required parameters start and/or end.',\
+        '2099' : 'Requested user is not the same as the user in session. Possibly, your session is corrupt or non-existent. Please login to try again.', \
     }
 
 def error_msg(code):

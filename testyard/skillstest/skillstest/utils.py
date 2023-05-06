@@ -351,7 +351,7 @@ def handleuploadedfile(uploaded_file, targetdir, filename=mysettings.PROFILE_PHO
     """
     mkdir_p(targetdir)
     if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
-        message = error_msg['1005']
+        message = "Error: " + error_msg('1005')
         return [ None, message, '' ]
     ext = get_extension(uploaded_file.name)
     destinationfile = os.path.sep.join([ targetdir, filename + "." + ext, ])
@@ -372,7 +372,7 @@ def handleuploadedfile2(uploaded_file, targetdir, filename=mysettings.PROFILE_PH
     """
     mkdir_p(targetdir)
     if uploaded_file.size > mysettings.MAX_FILE_SIZE_ALLOWED:
-        message = error_msg['1005']
+        message = "Error: " + error_msg('1005')
         return [ None, message, '' ]
     ext = get_extension2(uploaded_file.name)
     destinationfile = os.path.sep.join([ targetdir, filename + "." + ext, ])

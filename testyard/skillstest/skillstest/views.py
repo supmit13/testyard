@@ -532,8 +532,12 @@ def profileimagechange(request):
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
     message = ""
+    errorpattern = re.compile("^error\:", re.IGNORECASE)
     if request.FILES.has_key('profpic'):
         fpath, message, profpic = skillutils.handleuploadedfile(request.FILES['profpic'], mysettings.MEDIA_ROOT + os.path.sep + userobj.displayname + os.path.sep + "images")
+        if re.search(errorpattern, message):
+            message = errorpattern.sub("", message)
+            return HttpResponse(message)
         userobj.userpic = profpic
         try:
             userobj.save()
