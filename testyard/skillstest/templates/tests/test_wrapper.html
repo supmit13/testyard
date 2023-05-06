@@ -10,6 +10,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width">
 
+<!-- New interface code starts here -->
+	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<style>
+	a.btn {border-radius: .25rem; border: 1px solid transparent; padding: .5rem 1rem; color: #fff; width: 350px; height:38px;}
+	a.btn:hover { border-radius: .25rem; }
+	</style>
+<!-- New interface code ends here -->
+
 {% autoescape on %}
 <style>
 	.semitranstesttaker {
@@ -18,8 +27,8 @@
 	  opacity: 0.9;
 	  -moz-opacity: .90; 
 	  -khtml-opacity: 0.9;
-	  background-color:#669999;
-	  color:#FFFFFF;
+	  background-color:#ccffff;
+	  color:#0000aa;
 	  position:absolute; top:180px; left:0px; width:100%; height:200%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
 </style>
@@ -274,7 +283,7 @@ function decryptwrapper(encjson){
 
 
 function nomorechallenges_old(testname, testid, starttime, tabref, tabid){
-    nomorehtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>There are no more challenges beyond this screen. If you have completed the test, you may choose to exit the test environment by clicking on the button below. Alternatively, you may remain logged in to the test as long as the test duration doesn't expire. If the rules for this test permit, you may make use of this time by reviewing your responses to the challenges.<br /></font><br /><input type='button' name='exitenv' id='exitenv' value='Exit Test Environment' onClick='javascript:endtest(testname, testid, starttime, tabref, tabid);'><div id='saveendtest' style='display:none;'></div></font></center></form>";
+    nomorehtml = "<form name='frmchallenge' id='frmchallenge' method='POST'><center><font color='#0000AA' style='font-weight:bold;'>There are no more challenges beyond this screen. If you have completed the test, you may choose to exit the test environment by clicking on the button below. Alternatively, you may remain logged in to the test as long as the test duration doesn't expire. If the rules for this test permit, you may make use of this time by reviewing your responses to the challenges.<br /></font><br /><input type='button' name='exitenv' id='exitenv' value='Exit Test Environment' onClick='javascript:endtest(testname, testid, starttime, tabref, tabid);' class='btn btn-primary'><div id='saveendtest' style='display:none;'></div></font></center></form>";
     return(nomorehtml);
 }
 
@@ -313,7 +322,7 @@ function endtest(testname, testid, starttime, tabref, tabid){
     saveenddiv = document.getElementById('saveendtest');
     saveenddiv.style.display = "";
     saveenddiv.innerHTML = "This will take you away from this page by closing the window. The test will be considered as completed by you. Do you want to continue?"
-    saveenddiv.innerHTML += "<input type='button' name='btnyes' value='Yes' onClick='javascript:decide(1);'>&nbsp;&nbsp;<input type='button' name='btnno' value='No' onClick='javascript:decide(0);'>";
+    saveenddiv.innerHTML += "<input type='button' name='btnyes' value='Yes' onClick='javascript:decide(1);' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='btnno' value='No' onClick='javascript:decide(0);' class='btn btn-primary'>";
 }
 
 
@@ -485,7 +494,7 @@ function sendtoserver(postdata){
     starttime = jsdatetomysqldatetime(String(starttime));
     qareadiv.innerHTML += "<font color='#0000AA'>This test falls in the '" + topicname + "' category.</font><br /><br />";
     qareadiv.innerHTML += "<br /><br /><font color='#AA1111' style='font-weight:bold;'><u>Please note: Trying to refresh the screen using F5 or the browser's 'Refresh' button will end this test abruptly. Hence we have put locks on these buttons so that such actions may be performed only on receiving explicit consent from you. Please also note that trying to move away from this tab/window during the course of the test will be reported.</u></font><br /><br />";
-    qareadiv.innerHTML += "<center><input type='button' name='btnfacethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");'><div id='saveendtest' style='display:none;'></div></center><br/>";
+    qareadiv.innerHTML += "<center><input type='button' name='btnfacethemusic' value='Start Answering' onClick='javascript:facethemusic(\"" + encjson + "\", \"" + starttime + "\");' class='btn btn-primary'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value='Save All Responses and End Test' onClick='javascript:endtest(\"" + testname + "\", \"" + testid + "\", \"" + starttime + "\", \"" + tabref + "\", \"" + tabid + "\");' class='btn btn-testyard1'><div id='saveendtest' style='display:none;'></div></center><br/>";
     // Make a check here to see if starttest
     clock();
     encodedemail = Base64.encode(targetemail);
@@ -1951,7 +1960,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	    //if(jsonobj.challenges[challenge].mathenv.toString() == "1"){
 	    //    pages[pagectr][0] += "<b>Enable Math Keyboard:</b>&nbsp;&nbsp;<input type='checkbox' id='respmathenv_" + jsonobj.challenges[challenge].chid + "' name='respmathenv_" + jsonobj.challenges[challenge].chid + "' value='1'  onclick='showhidemathkeyboard(\"" + jsonobj.challenges[challenge].chid + "\")'><br/>";
 	    //}
-            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id=\"sa\" style=\"display:block;\"></span>";
+            pages[pagectr][0] += "<b>Enter response:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' class='form-control' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><br /><br /><span id=\"sa\" style=\"display:block;\"></span>";
         }
         else if(jsonobj.challenges[challenge].challengetype == 'CODN'){ // Get and embed editor from codemirror
 	    //alert("HERE");
@@ -1960,11 +1969,11 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
             challengearg = challengearg.replace("<", "__LT__");
 	    challengeargenc = Base64.encode(challengearg);
 	    if(jsonobj.challenges[challenge].proglang != ""){
-                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><input type='hidden' name='codescreen' value='codescreen'><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");'> --><div id='output'></div><br /><br />";
+                pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' class='form-control' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><input type='hidden' name='codescreen' value='codescreen'><span id='co' style='display:block;'></span><!-- <input type='button' name='btncodeexec_" + jsonobj.challenges[challenge].chid + "' id='btncodeexec_" + jsonobj.challenges[challenge].chid + "' value='Run Code' onClick='javascript:code_exec(\"" + jsonobj.testid + "\", \"" + jsonobj.challenges[challenge].chid + "\", \"" + jsonobj.targetemail + "\");' class='btn btn-primary'> --><div id='output'></div><br /><br />";
 	    }
 	    else{
 		challengeargenc = Base64.encode(challengearg);
-		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><input type='hidden' name='codescreen' value='codescreen'><span id=\"co\" style=\"display:block;\"></span><div id='output'></div><br /><br />";
+		pages[pagectr][0] += "<b>Write Code here:</b><br /><textarea name='id_" + jsonobj.challenges[challenge].chid + "' id='id_" + jsonobj.challenges[challenge].chid + "' rows='2' cols='10' class='form-control' style='width:600px;height:200px;border:1px solid #0000AA;' onkeydown='javascript:checkresponselength(event," + jsonobj.challenges[challenge].chid + ", \"" + challengeargenc + "\");' maxlength='" + jsonobj.challenges[challenge].maxresponsesizeallowable + "'></textarea><input type='hidden' name='codescreen' value='codescreen'><span id=\"co\" style=\"display:block;\"></span><div id='output'></div><br /><br />";
 	    }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'MULT'){
@@ -1982,7 +1991,7 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__LT__/g, "&lt;");
                         //alert(jsonobj.challenges[challenge][key]);
                         //pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
-			pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+			pages[pagectr][0] += "<input type='checkbox' name='option_" + optionctr + "' id='option_" + optionctr + "' value='" + checkboxvalue + "' onmousedown='javascript:switchbutton(\"checkbox\",\"option_" + optionctr + "\");' class='form-control'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
@@ -2003,14 +2012,14 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 			//jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/</g, "__LT__");
 			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__GT__/g, "&gt;");
 			jsonobj.challenges[challenge][key] = jsonobj.challenges[challenge][key].replace(/__LT__/g, "&lt;");
-                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "' onmousedown=\"javascript:switchbutton(\'radio\', \'rdoption_" + optionctr + "\');\">&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
+                        pages[pagectr][0] += "<input type='radio' name='rdoption' id='rdoption_" + optionctr + "' value='" + radiobuttonvalue + "' onmousedown=\"javascript:switchbutton(\'radio\', \'rdoption_" + optionctr + "\');\" class='form-control'>&nbsp;&nbsp;<b>" + jsonobj.challenges[challenge][key] + "</b><br />";
                         optionctr++;
                     }
                 }
             }
         }
         else if(jsonobj.challenges[challenge].challengetype == 'FILB'){
-            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;' value='Enter your answer here' onClick='javascript:this.value=\"\";'><br />";
+            pages[pagectr][0] += "<b>Fill in the blank: </b><input type='text' name='filb_" + jsonobj.challenges[challenge].chid + "' style='width:600px;border:1px solid #000000;' value='Enter your answer here' onClick='javascript:this.value=\"\";' class='form-control'><br />";
         }
         pages[pagectr][0] += "<br /><font size=-1>You may use the <a href=\"/static/mathkbd_response.html\" target=\"_blank\">LaTeX keyboard</a> to answer the questions if you need to use special characters</font><br />";
         pages[pagectr][0] += "<br /><font size=-1>Time Alloted for this challenge: " + jsonobj.challenges[challenge].timeframe + " seconds</font><br />";
@@ -2018,10 +2027,10 @@ function getchallenges(encjson, starttime, mytime, ruleflag){
 	//alert(ruleflag);
 		testpagesstr = Base64.encode(JSON.stringify(pages));
 		if(ruleflag != 1){
-            pages[pagectr][0] += "<input type=\"button\" name=\"btnnextchallenge\" id=\"btnnextchallenge\" value=\"Next Challenge\" onClick=\"javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " '" + mytime + "', '" + ruleflag + "', '" + jsonobj.tabtype + "', " + jsonobj.tabid + ");\">&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
+            pages[pagectr][0] += "<input type=\"button\" name=\"btnnextchallenge\" id=\"btnnextchallenge\" value=\"Next Challenge\" onClick=\"javascript:nextchallenge(" + pagectr + ", ####RANDOMLIST####, " + " '" + mytime + "', '" + ruleflag + "', '" + jsonobj.tabtype + "', " + jsonobj.tabid + ");\" class='btn btn-primary'>&nbsp;&nbsp;<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\" class='btn btn-primary'><div id=\"saveendtest\" style=\"display:none;\"></div>";
 		}
 		else{ // showatonce
-			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\"><div id=\"saveendtest\" style=\"display:none;\"></div>";
+			pages[pagectr][0] += "<br><br><hr><br><input type='button' name='btnendtest' value=\"Save All Responses and End Test\" onClick=\"javascript:endtest('" + testname + "', {{ testid }}, '" + starttime + "', '" + jsonobj.tabtype + "', '" + jsonobj.tabid + "');\" class='btn btn-primary'><div id=\"saveendtest\" style=\"display:none;\"></div>";
 		}
 	challengestmt = challenge;
 	challengestmt = challengestmt.replace(/'/g, "&amp;apos;");
@@ -2061,7 +2070,7 @@ function handletest(encjson){
     qareadiv.innerHTML = "<center><h2><font color='#0000AA'>" + jsonobj.testname + "</font></h2></center><br /><center><h3><font color='#0000AA'> - " + jsonobj.creator + "</font></h3></center>";
     qareadiv.innerHTML += "<span><b><font color='#0000AA'>You may start taking this test by clicking on the 'Start Test' button below. Alternatively,<br />you may come back to take this test later.</font></b></span>";
     numchallenges = Object.keys(jsonobj.challenges).length;
-    qareadiv.innerHTML += "<br /><center><input type='button' name='starttest' value='Start Test' onClick='javascript:starttest(\"" + encjson + "\");'>&nbsp;&nbsp;<input type='button' name='notnow' value='No, not now' onClick='javascript:closetest();'></center>";
+    qareadiv.innerHTML += "<br /><center><input type='button' name='starttest' value='Start Test' onClick='javascript:starttest(\"" + encjson + "\");' class='btn btn-primary'>&nbsp;&nbsp;<input type='button' name='notnow' value='No, not now' onClick='javascript:closetest();' class='btn btn-testyard1'></center>";
 }
 
 
