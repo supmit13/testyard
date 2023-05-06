@@ -243,16 +243,16 @@
 		    testid = document.frmanalytics.usertests.options[document.frmanalytics.usertests.options.selectedIndex].value;
 		    postdata += "analytic_technique=" + analytic_technique + "&test_topic=" + ttopic + "&testid=" + testid + "&csrfmiddlewaretoken=" + document.frmanalytics.csrfmiddlewaretoken.value;
 		    //alert(postdata);
+		    displaydata = document.getElementById('displaydata');
+		    if(usertype == "creator"){
+			displaydata = document.getElementById('creator_displaydata');
+		    }
+		    else if(usertype == "evaluator"){
+			displaydata = document.getElementById('evaluator_displaydata');
+		    }
 		    xmlhttp.onreadystatechange = function(){
   		    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
 			//alert(xmlhttp.responseText);
-			displaydata = document.getElementById('displaydata');
-			if(usertype == "creator"){
-			    displaydata = document.getElementById('creator_displaydata');
-			}
-			else if(usertype == "evaluator"){
-			    displaydata = document.getElementById('evaluator_displaydata');
-			}
 			chartdataobj = {};
 			try{
 			    chartdataobj = JSON.parse(xmlhttp.responseText)
@@ -861,6 +861,7 @@
 			xmlhttp.open("POST", '{{ evaluatoransbytimeurl }}', true);
 		    }
   		    xmlhttp.send(postdata);
+  		    displaydata.innerHTML = "<img src='/static/images/loading_big.gif' style='padding-left:100px;'>";
 		}
 	   </script>
 		<!-- ### Post Entry Begin ###  -->
