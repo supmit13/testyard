@@ -337,6 +337,9 @@ def getmoremessages(request):
             pageno = int(request.POST['pageno'])
         except:
             pass
+    searchphrase = "" # TODO: Handle the case where we get a non-empty searchphrase. 
+    if request.POST.has_key('searchphrase'):
+        searchphrase = request.POST['searchphrase']
     startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
     endctr = pageno * mysettings.PAGE_CHUNK_SIZE
     messagesdict = {}
@@ -3655,12 +3658,18 @@ def msgsearch(request):
     userobj = sessionobj[0].user
     message = ""
     searchphrase = ""
+    pageno = 1
     if request.POST.has_key('searchphrase'):
         searchphrase = request.POST['searchphrase']
     else:
         message = error_msg('1138')
         response = HttpResponse(message)
         return response
+    if request.POST.has_key('pageno'):
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
     grpmemberqset = GroupMember.objects.filter(member=userobj, status=True, removed=False)
     groupslist = []
     for grpmemberobj in grpmemberqset:
@@ -3678,8 +3687,10 @@ def msgsearch(request):
     allpostslist = list(chain(postsrecvdqset, postssentqset, postsgroupsqset))
     #allpostslist = list(chain(postsrecvdqset, postssentqset))
     messagesdict = {}
+    startctr = pageno * mysettings.PAGE_CHUNK_SIZE - mysettings.PAGE_CHUNK_SIZE
+    endctr = pageno * mysettings.PAGE_CHUNK_SIZE
     searchpattern = re.compile(searchphrase, re.IGNORECASE|re.DOTALL)
-    for postobj in allpostslist:
+    for postobj in allpostslist[startctr:endctr]:
         postcontent = postobj.postcontent
         postmsgtag = postobj.postmsgtag
         attachfilename = postobj.attachmentfile
@@ -3700,6 +3711,11 @@ def msgsearch(request):
             searchrecord += postobj.poster.displayname + "##" + str(postobj.createdon) + "##" + attachtag + "##" + postmsgtag + "##" + postcontent + "##searchphrase=" + searchphrase
             postid = postobj.id
             messagesdict[postid] = [searchrecord, ]
+    nextpage = pageno + 1
+    prevpage = pageno - 1
+    messagesdict['nextpage'] = nextpage
+    messagesdict['prevpage'] = prevpage
+    messagesdict['searchphrase'] = searchphrase
     messagesdictstr = json.dumps(messagesdict)
     messagesdictenc = base64.b64encode(messagesdictstr)
     response = HttpResponse(messagesdictenc)
@@ -4650,6 +4666,10 @@ def groupimagechange(request):
     grpname = grpobj.groupname
     if request.FILES.has_key('grouppic'):
         fpath, message, grouppic = skillutils.handleuploadedfile(request.FILES['grouppic'], mysettings.MEDIA_ROOT + os.path.sep + grpobj.owner.displayname + "/groups/" + grpname, grpname)
+        errorpattern = re.compile("^error\:", re.IGNORECASE)
+        if re.search(errorpattern, message):
+            message = errorpattern.sub("", message)
+            return HttpResponse(message)
         grpobj.groupimagefile = grouppic
         try:
             grpobj.save()

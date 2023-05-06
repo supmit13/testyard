@@ -9,7 +9,7 @@ error_codes = { \
         '1002' : 'Authentication Failed - username or password didn\'t match', \
         '1003' : 'User is not active', \
         '1004' : 'Unhandled HTTP method called.', \
-        '1005' : 'Uploaded file exceeds max file size limit', \
+        '1005' : 'Uploaded file exceeds max file size limit (%s MB)'%(mysettings.MAX_FILE_SIZE_ALLOWED/1000000), \
         '1006' : 'Session is corrupt or it has expired', \
         '1007' : 'Mismatch in your session and location information',\
         '1008' : 'Session doesn\'t exist. Please login into testyard to perform the requested action.', \

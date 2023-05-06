@@ -2902,9 +2902,9 @@
 	function changeimg(grpid){
             identifier = 'imgchange_' + grpid;
 	    chgimgdiv = document.getElementById('imgchange_' + grpid);
-	    chgimgdiv.style.display = "";
+	    chgimgdiv.style = "opacity:1.0;display:flex;background-color:#ccffff;height:125px;";
 	    csrftoken = document.searchform.csrfmiddlewaretoken.value;
-	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><center><span class='row'><div class='form-group'><input type='file' name='grouppic' value='' class='form-control'></div><div class='form-group'><input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage(\"" + grpid + "\");' class='btn btn-primary' style='width:100px;padding-right:5px;'>&nbsp;&nbsp;<input type='button' name='imgclose' id='imgclose' value='Close' class='btn btn-testyard1' style='width:100px;padding-left:5px;' onclick='javascript:closeimgupload(\"" + identifier + "\");'></div></span></center><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
+	    chgimgdiv.innerHTML = "<form name='grpimageuploadform' action='skillstest/network/changegrpimg/' enctype='multipart/form-data' method='POST'><div class='row' style='text-align:center;vertical-align:middle;display:flex;position:relative;top:20px;left:10px;width:450px;padding:5px;'><input type='file' name='grouppic' value='' class='form-control' style='width:200px;padding:5px;'>&nbsp;&nbsp;<input type='button' name='btnupload' value='Go' onClick='javascript:uploadgrpimage(\"" + grpid + "\");' class='btn btn-primary' style='width:100px;padding:5px;font-weight:bold;color:#ffffff;'>&nbsp;&nbsp;<input type='button' name='imgclose' id='imgclose' value='Close' class='btn btn-primary' style='width:100px;padding:5px;background-color:#f09690;color:#000000;font-weight:bold;' onclick='javascript:closeimgupload(\"" + identifier + "\");'></div><input type='hidden' name='csrfmiddlewaretoken' value='" + csrftoken + "'><input type='hidden' name='groupid' value='" + grpid + "'></form>";
 	}
 
 
