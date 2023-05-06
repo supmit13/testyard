@@ -116,7 +116,8 @@ Immediate Plans:
 550. Integrating ChatGPT based support assistant and an issue tracker system.
 600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether. [Done]
 650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot)
-700. Interface Refinement (Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
+700. Interface Refinement - Phase I(Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
+750. Error Messages Display from backend to UI.
 
 
 Scope of #50 - Pagination:
@@ -154,17 +155,17 @@ Scope of #200 - WebRTC Interviews:
 
 Scope of #150 - Hardening with Inappropriate Inputs:
 ----------------------------------------------------
-151. Create/Edit Test Screen (Tests app)
-152. Add/Edit Challenge Screen (Tests app)
-153. Create Interview Screen (Tests app)
-154. Test Evaluation Screen (Tests app)
+151. Create/Edit Test Screen (Tests app) [Done]
+152. Add/Edit Challenge Screen (Tests app) [Done]
+153. Create Interview Screen (Tests app) [Done]
+154. Test Evaluation Screen (Tests app) [Done]
 155. Test User Screen (for candidates to take the test) (Tests app)
-156. Test Invite Screen (Tests app)
-157. Schedule Test Screen (Tests app)
-158. Upload New Test Screen (Tests app)
-159. Search Tests Input Control (Tests app)
-160. User Profile Screen (Profile app)
-161. Tests/Users/Groups Search Screen (Search app)
+156. Test Invite Screen (Tests app) [Done]
+157. Schedule Test Screen (Tests app) [Done]
+158. Upload New Test Screen (Tests app) [Done]
+159. Search Tests/Interviews Input Control (Tests app) [Done]
+160. User Profile Screen (Profile app) [Done]
+161. Tests/Users/Groups Search Screen (Adv. Search app) [Done]
 162. Create Group Screen (Network app)
 163. Join a Group Screen (Network app)
 164. Add Contact Screen (Network app)
@@ -173,7 +174,14 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 167. Give a test to one or more Groups Screen (Network app)
 168. Group Settings Screen (Network app)
 169. Send a Mesage Screen (Network app)
-170. Analytics Screen (Analytics app)
-171. Image Upload in Manage Owned Groups Screen - should render error message if image upload fails.
+170. Analytics Screen (Analytics app) [Nothing to be done here]
+171. Image Upload in Manage Owned Groups Screen - should render error message if image upload fails (Network app). [Done]
+172. Profile image upload (Multi app). [Done]
+
+**** Edit Challenge Screen is too wide for multiple choice type challenge. The input elements need to be arranged appropriately. [Done]
+**** Refine Test Creation Interface - Phase II.
+**** Create interface to display interview schedules.
+**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible).
+**** Verify all statistics computation in Analytics app.
 
 
