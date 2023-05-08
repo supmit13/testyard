@@ -1810,7 +1810,7 @@
 	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center><br/><br/>";
 	    html += "<table border=0 cellspacing=2 cellpadding=3>";
 	    
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' max_size='200' size='30' class='form-control'></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Message Tag: &nbsp;</font></td><td width='70%'><input type='text' name='msgtag' id='msgtag' value='' maxlength='150' size='30' class='form-control'></td></tr>";
             html += "<tr><td colspan=2 nowrap></td></tr>"
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Message to: &nbsp;</font></td><td width='70%' nowrap valign='middle'><select name='targetgroups' id='targetgroups' size='3' class='form-control' multiple><option value=''>------- Groups List ------</option>";
 	    {% for k,v in groupsdict.iteritems %}
@@ -1830,7 +1830,7 @@
 	    {% endfor %}
 	    html += "</select></td></tr>";
             html += "<tr><td colspan=2 nowrap></td></tr>"
-	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10' class='form-control'></textarea></td></tr>";
+	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>* Post Content: &nbsp;</font></td><td><textarea name='postcontent' cols='40' rows='10' class='form-control' maxlength='500'></textarea></td></tr>";
             html += "<tr><td colspan=2 nowrap></td></tr>"
 	    html += "<tr><td nowrap><font color='#0000AA' style='font-weight:bold;'>Attach Files: &nbsp;</font></td><td width='70%'><input type='file' name='postattachment' id='postattachment' class='form-control'>";
             html += "<tr><td colspan=2 nowrap></td></tr>"
@@ -1843,7 +1843,6 @@
 	function postmessagetotarget(){
             waittag = document.getElementById('waitspan');
             waittag.style.display='';
-            waittag.innerHTML="<img src='static/images/loading_small.gif'>";
 	    targetgroups = "";
 	    targetconnections = "";
  	    targettests = "";
@@ -1890,6 +1889,7 @@
 	    }
 	    var postdata = new FormData(document.forms.namedItem("frmpostamessage"));
 	    var xmlhttp;
+	    waittag.innerHTML="<img src='static/images/loading_small.gif'>";
 	    if (window.XMLHttpRequest){
 	        xmlhttp=new XMLHttpRequest();
 	    }
@@ -2435,7 +2435,7 @@
 		    }
 		    html += "</select></td></tr>";
 		    html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
-		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Force Create New Test URL:</font></td><td align='left'><input type='checkbox' name='chkforcefreshurl' id='chkforcefreshurl' value='1' class='form-control'></td></tr>";
+		    html += "<tr><td align='right' nowrap><font color='#0000AA' style='font-weight:bold;'>Force Create New Test URL:</font></td><td align='left'><input type='checkbox' name='chkforcefreshurl' id='chkforcefreshurl' value='1' class='form-control' checked></td></tr>";
                     html += "<tr><td align='right' nowrap colspan=2>&nbsp;</td></tr>";
 		    html += "<tr><td align='center'>&nbsp;</td><td align='center' nowrap><input type='button' name='btngive' value='Send Test' onClick='javascript:sendtesttogroups();' class='btn btn-primary' style='width:150px;'>&nbsp;&nbsp;<input type='button' name='btnclose' value='Close Screen' onClick='javascript:closescreen2();' class='btn btn-testyard1' style='width:150px;'></td></tr>";
 	    	    html += "</table>{% csrf_token %}</form></center>";

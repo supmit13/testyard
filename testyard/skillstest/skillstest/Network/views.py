@@ -44,6 +44,7 @@ from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
 from skillstest.Tests.views import sendtestinvitations
+from skillstest.Tests.tasks import send_emails
 
 
 
@@ -3445,6 +3446,10 @@ def postmessagecontent(request):
         message = error_msg('1131')
         response = HttpResponse(message)
         return response
+    if msgtag.strip().__len__() > 150 or postcontent.strip().__len__() > 500:
+        message = "The message tag or content exceeds the stipulated length of 150 characters for tag and 500 characters for content."
+        response = HttpResponse(message)
+        return response
     postcontent = postcontent.replace("\n", "<br>")
     targetgroupids = targetgroups
     targetconnectionids = targetconnections
@@ -3838,8 +3843,10 @@ def sendtestemails(request, testid, forcefreshurl, emailidlist):
     subject = "Status of email sent to members of the selected group(s)"
     fromaddr = userobj.emailid
     email = fromaddr
+    retval = 0
     try:
-        retval = send_mail(subject, message, fromaddr, [email,], False)
+        #retval = send_mail(subject, message, fromaddr, [email,], False)
+        send_emails.delay(subject, message, fromaddr, email, False)
     except:
         message = error_msg('1141')
         print message
