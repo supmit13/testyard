@@ -502,11 +502,28 @@ def creategroup(request):
     grpobj = Group()
     grpmember = GroupMember()
     grpobj.owner = userobj
+    if groupname.__len__() > 200:
+        message = "Please restrict the length of the Group Name to 200 characters."
+        response = HttpResponse(message)
+        return response
     grpobj.groupname = groupname
+    if groupdescription.__len__() > 500:
+        message = "Please keep the length of the Description field within 500 characters."
+        response = HttpResponse(message)
+        return response
     grpobj.description = groupdescription
+    if tagline.__len__() > 200:
+        message = "Please restrict the length of the Tag line to 200 characters."
+        response = HttpResponse(message)
+        return response
     grpobj.tagline = tagline
     grpobj.memberscount = 1
-    grpobj.maxmemberslimit = int(maxmemberscount)
+    try:
+        grpobj.maxmemberslimit = int(maxmemberscount)
+    except:
+        message = "The max members count should be a numeric value. The default value is 10000."
+        response = HttpResponse(message)
+        return response
     grpobj.status = isactive
     grpobj.grouptype = grouptype
     grpobj.basedontopic = grouptopic
@@ -516,13 +533,28 @@ def creategroup(request):
     grpobj.stars = 0
     if not entryfee or entryfee == "" or payschemeval != "entryfeebased":
         entryfee = 0.0
-    grpobj.entryfee = float(entryfee)
+    try:
+        grpobj.entryfee = float(entryfee)
+    except:
+        message = "The entry fee should be a numeric (decimal) value"
+        response = HttpResponse(message)
+        return response
     if not subscriptionfee or subscriptionfee == "" or payschemeval != "subscriptionbased":
         subscriptionfee = 0.0
     if not subscriptionperiod or subscriptionperiod == "":
         subscriptionperiod = 0
-    grpobj.subscription_fee = float(subscriptionfee)
-    grpobj.subscriptionperiod = int(subscriptionperiod)
+    try:
+        grpobj.subscription_fee = float(subscriptionfee)
+    except:
+        message = "The subscription fee should be a numeric (decimal) value"
+        response = HttpResponse(message)
+        return response
+    try:
+        grpobj.subscriptionperiod = int(subscriptionperiod)
+    except:
+        message = "The subscription period should be an integer value specifying the number of days the subscription would last."
+        response = HttpResponse(message)
+        return response
     grpobj.currency = currency
     grpmember.member = userobj
     grpmember.status = True
