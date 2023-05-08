@@ -118,6 +118,7 @@ Immediate Plans:
 650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot)
 700. Interface Refinement - Phase I(Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
 750. Error Messages Display from backend to UI.
+800. Create Youtube videos demonstrating the usage of each app (with particular emphasis on Test and Network apps).
 
 
 Scope of #50 - Pagination:
@@ -159,29 +160,34 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 152. Add/Edit Challenge Screen (Tests app) [Done]
 153. Create Interview Screen (Tests app) [Done]
 154. Test Evaluation Screen (Tests app) [Done]
-155. Test User Screen (for candidates to take the test) (Tests app)
+155. Test User Screen (for candidates to take the test) (Tests app) [Done]
 156. Test Invite Screen (Tests app) [Done]
 157. Schedule Test Screen (Tests app) [Done]
 158. Upload New Test Screen (Tests app) [Done]
 159. Search Tests/Interviews Input Control (Tests app) [Done]
 160. User Profile Screen (Profile app) [Done]
 161. Tests/Users/Groups Search Screen (Adv. Search app) [Done]
-162. Create Group Screen (Network app)
-163. Join a Group Screen (Network app)
-164. Add Contact Screen (Network app)
-165. Post a Message Screen (Network app)
+162. Create Group Screen (Network app) [Done]
+163. Join a Group Screen (Network app) [Done]
+164. Add Contact Screen (Network app) [Done]
+165. Post a Message Screen (Network app) [Done]
 166. Manage Owned Groups (Network app)
-167. Give a test to one or more Groups Screen (Network app)
+167. Give a test to one or more Groups Screen (Network app) [Done]
 168. Group Settings Screen (Network app)
-169. Send a Mesage Screen (Network app)
+169. Send a Mesage Screen (Network app) [Done]
 170. Analytics Screen (Analytics app) [Nothing to be done here]
 171. Image Upload in Manage Owned Groups Screen - should render error message if image upload fails (Network app). [Done]
 172. Profile image upload (Multi app). [Done]
 
 **** Edit Challenge Screen is too wide for multiple choice type challenge. The input elements need to be arranged appropriately. [Done]
-**** Refine Test Creation Interface - Phase II.
-**** Create interface to display interview schedules.
-**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible).
-**** Verify all statistics computation in Analytics app.
-
+**** Refine Test Creation Interface - Phase II. [Very high priority]
+**** Refine Test Taker's Screen - Phase II. [Very high priority]
+**** Facility to (re-)schedule an existing interview. [Low priority]
+**** Create interface to display interview schedules. [Low priority]
+**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible). [High priority]
+**** Verify all statistics computation in Analytics app. [High priority] [Done]
+**** Check if interview link email is sent to the interview creator (interviewer). If not, implement it. [Very high priority]
+**** Replace "Interview Id" field with "Interview URL" field on "Interviews Conducted" tab (with a 'copy' link beside it). [Very high priority]
+**** Add 'copy' link beside entries in "Interview URL" field in "Interviews Attended" tab. [High priority]
+**** Add content for "What does this statistic mean" for every statistic in "Analytics" tab. [Very high priority] [Done]
 
