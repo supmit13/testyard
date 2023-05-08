@@ -110,62 +110,62 @@
 		      stat_technique = document.getElementById("evaluator_analytic_technique").options[document.getElementById("evaluator_analytic_technique").options.selectedIndex].value;
 		    } */
 		    // Display help text for each of the statistical techniques.		    
-		    if(stat_technique == "comp_topper"){ 
-		      statsanchor.title = "Help text here...";
+		    if(stat_technique == "comp_topper"){
+		      statsanchor.title = "Compare your scores with the scores of toppers in all tests you have taken under the selected topic. If you have a very large number of tests under the selected topic, then it would be advisable to select specific tests under the topic to compare the score of that test with the score of the topper of that test.";
 		    }
 		    else if(stat_technique == "comp_all"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Compare your score with the scores of all other takers of the selected test. The names of the other users are replaced with the string 'hidden_x', where x is a number. This is to keep the identities of the users private.";
 		    }
 		    else if(stat_technique == "comp_cats"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Compare your scores for all tests you have taken on the selected topic. If a test has been attempted multiple times, then the score of only the last attempt is considered.";
 		    }
 		    else if(stat_technique == "comp_chlg"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Compare your scores on the various challenge/questions for the selected test with that of the topper in that test.";
 		    }
 		    else if(stat_technique == "comp_mmm"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Compare your score in the selected test with the mean value, the median value, and the mode value of all takers of the test.";
 		    }
 		    else if(stat_technique == "comp_cohort"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Display count of users of all tests that have been taken by the users who took the selected test. This is just a basic cohort analysis.";
 		    }
 		    else if(stat_technique == "comp_sbt"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Compare your scores in the different tests you have taken under the selected topic. The analysis shows the scores on Y-axis and the time at which the tests were taken on the X-axis.";
 		    }
 		    else if(stat_technique == "comp_ppt"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Display the percentage scores of tests under the given topic as a function of time. The scores are on the Y-axis and the time in the X-axis.";
 		    }
 		    else if(stat_technique == "comp_ttperf"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Comparison of your scores on different types of challenges in tests under the selected topic.";
 		    }
 		    else if(stat_technique == "comp_passfail"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This is a plot of pass/fail in tests taken by you under the selected topic as a function of time.";
 		    }
 		    else if(stat_technique == "creator_comp_scores"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "Display the scores of different candidates in the selected test. This may be used by the test's creator (you) to identify the relative strength of the candidates on the topic of the selected test.";
 		    }
 		    else if(stat_technique == "creator_comp_testpop"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This displays the counts of candidates who took the various tests created by the user (you) under the selected topic. This may be used as a measure of the popularity of all tests created by you under the selected topic.";
 		    }
-		    else if(stat_technique == "creator_show_testtimes"){ 
-		      statsanchor.title = "Help text here...";
+		    else if(stat_technique == "creator_show_testtimes"){ // This needs to be debugged.
+		      statsanchor.title = "This displays the date/time at which candidates have taken the selected test. A separate plot is displayed for each year.";
 		    }
 		    else if(stat_technique == "creator_comp_mmm"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This displays the mean value, median value and the mode value of the scores in the selected test.";
 		    }
 		    else if(stat_technique == "creator_comp_testusage"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This displays the count of users who took the tests created by you under the selected topic. This may be used as a marker of popularity of the tests under the selected topic.";
 		    }
 		    else if(stat_technique == "creator_comp_cohort"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This is a cohort analysis that displays the counts of users who took other tests created by you under the same topic, apart from taking the selected test.";
 		    }
 		    else if(stat_technique == "evaluator_ratio_pass_total"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This displays 4 bars that reflect the total number of candidates for the selected test, the number of candidates who passed the selected test, the number of candidates who failed the test, and the number of candidates whose answer scripts have not been evaluated yet.";
 		    }
 		    else if(stat_technique == "evaluator_count_evaluated_tests"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This displays the counts of all tests under the selected topic that have been evaluated by the user.";
 		    }
 		    else if(stat_technique == "evaluator_ans_evaluated_by_time"){ 
-		      statsanchor.title = "Help text here...";
+		      statsanchor.title = "This displays the plot of the counts of answer scripts that have been evaluated by the user (you) over time, for the selected topic. For example, if it shows a value of 16 on 9th May 2023, then you have evaluated 16 answer scripts of one or more tests under the selected topic on that date. This may be used as a measure of workload you have as an evaluator on the given date.";
 		    }
 		}
 
@@ -711,7 +711,8 @@
 				        var regdt = /(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})/;
 					var dtlist = regdt.exec(t);
 					dtobj = new Date(parseInt(dtlist[1], 10), parseInt(dtlist[2], 10)-1, parseInt(dtlist[3], 10), parseInt(dtlist[4], 10), parseInt(dtlist[5], 10), parseInt(dtlist[6], 10));
-					scoredata = [dtobj, time, uname ];
+					//scoredata = [dtobj, time, uname ];
+					scoredata = [ dtobj, parseInt(time) ];
 			            	chartdata[i] = scoredata;
 				    }
 				    //nodataflag = 0;
@@ -869,6 +870,7 @@
 			}
 			else if(analytic_technique == "creator_show_testtimes"){
 			    var data = google.visualization.arrayToDataTable(chartdata);
+			    document.getElementById('creator_displaydata').style = "overflow: auto;height: 1000px;";
 			    var chart = new google.visualization.Calendar(document.getElementById('creator_displaydata'));
 			    chart.draw(data, options);
 			}
@@ -1074,7 +1076,7 @@
 		<script language='Javascript'>
 		// Making sure openTab is called on creatortab when the window loads.
 		 var evt = document.createEvent('Event');  
-		 evt.initEvent('click', false, false);  
+		 evt.initEvent('click', false, false);
 		 document.getElementById("candidatestab").dispatchEvent(evt);
 		</script>
 		<!-- ### Post Entry End ###  -->
