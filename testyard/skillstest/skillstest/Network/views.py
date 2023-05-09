@@ -4779,9 +4779,25 @@ def groupinfosave(request):
         message = sys.exc_info()[1].__str__()
         response = HttpResponse(message)
         return response
-    groupobj.tagline = request.POST['tagline']
-    groupobj.description = base64.b64decode(request.POST['description'])
-    groupobj.maxmemberslimit = request.POST['maxuserslimit']
+    grptagline = request.POST['tagline']
+    if grptagline.__len__() > 200:
+        message = "Error: Tagline should not be more than 200 characters long."
+        response = HttpResponse(message)
+        return response
+    groupobj.tagline = grptagline
+    grpdescription = base64.b64decode(request.POST['description'])
+    if grpdescription.__len__() > 500:
+        message = "Error: Group Description should not exceed 500 characters."
+        response = HttpResponse(message)
+        return response
+    groupobj.description = grpdescription
+    grpmaxuserslim = request.POST['maxuserslimit']
+    try:
+        groupobj.maxmemberslimit = int(grpmaxuserslim)
+    except:
+        message = "Error: Max Users Limit should be an integer value"
+        response = HttpResponse(message)
+        return response
     ownerbankacctobj = None
     try:
         ownerbankacctqset = OwnerBankAccount.objects.filter(group=groupobj)
