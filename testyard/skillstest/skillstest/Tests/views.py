@@ -7275,6 +7275,9 @@ def createinterview(request):
         intervieweremails = request.POST['interviewer_emails']
     if int(maxinterviewerscount) == 1:
         intervieweremails = userobj.emailid
+    else:
+        intervieweremails += ",%s"%userobj.emailid
+    intervieweremailslist = intervieweremails.split(",")
     if request.POST.has_key('realtime') and request.POST.has_key('scheduledatetime'):
         realtime = request.POST['realtime']
         scheduledatetime = request.POST['scheduledatetime']
@@ -7379,6 +7382,33 @@ def createinterview(request):
         except:
             if mysettings.DEBUG:
                 print "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
+    if intervieweremailslist.__len__() >= 1: # Send an email with the interviewer's link to the email addresses
+        message = """Dear Interviewer,
+                     <br/><br/>
+                     You have invited a candidate identified by email '%s' to interview at %s. Please click on the<br/> 
+                     link below to load the interview interface. If it doesn't work, then copy <br/>
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     
+                     %s/%s <br/><br/>
+                     
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
+                     <br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the inter-<br/>
+                     view application.<br/><br/>
+
+                     Good Luck!<br/>
+                     The TestYard Interview Team.
+         """%(emailinvitationtarget, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
+        subject = "TestYard Interview Scheduled"
+        fromaddr = userobj.emailid
+        for interviewerem in intervieweremailslist:
+            if interviewerem != "":
+                try:
+                    retval = send_emails.delay(subject, message, fromaddr, interviewerem, False)
+                except:
+                    if mysettings.DEBUG:
+                        print "sendemail failed for %s - %s\n"%(interviewerem, sys.exc_info()[1].__str__())
     interviewobj.filetype = "wav"
     int_user_dict = {}
     try:
