@@ -7382,6 +7382,14 @@ def createinterview(request):
         except:
             if mysettings.DEBUG:
                 print "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
+    uniqueintervieweremailsdict = {}
+    for interviewerem in intervieweremailslist:
+        if interviewerem.strip() == "":
+            continue
+        if interviewerem not in uniqueintervieweremailsdict.keys():
+            uniqueintervieweremailsdict[interviewerem] = 1
+        else:
+            pass
     if intervieweremailslist.__len__() >= 1: # Send an email with the interviewer's link to the email addresses
         message = """Dear Interviewer,
                      <br/><br/>
@@ -7402,7 +7410,7 @@ def createinterview(request):
          """%(emailinvitationtarget, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Scheduled"
         fromaddr = userobj.emailid
-        for interviewerem in intervieweremailslist:
+        for interviewerem in uniqueintervieweremailsdict.keys():
             if interviewerem != "":
                 try:
                     retval = send_emails.delay(subject, message, fromaddr, interviewerem, False)
