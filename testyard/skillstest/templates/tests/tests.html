@@ -4548,6 +4548,38 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	      console.error('Failed to copy: ', err);
 	    }
 	}
+	
+	
+	function scheduleinterview(intlinkid){
+	  //alert(intlinkid);
+	  var xmlhttp;
+	    if (window.XMLHttpRequest){
+    		xmlhttp=new XMLHttpRequest();
+  	    }
+  	    else{
+    		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	    }
+  	    thediv = document.getElementById('createtestdiv');
+  	    //thediv = document.getElementById('intsched_'+intlinkid);
+  	    xmlhttp.onreadystatechange = function(){
+  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+  		  thediv.className= "";
+  		  thediv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1000px;background-color:#ccffff;";
+  		  errorpattern = new RegExp("^Error", "i");
+  		  if(errorpattern.test(xmlhttp.responseText)){
+  		    alert(xmlhttp.responseText);
+  		  }
+  		  else{
+  		    //alert(xmlhttp.responseText);
+		    thediv.innerHTML = xmlhttp.responseText;
+		  }
+		  return false;
+		}
+	    };
+	    xmlhttp.open("GET", '{{ showinterviewschedulescreenurl }}?intlinkid='+intlinkid, true);
+  	    xmlhttp.send();
+	}
+	
 	</script>
 		{% include "inc/right_panel.html" %}
 		<div class="post">
@@ -4833,17 +4865,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
+			  <td align='center' nowrap style="width:200px;display:auto;"><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap style="width:100px;display:auto;"><font size=-1 style='font-weight:bold;'>Language</font></td>
+			  <td align='center' nowrap style="width:190px;display:auto;"><font size=-1 style='font-weight:bold;'>Create Date</font></td>
+			  <td align='center' nowrap style="width:190px;display:auto;"><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule/Re-Schedule</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
 			</tr>
 			<tr>
@@ -4851,10 +4884,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</tr>
 			{% for interviewtitle in asinterviewer_seq %}  
 			    <tr>
-  			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
+  			    <td style="width:200px;display:auto;"><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:2 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:3 }}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:4 }}</font></td>
+			    <td style="width:150px;display:auto;"><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:4 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:5 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:6 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:7 }}</font></td>
@@ -4862,6 +4895,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:9 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:10 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}</font></td>
+			    <td><a href="#/" class="btn btn-primary" onclick="javascript:scheduleinterview('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}');" style="height:35px;width:150px;color:#ffffff;font-size:small;font-weight:bold;">(Re-)Schedule</a><div id="intsched_{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}" style="display:none;"></div></td>
 			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = "javascript:postonlinkedin('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}', 'interviewconductor');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}
