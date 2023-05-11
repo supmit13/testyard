@@ -7710,7 +7710,9 @@ def displayinterviewschedulescreen(request):
         schedulestatus = False
         if not starttime:
             schedulestatus = True
-        d = {'email' : intcandidate.emailaddr, 'scheduled' : intcandidate.scheduledtime.strftime("%Y-%m-%d %H:%M:%S"), 'schedulestatus' : schedulestatus, 'intcandidateid' : intcandidate.id, 'interviewid' : interviewobj.id}
+        candidateemailslist = intcandidate.emailaddr.split(",")
+        candidateemailscount = candidateemailslist.__len__()
+        d = {'email' : intcandidate.emailaddr, 'scheduled' : intcandidate.scheduledtime.strftime("%Y-%m-%d %H:%M:%S"), 'schedulestatus' : schedulestatus, 'intcandidateid' : intcandidate.id, 'interviewid' : interviewobj.id, 'emailscount' : candidateemailscount}
         intdatadict['existing_interviews'].append(d)
     tmpl = get_template("tests/schedule_interview.html")
     intdatadict.update(csrf(request))

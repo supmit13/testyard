@@ -1,22 +1,10 @@
 
-<script language="javascript">
-function rescheduleinterview(intcandidateid, interviewid){
-
-}
-
-function newscheduleinterview(){
-
-}
-
-
-</script>   
-
-<div class='container'>
+<div>
 <center><h3>Add/Edit Interview Schedule - '{{interviewtitle}}'</h3></center>
 <form name='frmintschedule' id='frmintschedule' method='POST' action=''>
 <div id='intschedule'>
 <table border='0' cellspacing='2' cellpadding='2' width='95%'>
-<tr style="background-color:#ffffff;"><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;">Schedule Id</td><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;">Scheduled At<!-- <br />(yyyy-mm-dd hh:mm:ss) --></td><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;">Candidate Email</td><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;">Scheduled Status</td><td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;">Actions</td></tr>
+<tr style="background-color:#ffffff;"><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;padding-left:5px;padding-right:5px;">Schedule Id</td><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">Scheduled At<!-- <br />(yyyy-mm-dd hh:mm:ss) --></td><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">Candidate Email</td><td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;padding-right:5px;">Scheduled Status</td><td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;">Actions</td></tr>
 {% for intsched in existing_interviews %}
 
     {% if forloop.counter|divisibleby:2 %}
@@ -25,30 +13,34 @@ function newscheduleinterview(){
     <tr style='background:#ffffff;'>
     {% endif %}
     <td nowrap style="color:#0000aa;font-size:small;text-align:center;">{{forloop.counter}}</td>
-    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;">
-    {% if intsched.schedulestatus %}
-    <input type='datetime' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;'>
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">
+    {% if intsched.schedulestatus == True %}
+    <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;'>
     {% else %}
-    <input type='datetime' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' disabled>
+    <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' disabled>
     {% endif %}
     </td>
-    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;">{{intsched.email}}</td>
-    {% if intsched.schedulestatus %}
-    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;">Conducted</td>
-    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;">&nbsp;</td>
+    {% if intsched.emailscount < 2 %}
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">{{intsched.email}}</td>
     {% else %}
-    <td nowrap style="font-weight:bold;color:#aa0000;font-size:small;text-align:left;width:100px;padding-left:5px;">Not Conducted</td>
-    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;"><input type='button' name='btnreschedule_{{intsched.intcandidateid}}' id='btnreschedule_{{intsched.intcandidateid}}' class='btn btn-testyard1' value="Save Schedule" style="width:140px;" onclick="javascript:rescheduleinterview({{intsched.intcandidateid}}, {{intsched.interviewid}});"></td>
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">{{intsched.emailscount}} candidates <a id='listemails' href="#/" onmouseover="javascript:listcandidates('{{intsched.email}}');">List</a></td>
+    {% endif %}
+    {% if intsched.schedulestatus == True %}
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;padding-right:5px;">Not Conducted</td>
+    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;">&nbsp;</td>
+    {% else %}
+    <td nowrap style="font-weight:bold;color:#aa0000;font-size:small;text-align:left;width:100px;padding-left:5px;padding-right:5px;">Conducted</td>
+    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;"><input type='button' name='btnreschedule_{{intsched.intcandidateid}}' id='btnreschedule_{{intsched.intcandidateid}}' class='btn btn-testyard1' value="Save Schedule" style="width:140px;" onclick="javascript:rescheduleinterview({{intsched.intcandidateid}}, {{intsched.interviewid}});"></td>
     {% endif %}
     </tr>
 {% endfor %}
     <tr><td colspan=5>&nbsp;</td></tr>
     <tr style="background:#b8d1f3;">
     <td nowrap style="color:#0000aa;font-size:small;text-align:center;font-weight:bold;">New Schedule:</td>
-    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;"><input type='datetime' name='newsched_datetime' id='newsched_datetime' value='' class='form-control' style='width:250px;'></td>
-    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;"><textarea  name='newsched_email' id='newsched_email' maxlength=2000 rows=2 cols=10 value='' placeholder='Candidate Email' class='form-control'></textarea></td>
-    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;"><input type='button' name='btnnewschedule' id='btnnewschedule' class='btn btn-primary' value="Create Schedule" style="width:140px;" onclick="javascript:newscheduleinterview();"></td>
-    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;"><input type='button' name='btnclosesched' id='btnclosesched' class='btn btn-testyard1' value="Close" style="width:140px;" onclick="javascript:closeschedscreen();"></td>
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;"><input type='datetime-local' name='newsched_datetime' id='newsched_datetime' value='' class='form-control' style='width:250px;'></td>
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;"><textarea  name='newsched_email' id='newsched_email' maxlength=2000 rows=2 cols=10 value='' placeholder='Candidate Email' class='form-control'></textarea></td>
+    <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;padding-right:5px;"><input type='button' name='btnnewschedule' id='btnnewschedule' class='btn btn-primary' value="Create Schedule" style="width:140px;" onclick="javascript:newscheduleinterview();"></td>
+    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;"><input type='button' name='btnclosesched' id='btnclosesched' class='btn btn-testyard1' value="Close" style="width:140px;" onclick="javascript:closeschedscreen();"></td>
     </tr>
 </table>
 </div>
