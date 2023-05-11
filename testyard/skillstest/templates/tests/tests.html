@@ -4548,36 +4548,37 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	      console.error('Failed to copy: ', err);
 	    }
 	}
+		
 	
-	
-	function scheduleinterview(intlinkid){
-	  //alert(intlinkid);
-	  var xmlhttp;
+	function scheduleinterview(intlinkid, targeturl){
+	    var xmlhttp;
 	    if (window.XMLHttpRequest){
     		xmlhttp=new XMLHttpRequest();
   	    }
   	    else{
     		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   	    }
-  	    thediv = document.getElementById('createtestdiv');
-  	    //thediv = document.getElementById('intsched_'+intlinkid);
+  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    postdata = 'intlinkid='+intlinkid + '&csrfmiddlewaretoken=' + csrf;
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-  		  thediv.className= "";
-  		  thediv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1000px;background-color:#ccffff;";
-  		  errorpattern = new RegExp("^Error", "i");
+  		  let targetdiv = document.getElementById('createtestdiv');
+  		  //let targetdiv = document.getElementById('intsched_'+intlinkid);
+  		  targetdiv.className= "";
+  		  targetdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1000px;background-color:#ccffff;";
+  		  errorpattern = new RegExp("^Error");
   		  if(errorpattern.test(xmlhttp.responseText)){
   		    alert(xmlhttp.responseText);
   		  }
   		  else{
   		    //alert(xmlhttp.responseText);
-		    thediv.innerHTML = xmlhttp.responseText;
+		    targetdiv.innerHTML = xmlhttp.responseText;
 		  }
-		  return false;
+		  return (true);
 		}
 	    };
-	    xmlhttp.open("GET", '{{ showinterviewschedulescreenurl }}?intlinkid='+intlinkid, true);
-  	    xmlhttp.send();
+	    xmlhttp.open("POST", targeturl, true);
+  	    xmlhttp.send(postdata);
 	}
 	
 	</script>
@@ -4895,7 +4896,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:9 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:10 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}</font></td>
-			    <td><button class="btn btn-primary" onclick="javascript:scheduleinterview('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}');" style="height:35px;width:150px;color:#ffffff;font-size:small;font-weight:bold;">(Re-)Schedule</button><div id="intsched_{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}" style="display:none;"></div></td>
+			    <td><a href="#/" class="btn btn-primary" id="btnscheduleinterview" name="btnscheduleinterview"  onclick="javascript:scheduleinterview('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}', '{{showinterviewschedulescreenurl}}');" style="height:35px;width:150px;color:#ffffff;font-size:small;font-weight:bold;">(Re-)Schedule</a></td>
 			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = "javascript:postonlinkedin('{{ interviewlist_asinterviewer|dictlookup:interviewtitle|getval:11 }}', 'interviewconductor');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}

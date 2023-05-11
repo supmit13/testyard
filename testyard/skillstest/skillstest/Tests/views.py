@@ -7670,7 +7670,7 @@ def checknameavailability(request):
 @csrf_protect
 def displayinterviewschedulescreen(request):
     message = ""
-    if request.method != 'GET':
+    if request.method != 'POST':
         message = "Error: %s"%error_msg('1004')
         response = HttpResponse(message)
         return response
@@ -7684,11 +7684,11 @@ def displayinterviewschedulescreen(request):
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
     intlinkid = ""
-    if not request.GET.has_key('intlinkid'):
+    if not request.POST.has_key('intlinkid'):
         message = "Error: Required parameter interviewlink Id missing."
         response = HttpResponse(message)
         return response
-    intlinkid = request.GET['intlinkid']
+    intlinkid = request.POST['intlinkid']
     if intlinkid.strip() == "":
         message = "Error: Required parameter interviewlinkId is empty."
         response = HttpResponse(message)
