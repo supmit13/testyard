@@ -103,19 +103,19 @@ Immediate Plans:
 
 
 50. Pagination of Test, Network and Search Apps. [Done]										
-100. Optimization of entire application.
-150. Hardening with inappropriate inputs. [WIP]
+100. Optimization of entire application. (Very high priority)
+150. Hardening with inappropriate inputs. [Done]
 200. TURN server (using coturn). (https://github.com/muaz-khan/MultiRTC/tree/master/MultiRTC-websocket) [Done]
-250. Testing all Apps. (Load + Functional).
+250. Testing all Apps. (Load + Functional). (Very high priority)
 300. Create drawing toolbar using fabric.js (Low priority)
 350. Google Calendar Integration with test scheduling. [Done, needs testing with correct domain (testyard.in)]
 400. Export tests created by user to a google sheet/doc. (Low priority)
 410. Reimplement Bitly for v4. (https://dev.bitly.com/)  [Done]
-450. Debug code running mechanisms.
+450. Debug code running mechanisms. (High priority)
 500. Licensing and Plans. [WIP]
 550. Integrating ChatGPT based support assistant and an issue tracker system.
 600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether. [Done]
-650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot)
+650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot) (High priority)
 700. Interface Refinement - Phase I(Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
 750. Error Messages Display from backend to UI.
 800. Create Youtube videos demonstrating the usage of each app (with particular emphasis on Test and Network apps).
@@ -171,9 +171,9 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 163. Join a Group Screen (Network app) [Done]
 164. Add Contact Screen (Network app) [Done]
 165. Post a Message Screen (Network app) [Done]
-166. Manage Owned Groups (Network app)
+166. Manage Owned Groups (Network app) [Done]
 167. Give a test to one or more Groups Screen (Network app) [Done]
-168. Group Settings Screen (Network app)
+168. Group Settings Screen (Network app) [Done]
 169. Send a Mesage Screen (Network app) [Done]
 170. Analytics Screen (Analytics app) [Nothing to be done here]
 171. Image Upload in Manage Owned Groups Screen - should render error message if image upload fails (Network app). [Done]
@@ -182,12 +182,12 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 **** Edit Challenge Screen is too wide for multiple choice type challenge. The input elements need to be arranged appropriately. [Done]
 **** Refine Test Creation Interface - Phase II. [Very high priority]
 **** Refine Test Taker's Screen - Phase II. [Very high priority]
-**** Facility to (re-)schedule an existing interview. [Low priority]
-**** Create interface to display interview schedules. [Low priority]
+**** Facility to (re-)schedule an existing interview. [High priority]
+**** Create interface to display interview schedules. [High priority]
 **** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible). [High priority]
 **** Verify all statistics computation in Analytics app. [High priority] [Done]
-**** Check if interview link email is sent to the interview creator (interviewer). If not, implement it. [Very high priority]
-**** Replace "Interview Id" field with "Interview URL" field on "Interviews Conducted" tab (with a 'copy' link beside it). [Very high priority]
-**** Add 'copy' link beside entries in "Interview URL" field in "Interviews Attended" tab. [High priority]
+**** Check if interview link email is sent to the interview creator (interviewer). If not, implement it. [Very high priority] [Done]
+**** Replace "Interview Id" field with "Interview URL" field on "Interviews Conducted" tab (with a 'copy' link beside it). [Very high priority] [Redundant requirement, as we are sending emails with the interview URL to all interviewers now. Won't implement.]
+**** Add 'copy' link beside entries in "Interview URL" field in "Interviews Attended" tab. [High priority] [Done]
 **** Add content for "What does this statistic mean" for every statistic in "Analytics" tab. [Very high priority] [Done]
 
