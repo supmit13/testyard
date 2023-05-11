@@ -4566,14 +4566,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
   	          var targetdiv = document.getElementById('createtestdiv');
   		  targetdiv.className= "";
-  		  targetdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1000px;background-color:#ccffff;";
+  		  targetdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1200px;background-color:#ccffff;";
   		  errorpattern = new RegExp("^Error");
                  if(errorpattern.test(xmlhttp.responseText)){
   	            alert(xmlhttp.responseText);
   		  }
   		  else{
   		    respcontentobj = JSON.parse(xmlhttp.responseText);
-  		    alert(respcontentobj.html);
 		    targetdiv.innerHTML = respcontentobj.html;
 		  }
 		  return false;
@@ -4585,6 +4584,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	    xmlhttp.setRequestHeader('Accept', 'application/json');
   	    xmlhttp.send(postdata);
   	    return false;
+	}
+	
+	function closeschedscreen(){
+	  closedivbyid("createtestdiv");
 	}
 	
 	</script>

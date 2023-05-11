@@ -488,7 +488,7 @@ def get_user_tests(request):
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
-    tests_user_dict['showinterviewschedulescreenurl'] = showinterviewschedulescreenurl
+    tests_user_dict['showinterviewschedulescreenurl'] = skillutils.gethosturl(request) + "/" + showinterviewschedulescreenurl
     # pagination related vars
     tests_user_dict['nextpage_ascreator'] = nextpage_ascreator
     tests_user_dict['prevpage_ascreator'] = prevpage_ascreator
@@ -7710,7 +7710,7 @@ def displayinterviewschedulescreen(request):
         schedulestatus = False
         if not starttime:
             schedulestatus = True
-        d = {'email' : intcandidate.emailaddr, 'scheduled' : datetime.datetime.strptime(intcandidate.scheduledtime, "%Y-%m-%d %H:%M:%S"), 'schedulestatus' : schedulestatus, 'intcandidateid' : intcandidate.id, 'interviewid' : interviewobj.id}
+        d = {'email' : intcandidate.emailaddr, 'scheduled' : intcandidate.scheduledtime.strftime("%Y-%m-%d %H:%M:%S"), 'schedulestatus' : schedulestatus, 'intcandidateid' : intcandidate.id, 'interviewid' : interviewobj.id}
         intdatadict['existing_interviews'].append(d)
     tmpl = get_template("tests/schedule_interview.html")
     intdatadict.update(csrf(request))
