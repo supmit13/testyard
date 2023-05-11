@@ -4563,7 +4563,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    xmlhttp.onreadystatechange = function(){
   		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
   		  let targetdiv = document.getElementById('createtestdiv');
-  		  //let targetdiv = document.getElementById('intsched_'+intlinkid);
   		  targetdiv.className= "";
   		  targetdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1000px;background-color:#ccffff;";
   		  errorpattern = new RegExp("^Error");
@@ -4571,14 +4570,19 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		    alert(xmlhttp.responseText);
   		  }
   		  else{
-  		    //alert(xmlhttp.responseText);
-		    targetdiv.innerHTML = xmlhttp.responseText;
+  		    respcontentobj = JSON.parse(xmlhttp.responseText);
+  		    alert(respcontentobj.html);
+		    targetdiv.innerHTML = respcontentobj.html;
 		  }
 		  return (true);
 		}
 	    };
 	    xmlhttp.open("POST", targeturl, true);
+	    xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	    //xmlhttp.setRequestHeader('Content-length', postdata.length.toString());
+	    xmlhttp.setRequestHeader('Accept', 'application/json');
   	    xmlhttp.send(postdata);
+  	    return (true);
 	}
 	
 	</script>

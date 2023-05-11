@@ -7716,7 +7716,8 @@ def displayinterviewschedulescreen(request):
     intdatadict.update(csrf(request))
     cxt = Context(intdatadict)
     schedulescreenhtml = tmpl.render(cxt)
-    return HttpResponse(schedulescreenhtml)
+    contentdict = {'html' : schedulescreenhtml}
+    return HttpResponse(json.dumps(contentdict))
     
     
 @skillutils.is_session_valid
