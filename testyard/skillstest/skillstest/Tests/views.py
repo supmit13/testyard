@@ -7668,7 +7668,7 @@ def checknameavailability(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
-def showinterviewschedulescreen(request):
+def displayinterviewschedulescreen(request):
     message = ""
     if request.method != 'GET':
         message = "Error: %s"%error_msg('1004')
