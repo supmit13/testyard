@@ -4380,17 +4380,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
+			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap style='width:150px;display:auto;'><font size=-1 style='font-weight:bold;'>Language</font></td>\
+			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
+			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule/Re-Schedule</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
 			</tr>\
 			<tr>\
@@ -4404,17 +4405,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            testname = keyvals[k];
 		            testvals = d[testname];
 		            searchhtml += "<tr>\
-  			    <td><font size=-1 color='#0000AA'>" + testname + "</font></td>\
+  			    <td style='width:200px;display:auto;'><font size=-1 color='#0000AA'>" + testname + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
+			    <td style='width:150px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[5] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[6] + "</font></td>\
+			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[5] + "</font></td>\
+			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[6] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>\
 		  	    <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[10] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[11] + "</font></td>\
+			    <td><a href='#/' class='btn btn-primary' id='btnscheduleinterview' name='btnscheduleinterview'  onclick='javascript:scheduleinterview(\"" + testvals[11] + "\", \"{{showinterviewschedulescreenurl}}\");' style='height:35px;width:150px;color:#ffffff;font-size:small;font-weight:bold;'>(Re-)Schedule</a></td>\
 			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = \"javascript:postonlinkedin('" + testvals[11] + "', 'interviewconductor');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
 			    </tr>";
 		        }
@@ -4468,12 +4470,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    searchhtml = "<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class=\"blue\">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='" + searchqval + "' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>\
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>\
 			<tr class=\"th\">\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
+			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap style='width:150px;display:auto;'><font size=-1 style='font-weight:bold;'>Language</font></td>\
+			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
+			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>\
@@ -4496,12 +4498,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            testname = keyvals[k];
 		            testvals = d[testname];
 		            searchhtml += "<tr>";
-		            searchhtml += "<td><font size=-1 color='#0000AA'>" + testname + "</font></td>\
+		            searchhtml += "<td style='width:200px;display:auto;'><font size=-1 color='#0000AA'>" + testname + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[5] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[6] + "</font></td>\
+			    <td style='width:150px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
+			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[5] + "</font></td>\
+			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[6] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>\
 		  	    <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
@@ -4558,31 +4560,31 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    else{
     		xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
   	    }
-  	    csrf = document.frmmaintests.csrfmiddlewaretoken.value;
-  	    postdata = 'intlinkid='+intlinkid + '&csrfmiddlewaretoken=' + csrf;
+  	    var csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	    var postdata = 'intlinkid=' + intlinkid + '&csrfmiddlewaretoken=' + csrf;
   	    xmlhttp.onreadystatechange = function(){
-  		if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-  		  let targetdiv = document.getElementById('createtestdiv');
+  	      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+  	          var targetdiv = document.getElementById('createtestdiv');
   		  targetdiv.className= "";
   		  targetdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1000px;background-color:#ccffff;";
   		  errorpattern = new RegExp("^Error");
-  		  if(errorpattern.test(xmlhttp.responseText)){
-  		    alert(xmlhttp.responseText);
+                 if(errorpattern.test(xmlhttp.responseText)){
+  	            alert(xmlhttp.responseText);
   		  }
   		  else{
   		    respcontentobj = JSON.parse(xmlhttp.responseText);
   		    alert(respcontentobj.html);
 		    targetdiv.innerHTML = respcontentobj.html;
 		  }
-		  return (true);
-		}
+		  return false;
+	      }
 	    };
-	    xmlhttp.open("POST", targeturl, true);
+	    xmlhttp.open("POST", targeturl, false);
 	    xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 	    //xmlhttp.setRequestHeader('Content-length', postdata.length.toString());
 	    xmlhttp.setRequestHeader('Accept', 'application/json');
   	    xmlhttp.send(postdata);
-  	    return (true);
+  	    return false;
 	}
 	
 	</script>
@@ -4928,12 +4930,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			
 			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
 			<tr class="th">
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
+			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Language</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Create Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
+			  <td align='center' nowrap style="width:150px;display:auto;"><font size=-1 style='font-weight:bold;'>Language</font></td>
+			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Create Date</font></td>
+			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>
@@ -4950,12 +4952,12 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</tr>
 			{% for interviewtitle in asinterviewee_seq %}  
 			<tr>
-  			    <td><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
+  			    <td style='width:200px;display:auto;'><font size=-1 color='#0000AA'>{{interviewtitle}}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:2 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:3 }}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:4 }}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:5 }}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:6 }}</font></td>
+			    <td style="width:150px;display:auto;"><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:4 }}</font></td>
+			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:5 }}</font></td>
+			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:6 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:7 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:8 }}</font></td>
 		  	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:9 }}</font></td>
@@ -4991,7 +4993,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</div>
 			</span>
 		</div>
-
 		<script language='Javascript'>
 		// Making sure openTab is called on creatortab when the window loads.
 		 var evt = document.createEvent('Event');  
