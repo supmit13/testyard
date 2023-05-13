@@ -4603,8 +4603,56 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
         }
 
-        function newscheduleinterview(){
-
+        function newscheduleinterview(intid){
+	  newsched_dt = document.getElementById("newsched_datetime").value;
+	  emails = document.getElementById("newsched_email").value;
+	  // Validate Input
+	  datetimepattern = new RegExp("\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}");
+	  emailpattern = new RegExp("@.*\\.");
+	  if(newsched_dt.trim() == ""){
+	    alert("The New Schedule datetime field cannot be empty.");
+	    return false;
+	  }
+	  if(!datetimepattern.test(newsched_dt)){
+	    alert("Invalid datetime value");
+	    return false;
+	  }
+	  if(emails.trim() == ""){
+	    alert("Candidate Emails field cannot be empty");
+	    return false;
+	  }
+	  emailslist = emails.split(",");
+	  for(var i=0; i < emailslist.length; i++){
+	    if(!emailpattern.test(emailslist[i])){
+	      alert("Invalid email detected. Please remove the invalid email and try again.");
+	      return false;
+	    }
+	  }
+	  waitdiv = document.getElementById("newschedwait");
+	  waitdiv.style.display = "";
+	  waitdiv.innerHTML = "<img src='/static/images/loading_small.gif'>";
+	  var xmlhttp;
+	  csrf = document.frmintschedule.csrfmiddlewaretoken.value;
+	  postdata = "interviewid=" + intid + "&newsched_datetime=" + newsched_dt + "&newsched_email=" + emails + "&csrfmiddlewaretoken=" + csrf;
+	  if (window.XMLHttpRequest){
+    	    xmlhttp=new XMLHttpRequest();
+  	  }
+  	  else{
+    	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	  }
+  	  var csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	  xmlhttp.onreadystatechange = function(){
+  	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+  	      alert(xmlhttp.responseText);
+  	      waitdiv.innerHTML = "";
+  	      waitdiv.style.display = "none";
+  	    }
+  	  };
+  	  alert(postdata);
+  	  xmlhttp.open("POST", "{{savenewinterviewscheduleurl}}", false);
+	  xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  	  xmlhttp.send(postdata);
+  	  return false;
         }
 
         function listcandidates(emailslist){

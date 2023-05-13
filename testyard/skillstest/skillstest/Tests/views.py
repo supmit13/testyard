@@ -485,6 +485,7 @@ def get_user_tests(request):
     tests_user_dict['linkedinpostsessionurl'] = skillutils.gethosturl(request) + "/" + linkedinpostsessionurl
     tests_user_dict['maxinvitationspersession'] = mysettings.MAX_INVITES_PER_SESSION
     tests_user_dict['addtogooglecalendarurl'] = skillutils.gethosturl(request) + "/" + addtogooglecalendarurl
+    tests_user_dict['savenewinterviewscheduleurl'] = skillutils.gethosturl(request) + "/" + mysettings.SAVE_NEW_INTERVIEW_SCHEDULE_URL
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
@@ -7703,6 +7704,7 @@ def displayinterviewschedulescreen(request):
     intdatadict = {}
     intdatadict['interviewtitle'] = interviewobj.title
     intdatadict['interviewer'] = interviewobj.interviewer.displayname
+    intdatadict['interviewid'] = interviewobj.id
     interviewcandidatesqset = InterviewCandidates.objects.filter(interview=interviewobj).order_by('-scheduledtime')
     intdatadict['existing_interviews'] = []
     for intcandidate in interviewcandidatesqset:
@@ -7720,8 +7722,98 @@ def displayinterviewschedulescreen(request):
     schedulescreenhtml = tmpl.render(cxt)
     contentdict = {'html' : schedulescreenhtml}
     return HttpResponse(json.dumps(contentdict))
-    
-    
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def savenewinterviewschedule(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    interviewid = ""
+    if not request.POST.has_key('interviewid'):
+        message = "Error: Required parameter interview Id missing."
+        response = HttpResponse(message)
+        return response
+    interviewid = request.POST['interviewid']
+    if interviewid.strip() == "":
+        message = "Error: Required parameter interview Id is empty."
+        response = HttpResponse(message)
+        return response
+    interviewobj = None
+    try:
+        interviewobj = Interview.objects.get(id=interviewid)
+    except:
+        message = "Error retrieving interview object"
+        response = HttpResponse(message)
+        return response
+    # Now we do have the requisite interview object, let's check out if all other values are valid.
+    newsched_email, newsched_datetime = "", ""
+    if not request.POST.has_key("newsched_email"):
+        message = "Error: Required parameter email Ids missing."
+        response = HttpResponse(message)
+        return response
+    if not request.POST.has_key("newsched_datetime"):
+        message = "Error: Required parameter Schedule date and time missing."
+        response = HttpResponse(message)
+        return response
+    newsched_email = request.POST['newsched_email']
+    newsched_datetime = request.POST['newsched_datetime']
+    if newsched_email.strip() == "" or newsched_datetime.strip() == "":
+        message = "One or more of the required field values are empty"
+        response = HttpResponse(message)
+        return response
+    emailpattern = re.compile("@.*\.")
+    datetimepattern = re.compile("\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}")
+    if not re.search(datetimepattern, newsched_datetime):
+        message = "Schedule datetime is not in appropriate format."
+        response = HttpResponse(message)
+        return response
+    emailslist = newsched_email.split(",")
+    emailidslist = []
+    uniqemails = {}
+    for email in emailslist:
+        if not re.search(emailpattern, email): # If email Id is invalid, we simply skip it.
+            continue
+        if email not in uniqemails.keys():
+            emailidslist.append(email)
+            uniqemails[email] = 1
+        else:
+            pass
+    # So emailidslist is not a list of unique emails sent to us for scheduling
+    intcandidateobj = InterviewCandidates()
+    intcandidateobj.interview = interviewobj
+    intcandidateobj.emailaddr = ",".join(emailidslist)
+    intcandidateobj.scheduledtime = datetime.datetime.strptime(newsched_datetime, "%Y-%m-%d %H:%M:%S")
+    intcandidateobj.interviewlinkid = skillutils.generate_random_string()
+    hashtoken = binascii.hexlify(os.urandom(16))
+    intcandidateobj.interviewurl = skillutils.gethosturl(request) + "/"mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  intcandidateobj.interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist)
+    try:
+        intcandidateobj.save()
+    except:
+        message = "The interview schedule could not be saved: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    # Send out the requisite emails.
+    message = "The interview schedule has been successfully saved and the requisite emails are being sent out."
+    response = HttpResponse(message)
+    return response
+        
+
+
+
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
