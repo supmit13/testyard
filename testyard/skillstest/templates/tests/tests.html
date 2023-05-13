@@ -4600,7 +4600,41 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	}
 	
 	function rescheduleinterview(intcandidateid, interviewid){
-
+	  resched_datetime = document.getElementById("resched_datetime_" + intcandidateid).value;
+	  datetimepattern = new RegExp("\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}");
+	  if(resched_datetime.trim() == ""){
+	    alert("The Re-Schedule datetime field cannot be empty.");
+	    return false;
+	  }
+	  if(!datetimepattern.test(resched_datetime)){
+	    alert("Invalid datetime value in Re-Schedule datetime field");
+	    return false;
+	  }
+	  var xmlhttp;
+	  csrf = document.frmintschedule.csrfmiddlewaretoken.value;
+	  postdata = "interviewid=" + interviewid + "&resched_datetime=" + resched_datetime + "&csrfmiddlewaretoken=" + csrf + "&intcandidateid=" + intcandidateid;
+	  if (window.XMLHttpRequest){
+    	    xmlhttp=new XMLHttpRequest();
+  	  }
+  	  else{
+    	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	  }
+  	  waitdiv = document.getElementById("reschedwait_"+intcandidateid);
+	  waitdiv.style.display = "";
+	  waitdiv.innerHTML = "<img src='/static/images/loading_small.gif'>";
+  	  var csrf = document.frmmaintests.csrfmiddlewaretoken.value;
+  	  xmlhttp.onreadystatechange = function(){
+  	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+  	      waitdiv.innerHTML = "";
+  	      waitdiv.style.display = "none";
+  	      alert(xmlhttp.responseText);
+  	      closedivbyid("createtestdiv");
+  	    }
+  	  };
+  	  xmlhttp.open("POST", "{{rescheduleinterviewurl}}", false);
+	  xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  	  xmlhttp.send(postdata);
+  	  return false;
         }
 
         function newscheduleinterview(intid){

@@ -486,6 +486,7 @@ def get_user_tests(request):
     tests_user_dict['maxinvitationspersession'] = mysettings.MAX_INVITES_PER_SESSION
     tests_user_dict['addtogooglecalendarurl'] = skillutils.gethosturl(request) + "/" + addtogooglecalendarurl
     tests_user_dict['savenewinterviewscheduleurl'] = skillutils.gethosturl(request) + "/" + mysettings.SAVE_NEW_INTERVIEW_SCHEDULE_URL
+    tests_user_dict['rescheduleinterviewurl'] = skillutils.gethosturl(request) + "/" + mysettings.RESCHEDULE_INTERVIEW_URL
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
@@ -7872,7 +7873,159 @@ def savenewinterviewschedule(request):
     return response
         
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def rescheduleinterview(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    interviewid, intcandidateid = -1, -1
+    if not request.POST.has_key('interviewid'):
+        message = "Error: Required parameter interview Id missing."
+        response = HttpResponse(message)
+        return response
+    interviewid = request.POST['interviewid']
+    if interviewid.strip() == "":
+        message = "Error: Required parameter interview Id is empty."
+        response = HttpResponse(message)
+        return response
+    interviewobj = None
+    try:
+        interviewobj = Interview.objects.get(id=int(interviewid))
+    except:
+        message = "Error retrieving interview object"
+        response = HttpResponse(message)
+        return response
+    # Now we do have the requisite interview object, let's check out if all other values are valid.
+    if not request.POST.has_key('intcandidateid'):
+        message = "Error: Required parameter interview candidate Id missing."
+        response = HttpResponse(message)
+        return response
+    intcandidateid = request.POST['intcandidateid']
+    if intcandidateid.strip() == "":
+        message = "Error: Required parameter interview candidate Id is empty."
+        response = HttpResponse(message)
+        return response
+    intcandidateobj = None
+    try:
+        intcandidateobj = InterviewCandidates.objects.get(id=int(intcandidateid))
+        if intcandidateobj.interview.id != int(interviewid):
+            message = "The interview object doesn't apply to this given interview candidate"
+            response = HttpResponse(message)
+            return response
+    except:
+        message = "Error retrieving interview candidate object"
+        response = HttpResponse(message)
+        return response
+    resched_datetime = ""
+    if not request.POST.has_key('resched_datetime'):
+        message = "Required parameter schedule missing"
+        response = HttpResponse(message)
+        return response
+    resched_datetime = request.POST['resched_datetime']
+    if resched_datetime.strip() == "":
+        message = "Required parameter schedule is empty"
+        response = HttpResponse(message)
+        return response
+    datetimepattern = re.compile("\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}")
+    if not re.search(datetimepattern, resched_datetime):
+        message = "Schedule datetime is not in appropriate format."
+        response = HttpResponse(message)
+        return response
+    resched_datetime = resched_datetime.replace("T", " ")
+    resched_datetime_parts = resched_datetime.split(" ")
+    if resched_datetime_parts.__len__() > 1:
+        reschedtimeparts = resched_datetime_parts[1].split(":")
+        if reschedtimeparts.__len__() == 2:
+            resched_datetime = resched_datetime_parts[0] + " " + resched_datetime_parts[1] + ":00"
+        else:
+            pass
+    intcandidateobj.scheduledtime = datetime.datetime.strptime(resched_datetime, "%Y-%m-%d %H:%M:%S")
+    candidateemails = intcandidateobj.emailaddr
+    candidateemailslist = candidateemails.split(",")
+    interviewlinkid = intcandidateobj.interviewlinkid
+    interviewurl = intcandidateobj.interviewurl
+    try:
+        intcandidateobj.save()
+    except:
+        message = "Could not save the given schedule: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    # Send requisite emails to candidates
+    if candidateemailslist.__len__() > 0:
+        message = """Dear Candidate,
+                     <br/><br/>
+                     This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the<br/> 
+                     link below to load the interview interface. If it doesn't work, then copy <br/>
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     
+                     %s <br/><br/>
+                     
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
+                     <br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the inter-<br/>
+                     view application.<br/><br/>
 
+                     Good Luck!<br/>
+                     The TestYard Interview Team.
+    """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+        subject = "TestYard Interview Invitation"
+        fromaddr = userobj.emailid
+        # Send email
+        for targetemail in candidateemailslist:
+            try:
+                #retval = send_mail(subject, message, fromaddr, [targetemail,], False)
+                retval = send_emails.delay(subject, message, fromaddr, targetemail, False)
+            except:
+                if mysettings.DEBUG:
+                    print "sendemail failed for %s - %s\n"%(targetemail, sys.exc_info()[1].__str__())
+    # Send an email to the interviewer too.
+    interviewerurl = interviewurl
+    try:
+        interviewerurl = interviewurl.split("&attend")[0]
+    except:
+        pass
+    message = """Dear Interviewer,
+                     <br/><br/>
+                     You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the<br/> 
+                     link below to load the interview interface. If it doesn't work, then copy <br/>
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     
+                     %s <br/><br/>
+                     
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
+                     <br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the inter-<br/>
+                     view application.<br/><br/>
+
+                     Good Luck!<br/>
+                     The TestYard Interview Team.
+         """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+    subject = "TestYard Interview Scheduled"
+    fromaddr = userobj.emailid
+    try:
+        retval = send_emails.delay(subject, message, mysettings.MAILSENDER, fromaddr, False)
+    except:
+        if mysettings.DEBUG:
+            print "sendemail failed for %s - %s\n"%(interviewerem, sys.exc_info()[1].__str__())
+    message = "The interview schedule has been successfully saved and the requisite emails are being sent out."
+    response = HttpResponse(message)
+    return response
+    
 
 @skillutils.is_session_valid
 @skillutils.session_location_match
