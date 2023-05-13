@@ -4643,20 +4643,20 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	  var csrf = document.frmmaintests.csrfmiddlewaretoken.value;
   	  xmlhttp.onreadystatechange = function(){
   	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-  	      alert(xmlhttp.responseText);
   	      waitdiv.innerHTML = "";
   	      waitdiv.style.display = "none";
+  	      alert(xmlhttp.responseText);
+  	      closedivbyid("createtestdiv");
   	    }
   	  };
-  	  alert(postdata);
   	  xmlhttp.open("POST", "{{savenewinterviewscheduleurl}}", false);
 	  xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   	  xmlhttp.send(postdata);
   	  return false;
         }
 
-        function listcandidates(emailslist){
-          document.getElementById("listemails").title = emailslist;
+        function listcandidates(emailslist, candidateid){
+          document.getElementById("listemails_"+candidateid).title = emailslist;
         }
 
 	</script>

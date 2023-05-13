@@ -7710,7 +7710,7 @@ def displayinterviewschedulescreen(request):
     for intcandidate in interviewcandidatesqset:
         starttime = intcandidate.actualstarttime
         schedulestatus = False
-        if not starttime:
+        if not starttime or starttime == "NULL" or starttime is None:
             schedulestatus = True
         candidateemailslist = intcandidate.emailaddr.split(",")
         candidateemailscount = candidateemailslist.__len__()
@@ -7796,10 +7796,17 @@ def savenewinterviewschedule(request):
     intcandidateobj = InterviewCandidates()
     intcandidateobj.interview = interviewobj
     intcandidateobj.emailaddr = ",".join(emailidslist)
+    newsched_datetime = newsched_datetime.replace("T", " ")
+    newsched_datetime_parts = newsched_datetime.split(" ")
+    if newsched_datetime_parts.__len__() > 1:
+        newschedtimeparts = newsched_datetime_parts[1].split(":")
+        if newschedtimeparts.__len__() == 2:
+            newsched_datetime = newsched_datetime_parts[0] + " " + newsched_datetime_parts[1] + ":00"
     intcandidateobj.scheduledtime = datetime.datetime.strptime(newsched_datetime, "%Y-%m-%d %H:%M:%S")
-    intcandidateobj.interviewlinkid = skillutils.generate_random_string()
+    interviewlinkid = skillutils.generate_random_string()
+    intcandidateobj.interviewlinkid = interviewlinkid
     hashtoken = binascii.hexlify(os.urandom(16))
-    intcandidateobj.interviewurl = skillutils.gethosturl(request) + "/"mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  intcandidateobj.interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist)
+    intcandidateobj.interviewurl = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  intcandidateobj.interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist)
     try:
         intcandidateobj.save()
     except:
@@ -7807,6 +7814,59 @@ def savenewinterviewschedule(request):
         response = HttpResponse(message)
         return response
     # Send out the requisite emails.
+    if emailidslist.__len__() > 0: # Send an email invitation link to the email addresses.
+        message = """Dear Candidate,
+                     <br/><br/>
+                     This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the<br/> 
+                     link below to load the interview interface. If it doesn't work, then copy <br/>
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     
+                     %s/%s <br/><br/>
+                     
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
+                     <br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the inter-<br/>
+                     view application.<br/><br/>
+
+                     Good Luck!<br/>
+                     The TestYard Interview Team.
+    """%(interviewobj.title, userobj.displayname, newsched_datetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist), skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+        subject = "TestYard Interview Invitation"
+        fromaddr = userobj.emailid
+        # Send email
+        for targetemail in emailidslist:
+            try:
+                #retval = send_mail(subject, message, fromaddr, [targetemail,], False)
+                retval = send_emails.delay(subject, message, fromaddr, targetemail, False)
+            except:
+                if mysettings.DEBUG:
+                    print "sendemail failed for %s - %s\n"%(targetemail, sys.exc_info()[1].__str__())
+    # Send an email to the interviewers
+    message = """Dear Interviewer,
+                     <br/><br/>
+                     You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the<br/> 
+                     link below to load the interview interface. If it doesn't work, then copy <br/>
+                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     
+                     %s/%s <br/><br/>
+                     
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
+                     <br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
+                     Browsers other than these 3 may not support every feature used by the inter-<br/>
+                     view application.<br/><br/>
+
+                     Good Luck!<br/>
+                     The TestYard Interview Team.
+         """%(",".join(emailidslist), interviewobj.title, newsched_datetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+    subject = "TestYard Interview Scheduled"
+    fromaddr = userobj.emailid
+    try:
+        retval = send_emails.delay(subject, message, mysettings.MAILSENDER, fromaddr, False)
+    except:
+        if mysettings.DEBUG:
+            print "sendemail failed for %s - %s\n"%(interviewerem, sys.exc_info()[1].__str__())
     message = "The interview schedule has been successfully saved and the requisite emails are being sent out."
     response = HttpResponse(message)
     return response
