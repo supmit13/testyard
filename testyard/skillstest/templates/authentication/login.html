@@ -1,8 +1,9 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
-<title>TestYard - Taking Care of Your Workforce's Testing Needs</title>
+<title>TestYard - Taking Care of Your Skills Testing Needs</title>
 <link rel="stylesheet" type="text/css" href="static/css/style.css" />
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 
@@ -10,9 +11,89 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <!-- New interface code ends here -->
-<script language='javascript'>
+<style>
+:root {
+  --input-padding-x: 1.5rem;
+  --input-padding-y: .75rem;
+}
 
-</script>
+.card-signin {
+  border: 0;
+  border-radius: 0rem;
+  box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+  background-color: #ccffff;
+}
+
+.card-signin .card-title {
+  margin-bottom: 2rem;
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.card-signin .card-body {
+  padding: 2rem;
+}
+
+.form-signin {
+  width: 100%;
+}
+
+.form-signin .btn {
+  font-size: 80%;
+  border-radius: 0rem;
+  letter-spacing: .1rem;
+  font-weight: bold;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.form-label-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-label-group input {
+  height: auto;
+}
+
+.form-label-group>input,
+.form-label-group>label {
+  padding: var(--input-padding-y) var(--input-padding-x);
+}
+
+.form-label-group>label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  /* Override default `<label>` margin */
+  line-height: 1.5;
+  color: #495057;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  transition: all .1s ease-in-out;
+}
+
+
+.form-control:focus {
+
+    box-shadow: 10px 0px 0px 0px #ffffff !important;
+
+}
+
+.btn-google {
+  color: white;
+  background-color: #ea4335;
+}
+
+.btn-facebook {
+  color: white;
+  background-color: #3b5998;
+}
+
+</style>
 </head>
 <body>
 
@@ -20,7 +101,7 @@
 
 	<div id="header">	
 		<h1><a href="#">TEST<span>YARD</span></a></h1>
-		<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience testing... Give one, or take one.</p>
+		<p style="color:#FFFFFF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Experience skills testing... Conveniently.</p>
 
 		<!-- ### Top Menu ### -->
 
@@ -63,38 +144,39 @@
 		
 		</div>
 
-		<!-- ### Post Entry End ### -->
+	
+	<div class="container" style="width:150%;">
+	    <div class="row">
+	      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
+		<div class="card card-signin my-5">
+		  <div class="card-body">
+		    <p style='font-weight:bold;'><h5 class="card-title text-center">Sign In</h5>&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
+		    {{ msg }}
+		    <form name='loginform' method='POST' action='/skillstest/login/' class="form-signin">
+		      <div class="form-label-group">
+		        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
+		        <!-- <label for="username">Username</label> -->
+		      </div>
 
-		<!-- ### Post Entry Begin ###  -->
-
-		<div class="post">
-		    <div class='row'>
-			<span class="meta">
-			<p style='font-weight:bold;'>Login below&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
-			{{ msg }}
-			<div class="entry">
-
-			<form name='loginform' method='POST' action='/skillstest/login/'>
-			<b>Username: </b><input type='text' name='username' value='' class='form-control' style='width:300px;'><br />
-			<b>Password: </b><input type='password' name='password' value='' class='form-control' style='width:300px;'><br />
+		      <div class="form-label-group">
+		        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+		        <!-- <label for="password">Password</label> -->
+		      </div>
 			{% csrf_token %}
-			<input type='button' name='login' value='Login' onClick='javascript:process_login();' class='btn btn-primary' style='width:100px;'>
-			<!-- <input type='checkbox' name='keepmeloggedin' value='1' checked><b><i>Keep me logged in</i></b> -->
-			</form>
-			</div>
-			</span><p style='color:#0000aa;'>OR</p>
-			<span class='meta' style='padding-left:30px;text-align:center;'>
-			    
-			    <p style='font-weight:bold;color:#0000aa;font-face:helvetica;'><a href='#/' onclick='signinwithgoogle();'>Sign In with Google</a></p>
-			    
-			    <p style='font-weight:bold;color:#0000aa;font-face:helvetica;'><a href='#/' onclick='signinwithfacebook();'>Sign In with Facebook</a></p>
-			</span>
-		    </div>
+		      <!-- <div class="custom-control custom-checkbox mb-3">
+		        <input type="checkbox" class="custom-control-input" id="customCheck1">
+		        <label class="custom-control-label" for="customCheck1">Remember password?</label>
+		      </div> -->
+		      <button class="btn btn-lg btn-primary btn-block text-uppercase" type="button" name="login" onClick='javascript:process_login();'>Sign in</button>
+		      <hr class="my-4">
+		      <button class="btn btn-lg btn-google btn-block text-uppercase" type="button" onclick='signinwithgoogle();'><i class="fab fa-google mr-2"></i> Sign in with Google</button>
+		      <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
+		    </form>
+		  </div>
 		</div>
-		
-		<!-- ### Post Entry End ###  -->
-		
-		
+	      </div>
+	    </div>
+	  </div>
 
 		<div class="postpagesnav">
 		
@@ -138,3 +220,6 @@
 </div>
 </body>
 </html>
+
+
+
