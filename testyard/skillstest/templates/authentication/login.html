@@ -6,6 +6,12 @@
 <link rel="stylesheet" type="text/css" href="static/css/style.css" />
 <script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
 
+<!-- New interface code starts here -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<!-- New interface code ends here -->
+
+
 </head>
 <body>
 
@@ -42,7 +48,7 @@
 		
 		<div class="post">
 			
-			<h2>Welcome to TestYard </h2><h3> {{ curdate }}</h3>
+			<h2>Welcome to TestYard </h2><p style='font-size:small;'> {{ curdate }}</p>
 			
 			
 			<div class="entry">
@@ -61,20 +67,28 @@
 		<!-- ### Post Entry Begin ###  -->
 
 		<div class="post">
+		    <div class='row'>
 			<span class="meta">
-			<h3>Login below&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></h3>
+			<p style='font-weight:bold;'>Login below&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
 			{{ msg }}
 			<div class="entry">
 
 			<form name='loginform' method='POST' action='/skillstest/login/'>
-			<b>Username: </b><input type='text' name='username' value='' class='glowing-border glob-input'><br />
-			<b>Password: </b><input type='password' name='password' value='' class='glowing-border glob-input'><br />
+			<b>Username: </b><input type='text' name='username' value='' class='form-control' style='width:300px;'><br />
+			<b>Password: </b><input type='password' name='password' value='' class='form-control' style='width:300px;'><br />
 			{% csrf_token %}
-			<input type='button' name='login' value='Login' onClick='javascript:process_login();' class='glowing-border btn-gbl btn-suc'>
+			<input type='button' name='login' value='Login' onClick='javascript:process_login();' class='btn btn-primary' style='width:100px;'>
 			<!-- <input type='checkbox' name='keepmeloggedin' value='1' checked><b><i>Keep me logged in</i></b> -->
 			</form>
 			</div>
+			</span><p style='color:#0000aa;'>OR</p>
+			<span class='meta' style='padding-left:30px;text-align:center;'>
+			    
+			    <p style='font-weight:bold;color:#0000aa;'><a href='#/' onclick='signinwithgoogle();'>Sign In with Google</a></p>
+			    
+			    <p style='font-weight:bold;color:#0000aa;'><a href='#/' onclick='signinwithfacebook();'>Sign In with Facebook</a></p>
 			</span>
+		    </div>
 		</div>
 		
 		<!-- ### Post Entry End ###  -->
