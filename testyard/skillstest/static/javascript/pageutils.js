@@ -311,5 +311,13 @@ function stripandexecutescript(text){
 }
 
 
+function signinwithgoogle(){
+
+}
+
+function signinwithfacebook(){
+
+}
+
 
 
