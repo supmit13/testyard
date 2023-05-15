@@ -416,6 +416,7 @@ def storegoogleuserinfo(request):
         return HttpResponse(message)
     # Get all the post data
     firstname, lastname, username, gender, emailid, profpicurl = "", "", "", "", "", ""
+    password = "googlesignin" # This is a special string to be used as password for google authentication users
     if request.POST.has_key('firstname'):
         firstname = request.POST['firstname']
     if request.POST.has_key('lastname'):
@@ -442,7 +443,7 @@ def storegoogleuserinfo(request):
         userobj = User()
         userobj.displayname = username
         userobj.emailid = emailid
-        userobj.password = "" # Don't need to store a password for this user as long as Google authenticates this user
+        userobj.password = password
         userobj.sex = sex
         userobj.firstname = firstname
         userobj.middlename = ""
@@ -459,8 +460,39 @@ def storegoogleuserinfo(request):
             message = "Couldn't save user information for use with TestYard. Please Register on this website to use our services."
             response = HttpResponse(message)
             return response
-    message = "Successfully logged in as %s"%username
-    response = HttpResponse(message)
+    # Now, log the user in.
+    authuserobj = authenticate(username, password)
+    if not authuserobj: # Incorrect password - return user to login screen with an appropriate message.
+        message = error_msg('1002')
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    else: # user will be logged in after checking the 'active' field
+        if authuserobj.active:
+            sessobj = Session()
+            clientip = request.META['REMOTE_ADDR']
+            timestamp = int(time.time())
+            # timestamp will be a 10 digit string.
+            sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip, timestamp.__str__())
+            sessobj.sessioncode = sesscode
+            sessobj.user = authuserobj
+            # sessobj.starttime should get populated on its own when we save this session object.
+            sessobj.endtime = None
+            sessobj.sourceip = clientip
+            if authuserobj.istest: # This session is being performed by a test user, so this must be a test session.
+                sessobj.istest = True
+            elif mysettings.TEST_RUN: # This is a test run as mysettings.TEST_RUN is set to True
+                sessobj.istest = True
+            else:
+                sessobj.istest = False
+            sessobj.useragent = request.META['HTTP_USER_AGENT']
+            # Now save the session...
+            sessobj.save()
+            # ... and redirect to landing page (which happens to be the profile page).
+            response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
+            response.set_cookie('sessioncode', sesscode)
+            response.set_cookie('usertype', authuserobj.usertype)
+        else: # User is not active
+            message = "The user is not active."
+            response = HttpResponse(message)
     return response
     
 

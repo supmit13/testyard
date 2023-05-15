@@ -11,6 +11,7 @@
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <!-- New interface code ends here -->
+
 <!-- Google Sign In code starts -->
 <script src="https://apis.google.com/js/client:platform.js?onload=renderButton" async defer></script>
 <meta name="google-signin-client_id" content="562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com">
@@ -33,7 +34,6 @@ function onSuccess(googleUser) {
     // Get the Google profile data (basic)
     //var profile = googleUser.getBasicProfile();
     
-    // Retrieve the Google account data
     gapi.client.load('oauth2', 'v2', function () {
         var request = gapi.client.oauth2.userinfo.get({
             'userId': 'me'
@@ -44,7 +44,7 @@ function onSuccess(googleUser) {
             var postdata = "";
             var csrf = document.loginform.csrfmiddlewaretoken.value;
             postdata = "csrfmiddlewaretoken=" + csrf + "&firstname=" + resp.given_name + "&emailid=" + resp.email + "&fullname=" + resp.name + "&gender=" + resp.gender + "&googleid=" + resp.id + "&profpic=" + resp.picture + "&lastname=" + resp.family_name;
-            //alert(postdata);
+            alert(postdata);
 	    if (window.XMLHttpRequest){
 	      xmlhttp=new XMLHttpRequest();
 	    }
@@ -53,16 +53,12 @@ function onSuccess(googleUser) {
 	    }
 	    xmlhttp.onreadystatechange = function(){
 	      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-	          testnameslist = JSON.parse(xmlhttp.responseText);
-	          //alert(testnameslist);
-	          return (testnameslist);
+	          window.location.href = "/skillstest/profile/";
 	      }
 	    }
 	    xmlhttp.open("POST", '{{ googleinfourl }}' + q, false);
    	    xmlhttp.send(postdata);
             //var profileHTML = '<h3>Welcome '+resp.given_name+'! <a href="javascript:void(0);" onclick="signOut();">Sign out</a></h3>';
-            //profileHTML += '<img src="'+resp.picture+'"/><p><b>Google ID: </b>'+resp.id+'</p><p><b>Name: </b>'+resp.name+'</p><p><b>Email: </b>'+resp.email+'</p><p><b>Gender: </b>'+resp.gender+'</p><p><b>Locale: </b>'+resp.locale+'</p><p><b>Google Profile:</b> <a target="_blank" href="'+resp.link+'">click to view profile</a></p>';
-            //document.getElementsByClassName("userContent")[0].innerHTML = profileHTML;
             document.getElementById("googlesignin").style.display = "none";
         });
     });
@@ -73,7 +69,7 @@ function onFailure(error) {
     underscorepattern = /_/g;
     var message = error.error
     message = message.replace(underscorepattern, " ");
-    document.getElementById("msgspan").innerHTML = "<p style='color:#aa0000;'>" + message + "</p>";
+    document.getElementById("msgspan").innerHTML = "<p style='color:#ff0000;'>" + message + "</p>";
 }
 
 // Sign out the user
@@ -82,7 +78,6 @@ function signOut() {
     auth2.signOut().then(function () {
         document.getElementById("googlesignin").style.display = "block";
     });
-    
     auth2.disconnect();
 }
 </script>
