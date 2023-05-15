@@ -409,7 +409,7 @@ def mobile_verifypassword(request):
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
 
 
-@csrf_protect
+@csrf_exempt
 def storegoogleuserinfo(request):
     if request.method != "POST":
         message = "Error: %s"%error_msg('1004')

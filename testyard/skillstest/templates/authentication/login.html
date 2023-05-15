@@ -13,74 +13,8 @@
 <!-- New interface code ends here -->
 
 <!-- Google Sign In code starts -->
-<script src="https://apis.google.com/js/client:platform.js?onload=renderButton" async defer></script>
-<meta name="google-signin-client_id" content="562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com">
-<script>
-// Render Google Sign-in button
-function renderButton() {
-    gapi.signin2.render('googlesignin', {
-        'scope': 'profile email',
-        'width': 255,
-        'height': 50,
-        'longtitle': true,
-        'theme': 'dark',
-        'onsuccess': onSuccess,
-        'onfailure': onFailure
-    });
-}
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
-// Sign-in success callback
-function onSuccess(googleUser) {
-    // Get the Google profile data (basic)
-    //var profile = googleUser.getBasicProfile();
-    
-    gapi.client.load('oauth2', 'v2', function () {
-        var request = gapi.client.oauth2.userinfo.get({
-            'userId': 'me'
-        });
-        request.execute(function (resp) {
-            // Send a POST request to the backend server with the info in resp
-            var xmlhttp;
-            var postdata = "";
-            var csrf = document.loginform.csrfmiddlewaretoken.value;
-            postdata = "csrfmiddlewaretoken=" + csrf + "&firstname=" + resp.given_name + "&emailid=" + resp.email + "&fullname=" + resp.name + "&gender=" + resp.gender + "&googleid=" + resp.id + "&profpic=" + resp.picture + "&lastname=" + resp.family_name;
-            alert(postdata);
-	    if (window.XMLHttpRequest){
-	      xmlhttp=new XMLHttpRequest();
-	    }
-	    else{
-	      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-	    }
-	    xmlhttp.onreadystatechange = function(){
-	      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-	          window.location.href = "/skillstest/profile/";
-	      }
-	    }
-	    xmlhttp.open("POST", '{{ googleinfourl }}' + q, false);
-   	    xmlhttp.send(postdata);
-            //var profileHTML = '<h3>Welcome '+resp.given_name+'! <a href="javascript:void(0);" onclick="signOut();">Sign out</a></h3>';
-            document.getElementById("googlesignin").style.display = "none";
-        });
-    });
-}
-
-// Sign-in failure callback
-function onFailure(error) {
-    underscorepattern = /_/g;
-    var message = error.error
-    message = message.replace(underscorepattern, " ");
-    document.getElementById("msgspan").innerHTML = "<p style='color:#ff0000;'>" + message + "</p>";
-}
-
-// Sign out the user
-function signOut() {
-    var auth2 = gapi.auth2.getAuthInstance();
-    auth2.signOut().then(function () {
-        document.getElementById("googlesignin").style.display = "block";
-    });
-    auth2.disconnect();
-}
-</script>
 <!-- Google authentication code ends here -->
 
 <style>
@@ -242,7 +176,21 @@ function signOut() {
 		      <button class="btn btn-lg btn-primary btn-block text-uppercase" type="button" name="login" onClick='javascript:process_login();'>Sign in</button>
 
 		      <hr class="my-4">
-		      <div id='googlesignin' style="text-align:center;">
+		      <div id="g_id_onload"
+			     data-client_id="562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com"
+			     data-context="signin"
+			     data-ux_mode="popup"
+			     data-login_uri="https://testyard.in/skillstest/googlelogin/"
+			     data-auto_prompt="false">
+		      </div>
+
+		      <div class="g_id_signin"
+			     data-type="standard"
+			     data-shape="rectangular"
+			     data-theme="outline"
+			     data-text="signin_with"
+			     data-size="large"
+			     data-logo_alignment="left">
 		      </div>
 		      <hr class="my-4">
 		      <!-- <button class="btn btn-lg btn-google btn-block text-uppercase" type="button" onclick='signinwithgoogle();'><i class="fab fa-google mr-2"></i> Sign in with Google</button> -->
