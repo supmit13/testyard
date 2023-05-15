@@ -415,27 +415,19 @@ def storegoogleuserinfo(request):
         message = "Error: %s"%error_msg('1004')
         return HttpResponse(message)
     # Get all the post data
-    fullname, gender, emailid, username, googleid, profpicurl = "", "", "", "", "", ""
-    if request.POST.has_key('given_name'):
-        username = request.POST['given_name']
+    firstname, lastname, username, gender, emailid, profpicurl = "", "", "", "", "", ""
+    if request.POST.has_key('firstname'):
+        firstname = request.POST['firstname']
+    if request.POST.has_key('lastname'):
+        lastname = request.POST['lastname']
     if request.POST.has_key('emailid'):
         emailid = request.POST['emailid']
-    if request.POST.has_key('fullname'):
-        fullname = request.POST['fullname']
     if request.POST.has_key('gender'):
         gender = request.POST['gender']
     if request.POST.has_key('googleid'):
-        googleid = request.POST['googleid']
+        username = request.POST['googleid']
     if request.POST.has_key('profpic'):
         profpicurl = request.POST['profpic']
-    firstname, middlename, lastname = "", "", ""
-    nameparts = fullname.split(" ")
-    firstname = nameparts[0]
-    if nameparts.__len__() > 2:
-        middlename = nameparts[1]
-        lastname = " ".join(nameparts[2:])
-    elif nameparts.__len__() > 1:
-        lastname = nameparts[1]
     sex = "U"
     if gender == "male":
         sex = "M"
@@ -453,14 +445,14 @@ def storegoogleuserinfo(request):
         userobj.password = "" # Don't need to store a password for this user as long as Google authenticates this user
         userobj.sex = sex
         userobj.firstname = firstname
-        userobj.middlename = middlename
+        userobj.middlename = ""
         userobj.lastname = lastname
         userobj.usertype = 'CORP'
         userobj.active = True
         userobj.istest = False
         userobj.mobileno = ""
         userobj.userpic = profpicurl
-        userobj.newuser = False # Google users will not need to verify account.
+        userobj.newuser = False # Google users will not need to have verified accounts.
         try:
             userobj.save()
         except:

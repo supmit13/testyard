@@ -43,7 +43,7 @@ function onSuccess(googleUser) {
             var xmlhttp;
             var postdata = "";
             var csrf = document.loginform.csrfmiddlewaretoken.value;
-            postdata = "csrfmiddlewaretoken=" + csrf + "&given_name=" + resp.given_name + "&emailid=" + resp.email + "&fullname=" + resp.name + "&gender=" + resp.gender + "&googleid=" + resp.id + "&profpic=" + resp.picture;
+            postdata = "csrfmiddlewaretoken=" + csrf + "&firstname=" + resp.given_name + "&emailid=" + resp.email + "&fullname=" + resp.name + "&gender=" + resp.gender + "&googleid=" + resp.id + "&profpic=" + resp.picture + "&lastname=" + resp.family_name;
             //alert(postdata);
 	    if (window.XMLHttpRequest){
 	      xmlhttp=new XMLHttpRequest();
@@ -70,7 +70,10 @@ function onSuccess(googleUser) {
 
 // Sign-in failure callback
 function onFailure(error) {
-    alert(error);
+    underscorepattern = /_/g;
+    var message = error.error
+    message = message.replace(underscorepattern, " ");
+    document.getElementById("msgspan").innerHTML = "<p style='color:#aa0000;'>" + message + "</p>";
 }
 
 // Sign out the user
@@ -225,7 +228,7 @@ function signOut() {
 		<div class="card card-signin my-5">
 		  <div class="card-body">
 		    <p style='font-weight:bold;'><h5 class="card-title text-center">Sign In</h5>&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
-		    {{ msg }}
+		    <span id='msgspan'>{{ msg }}</span>
 		    <form name='loginform' method='POST' action='/skillstest/login/' class="form-signin">
 		      <div class="form-label-group">
 		        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>

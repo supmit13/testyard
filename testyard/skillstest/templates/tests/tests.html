@@ -3739,10 +3739,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			        continue;
 			    }
 			    if(testsinfo[testnm][18] == 'public'){
-			        ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testnm + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a> --></font></td>";
+			        ascandidatehtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testnm + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a> --></font></td>";
 			    }
 			    else{
-			        ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testnm + "</font></td>";
+			        ascandidatehtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testnm + "</font></td>";
 			    }
 			    ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>";
 			    ascandidatehtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][3] + "</font></td>\
@@ -4300,10 +4300,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            testvals = d[testname];
 		            searchhtml += "<tr>";
 		            if(testvals['17'] == 'public'){
-		                searchhtml += "<td align='center'><font size=-1 color='#0000AA'>" + testname + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a> --></font></td>";
+		                searchhtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testname + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a> --></font></td>";
 		            }
 		            else{
-		                searchhtml += "<td align='center'><font size=-1 color='#0000AA'>" + testname + "</font></td>";
+		                searchhtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testname + "</font></td>";
 		            }
 		            searchhtml += "<td align='center'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
 			  <td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>\
@@ -4926,9 +4926,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% for testnm in tests_candidate_ordered_createdate reversed %}
 			<tr>
 			  {% if candidate_tests_info|dictlookup:testnm|getval:18 == 'public' %}
-			  <td align='center'><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
+			  <td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
 			  {% else %}
-			  <td align='center'><font size=-1 color='#0000AA'>{{ testnm }}</font></td>
+			  <td  style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font></td>
 			  {% endif %}
 			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:3 }}</font></td>
