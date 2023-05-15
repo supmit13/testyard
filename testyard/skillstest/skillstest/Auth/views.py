@@ -75,7 +75,7 @@ def login(request):
         # Display login form
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
-        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL }
+        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'googleinfourl' : skillutils.gethosturl(request) + "/" + mysettings.GOOGLE_INFO_URL }
         c.update(csrf(request))
         cxt = Context(c)
         loginhtml = tmpl.render(cxt)
@@ -409,6 +409,66 @@ def mobile_verifypassword(request):
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
 
 
-
-
+@csrf_protect
+def storegoogleuserinfo(request):
+    if request.method != "POST":
+        message = "Error: %s"%error_msg('1004')
+        return HttpResponse(message)
+    # Get all the post data
+    fullname, gender, emailid, username, googleid, profpicurl = "", "", "", "", "", ""
+    if request.POST.has_key('given_name'):
+        username = request.POST['given_name']
+    if request.POST.has_key('emailid'):
+        emailid = request.POST['emailid']
+    if request.POST.has_key('fullname'):
+        fullname = request.POST['fullname']
+    if request.POST.has_key('gender'):
+        gender = request.POST['gender']
+    if request.POST.has_key('googleid'):
+        googleid = request.POST['googleid']
+    if request.POST.has_key('profpic'):
+        profpicurl = request.POST['profpic']
+    firstname, middlename, lastname = "", "", ""
+    nameparts = fullname.split(" ")
+    firstname = nameparts[0]
+    if nameparts.__len__() > 2:
+        middlename = nameparts[1]
+        lastname = " ".join(nameparts[2:])
+    elif nameparts.__len__() > 1:
+        lastname = nameparts[1]
+    sex = "U"
+    if gender == "male":
+        sex = "M"
+    elif gender == "female":
+        sex = "F"
+    userobj = None
+    try:
+        userobj = User.objects.get(displayname=username)
+    except:
+        pass
+    if userobj is None: # We need to create this user - this is the first time
+        userobj = User()
+        userobj.displayname = username
+        userobj.emailid = emailid
+        userobj.password = "" # Don't need to store a password for this user as long as Google authenticates this user
+        userobj.sex = sex
+        userobj.firstname = firstname
+        userobj.middlename = middlename
+        userobj.lastname = lastname
+        userobj.usertype = 'CORP'
+        userobj.active = True
+        userobj.istest = False
+        userobj.mobileno = ""
+        userobj.userpic = profpicurl
+        userobj.newuser = False # Google users will not need to verify account.
+        try:
+            userobj.save()
+        except:
+            message = "Couldn't save user information for use with TestYard. Please Register on this website to use our services."
+            response = HttpResponse(message)
+            return response
+    message = "Successfully logged in as %s"%username
+    response = HttpResponse(message)
+    return response
+    
 
