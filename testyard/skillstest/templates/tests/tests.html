@@ -3744,13 +3744,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    else{
 			        ascandidatehtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testnm + "</font></td>";
 			    }
-			    ascandidatehtml += "<td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>";
+			    ascandidatehtml += "<td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>";
 			    ascandidatehtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][3] + "</font></td>\
 			    <td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][4] + "</font></td>\
 			    <td align='center'><font size=-1 color='#0000AA'>" + testsinfo[testnm][22] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][26] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][27] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][23] + "</font></td>\
+			    <td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testsinfo[testnm][23] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][13] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][10] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testsinfo[testnm][8] + "</font></td>\
@@ -4305,13 +4305,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            else{
 		                searchhtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testname + "</font></td>";
 		            }
-		            searchhtml += "<td align='center'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
+		            searchhtml += "<td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
 			  <td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>\
 			  <td align='center'><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>\
 			  <td align='center'><font size=-1 color='#0000AA'>" + testvals[19] + "</font></td>\
 			  <td><font size=-1 color='#0000AA'>" + testvals[20] + "</font></td>\
 			  <td><font size=-1 color='#0000AA'>" + testvals[21] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[22] + "</font></td>\
+			  <td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testvals[22] + "</font></td>\
 			  <td><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>\
 			  <td><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
 			  <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
@@ -4930,13 +4930,13 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% else %}
 			  <td  style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font></td>
 			  {% endif %}
-			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap style="padding-left:5px;padding-right:5px;"><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:4 }}</font></td>
 			  <td align='center'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:22 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:26 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:27 }}</font></td>
-			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:23 }}</font></td>
+			  <td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:23 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:13 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:10 }}</font></td>
 			  <td><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:8 }}</font></td>
