@@ -590,7 +590,7 @@ def index(request):
     index_user_dict['login_url'] = mysettings.LOGIN_URL
     index_user_dict['register_url'] = mysettings.REGISTER_URL
     index_user_dict['logged_in_as'] = ""
-    if userobj is not None:
+    if skillutils.isloggedin(request):
         index_user_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("user/index.html")
     index_user_dict.update(csrf(request))

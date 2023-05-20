@@ -77,6 +77,9 @@ def login(request):
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
         c = {'curdate' : curdate, 'msg' : msg, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'googleinfourl' : skillutils.gethosturl(request) + "/" + mysettings.GOOGLE_INFO_URL }
+        inc_context = skillutils.includedtemplatevars("", request)
+        for inc_key in inc_context.keys():
+            c[inc_key] = inc_context[inc_key]
         c.update(csrf(request))
         cxt = Context(c)
         loginhtml = tmpl.render(cxt)
