@@ -38,6 +38,7 @@ urlpatterns += patterns('',
 
     url(r'^%s$'%mysettings.REGISTER_URL, 'skillstest.Auth.views.register', name='newuser'),
     url(r'^%s$'%mysettings.DASHBOARD_URL, 'skillstest.views.dashboard', name='dashboard'),
+    url(r'^%s$'%mysettings.INDEX_URL, 'skillstest.views.index', name='index'),
     url("%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login'),
     url("/%s$"%mysettings.LOGIN_URL, 'skillstest.Auth.views.login', name='login2'),
     url(r'%s$'%mysettings.LOGIN_REDIRECT_URL, 'skillstest.views.profile', name='profile'),

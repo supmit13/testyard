@@ -1,0 +1,208 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
+<title>TestYard - Taking Care of Your Skills Testing Needs</title>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+
+<!-- New interface code starts here -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<!-- New interface code ends here -->
+
+
+<style>
+:root {
+  --input-padding-x: 1.5rem;
+  --input-padding-y: .75rem;
+}
+
+.card-signin {
+  border: 0;
+  border-radius: 0rem;
+  box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
+  background-color: #ccffff;
+}
+
+.card-signin .card-title {
+  margin-bottom: 2rem;
+  font-weight: 300;
+  font-size: 1.5rem;
+}
+
+.card-signin .card-body {
+  padding: 2rem;
+}
+
+.form-signin {
+  width: 100%;
+}
+
+.form-signin .btn {
+  font-size: 80%;
+  border-radius: 0rem;
+  letter-spacing: .1rem;
+  font-weight: bold;
+  padding: 1rem;
+  transition: all 0.2s;
+}
+
+.form-label-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.form-label-group input {
+  height: auto;
+}
+
+.form-label-group>input,
+.form-label-group>label {
+  padding: var(--input-padding-y) var(--input-padding-x);
+}
+
+.form-label-group>label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  margin-bottom: 0;
+  /* Override default `<label>` margin */
+  line-height: 1.5;
+  color: #495057;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  transition: all .1s ease-in-out;
+}
+
+
+.form-control:focus {
+
+    box-shadow: 10px 0px 0px 0px #ffffff !important;
+
+}
+
+.btn-google {
+  color: white;
+  background-color: #ea4335;
+}
+
+.btn-facebook {
+  color: white;
+  background-color: #3b5998;
+}
+
+</style>
+</head>
+<body>
+
+<div id="container">
+
+	<div id="header">	
+		<h1><a href="/skillstest/index/" style="text-shadow: rgba(245,245,245,0.5);background-clip: text;-moz-background-clip: text;-webkit-background-clip: text;">TEST<span>YARD</span></a></h1>
+		<p style="color:#FFFFFF;font-size:14;font-family: Futura;text-shadow: rgba(245,245,245,0.5);background-clip: text;-moz-background-clip: text;-webkit-background-clip: text;background-color: #666666;font-style:oblique;">Taking care of your skills testing needs...</p>
+
+		<!-- ### Top Menu ### -->
+
+		<div id="topmenu">
+		<ul>
+			<li><a href="{{ profile_url }}"{{ select_profile }}>Profile</a></li>	
+			<!-- <li><a href="{{ dashboard_url }}"{{ select_dashboard }}>Dashboard</a></li>
+			<li><a href="{{ subscription_url }}"{{ select_subscription }}>Subscriptions</a></li> -->
+			<li><a href="{{ tests_url }}"{{ select_tests }}>Tests & Interviews</a></li>	
+			<li><a href="{{ search_url }}"{{ select_search }}>Search</a></li>
+			<li><a href="{{ network_url }}"{{ select_socnet }}>Network</a></li>
+			<li><a href="{{ analytics_url }}"{{ select_analytics }}>Analytics</a></li>
+			<li><a href="{{ aboutus_url }}"{{ select_aboutus }}>About Us</a></li>
+			<li><a href="{{ helpndoc_url }}"{{ select_helpndoc }}>Help</a></li>
+			<li><a href="{{ careers_url }}"{{ select_careers }}>Careers</a></li>	
+		</ul>	
+		</div>
+
+	</div>
+	
+	<div id="contentcontainer">
+	
+		<div id="content">
+
+		<!-- ### Post Entry Begin ###  -->
+		
+		<div class="post">
+			
+			<h2>Welcome to TestYard </h2><p style='font-size:small;'> {{ curdate }}</p>
+			
+			
+			<div class="entry">
+			
+			<!--<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
+			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>-->
+			<blockquote><p class="note">Check our <b>Android</b>&#8482; and <b>iOS</b>&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
+			<p></p>
+			
+			</div>
+		
+		</div>
+
+
+
+		<!-- Content here -->
+
+
+
+
+
+
+
+
+
+
+	
+	
+		<div class="postpagesnav">
+		
+		</div>
+		
+		
+		
+		<!-- ### Sidebar Begin ### -->
+
+		
+		<div id="sidebar">
+			
+		<ul>
+
+		<li><h2>Search</h2>
+		<form id="searchform" method="get" action="#">
+			<div>
+			<input type="text" value="" name="s" id="searchfield" />
+			<input type="hidden" id="searchsubmit" value="Search" />
+			</div>
+
+		</form>
+		</li>
+
+		</ul>	
+		
+		</div>
+
+		<!-- ### Sidebar End ### -->
+
+	</div>
+
+<div id="content2">
+	<p>Copyright &copy; 2010 YourSite.com 
+
+	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
+	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
+
+</div>
+
+</div>
+</body>
+</html>
+
+
+

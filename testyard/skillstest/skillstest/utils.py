@@ -221,8 +221,16 @@ def checksession(request):
     to the login page if session is invalid.
     """
     if not isloggedin(request):
-        message = error_msg('1006')
-        return HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+        loginredirect = True
+        for pathpattern in mysettings.UNAUTHENTICATED_ACCESS_PATH_PATTERNS:
+            if re.search(pathpattern, request.path) is not None:
+                loginredirect = False
+                break
+        if loginredirect is True:
+            message = error_msg('1006')
+            return HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+        else:
+            return request
     else: # Return the request
         return request
 
@@ -233,8 +241,16 @@ def is_session_valid(func):
     """
     def sessioncheck(request):
         if not isloggedin(request):
-            message = error_msg('1006')
-            response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+            loginredirect = True
+            for pathpattern in mysettings.UNAUTHENTICATED_ACCESS_PATH_PATTERNS:
+                if re.search(pathpattern, request.path) is not None:
+                    loginredirect = False
+                    break
+            if loginredirect is True:
+                message = error_msg('1006')
+                response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+            else:
+                return request
         else: # Return the request
             response = func(request)
         return response
@@ -253,9 +269,18 @@ def session_location_match(func):
         try:
             session_obj = Session.objects.get(sessioncode=sesscode)
         except:
-            message = error_msg('1006')
-            # Create response with redirect to login page and this message as GET arg. Return that response
-            response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+            loginredirect = True
+            for pathpattern in mysettings.UNAUTHENTICATED_ACCESS_PATH_PATTERNS:
+                if re.search(pathpattern, request.path) is not None:
+                    loginredirect = False
+                    break
+            if loginredirect is True:
+                message = error_msg('1006')
+                # Create response with redirect to login page and this message as GET arg. Return that response
+                response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+            else:
+                response = func(request)
+                return response
         if session_obj.user.usertype != usertype or session_obj.sourceip != clientIP_fromheader:
             message = error_msg('1007')
             # Create response with redirect to login page and this message as GET arg. Return that response

@@ -45,9 +45,16 @@ def returnRedirect(request):
         urlPathPart = mysettings.URL_PROTOCOL + skillutils.gethosturl(request) + urlPathPart
         urlPathPart = urlPathPart.replace("https://", "", 1)
         return HttpResponseRedirect(urlPathPart)
-    redirectUrl = "%s/%s"%("", mysettings.MANAGE_TEST_URL)
+    #redirectUrl = "%s/%s"%("", mysettings.MANAGE_TEST_URL)
+    redirectUrl = "%s/%s"%("", mysettings.INDEX_URL)
     if not skillutils.isloggedin(request):
-        redirectUrl = "%s/%s"%("", mysettings.LOGIN_URL)
+        loginredirect = True
+        for pathpattern in mysettings.UNAUTHENTICATED_ACCESS_PATH_PATTERNS:
+            if re.search(pathpattern, request.path):
+                loginredirect = False
+                break
+        if loginredirect is True:
+            redirectUrl = "%s/%s"%("", mysettings.LOGIN_URL)
     redirectUrlParts = redirectUrl.split("//")
     urlPathPart = redirectUrlParts[redirectUrlParts.__len__() - 1]
     urlPathPart = mysettings.URL_PROTOCOL + skillutils.gethosturl(request) + urlPathPart
@@ -553,3 +560,34 @@ def profileimagechange(request):
     return HttpResponse(message)
 
 
+"""
+This view showcases the features of TestYard and points out the 
+conveniences of using it. This is to be displayed without the
+need to have a valid authenticated session. The page should include
+links to the Login and Register pages as well as a link to Plans
+page.
+"""
+def index(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode, usertype = "", ""
+    if request.COOKIES.has_key('sessioncode'):
+        sesscode = request.COOKIES['sessioncode']
+    if request.COOKIES.has_key('usertype'):
+        usertype = request.COOKIES['usertype']
+    sessionobj, userobj = None, None
+    if sesscode != "":
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    # Initialize context...
+    index_user_dict = {}
+    
+    tmpl = get_template("user/index.html")
+    index_user_dict.update(csrf(request))
+    cxt = Context(index_user_dict)
+    indexhtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        indexhtml = indexhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(indexhtml)
+    
