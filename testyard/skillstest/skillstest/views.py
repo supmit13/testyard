@@ -582,7 +582,19 @@ def index(request):
         userobj = sessionobj[0].user
     # Initialize context...
     index_user_dict = {}
-    
+    inc_context = skillutils.includedtemplatevars("", request)
+    for inc_key in inc_context.keys():
+        index_user_dict[inc_key] = inc_context[inc_key]
+    curdate = datetime.datetime.now()
+    index_user_dict['curdate'] = curdate
+    index_user_dict['login_url'] = ""
+    index_user_dict['register_url'] = ""
+    index_user_dict['logged_in_as'] = ""
+    if userobj is None:
+        index_user_dict['login_url'] = mysettings.LOGIN_URL
+        index_user_dict['register_url'] = mysettings.REGISTER_URL
+    else:
+        index_user_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("user/index.html")
     index_user_dict.update(csrf(request))
     cxt = Context(index_user_dict)

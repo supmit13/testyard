@@ -138,9 +138,16 @@
 			<div class="entry">
 			
 			<!--<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
-			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>-->
-			<blockquote><p class="note">Check our <b>Android</b>&#8482; and <b>iOS</b>&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote>
-			<p></p>
+			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>
+			<blockquote><p class="note">Check our <b>Android</b>&#8482; and <b>iOS</b>&#8482; app (SmartTest&copy;) to create or take a test/interview on the go.</p></blockquote> -->
+			{% if logged_in_as %}
+			<div class="row">
+			<span style="padding-left:10px;padding-right:10px;"><h5><img src='static/images/login.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='{{login_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;color:#ffffff;font-weight:bold;">Login</a></h5></span>
+			<span style="padding-left:10px;padding-right:10px;"><h5><img src='static/images/register.png' style='height:30px;width:30px;'>&nbsp;&nbsp;<a href='{{register_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;color:#ffffff;font-weight:bold;">Register</a></h5></span>
+			</div>
+			{% else %}
+			<span style="color:#0000aa;font-weight:bold;"><h5>Logged in as {{logged_in_as}}</h5></span>
+			{% endif %}
 			
 			</div>
 		
@@ -149,7 +156,7 @@
 
 
 		<!-- Content here -->
-
+		
 
 
 
@@ -171,8 +178,9 @@
 
 		
 		<div id="sidebar">
+		
 			
-		<ul>
+		<!-- <ul>
 
 		<li><h2>Search</h2>
 		<form id="searchform" method="get" action="#">
@@ -184,7 +192,7 @@
 		</form>
 		</li>
 
-		</ul>	
+		</ul>	-->
 		
 		</div>
 
