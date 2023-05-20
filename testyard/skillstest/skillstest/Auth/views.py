@@ -28,6 +28,7 @@ from passlib.hash import pbkdf2_sha256 # To create hash of passwords
 import os, sys, re, time, datetime
 import cPickle, urlparse
 import decimal, math, base64
+import requests, shutil
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, EmailValidationKey
@@ -452,7 +453,18 @@ def storegoogleuserinfo(request):
         userobj.active = True
         userobj.istest = False
         userobj.mobileno = ""
-        userobj.userpic = profpicurl
+        try:
+            r = requests.get(profpicurl, stream=True) # Try to get the file, if possible.
+            if r.status_code == 200:
+                imgpath = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + username + os.path.sep + "images"
+                imgfile = imgpath + os.path.sep + "profilepic.jpg" # If it is not a jpeg file, suck!
+                skillutils.mkdir_p(imgpath)
+                with open(imgfile, 'wb') as f:
+                    r.raw.decode_content = True
+                    shutil.copyfileobj(r.raw, f)
+            userobj.userpic = "profilepic.jpg"
+        except:
+            userobj.userpic = ""
         userobj.newuser = False # Google users will not need to have verified accounts.
         try:
             userobj.save()

@@ -332,37 +332,56 @@ function google_signin_callback(response){
   responsepayload = decodejwt(response.credential);
   //{"iss":"https://accounts.google.com","nbf":1684557814,"aud":"562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com","sub":"117414932176282034486","email":"testyard.in@gmail.com","email_verified":true,"azp":"562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com","name":"Test Yard","picture":"https://lh3.googleusercontent.com/a/AGNmyxZ5t_VXaXDMRSRYRMZcNJJBZgJ3OMsmpCaB_IG7=s96-c","given_name":"Test","family_name":"Yard","iat":1684558114,"exp":1684561714,"jti":"831cf42cd848434a9fd156ee7a0b4bad2bc57710"}
   var targeturl = "/skillstest/googleinfo/";
-  var postdata = "";
+  let signindiv = document.getElementById('dummysignindiv');
+  signindiv.style.display = "";
+  signinform = document.createElement("form");
+  signinform.method = "POST";
+  signinform.action = targeturl;
+  emailcontainer = document.createElement("input");
+  emailcontainer.type = "hidden";
+  emailcontainer.name = "emailid";
+  firstnamecontainer = document.createElement("input");
+  firstnamecontainer.type = "hidden";
+  firstnamecontainer.name = "firstname";
+  lastnamecontainer = document.createElement("input");
+  lastnamecontainer.type = "hidden";
+  lastnamecontainer.name = "lastname";
+  googleidcontainer = document.createElement("input");
+  googleidcontainer.type = "hidden";
+  googleidcontainer.name = "googleid";
+  gendercontainer = document.createElement("input");
+  gendercontainer.type = "hidden";
+  gendercontainer.name = "gender";
+  profpiccontainer = document.createElement("input");
+  profpiccontainer.type = "hidden";
+  profpiccontainer.name = "profpic";
+  csrfcontainer = document.createElement("input");
+  csrfcontainer.type = "hidden";
+  csrfcontainer.name = "csrfmiddlewaretoken";
+  csrf = document.loginform.csrfmiddlewaretoken.value;
   for(j=0;j < responsepayload.length;j++){
     datadict = responsepayload[j];
     if(datadict.hasOwnProperty("email")){ // Check if the dictionary has a key named 'email'
-      postdata += "emailid=" + datadict['email'] + "&firstname=" + datadict['given_name'] + "&lastname=" + datadict['family_name'] + "&googleid=" + datadict['name'] + "&gender=unknown&profpic=" + encodeURI(datadict['picture']);
+      //postdata += "emailid=" + datadict['email'] + "&firstname=" + datadict['given_name'] + "&lastname=" + datadict['family_name'] + "&googleid=" + datadict['name'] + "&gender=unknown&profpic=" + encodeURI(datadict['picture']);
+      emailcontainer.value = datadict['email'];
+      firstnamecontainer.value = datadict['given_name'];
+      lastnamecontainer.value = datadict['family_name'];
+      googleidcontainer.value = datadict['name'];
+      gendercontainer.value = "unknown";
+      profpiccontainer.value = datadict['picture'];
+      csrfcontainer.value = csrf;
+      signinform.appendChild(emailcontainer);
+      signinform.appendChild(firstnamecontainer);
+      signinform.appendChild(lastnamecontainer);
+      signinform.appendChild(googleidcontainer);
+      signinform.appendChild(gendercontainer);
+      signinform.appendChild(profpiccontainer);
+      signinform.appendChild(csrfcontainer);
+      signindiv.appendChild(signinform);
+      signinform.submit();
       break;
     }
   }
-  csrf = document.loginform.csrfmiddlewaretoken.value;
-  postdata += "&csrfmiddlewaretoken=" + csrf;
-  var xmlhttp;
-  if (window.XMLHttpRequest){
-    xmlhttp=new XMLHttpRequest();
-  }
-  else{
-    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
-  }
-  loginpattern = new RegExp("login", "g");
-  // Register the handler
-  xmlhttp.onreadystatechange = function(){
-  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-    if(xmlhttp.getResponseHeader('Location') != null && !loginpattern.test(xmlhttp.getResponseHeader('Location'))){
-      window.location.href = xmlhttp.getResponseHeader('Location');
-    }
-    else{
-      window.location.href = "/skilltest/login/";
-    }
-  }
-  };
-  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
-  xmlhttp.send(postdata);
 }
 
 function signinwithfacebook(){
