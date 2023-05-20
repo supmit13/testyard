@@ -157,7 +157,8 @@
 		<div class="card card-signin my-5">
 		  <div class="card-body">
 		    <p style='font-weight:bold;'><h5 class="card-title text-center">Sign In</h5>&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
-		    <span id='msgspan'>{{ msg }}</span>
+		    <span id='msgspan' style="font-size:small;font-weight:bold;padding-left:10px;padding-right:5px;padding-top:3px;padding-bottom:3px;">{{ msg }}</span>
+		    
 		    <form name='loginform' method='POST' action='/skillstest/login/' class="form-signin">
 		      <div class="form-label-group">
 		        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required autofocus>
@@ -193,11 +194,12 @@
 			     data-logo_alignment="left"
 			     data-width="250">
 		      </div>
-		      <div id="dummysignindiv" style="display:none;"></div>
+		      
 		      <hr class="my-4">
 		      <!-- <button class="btn btn-lg btn-google btn-block text-uppercase" type="button" onclick='signinwithgoogle();'><i class="fab fa-google mr-2"></i> Sign in with Google</button> -->
 		      <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
       		      </div>
+      		      <span id='cautionspan' style="font-size:small;font-weight:bold;color:#0000aa;padding-left:10px;padding-right:5px;padding-top:3px;padding-bottom:3px;">* In case of any issue with login, please clear your browser cache for this domain and try again.</span>
 		    </form>
 		  </div>
 		</div>
@@ -208,6 +210,8 @@
 		<div class="postpagesnav">
 		
 		</div>
+		
+		<div id="dummysignindiv" style="display:none;"></div>
 		
 		</div>
 		
