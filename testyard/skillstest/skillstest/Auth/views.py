@@ -416,7 +416,7 @@ def storegoogleuserinfo(request):
         return HttpResponse(message)
     # Get all the post data
     firstname, lastname, username, gender, emailid, profpicurl = "", "", "", "", "", ""
-    password = "googlesignin" # This is a special string to be used as password for google authentication users
+    password = mysettings.GOOGLE_SIGNIN_DEFAULT_PASSWORD # This is a special string to be used as password for google authentication users
     if request.POST.has_key('firstname'):
         firstname = request.POST['firstname']
     if request.POST.has_key('lastname'):
@@ -436,7 +436,7 @@ def storegoogleuserinfo(request):
         sex = "F"
     userobj = None
     try:
-        userobj = User.objects.get(displayname=username)
+        userobj = User.objects.get(emailid=emailid)
     except:
         pass
     if userobj is None: # We need to create this user - this is the first time

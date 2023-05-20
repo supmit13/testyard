@@ -311,8 +311,58 @@ function stripandexecutescript(text){
 }
 
 
-function signinwithgoogle(){
+function decodejwt(jwt){
+  tokens = jwt.split(".");
+  decodedlist = new Array();
+  for(var i=0;i < tokens.length;i++){
+    //console.log(atob(tokens[i]));
+    try{
+      decodedcontent = JSON.parse(atob(tokens[i]));
+      decodedlist.push(decodedcontent);
+    }
+    catch(err){
+      console.log(err.message);
+    }
+  }
+  return (decodedlist);
+}
 
+
+function google_signin_callback(response){
+  responsepayload = decodejwt(response.credential);
+  //{"iss":"https://accounts.google.com","nbf":1684557814,"aud":"562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com","sub":"117414932176282034486","email":"testyard.in@gmail.com","email_verified":true,"azp":"562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com","name":"Test Yard","picture":"https://lh3.googleusercontent.com/a/AGNmyxZ5t_VXaXDMRSRYRMZcNJJBZgJ3OMsmpCaB_IG7=s96-c","given_name":"Test","family_name":"Yard","iat":1684558114,"exp":1684561714,"jti":"831cf42cd848434a9fd156ee7a0b4bad2bc57710"}
+  var targeturl = "/skillstest/googleinfo/";
+  var postdata = "";
+  for(j=0;j < responsepayload.length;j++){
+    datadict = responsepayload[j];
+    if(datadict.hasOwnProperty("email")){ // Check if the dictionary has a key named 'email'
+      postdata += "emailid=" + datadict['email'] + "&firstname=" + datadict['given_name'] + "&lastname=" + datadict['family_name'] + "&googleid=" + datadict['name'] + "&gender=unknown&profpic=" + encodeURI(datadict['picture']);
+      break;
+    }
+  }
+  csrf = document.loginform.csrfmiddlewaretoken.value;
+  postdata += "&csrfmiddlewaretoken=" + csrf;
+  var xmlhttp;
+  if (window.XMLHttpRequest){
+    xmlhttp=new XMLHttpRequest();
+  }
+  else{
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  loginpattern = new RegExp("login", "g");
+  // Register the handler
+  xmlhttp.onreadystatechange = function(){
+  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+    if(xmlhttp.getResponseHeader('Location') != null && !loginpattern.test(xmlhttp.getResponseHeader('Location'))){
+      window.location.href = xmlhttp.getResponseHeader('Location');
+    }
+    else{
+      window.location.href = "/skilltest/login/";
+    }
+  }
+  };
+  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
+  xmlhttp.send(postdata);
 }
 
 function signinwithfacebook(){
