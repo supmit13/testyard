@@ -161,6 +161,11 @@ def register(request):
              'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
              'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request), 'profpicheight' : mysettings.PROFILE_PHOTO_HEIGHT, 'profpicwidth' : mysettings.PROFILE_PHOTO_WIDTH }
+        inc_context = skillutils.includedtemplatevars("", request)
+        for inc_key in inc_context.keys():
+            c[inc_key] = inc_context[inc_key]
+        curdate = datetime.datetime.now()
+        c['curdate'] = curdate
         c.update(csrf(request))
         cxt = Context(c)
         registerhtml = tmpl.render(cxt)
@@ -214,6 +219,11 @@ def register(request):
                  'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
                  'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request), 'profpicheight' : mysettings.PROFILE_PHOTO_HEIGHT, 'profpicwidth' : mysettings.PROFILE_PHOTO_WIDTH }
+            inc_context = skillutils.includedtemplatevars("", request)
+            for inc_key in inc_context.keys():
+                c[inc_key] = inc_context[inc_key]
+            curdate = datetime.datetime.now()
+            c['curdate'] = curdate
             c.update(csrf(request))
             cxt = Context(c)
             registerhtml = tmpl.render(cxt)
@@ -250,6 +260,11 @@ def register(request):
                  'min_passwd_strength' : mysettings.MIN_ALLOWABLE_PASSWD_STRENGTH, 'username' : username, 'password' : password, 'password2' : password2,\
                  'email' : email, 'firstname' : firstname, 'middlename' : middlename, 'lastname' : lastname, 'mobilenum' : mobilenum, \
                 'availabilityURL' :  mysettings.availabilityURL, 'hosturl' : skillutils.gethosturl(request), 'profpicheight' : mysettings.PROFILE_PHOTO_HEIGHT, 'profpicwidth' : mysettings.PROFILE_PHOTO_WIDTH }
+                inc_context = skillutils.includedtemplatevars("", request)
+                for inc_key in inc_context.keys():
+                    c[inc_key] = inc_context[inc_key]
+                curdate = datetime.datetime.now()
+                c['curdate'] = curdate
                 c.update(csrf(request))
                 cxt = Context(c)
                 reghtml = tmpl.render(cxt)
