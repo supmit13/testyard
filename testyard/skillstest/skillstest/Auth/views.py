@@ -410,11 +410,11 @@ def mobile_verifypassword(request):
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
 
 
-@csrf_exempt
+@csrf_protect
 def storegoogleuserinfo(request):
     if request.method != "POST":
         message = "Error: %s"%error_msg('1004')
-        return HttpResponse(message)
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     # Get all the post data
     firstname, lastname, username, gender, emailid, profpicurl = "", "", "", "", "", ""
     password = mysettings.GOOGLE_SIGNIN_DEFAULT_PASSWORD # This is a special string to be used as password for google authentication users
@@ -442,6 +442,7 @@ def storegoogleuserinfo(request):
         pass
     if userobj is None: # We need to create this user - this is the first time
         userobj = User()
+        username = username.replace("+", " ")
         userobj.displayname = username
         userobj.emailid = emailid
         userobj.password = password
@@ -504,7 +505,7 @@ def storegoogleuserinfo(request):
             response.set_cookie('usertype', authuserobj.usertype)
         else: # User is not active
             message = "The user is not active."
-            response = HttpResponse(message)
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     return response
     
 

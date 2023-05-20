@@ -330,7 +330,6 @@ function decodejwt(jwt){
 
 function google_signin_callback(response){
   responsepayload = decodejwt(response.credential);
-  //{"iss":"https://accounts.google.com","nbf":1684557814,"aud":"562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com","sub":"117414932176282034486","email":"testyard.in@gmail.com","email_verified":true,"azp":"562820546052-75j7kddlibed457q4jatur5l64hu15pv.apps.googleusercontent.com","name":"Test Yard","picture":"https://lh3.googleusercontent.com/a/AGNmyxZ5t_VXaXDMRSRYRMZcNJJBZgJ3OMsmpCaB_IG7=s96-c","given_name":"Test","family_name":"Yard","iat":1684558114,"exp":1684561714,"jti":"831cf42cd848434a9fd156ee7a0b4bad2bc57710"}
   var targeturl = "/skillstest/googleinfo/";
   let signindiv = document.getElementById('dummysignindiv');
   signindiv.style.display = "";
@@ -359,14 +358,25 @@ function google_signin_callback(response){
   csrfcontainer.type = "hidden";
   csrfcontainer.name = "csrfmiddlewaretoken";
   csrf = document.loginform.csrfmiddlewaretoken.value;
+  pluspattern = new RegExp("\\+", "g");
+  specialcharspattern = new RegExp("[\\.,\\-\\'\\:\\/]+", "g");
   for(j=0;j < responsepayload.length;j++){
     datadict = responsepayload[j];
     if(datadict.hasOwnProperty("email")){ // Check if the dictionary has a key named 'email'
-      //postdata += "emailid=" + datadict['email'] + "&firstname=" + datadict['given_name'] + "&lastname=" + datadict['family_name'] + "&googleid=" + datadict['name'] + "&gender=unknown&profpic=" + encodeURI(datadict['picture']);
       emailcontainer.value = datadict['email'];
-      firstnamecontainer.value = datadict['given_name'];
-      lastnamecontainer.value = datadict['family_name'];
-      googleidcontainer.value = datadict['name'];
+      firstname = datadict['given_name'];
+      lastname = datadict['family_name'];
+      username = datadict['name'];
+      firstname = firstname.replace(pluspattern, " ");
+      lastname = lastname.replace(pluspattern, " ");
+      username = username.replace(pluspattern, "");
+      firstname = firstname.replace(specialcharspattern, "");
+      lastname = lastname.replace(specialcharspattern, "");
+      username = username.replace(specialcharspattern, "");
+      //alert(username);
+      firstnamecontainer.value = firstname;
+      lastnamecontainer.value = lastname;
+      googleidcontainer.value = username;
       gendercontainer.value = "unknown";
       profpiccontainer.value = datadict['picture'];
       csrfcontainer.value = csrf;
