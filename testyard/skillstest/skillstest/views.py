@@ -587,13 +587,10 @@ def index(request):
         index_user_dict[inc_key] = inc_context[inc_key]
     curdate = datetime.datetime.now()
     index_user_dict['curdate'] = curdate
-    index_user_dict['login_url'] = ""
-    index_user_dict['register_url'] = ""
+    index_user_dict['login_url'] = mysettings.LOGIN_URL
+    index_user_dict['register_url'] = mysettings.REGISTER_URL
     index_user_dict['logged_in_as'] = ""
-    if userobj is None:
-        index_user_dict['login_url'] = mysettings.LOGIN_URL
-        index_user_dict['register_url'] = mysettings.REGISTER_URL
-    else:
+    if userobj is not None:
         index_user_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("user/index.html")
     index_user_dict.update(csrf(request))

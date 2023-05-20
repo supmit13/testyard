@@ -243,14 +243,14 @@ def is_session_valid(func):
         if not isloggedin(request):
             loginredirect = True
             for pathpattern in mysettings.UNAUTHENTICATED_ACCESS_PATH_PATTERNS:
-                if re.search(pathpattern, request.path) is not None:
+                if re.search(pathpattern, str(request.path)) is not None:
                     loginredirect = False
                     break
             if loginredirect is True:
                 message = error_msg('1006')
                 response = HttpResponseRedirect(gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
             else:
-                return request
+                return func(request)
         else: # Return the request
             response = func(request)
         return response
