@@ -1,101 +1,15 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
-<title>TestYard - Taking Care of Your Skills Testing Needs</title>
-<link rel="stylesheet" type="text/css" href="static/css/style.css" />
-<script language='JavaScript' type="text/javascript" src='static/javascript/pageutils.js'></script>
+<title>TestYard - Taking Care of Your Skills Testing Needs...</title>
+<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+<script language='JavaScript' type="text/javascript" src='/static/javascript/pageutils.js'></script>
 
 <!-- New interface code starts here -->
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 <!-- New interface code ends here -->
-
-
-<style>
-:root {
-  --input-padding-x: 1.5rem;
-  --input-padding-y: .75rem;
-}
-
-.card-signin {
-  border: 0;
-  border-radius: 0rem;
-  box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
-  background-color: #ccffff;
-}
-
-.card-signin .card-title {
-  margin-bottom: 2rem;
-  font-weight: 300;
-  font-size: 1.5rem;
-}
-
-.card-signin .card-body {
-  padding: 2rem;
-}
-
-.form-signin {
-  width: 100%;
-}
-
-.form-signin .btn {
-  font-size: 80%;
-  border-radius: 0rem;
-  letter-spacing: .1rem;
-  font-weight: bold;
-  padding: 1rem;
-  transition: all 0.2s;
-}
-
-.form-label-group {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.form-label-group input {
-  height: auto;
-}
-
-.form-label-group>input,
-.form-label-group>label {
-  padding: var(--input-padding-y) var(--input-padding-x);
-}
-
-.form-label-group>label {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: block;
-  width: 100%;
-  margin-bottom: 0;
-  /* Override default `<label>` margin */
-  line-height: 1.5;
-  color: #495057;
-  border: 1px solid transparent;
-  border-radius: .25rem;
-  transition: all .1s ease-in-out;
-}
-
-
-.form-control:focus {
-
-    box-shadow: 10px 0px 0px 0px #ffffff !important;
-
-}
-
-.btn-google {
-  color: white;
-  background-color: #ea4335;
-}
-
-.btn-facebook {
-  color: white;
-  background-color: #3b5998;
-}
-
-</style>
 
 <!-- Index page related css -->
 <link href="/static/css/index/bootstrap.min.css" rel="stylesheet">
@@ -135,18 +49,13 @@
 		</div>
 
 	</div>
-	
+
 	<div id="contentcontainer" style="width:100%;">
 	
 		<div id="content" style="width:100%;">
-
 		<!-- ### Post Entry Begin ###  -->
 		
-		<div class="post">
-			
-			
-			
-			
+		
 			<div class="entry">
 			
 			<!--<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
@@ -155,8 +64,8 @@
 			{% if logged_in_as == "" %}
 			<p style='font-size:small;color:#0000aa;'> {{ curdate }}</p>
 			<div class="row">
-			<span style="padding-left:10px;padding-right:10px;"><h5><a href='{{login_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;color:#0000aa;font-weight:bold;background:url(/static/images/login.png) no-repeat left #D8D8D8;">Login</a></h5></span>
-			<span style="padding-left:10px;padding-right:10px;"><h5><a href='{{register_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;color:#0000aa;font-weight:bold;background:url(/static/images/register.png) no-repeat left #D8D8D8;">Register</a></h5></span>
+			<span style="padding-left:10px;padding-right:10px;vertical-align:middle;"><a href='{{login_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;font-family:sans-serif;color:#505050;background:url(/static/images/login.png) no-repeat left #D8D8D8;vertical-align:middle;">Login</a></span>
+			<span style="padding-left:10px;padding-right:10px;vertical-align:middle;"><a href='{{register_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;font-family: sans-serif;color:#505050;font-weight:bold;background:url(/static/images/register.png) no-repeat left #D8D8D8;vertical-align:middle;">Register</a></span>
 			</div>
 			{% else %}
 			<div class="row">
@@ -164,10 +73,9 @@
 			<span style='font-size:small;color:#0000aa;padding-left:15px;line-height:1.5;display:inline-block;vertical-align:bottom;padding-top:4px;'> {{ curdate }}</span>
 			</div>
 			{% endif %}
-			
 			</div>
-		<p style='color:#505050;text-align:left;font-size:30px;font-family: sans-serif;white-space:nowrap;'>Welcome to TestYard - Our Offerings</p>
-		</div>
+		<p style='color:#505050;text-align:left;font-size:30px;font-family:sans-serif;white-space:nowrap;width:100%;'>Welcome to TestYard - Our Offerings</p>
+		
 	</div>
 	</div>
 
@@ -263,47 +171,62 @@
             </ul>
           </div>
         </div>
-
+      </div>
 	
-		</div>
-		
-		
-		
-		<!-- ### Sidebar Begin ### -->
+      <!-- Footer starts here -->	
+      <div class="container-fluid footer">
+        <div class="row contact">
+          <div class="col-md-6 contact-form">
+            <h3 class="content-ct"><span class="ti-email"></span> Contact Form</h3>
+            <form class="form-horizontal" data-toggle="validator" role="form">
+              <div class="form-group">
+                <label for="name" class="col-sm-3 control-label">Name<sup>*</sup></label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" id="name" placeholder="John Doe" required>
+                  <div class="help-block with-errors pull-right"></div>
+                  <span class="form-control-feedback" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email" class="col-sm-3 control-label">Email<sup>*</sup></label>
+                <div class="col-sm-9">
+                  <input type="email" class="form-control" id="email" placeholder="you@youremail.com" required>
+                  <div class="help-block with-errors pull-right"></div>
+                  <span class="form-control-feedback" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="message" class="col-sm-3 control-label">Your Message<sup>*</sup></label>
+                <div class="col-sm-9">
+                  <textarea id="message" class="form-control" rows="3" required></textarea>
+                  <div class="help-block with-errors pull-right"></div>
+                  <span class="form-control-feedback" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <button type="submit" id="submit" name="submit" class="btn btn-yellow pull-right">Send <span class="ti-arrow-right"></span></button>
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div>
+        <div class="row footer-credit">
+          <div class="col-md-6 col-sm-6">
+            <p>Copyright &copy; 2023 TestYard - testyard.in </p>
+          </div>
+          <div class="col-md-6 col-sm-6"> 
+            <ul class="footer-menu">
+              <li><a href="{{ careers_url }}"{{ select_careers }}>Careers</a></li>
+              <li><a href="{{privacypolicy_url}}">Privacy Policy</a></li>
+              <li><a href="{{tou_url}}">Terms of Use</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Footer ends here -->
 
-		
-		<div id="sidebar">
-		
-			
-		<!-- <ul>
-
-		<li><h2>Search</h2>
-		<form id="searchform" method="get" action="#">
-			<div>
-			<input type="text" value="" name="s" id="searchfield" />
-			<input type="hidden" id="searchsubmit" value="Search" />
-			</div>
-
-		</form>
-		</li>
-
-		</ul>	-->
-		
-		</div>
-
-		<!-- ### Sidebar End ### -->
-
-	</div>
-
-<div id="content2">
-	<p>Copyright &copy; 2023 TestYard - testyard.in 
-
-	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
-	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
-
-</div>
-
-</div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
       <script src="/static/javascript/index/jquery.min.js"></script>

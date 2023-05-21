@@ -601,6 +601,8 @@ def includedtemplatevars(pagetitle, request):
     cntxt['helpndoc_url'] = gethosturl(request) + "/" + mysettings.HELP_URL
     cntxt['careers_url'] = gethosturl(request) + "/" + mysettings.CAREER_URL
     cntxt['logout_url'] = gethosturl(request) + "/" + mysettings.LOGOUT_URL
+    cntxt['privacypolicy_url'] = gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
+    cntxt['tou_url'] = gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
     return cntxt
 
 

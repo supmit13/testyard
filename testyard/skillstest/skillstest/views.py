@@ -616,3 +616,63 @@ def index(request):
         indexhtml = indexhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(indexhtml)
     
+    
+def privacypolicy(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode, usertype = "", ""
+    if request.COOKIES.has_key('sessioncode'):
+        sesscode = request.COOKIES['sessioncode']
+    if request.COOKIES.has_key('usertype'):
+        usertype = request.COOKIES['usertype']
+    sessionobj, userobj = None, None
+    if sesscode != "":
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    privpol_dict = {}
+    curdate = datetime.datetime.now()
+    privpol_dict['curdate'] = curdate
+    privpol_dict['login_url'] = mysettings.LOGIN_URL
+    privpol_dict['register_url'] = "/" + mysettings.REGISTER_URL
+    privpol_dict['logged_in_as'] = ""
+    if skillutils.isloggedin(request):
+        privpol_dict['logged_in_as'] = userobj.displayname
+    tmpl = get_template("privacypolicy.html")
+    privpol_dict.update(csrf(request))
+    cxt = Context(privpol_dict)
+    privpolhtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        privpolhtml = privpolhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(privpolhtml)
+
+
+def termsofuse(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode, usertype = "", ""
+    if request.COOKIES.has_key('sessioncode'):
+        sesscode = request.COOKIES['sessioncode']
+    if request.COOKIES.has_key('usertype'):
+        usertype = request.COOKIES['usertype']
+    sessionobj, userobj = None, None
+    if sesscode != "":
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    tou_dict = {}
+    curdate = datetime.datetime.now()
+    tou_dict['curdate'] = curdate
+    tou_dict['login_url'] = mysettings.LOGIN_URL
+    tou_dict['register_url'] = "/" + mysettings.REGISTER_URL
+    tou_dict['logged_in_as'] = ""
+    if skillutils.isloggedin(request):
+        tou_dict['logged_in_as'] = userobj.displayname
+    tmpl = get_template("termsofuse.html")
+    tou_dict.update(csrf(request))
+    cxt = Context(tou_dict)
+    touhtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        touhtml = touhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(touhtml)
+
