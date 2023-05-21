@@ -7,10 +7,14 @@
 		
 		<div class="post">
 			<div id='welcome'>
+			    {% if displayname != "" %}
 				{{ profile_image_tag }}
 				<div nowrap style="color:#0000AA;font-style:italic;">
 					Logged in as {{ displayname }}:&nbsp;&nbsp;<a href="{{ logout_url }}"><b>Logout</b></a>
 				</div>	
+	  		    {% else %}
+	  		        <div nowrap style="color:#0000AA;font-style:italic;">&nbsp;</div>
+			    {% endif %}
 				<h2>Welcome to TestYard </h2>
 				<h3> {{ curdate }} </h3>
 			</div>
@@ -22,5 +26,5 @@
 				</div>
 			</div>
 		</div>
-
+		
 		<!-- ### Post Entry End ### -->

@@ -5,9 +5,11 @@
 		<!-- ### Post Entry Begin ###  -->
 		
 		<div class="post">
-			
+			{% if profile_image_tag != "" %}
 			<span id='welcome'>{{ profile_image_tag }}<h2>Welcome to TestYard </h2><h3> {{ curdate }}
-			
+			{% else %}
+			<h2>Welcome to TestYard </h2><h3> {{ curdate }}
+			{% endif %}
 			
 			<div class="entry">
 			

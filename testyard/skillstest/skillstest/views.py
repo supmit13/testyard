@@ -371,11 +371,14 @@ def aboutus(request):
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
         return response
-    sesscode = request.COOKIES['sessioncode']
-    usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj[0].user
-    displayname = userobj.displayname
+    sesscode, usertype, displayname = "", "", ""
+    sessionobj, userobj = None, None
+    if skillutils.isloggedin(request):
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+        displayname = userobj.displayname
     aboutus_data_dict = {}
     # Need check to see if user is logged in.
     # aboutus_data_dict['displayname'] = "%s"%userobj.displayname
@@ -404,11 +407,14 @@ def helpndocs(request):
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
         return response
-    sesscode = request.COOKIES['sessioncode']
-    usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj[0].user
-    displayname = userobj.displayname
+    sesscode, usertype, displayname = "", "", ""
+    sessionobj, userobj = None, None
+    if skillutils.isloggedin(request):
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+        displayname = userobj.displayname
     helpndocs_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
     #helpndocs_data_dict['displayname'] = "%s"%userobj.displayname
@@ -418,7 +424,9 @@ def helpndocs(request):
         helpndocs_data_dict[inc_key] = inc_context[inc_key]
     helpndocs_data_dict['displayname'] = displayname
     helpndocs_data_dict['detailhelpurl'] = mysettings.DETAIL_HELP_URL
-    helpndocs_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
+    helpndocs_data_dict['profile_image_tag'] = ""
+    if skillutils.isloggedin(request):
+        helpndocs_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     tmpl = get_template("help.html")
     helpndocs_data_dict.update(csrf(request))
     cxt = Context(helpndocs_data_dict)
@@ -480,10 +488,15 @@ def careers(request):
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.ABOUTUS_URL + "?msg=%s"%message)
         return response
-    sesscode = request.COOKIES['sessioncode']
-    usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj[0].user
+    sesscode, usertype, displayname = "", "", ""
+    sessionobj, userobj = None, None
+    if skillutils.isloggedin(request):
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+        if userobj is not None:
+            displayname = userobj.displayname
     careers_data_dict = {}
     # fix up the variables from included templates. Need check to see if user is logged in.
     #careers_data_dict['displayname'] = "%s"%userobj.displayname
@@ -491,7 +504,10 @@ def careers(request):
     inc_context = skillutils.includedtemplatevars("Careers/Jobs", request) # Since this is the 'Profile' page for the user.
     for inc_key in inc_context.keys():
         careers_data_dict[inc_key] = inc_context[inc_key]
-    careers_data_dict['displayname'] = userobj.displayname
+    if userobj is not None:
+        careers_data_dict['displayname'] = userobj.displayname
+    else:
+        careers_data_dict['displayname'] = ""
     careers_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     careersqset = Careers.objects.filter(status=True)
     positionslist = []
