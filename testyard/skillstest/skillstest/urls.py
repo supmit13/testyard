@@ -238,8 +238,8 @@ urlpatterns += patterns('',
     
     url(r'%s$'%mysettings.GOOGLE_CALENDAR_URL, 'skillstest.Tests.views.addtogooglecalendar', name='addtogooglecalendar'),
     url(r'%s$'%mysettings.GOOGLE_CALENDAR_INTERVIEW_URL, 'skillstest.Tests.views.addinterviewtogooglecalendar', name='addinterviewtogooglecalendar'),
-    url(r'%s$'%mysettings.PRIVPOLICY_URL, 'skillstest.views.privacypolicy', name='privacypolicy'),
-    url(r'%s$'%mysettings.TERMSOFUSE_URL, 'skillstest.views.termsofuse', name='termsofuse'),
+    url(r'^%s$'%mysettings.PRIVPOLICY_URL, 'skillstest.views.privacypolicy', name='privacypolicy'),
+    url(r'^%s$'%mysettings.TERMSOFUSE_URL, 'skillstest.views.termsofuse', name='termsofuse'),
 
     url(r'^.*$', 'skillstest.views.returnRedirect', name='returnRedirectHttp'), # All other URLs are handled here...
 )
