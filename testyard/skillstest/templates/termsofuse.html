@@ -68,6 +68,7 @@
 			<span style="padding-left:10px;padding-right:10px;vertical-align:middle;"><a href='{{register_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;font-family: sans-serif;color:#505050;font-weight:bold;background:url(/static/images/register.png) no-repeat left #D8D8D8;vertical-align:middle;">Register</a></span>
 			</div>
 			{% else %}
+			{{ profile_image_tag }}
 			<div class="row">
 			<span style="color:#0000aa;font-size:medium;font-style:oblique;padding-left:15px;">Logged in as {{logged_in_as}} [<a href="/skillstest/logout/">Logout</a>]</span>
 			<span style='font-size:small;color:#0000aa;padding-left:15px;line-height:1.5;display:inline-block;vertical-align:bottom;padding-top:4px;'> {{ curdate }}</span>

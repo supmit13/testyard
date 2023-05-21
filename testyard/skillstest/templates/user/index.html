@@ -23,7 +23,7 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
 </head>
-<body id="page-top" >
+<body id="page-top" data-spy="scroll">
 
 <div id="container">
 
@@ -56,7 +56,7 @@
 		<!-- ### Post Entry Begin ###  -->
 		
 		
-			<div class="entry">
+		<div class="entry">
 			
 			<!--<p><a href="#">TestYard</a> enables you to conduct tests and interviews for recruitment/promotions/certifications online, so that the probable candidates/employees/professionals can take them at their own convenience. This enables your organization to recruit the best pros' from around the world at a nominal cost.</p>
 			<p><a href="#">TestYard</a> also provides various programming/software environments where candidates can actually write code and run them (after compiling/building them, if necessary). This allows you to test your candidates on the real life scenarios for which you are recruiting.</p>
@@ -68,18 +68,19 @@
 			<span style="padding-left:10px;padding-right:10px;vertical-align:middle;"><a href='{{register_url}}' class='btn btn-primary' style="height:35px;width:150px;font-size:small;font-family: sans-serif;color:#505050;font-weight:bold;background:url(/static/images/register.png) no-repeat left #D8D8D8;vertical-align:middle;">Register</a></span>
 			</div>
 			{% else %}
+			{{ profile_image_tag }}
 			<div class="row">
 			<span style="color:#0000aa;font-size:medium;font-style:oblique;padding-left:15px;">Logged in as {{logged_in_as}} [<a href="/skillstest/logout/">Logout</a>]</span>
 			<span style='font-size:small;color:#0000aa;padding-left:15px;line-height:1.5;display:inline-block;vertical-align:bottom;padding-top:4px;'> {{ curdate }}</span>
 			</div>
 			{% endif %}
-			</div>
-		<p style='color:#505050;text-align:left;font-size:30px;font-family:sans-serif;white-space:nowrap;width:100%;'>Welcome to TestYard - Our Offerings</p>
-		
+		</div>
+
 	</div>
 	</div>
 
-	<div class="row me-row content-ct speaker" id="tyfeatures">
+	<div class="row me-row content-ct speaker" id="tyfeatures" style="padding-left:5px;padding-right:5px;">
+	<p style='color:#505050;text-align:left;font-size:30px;font-family:sans-serif;white-space:nowrap;width:100%;'>Welcome to TestYard - Our Offerings</p>
           <div class="col-md-4 col-sm-6 feature">
             <img src="/static/images/index/parameterizedtests.png" class="speaker-img" style="width:64px;height:64px;">
             <h3>Parameterized Tests</h3>

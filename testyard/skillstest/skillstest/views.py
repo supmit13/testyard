@@ -603,6 +603,7 @@ def index(request):
         index_user_dict[inc_key] = inc_context[inc_key]
     curdate = datetime.datetime.now()
     index_user_dict['curdate'] = curdate
+    index_user_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     index_user_dict['login_url'] = mysettings.LOGIN_URL
     index_user_dict['register_url'] = "/" + mysettings.REGISTER_URL
     index_user_dict['logged_in_as'] = ""
@@ -638,6 +639,7 @@ def privacypolicy(request):
     privpol_dict['login_url'] = mysettings.LOGIN_URL
     privpol_dict['register_url'] = "/" + mysettings.REGISTER_URL
     privpol_dict['logged_in_as'] = ""
+    privpol_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     inc_context = skillutils.includedtemplatevars("", request)
     for inc_key in inc_context.keys():
         privpol_dict[inc_key] = inc_context[inc_key]
@@ -673,6 +675,7 @@ def termsofuse(request):
     tou_dict['login_url'] = mysettings.LOGIN_URL
     tou_dict['register_url'] = "/" + mysettings.REGISTER_URL
     tou_dict['logged_in_as'] = ""
+    tou_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
     inc_context = skillutils.includedtemplatevars("", request)
     for inc_key in inc_context.keys():
         tou_dict[inc_key] = inc_context[inc_key]
