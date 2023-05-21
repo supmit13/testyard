@@ -606,6 +606,8 @@ def index(request):
     index_user_dict['login_url'] = mysettings.LOGIN_URL
     index_user_dict['register_url'] = "/" + mysettings.REGISTER_URL
     index_user_dict['logged_in_as'] = ""
+    index_user_dict['privacypolicy_url'] = skillutils.gethosturl(request) + mysettings.PRIVPOLICY_URL
+    index_user_dict['tou_url'] = skillutils.gethosturl(request) + mysettings.TERMSOFUSE_URL
     if skillutils.isloggedin(request):
         index_user_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("user/index.html")
@@ -636,6 +638,11 @@ def privacypolicy(request):
     privpol_dict['login_url'] = mysettings.LOGIN_URL
     privpol_dict['register_url'] = "/" + mysettings.REGISTER_URL
     privpol_dict['logged_in_as'] = ""
+    inc_context = skillutils.includedtemplatevars("", request)
+    for inc_key in inc_context.keys():
+        privpol_dict[inc_key] = inc_context[inc_key]
+    privpol_dict['privacypolicy_url'] = skillutils.gethosturl(request) + mysettings.PRIVPOLICY_URL
+    privpol_dict['tou_url'] = skillutils.gethosturl(request) + mysettings.TERMSOFUSE_URL
     if skillutils.isloggedin(request):
         privpol_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("privacypolicy.html")
@@ -666,6 +673,11 @@ def termsofuse(request):
     tou_dict['login_url'] = mysettings.LOGIN_URL
     tou_dict['register_url'] = "/" + mysettings.REGISTER_URL
     tou_dict['logged_in_as'] = ""
+    inc_context = skillutils.includedtemplatevars("", request)
+    for inc_key in inc_context.keys():
+        tou_dict[inc_key] = inc_context[inc_key]
+    tou_dict['privacypolicy_url'] = skillutils.gethosturl(request) + mysettings.PRIVPOLICY_URL
+    tou_dict['tou_url'] = skillutils.gethosturl(request) + mysettings.TERMSOFUSE_URL
     if skillutils.isloggedin(request):
         tou_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("termsofuse.html")
