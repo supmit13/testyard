@@ -389,8 +389,15 @@ def aboutus(request):
     for inc_key in inc_context.keys():
         aboutus_data_dict[inc_key] = inc_context[inc_key]
     aboutus_data_dict['displayname'] = displayname
+    aboutus_data_dict['logged_in_as'] = ""
+    if skillutils.isloggedin(request):
+        aboutus_data_dict['logged_in_as'] = userobj.displayname
     aboutus_data_dict['freetestscount'] = mysettings.NEW_USER_FREE_TESTS_COUNT
     aboutus_data_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
+    aboutus_data_dict['login_url'] = mysettings.LOGIN_URL
+    aboutus_data_dict['register_url'] = "/" + mysettings.REGISTER_URL
+    aboutus_data_dict['privacypolicy_url'] = skillutils.gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
+    aboutus_data_dict['tou_url'] = skillutils.gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
     tmpl = get_template("aboutus.html")
     aboutus_data_dict.update(csrf(request))
     cxt = Context(aboutus_data_dict)
