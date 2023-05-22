@@ -709,8 +709,6 @@ def termsofuse(request):
     return HttpResponse(touhtml)
 
 
-@skillutils.is_session_valid
-@skillutils.session_location_match
 @csrf_protect
 def contactty(request):
     if request.method != 'POST':
@@ -726,6 +724,10 @@ def contactty(request):
         sessionobj = Session.objects.filter(sessioncode=sesscode)
         userobj = sessionobj[0].user
     else:
+        message = "You need to be logged in to be able to contact the website administration."
+        response = HttpResponse(message)
+        return response
+    if not skillutils.isloggedin(request):
         message = "You need to be logged in to be able to contact the website administration."
         response = HttpResponse(message)
         return response
