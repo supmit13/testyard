@@ -7,6 +7,7 @@ from django.http import HttpResponseBadRequest, HttpResponse , HttpResponseRedir
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
+from django.core.mail import send_mail
 import simplejson
 from django.db.models import Q
 from django.template.response import TemplateResponse
@@ -699,4 +700,69 @@ def termsofuse(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         touhtml = touhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(touhtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def contactty(request):
+    if request.method != 'POST':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode, usertype = "", ""
+    if request.COOKIES.has_key('sessioncode'):
+        sesscode = request.COOKIES['sessioncode']
+    if request.COOKIES.has_key('usertype'):
+        usertype = request.COOKIES['usertype']
+    sessionobj, userobj = None, None
+    if sesscode != "":
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    else:
+        message = "You need to be logged in to be able to contact the website administration."
+        response = HttpResponse(message)
+        return response
+    name, email, messagetext = "", "", ""
+    if "name" in request.POST.keys():
+        name = request.POST['name']
+    else:
+        message = "Name is a mandatory field."
+        response = HttpResponse(message)
+        return response
+    if "email" in request.POST.keys():
+        email = request.POST['email']
+    else:
+        message = "Email is a mandatory field."
+        response = HttpResponse(message)
+        return response
+    if "message" in request.POST.keys():
+        messagetext = request.POST['message']
+    else:
+        message = "Message should be a non-empty value."
+        response = HttpResponse(message)
+        return response
+    messagetext = re.sub(mysettings.MULTIPLE_WS_PATTERN, "", messagetext)
+    if messagetext == "":
+        message = "Message should be a non-empty value."
+        response = HttpResponse(message)
+        return response
+    if not re.search(mysettings.EMAIL_PATTERN, email):
+        message = "The email Id is not valid. Please enter a valid value for Email."
+        response = HttpResponse(message)
+        return response
+    if not re.search(mysettings.REALNAME_PATTERN, name):
+        message = "Name cannot have  any non-alphabetic and non-whitespace characters."
+        response = HttpResponse(message)
+        return response
+    try:
+        subject = "%s contacted you about something..."%name
+        retval = send_mail(subject, messagetext, email, ["testyard.in@gmail.com",], False)
+    except:
+        message = "Error occurred while sending email. %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    message = "Your email has been sent to %s."%mysettings.SERVICEADMIN
+    response = HttpResponse(message)
+    return response
+    
 
