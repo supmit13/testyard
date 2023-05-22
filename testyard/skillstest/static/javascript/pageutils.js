@@ -419,6 +419,8 @@ function emailty(){
   }
   xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
   xmlhttp.send(postdata);
+  document.getElementById('btnsend').disabled=true;
+  document.getElementById('sendingimgp').style.display = "";
 }
 
 

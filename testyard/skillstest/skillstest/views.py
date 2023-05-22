@@ -756,7 +756,7 @@ def contactty(request):
         return response
     try:
         subject = "%s contacted you about something..."%name
-        retval = send_mail(subject, messagetext, email, ["testyard.in@gmail.com",], False)
+        retval = send_mail(subject, messagetext, email, [mysettings.SERVICEADMIN,], False)
     except:
         message = "Error occurred while sending email. %s"%sys.exc_info()[1].__str__()
         response = HttpResponse(message)
