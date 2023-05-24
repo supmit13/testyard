@@ -6,31 +6,31 @@
 		<div class="post">
 			<span class="meta">
 			{% if displayname != "" %}
-			<h3 class='blue'>Hello {{ displayname }},</h3>
+			<h3>Hello {{ displayname }},</h3>
 			{% else %}
-			<h3 class='blue'>Hello User,</h3>
+			<h3>Hello User,</h3>
 			{% endif %}
 			{% if positionslist|length > 0 %}
-			<font color='#0000AA' face='verdana' size=-1>The following openings are available with TestYard at this time.</font>
+			<font color='#505050' face='verdana' size=-1>The following openings are available with TestYard at this time.</font>
 			{% else %}
-			<font color='#AA0000' face='verdana' size=-1>We have no openings at this time. Please check this page later for openings.</font>
+			<font color='#505050' face='verdana' size=-1>We have no openings at this time. Please check this page later for openings.</font>
 			{% endif %}
 			<hr>
 			<div class="entry">
 			{% for position in positionslist %}
 			<p>
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Code:</font><font color='#0000AA' size=-1>{{position.code}} </font><br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Title:</font> <font color='#0000AA' size=-1>{{position.longname}}</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Description: </font><font color='#0000AA' size=-1> {{position.description}} </font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Max Salary Offered:</font><font color='#0000AA' size=-1> {{position.maxsalaryoffered}} {{position.maxsalarytimeunit}}</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Max Notice Period: </font><font color='#0000AA' size=-1> {{position.urgencyindays}} days</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Position Type:</font><font color='#0000AA' size=-1>{{position.position_type}}</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Experience Desired:</font><font color='#0000AA' size=-1>{{position.experiencedesired}} years</font> <br />
-  			<font color='#0000AA' style='font-weight:bold;' size=-1>Skills Required:</font><font color='#0000AA' size=-1>{{position.skillset}}</font> <br />
- 			<font color='#0000AA' style='font-weight:bold;' size=-1>Location: </font><font color='#0000AA' size=-1>{{position.position_location}}</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Contact Person: </font><font color='#0000AA' size=-1>{{position.contactperson}}</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Send your CV to: </font><font color='#0000AA' size=-1>{{position.contactemail}}</font> <br />
-			<font color='#0000AA' style='font-weight:bold;' size=-1>Conditions, if any:</font><font color='#0000AA' size=-1>{{position.conditions}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Code:</font><font color='#505050' size=-1>{{position.code}} </font><br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Title:</font> <font color='#505050' size=-1>{{position.longname}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Description: </font><font color='#505050' size=-1> {{position.description}} </font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Max Salary Offered:</font><font color='#505050' size=-1> {{position.maxsalaryoffered}} {{position.maxsalarytimeunit}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Max Notice Period: </font><font color='#505050' size=-1> {{position.urgencyindays}} days</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Position Type:</font><font color='#505050' size=-1>{{position.position_type}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Experience Desired:</font><font color='#505050' size=-1>{{position.experiencedesired}} years</font> <br />
+  			<font color='#505050' style='font-weight:bold;' size=-1>Skills Required:</font><font color='#505050' size=-1>{{position.skillset}}</font> <br />
+ 			<font color='#505050' style='font-weight:bold;' size=-1>Location: </font><font color='#505050' size=-1>{{position.position_location}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Contact Person: </font><font color='#505050' size=-1>{{position.contactperson}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Send your CV to: </font><font color='#505050' size=-1>{{position.contactemail}}</font> <br />
+			<font color='#505050' style='font-weight:bold;' size=-1>Conditions, if any:</font><font color='#505050' size=-1>{{position.conditions}}</font> <br />
 			<hr>
 			</p>
 			{% endfor %}
