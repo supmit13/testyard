@@ -6465,12 +6465,18 @@ def gettestschedule(request):
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
     testid = -1
+    pageno = 1
     if request.POST.has_key('testid'):
         testid = request.POST['testid']
     else:
         message = error_msg('1055')
         response = HttpResponse(message)
         return response
+    if 'pageno' in request.POST.keys():
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
     testobj = None
     try:
         testobj = Test.objects.get(id=testid)
@@ -6478,7 +6484,8 @@ def gettestschedule(request):
         message = error_msg('1058') + ": %s"%sys.exc_info()[1].__str__()
         response = HttpResponse(message)
         return response
-    
+    startctr = mysettings.PAGE_CHUNK_SIZE * pageno - mysettings.PAGE_CHUNK_SIZE
+    endctr = mysettings.PAGE_CHUNK_SIZE * pageno
     # Note: Don't allow creator to schedule test if the test hasn't been published and activated. Also 'status' should be True
     try:
         curdatetime = utilstimezone.now()
@@ -6501,8 +6508,8 @@ def gettestschedule(request):
     # Now look for all schedules for this test in 'Tests_usertest' and 'Tests_wouldbeusers' tables.
     schedule_dict = {}
     for schedobj in allschedulesqset:
-        scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)
-        scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)
+        scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)#[startctr:endctr]
+        scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)#[startctr:endctr]
         emailslist = []
         for utobj in scheduledtestsqset_ut:
             emailslist.append(utobj.emailaddr)
@@ -6522,7 +6529,9 @@ def gettestschedule(request):
         except:
             print sys.exc_info()[1].__str__()
     tmpl = get_template("tests/getscheduleinfo.html")
-    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname, 'showallemailidsurl' : mysettings.SHOW_ALL_EMAILS_URL, 'updatescheduleurl' : mysettings.UPDATE_SCHEDULE_URL}
+    nextpageno = pageno + 1
+    prevpageno = pageno - 1
+    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname, 'showallemailidsurl' : mysettings.SHOW_ALL_EMAILS_URL, 'updatescheduleurl' : mysettings.UPDATE_SCHEDULE_URL, 'prevpageno' : prevpageno, 'nextpageno' : nextpageno}
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     schedulehtml = tmpl.render(cxt)

@@ -2969,10 +2969,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	}
 	
 	
-	function scheduletest(testid){
+	function scheduletest(testid, pageno=1){
 	    var postdata = "";
 	    csrftoken = document.frmmaintests.csrfmiddlewaretoken.value;
-	    postdata += "testid=" + testid + "&csrfmiddlewaretoken=" + csrftoken;
+	    postdata += "testid=" + testid + "&csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno;
             //alert(postdata);
 	    var xmlhttp;
 	    if (window.XMLHttpRequest){

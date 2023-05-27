@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
@@ -242,6 +242,12 @@ function showallemailids(schedid, page=1, newwin=true){
 {% endfor %}
 <tr><td colspan=5>&nbsp;</td></tr>
 <tr><td colspan=5>&nbsp;</td></tr>
+<!-- <tr><td colspan=5>
+{% if prevpageno > 1 %}
+<a href='#/' class='btn btn-primary' style='color:#ffffff;' onclick='javascript:scheduletest({{testid}}, {{prevpageno}});'>< Prev</a>
+{% endif %}
+<a href='#/' class='btn btn-primary' style='color:#ffffff;' onclick='javascript:scheduletest({{testid}}, {{nextpageno}});'>Next ></a>
+</td></tr> -->
 </table>
 </center>
 {% csrf_token %}
