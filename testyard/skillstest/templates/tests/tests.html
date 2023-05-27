@@ -2009,8 +2009,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		// test. Candidates whose responses have not been evaluated 
 		// as yet would be displayed first. The evaluated candidates
 		// responses will be displayed after that.
-		function evaluatetest(testid){
-		    var postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value;
+		function evaluatetest(testid, pageno=1){
+		    var postdata = "testid=" + testid + "&csrfmiddlewaretoken=" + document.frmmaintests.csrfmiddlewaretoken.value + "&pageno=" + pageno;
 		    //alert(postdata);
 		    testdiv = document.getElementById('createtestdiv');
                     // Show waiting status to user while we load the data.
@@ -2027,33 +2027,42 @@ ul.tab li a:focus, .active {background-color: #ccc;}
                         //alert(xmlhttp.responseText);
   		        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
                             testdiv.innerHTML = "";
-			    // Display the data in a screen
-			    eval_elements = displayevaluationscreen(xmlhttp.responseText);
+                            pagecontent = "";
+			     // Display the data in a screen
+			     eval_elements = displayevaluationscreen(xmlhttp.responseText);
                             rowcount = parseInt(eval_elements[1]);
-			    testdiv.className = "register";
-			    testdiv.style='padding-left:20px;padding-right:20px;';
+			     testdiv.className = "register";
+			     testdiv.style='padding-left:20px;padding-right:20px;';
                             testdiv.style.background = '#ccffff'; // -webkit-linear-gradient(left, #3931af, #00c6ff);
-                            testdiv.style.height = "150px";
+                            testdiv.style.height = "200px";
                             testdiv.style.width = "125%";
                             if (rowcount < 10){
-                                testdiv.style.height = "400px";
+                                testdiv.style.height = "500px";
                             }
                             else if (rowcount < 25){
-                                testdiv.style.height = "750px";
+                                testdiv.style.height = "900px";
                             }
                             else if (rowcount < 40){
-                                testdiv.style.height = "1100px";
+                                testdiv.style.height = "1300px";
                             }
                             else if (rowcount < 60){
-                                testdiv.style.height = "1550px";
+                                testdiv.style.height = "1750px";
                             }
                             else if (rowcount < 80){
-                                testdiv.style.height = "1950px";
+                                testdiv.style.height = "250px";
                             }
                             else{
-                                testdiv.style.height = "2550px";
+                                testdiv.style.height = "2850px";
                             }
-                            testdiv.innerHTML += eval_elements[0];
+                            pagecontent += eval_elements[0];
+                            prevpageno = pageno - 1;
+                            nextpageno = pageno + 1;
+                            pagecontent += "<br/>";
+                            if(prevpageno > 0){
+                                pagecontent += "<a href='#/' class='btn btn-primary' onclick='javascript:evaluatetest(" + testid + ", " + prevpageno + ")' style='color:#ffffff;'>< Prev</a>&nbsp;";
+                            }
+                            pagecontent += "&nbsp;<a href='#/' class='btn btn-primary' onclick='javascript:evaluatetest(" + testid + ", " + nextpageno + ")' style='color:#ffffff;'>Next ></a>";
+                            testdiv.innerHTML = pagecontent;
   		        }
   		    };
 		    xmlhttp.open("POST", '{{ testevaluationurl }}', true);

@@ -4593,6 +4593,7 @@ def evaluate(request):
         return response
     sesscode = request.COOKIES['sessioncode']
     usertype = request.COOKIES['usertype']
+    pageno = 1
     sessionqset = Session.objects.filter(sessioncode=sesscode)
     if not sessionqset or sessionqset.__len__() == 0:
         message = "Error: " + error_msg('1008')
@@ -4606,6 +4607,13 @@ def evaluate(request):
         candidateresponses['Error'] = error_msg('1059')
         response = HttpResponse(json.dumps(candidateresponses))
         return response
+    if 'pageno' in request.POST.keys():
+        try:
+            pageno = int(request.POST['pageno'])
+        except:
+            pass
+    startctr = mysettings.PAGE_CHUNK_SIZE * pageno - mysettings.PAGE_CHUNK_SIZE
+    endctr = mysettings.PAGE_CHUNK_SIZE * pageno
     testid = request.POST['testid']
     # First ensure that the user is a valid evaluator for the given test
     testobj = None
@@ -4650,8 +4658,8 @@ def evaluate(request):
     else:
         userisvalidevaluator = True
     if userisvalidevaluator: # Get a list of all candidates who have taken this test.
-        utqset = UserTest.objects.filter(test=testobj)
-        wbuqset = WouldbeUsers.objects.filter(test=testobj)
+        utqset = UserTest.objects.filter(test=testobj)[startctr:endctr]
+        wbuqset = WouldbeUsers.objects.filter(test=testobj)[startctr:endctr]
         #fp = open("/home/supriyo/work/testyard/tmpfiles/answes.txt","w+")
         for ut in utqset:
             if ut.active and not ut.cancelled and ut.status == 2:
