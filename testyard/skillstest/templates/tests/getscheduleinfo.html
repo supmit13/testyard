@@ -5,13 +5,17 @@
 <META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 <META HTTP-EQUIV="PRAGMA" CONTENT="NO-CACHE">
 
+<!-- <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' type='text/javascript'></script>
+<script src='https://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script> -->
+<script defer src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/themes/smoothness/jquery-ui.css">
+<script defer src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.13.2/jquery-ui.min.js"></script>
+
 <!-- New interface code starts here -->
 <link href='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css' rel='stylesheet' id='bootstrap-css'>
-<script src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'></script>
+<script defer src='//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js'></script>
 <!-- New interface code ends here -->
 
-<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js' type='text/javascript'></script>
-<script src='https://code.jquery.com/ui/1.8.20/jquery-ui.min.js' type='text/javascript'></script>
 <script src="static/datetimepicker/datetimepicker_css.js"></script>
 <script language='JavaScript'>
 
@@ -87,6 +91,32 @@ function validateinput(){
 	}
     }
     return (true);
+}
+
+// This function is defined in the tests.html as well as here in order to handle pagination calls
+function scheduletest(testid, pageno=1){
+    var postdata = "";
+    csrftoken = document.frmgetschedule.csrfmiddlewaretoken.value; // This line is different in the definition in tests.html
+    postdata += "testid=" + testid + "&csrfmiddlewaretoken=" + csrftoken + "&pageno=" + pageno;
+    //alert(postdata);
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+    }
+    else{
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+	//alert(xmlhttp.responseText);
+	if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    window.document.body.innerHTML = xmlhttp.responseText;
+	    window.onfocus = window.loaddatepicker;
+	    //window.blur();
+	    window.focus();
+	}
+    };
+    xmlhttp.open("POST", '{{ gettestscheduleurl }}', true);
+    xmlhttp.send(postdata);
 }
 
 
@@ -242,12 +272,12 @@ function showallemailids(schedid, page=1, newwin=true){
 {% endfor %}
 <tr><td colspan=5>&nbsp;</td></tr>
 <tr><td colspan=5>&nbsp;</td></tr>
-<!-- <tr><td colspan=5>
-{% if prevpageno > 1 %}
+<tr><td colspan=5>
+{% if prevpageno >= 1 %}
 <a href='#/' class='btn btn-primary' style='color:#ffffff;' onclick='javascript:scheduletest({{testid}}, {{prevpageno}});'>< Prev</a>
 {% endif %}
 <a href='#/' class='btn btn-primary' style='color:#ffffff;' onclick='javascript:scheduletest({{testid}}, {{nextpageno}});'>Next ></a>
-</td></tr> -->
+</td></tr>
 </table>
 </center>
 {% csrf_token %}

@@ -6504,12 +6504,12 @@ def gettestschedule(request):
         response = HttpResponse(message)
         return response
     # Get all schedules for this test.
-    allschedulesqset = Schedule.objects.filter(test=testobj).order_by('-createdon')
+    allschedulesqset = Schedule.objects.filter(test=testobj).order_by('-createdon')[startctr:endctr]
     # Now look for all schedules for this test in 'Tests_usertest' and 'Tests_wouldbeusers' tables.
     schedule_dict = {}
     for schedobj in allschedulesqset:
-        scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)#[startctr:endctr]
-        scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)#[startctr:endctr]
+        scheduledtestsqset_ut = UserTest.objects.filter(test=testobj, schedule=schedobj)
+        scheduledtestsqset_wbu = WouldbeUsers.objects.filter(test=testobj, schedule=schedobj)
         emailslist = []
         for utobj in scheduledtestsqset_ut:
             emailslist.append(utobj.emailaddr)
@@ -6531,7 +6531,7 @@ def gettestschedule(request):
     tmpl = get_template("tests/getscheduleinfo.html")
     nextpageno = pageno + 1
     prevpageno = pageno - 1
-    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname, 'showallemailidsurl' : mysettings.SHOW_ALL_EMAILS_URL, 'updatescheduleurl' : mysettings.UPDATE_SCHEDULE_URL, 'prevpageno' : prevpageno, 'nextpageno' : nextpageno}
+    contextdict = {'scheduleinfo' : schedule_dict, 'settestscheduleurl' : mysettings.SET_TEST_SCHEDULE_URL, 'testid' : testid, 'testname' : testobj.testname, 'showallemailidsurl' : mysettings.SHOW_ALL_EMAILS_URL, 'updatescheduleurl' : mysettings.UPDATE_SCHEDULE_URL, 'prevpageno' : prevpageno, 'nextpageno' : nextpageno, 'pageno' : pageno, 'gettestscheduleurl' : skillutils.gethosturl(request) + "/" + mysettings.GET_TEST_SCHEDULE_URL}
     contextdict.update(csrf(request))
     cxt = Context(contextdict)
     schedulehtml = tmpl.render(cxt)
