@@ -23,6 +23,11 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
   <script language='JavaScript' type="text/javascript" src='/static/javascript/pageutils.js'></script>
+  <style>
+  ul {
+    margin-left:40px;
+  }
+  </style>
 </head>
 <body id="page-top" >
 
@@ -59,23 +64,84 @@
 Generally, the Network page allows you to create coherent groups so that you may provide tests, interviews and information pertaining to a group in an effective way. For example, if you are an educator, and you have a group of students learning some skill from you, you can create a group containing all your students and give them tests and interviews as a coherent unit. You may create groups that require your students to pay you a fee (either one time or as a subscription for a given period, usually a month) if and when they join it. That way, you earn from the efforts put up by you on TestYard. Of course, you may have free groups too, which anyone can join (depending either on an approval from you, the creator of the group, or without any approval). This page will take you through each activity provided on the Network page, and help you relate to it in a meaningful way.
 </p>
 <p style='color:#505050;'>
-<b>Create a Group</b>: This feature allows you to create a group. As mentioned above, your created group may or may not be a paid one. If it is a paid group, you would be asked for some financial information (as listed below). If not, you simply need to provide us with the very basic information for creating a group. Please note that the group thus created will be an empty one. You would need to ask your students
+The Network Page allows you to perform the listed activities:
+<ul style="list-style-type: square;">
+<li><a href="#creategroup">Create a Group</a></li>
+<li><a href="#joingroup">Join a Group</a></li>
+<li><a href="#addcontact">Add a Contact</a></li>
+<li><a href="#postmessage">Post a message in a Group</a></li>
+<li><a href="#manageownedgroups">Manage Owned Groups</a></li>
+<li><a href="#givetesttogroup">Give a Test to one or more Groups</a></li>
+</ul>
+<br/>
+Additionally, in the right panel, you may:
+<ul>
+<li><a href="#groupssubscribed">click on the groups subscribed by you,</a></li><li><a href="#checkemails">check your emails on the TestYard platform</a>,</li> <li><a href="#invitationsreceived">act on invitations received to connect with other members</a>,</li> <li>or <a href="#viewprofiles">simply browse the profiles of your connections on the platform.</a></li>
+</ul>
+</p>
+
+<p style='color:#505050;'>
+<b><a id="creategroup">Create a Group</a></b>: This feature allows you to create a group. As mentioned above, your created group may or may not be a paid one. If it is a paid group, you would be asked for some financial information (as listed below). If not, you simply need to provide us with the very basic information for creating a group. Please note that the group thus created will be an empty one. You would need to ask your students
 (or candidates, as the case may be) to join the newly created group. <i>Every member of a group needs to be a bonafide user on TestYard platform.</i> To invite them to join your group, you may use TestYard's mail service to send them a request to join.
 </p>
 <p style='color:#505050;'>
 The following information is needed to create a group.
 </p>
-<ul>
-<li>Group Name - This could be anything that is meaningful to you. Please restrict yourself to alphanumeric characters only.</li>
-<li>Tagline - A oneliner that provides the essence of the group.</li>
-<li>Description - Anything that describes the group. Please be brief though.</li>
-<li>Group Topic - The topic under which this group can be clubbed.</li>
-<li>Is Paid - Whether this is a paid group or not. If you select this, you will be shown a further list of fields. More on them below.</li>
-<li>Group Type - The visibility of the group. Public groups are visible to everyone (but non-members cannot view group's posts). Private groups are visible only to members and owner of the group. Hidden groups are, well, hidden. You might want to hide a group if you don't want anyone to know the existence of such a group.</li>
-<li>Active - Whether the group is in active state or not.</li>
-<li>Allow Entry - Leave this selected if you want users to join this group.</li>
-<li>Max Members Allowed - The maximum number of members the group is allowed to have. We thought 10000 would be good enough, but change as you please.</li>
+<ul style="list-style-type: square;">
+<li><b>Group Name</b> - This could be anything that is meaningful to you. Please restrict yourself to alphanumeric characters only.</li>
+<li><b>Tagline</b> - A oneliner that provides the essence of the group.</li>
+<li><b>Description</b> - Anything that describes the group. Please be brief though.</li>
+<li><b>Group Topic</b> - The topic under which this group can be clubbed.</li>
+<li><b>Is Paid</b> - Whether this is a paid group or not. If you select this, you will be shown a further list of fields. More on them below.</li>
+<li><b>Group Type</b> - The visibility of the group. Public groups are visible to everyone (but non-members cannot view group's posts). Private groups are visible only to members and owner of the group. Hidden groups are, well, hidden. You might want to hide a group if you don't want anyone to know the existence of such a group.</li>
+<li><b>Active</b> - Whether the group is in active state or not.</li>
+<li><b>Allow Entry</b> - Leave this selected if you want users to join this group.</li>
+<li><b>Max Members Allowed</b> - The maximum number of members the group is allowed to have. We thought 10000 would be good enough, but change as you please.</li>
+<li>
+<ul style="list-style-type: circle;">
+Paid Groups: You need to enter the following additional information for Paid groups:
+<li><b>Bank Name</b> - Indian users may select the name of their bank. Non-Indian users may select PayPal or Wise</li>
+<li><b>Branch</b> - Enter the name of the bank's branch where your account is. Users selecting PayPal or Wise should leave this empty.</li>
+<li><b>IFSCode</b> - Enter your bank's IFSCode. This officially ties you with the branch of the bank. Users selecting PayPal or Wise should leave this empty.</li>
+<li><b>Name in Account</b> - Please enter the account holder's name. For PayPal or Wise users, this should be your username in PayPal or Wise.</li>
+<li><b>Account Number</b> - Enter the identifier number of your bank account. PayPal users should leave this empty. Wise users need to enter the account number of their account on Wise</li>
+<li><b>Payment Type</b> - Enter the payment scheme you want to use for your users. It may be only one of "Entry Fee Based" or "Subscription Based"</li>
+<li><b>Entry Fee</b> - Enter the entry fee amount (in US$) if you selected "Entry Fee Based".</li>
+<li><b>Subscription Fee</b> - Enter the subscription fee amount (in US$) if you selected "Subscription Based".</li>
+<li><b>Subscription Period</b> - Enter the subscription period (in days) for which the Subscription Fee amount may be paid.</li>
+<li><b>GSTIN</b> - Indian users may enter their GSTIN number. Users who selected PayPal or Wise as Bank name should leave this empty.</li>
 </ul>
+</li>
+</ul>
+Click on the "Create Group" button to complete the process.
+
+<p style='color:#505050;'>
+<b><a id="joingroup">Join a Group:</a></b> This feature allows you to join a group as a member. This might involve a financial transaction, should the group you are trying to join is a paid one. In order to join a group, first you need to search and retrieve the group using the search feature on the screen.
+</p>
+<p style='color:#505050;'>
+Once you find the group you are looking for, click on the link to the group. This should open up a screen containing the basic details of the group, and at the bottom of it you will find the "Join" button. If the group is a paid one, clicking on "Join" would take you through a payment gateway, where you would need to make the requisite payment. Once that completes successfully, you are good.
+</p>
+<p style='color:#505050;'>
+Some groups require the group's owner to approve your join request. This could take some time depending on the availability of the group's owner. Once your join request to such a group has been sent, you can revisit this screen later and send a reminder to the owner using the "Send Gentle Reminder" button. 
+</p>
+<p style='color:#505050;'>
+To know more about a group, you may click the "Open Group Page" button to view some specific details of the group. To exit the screen, click the "Close" button.
+</p>
+<p style='color:#505050;'>
+<b><a id="addcontact">Add a Contact:</a></b> This feature allows you to look up any user based on the user's username on the TestYard platform or the email Id of the user. Once the user is found, you may send the user a "Connection Request" by clicking on the "Send Connect Request" button. Once the targetted user approves of this connection request, you become connected with that user on the TestYard platform, and you may exchange notes with that user through the TestYard platform.
+</p>
+<p style='color:#505050;'>
+In case of a rejection of a connection request, you will be duly notified about it through the TestYard email messaging service discussed below.
+</p>
+<p style='color:#505050;'>
+You may view the publicly available information pertaining to the user without connecting too. This information would include tests and interview data that have a "public" visibility. You can do this by clicking on the username part of the users that your search yielded. The motivation behind this feature is to allow prospective employers/teachers view the strengths and weaknesses of any user on TestYard, and thus make an informed decision. Note: Misuse of such information may lead to criminal proceedings. Please use this feature with requisite prudence.
+</p>
+<p style='color:#505050;'>
+<b><a id="postmessage">Post a message in a Group:</a></b>
+
+</p>
+
+
 <p style='text-align:center;'><input type='button' name='btnclose' id='btnclose' class='btn btn-primary' value='Close' onclick='javascript:window.close();'></p>
 
 <!-- Content ends here -->
