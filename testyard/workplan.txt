@@ -119,6 +119,11 @@ Immediate Plans:
 700. Interface Refinement - Phase I(Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
 750. Error Messages Display from backend to UI.
 800. Create Youtube videos demonstrating the usage of each app (with particular emphasis on Test and Network apps).
+850. About Us Write Up [Done]
+900. Help on Topics [WIP]
+950. Refine Test Creation Interface - Phase II. Window positioning to be done. [Very high priority]
+1000. Refine Test Taker's Screen - Phase II. Window positioning to be done. [Very high priority]
+1050. PayPal and Wise integration in Network (Create Group).
 
 
 Scope of #50 - Pagination:
@@ -136,6 +141,8 @@ Scope of #50 - Pagination:
 61. Network -> Groups Subscribed By You -> Group Posts [Already handled using 'Display More']
 62. Network -> Groups Subscribed By You -> Join Requests -> Open/Closed/Refused/Accepted [Done]
 63. Network -> Inbox [Done] [Bug pertaining to email search - needs fixing]
+64. Tests -> Tests as Evaluator -> Evaluate. [Done]
+65. Tests -> Pagination in "Schedule Test" popup. [High Priority] [Done]
 
 Scope of 'More' (Part of #50):
 ------------------------------
@@ -180,14 +187,23 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 172. Profile image upload (Multi app). [Done]
 
 **** Edit Challenge Screen is too wide for multiple choice type challenge. The input elements need to be arranged appropriately. [Done]
-**** Refine Test Creation Interface - Phase II. [Very high priority]
-**** Refine Test Taker's Screen - Phase II. [Very high priority]
-**** Facility to (re-)schedule an existing interview. [High priority]
-**** Create interface to display interview schedules. [High priority]
-**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible). [High priority]
+**** Facility to schedule/reschedule an existing interview. [High priority] [Done]
+**** Create interface to display interview schedules. [High priority] [Done]
+**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible). [High priority] [WIP]
 **** Verify all statistics computation in Analytics app. [High priority] [Done]
 **** Check if interview link email is sent to the interview creator (interviewer). If not, implement it. [Very high priority] [Done]
 **** Replace "Interview Id" field with "Interview URL" field on "Interviews Conducted" tab (with a 'copy' link beside it). [Very high priority] [Redundant requirement, as we are sending emails with the interview URL to all interviewers now. Won't implement.]
 **** Add 'copy' link beside entries in "Interview URL" field in "Interviews Attended" tab. [High priority] [Done]
 **** Add content for "What does this statistic mean" for every statistic in "Analytics" tab. [Very high priority] [Done]
+**** Verify test and interview schedules for the timezones (Sometimes, the schedule time is altered in the DB).[Very High Priority]
+**** Fix session identification in "About Us", "Help" and "Careers" pages. [High Priority] [Done]
+**** Add content in index.html [High Priority] [Done]
+**** Change colour of all text to #505050. Also, privacy policy and terms of use formatting should be same as about us.[Won't change colour, but privacy policy and about us have the same formatting now]
+**** Social media integration [WIP]
+**** Handle Footer Contact Form [Done]
+**** All static content should be in new format. [Done]
+**** Inbox screen (Network app) has a problem with scrollbars.
 
+
+https://192.168.1.6/skillstest/privacypolicy/ [Done]
+https://192.168.1.6/skillstest/termsofuse/ [Done]
