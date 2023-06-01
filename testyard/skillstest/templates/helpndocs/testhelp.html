@@ -58,7 +58,7 @@
 <p style='color:#505050;'>
 The Tests & Interviews page enables you to use most of the functionality TestYard has to offer. Specifically, it enables you to:
 <ul style="list-style-type: square;">
-<li><a href="#createtest">Create a Test</a></li>
+<li><a href="#createtest">Create New Test</a></li>
 <li><a href="#evaluatetest">Evaluate a Test</a></li>
 <li><a href="#edittest">Access an existing test in edit mode</a></li>
 <li><a href="#createinterview">Create an Interview</a></li>
@@ -72,31 +72,67 @@ The Tests & Interviews page enables you to use most of the functionality TestYar
 <li><a href="#searchtestsandinterviews">Search Tests/Interviews</a></li>
 <li><a href="#postonlinkedin">Post a Test on LinkedIn Profile</a></li>
 <li><a href="#uploadbulk">Upload Tests in Bulk</a></li>
+<li><a href="#progenv">Programming Environments</a></li>
 </ul>
 </p>
 <p style='color:#505050;'>
-In this help section, we will go over all the above functionalities, and in addition we will also take a look at the interfaces for taking a test and an interview. But first, we need to understand a few entities that we would be refering to quite frequently while discussing all this.
+In this help section, we will go over all the above functionalities, and in addition we will also take a look at the interfaces for taking a test and attending an interview. But first, we need to understand a few entities that we would be refering to quite frequently while discussing all this.
 </p>
 <p style='color:#505050;'>
 <b>Creator/Owner</b>: A Creator or Owner of a test or interview is the user who creates the test or interview. This entity has to be a user who has signed up on TestYard, and has an active account on the platform.<br/>
 <b>Evaluator</b>: An Evaluator of a test is a user who has been designated as an "Evaluator" by the Test's creator while creating the test. There may be more than one evaluator for a test. Optionally, the creator of the test may also be an evaluator of the same test. This entity has to be a user who has signed up on TestYard, and has an active account on the platform.<br/>
 <b>Evaluator Group</b>: This entity is a group of evaluators, who have been tagged by a name. So a Test would usually have an Evaluator Group consisting of one or more users on the platform. Since Evaluator Groups are tagged by a name, they may be used in multiple tests. Interviews do not have an evaluator. The user who creates the interview is the one who evaluates the candidate(s).<br/>
 <b>Candidate</b>: A candidate for a test or interview could be anyone who receives an invitation to attend the same. Candidates need not be a signed up user on TestYard platform. Candidates are identified by their email addresses.<br/>
+<b>Challenge(s)</b>: We use the word "Challenge" and "Question" interchangeably. Basically, these are the questions that your test is going to pose to the test taker.<br/>
 </p>
 <p style='color:#505050;'>
 So now, with terminology out of the way, we can focus on the functional aspects of the application.
 </p>
 <p style='color:#505050;'>
-<b><a id="createtest">Create a Test</a></b>:
-
+<b><a id="createtest">Create New Test</a></b>: The "Test" creation interface has 2 parts to it. Most of the data that needs to be entered in these 2 interfaces have default values set in the interfaces that would, most likely, be good enough for most users. However, to remain as versatile as possible, we thought it would be helpful to offer the users the chance to edit these fields, should they need it.<br/>
+The two parts of the Test creation interface are the a) Test Metadata interface, and b) The Challenges/Questions interface. When you click on the "Create a Test" button, the overlay interface that appears is the Test Metadata interface. This interface allows you to add/edit the following fields:
+<ul style="list-style-type: square;"><u>Test Metadata interface:</u>
+<li><i>Test Name</i> - mandatory field with no default values. This defines an identifier by which you can later refer to the test you are going to create.</li>
+<li><i>Test Type</i> - mandatory field with the default value of "composite". This defines the type of questions/challenges you might add to this test. The available values are self explanatory. The value "composite" allows you to add challenges of all the available types.</li>
+<li><i>Rules to Apply</i> - mandatory field with the default value "User may not consult online material during the test". The available rules are: a) Stream video of the test taker during the test, b) Show all challenges/questions at the begining of the test, c) Display challenges/questions to the user one at a time, and d) User may not consult online material during the test. You may select more than one rule, in which case all selected rules will be imposed on the test taker or candidate. However, please note that the options b and c are mutually exclusive. You will get an error if you select both rules and try to create a test.</li>
+<li><i>Test Topic</i> - optional field with no default value. This is a categorization field based on the subject matter of the test.</li>
+<li><i>Total Score</i> - mandatory field with no default value. Please enter an integer value for this.</li>
+<li><i>Number of Challenges</i> - optional field with no default value. You may enter an integer value for this, but it is not imposed while adding challenges/questions. Please leave it blank if you would like to make up your mind on this while adding challenges later.</li>
+<li><i>Score Distribution Uniform</i> - boolean field with default value "Yes". This means each of the challenges in your test will have the same weightage. Please select "No" if you want the challenges in your test to have unequal weightage.</li>
+<li><i>Negative Scoring Applicable</i> - boolean field with default value "No". Please select "Yes" if you want wrong answers to your challenges to have negative scores.</li>
+<li><i>Minimum Pass Score</i> - mandatory field with no default value. Please enter an integer value for this field. It should be less than the Total Score for the test.</li>
+<li><i>Existing Evaluator Groups and Group Name fields</i> - mandatory field with no default value. Please refer to the note on Evaluator and Evaluator Group above. If you do not have pre-defined Evaluator Groups available or if you want to create a new Evaluator Group for this test, then please type in the email address(es) of the users who would be the evaluator(s) for your test. Please note that by virtue of you being the creator of this test, you are automatically an evaluator. If you do not wish to be an evaluator for your test, then simply remove your email address from the list of email addresses of your evaluators (in the yellow box). </li>
+<li><i>Publish Date</i> - mandatory field with no default value. This is the date from which your test would be available for use. Prior to this date, users (test takers) would see a message stating that the test is not yet available, should they try to access and take the test. Please enter a date in the future.</li>
+<li><i>Activation Date</i> - mandatory field with no default value. This is the date from which your test would be activated. Prior to this date, users (test takers) would see a message stating that the test is not yet active, should they try to access and take the test. Please enter a date in the future, and that date should not be a date prior to the "Publish Date".</li>
+<li><i>Skill Level</i> - optional field with default value "Intermediate" (if you do not select any of the options, it would be considered as "Intermediate" selection).</li>
+<li><i>Test Scope</i> - optional field with default value "private". This determines if your test would be visible to everyone (public), or if it would be visible only to users who are "Connected" with you (protected), or if it would be visible only to you (private). Of course, the test would be accessible to test takers if and when you invite them to take the test, no matter what it's scope is.</li>
+<li><i>Answering Language</i> - mandatory field with default value "English-US". You may create a test only with the supported languages listed here.</li>
+<li><i>Programming Env.</i> - optional field with default value "None". This determines if a programming environment should be provided by TestYard to the test takers. Currently, only a few languages are offered. Please refer to the note on <a href="#progenv">Programming Environment</a> later in this document.</li>
+<li><i>Multimedia Reqd</i> - mandatory field with default value FALSE. This is supposed to determine if the challenges in the test require special multimedia equipment.</li>
+<li><i>Random Sequencing</i> - mandatory field with default value FALSE. Please select this checkbox to randomize the sequence of challenges in the test for every test taker.</li>
+<li><i>Allow Multiple Attempts</i> - mandatory field with default value FALSE. This determines if this test may be taken by a candidate or test taker multiple times. At present, this has a bug. Please leave this unchecked. Right now you would be able to offer a test taker multiple attempts anyway.</li>
+<li><i>Test Duration</i> - mandatory field with no default value. This would be the duration of the test. Please enter an integer value, and select hours or minutes or seconds for the entered integer value.</li>
+<li><i>Challenge Duration</i> - mandatory field with default value same as Test Duration. This would be the time allowed for each challenge of the test. </li>
+</ul>
+<ul style="list-style-type: square;"><u>Challenges interface:</u> The Challenges interface has the following fields.
+<li><i>Challenge Statement/Question </i>- This is the statement of the Challenge or question. You may check the "Math Environment" checkbox to access the Math keyboard to type in math expressions. If your browser is Google-Chrome, then you might also use the "Start Recording" and "Stop Recording" buttons to enter the question using Speech Recognition facility of Chrome.</li>
+<li><i>Draw figure for this challenge </i>- If your challenge statement needs an accompanying figure or diagram, please click on "click here to draw" to add the figure. You get a very basic drawing utility to add the figure.</li>
+<li><i>Upload Media File </i>- If your challenge statement needs an accompanying media file, you may upload it here.</li>
+<li><i>External resource URL </i>- If your challenge statement needs an external resource URL, you may add it here.</li>
+<li><i>Select Challenge Type </i>- Please select the type of challenge.</li>
+<li><i>Max Answer Length</i> - Maximum number of characters allowed for the answer. Default value is 100. Leave empty for no limit.</li>
+<li><i>Score for this Challenge/Question</i> - Score for this specific challenge. Please enter an integer value less than the Total Score of this test.</li>
+<li><i>Is it compulsory for the candidate to respond?</i> - Leave it unchecked for now.</li>
+<li><i>Maximum Time Limit</i> - Maximum time limit (in seconds) allowed for this challenge. The default value is the time limit for th entire test.</li>
+<li><i>Quality of the Challenge</i> - How difficult this challenge is. Default value is "Proficient".</li>
+</ul>
+<br/>That concludes the test creation interfaces. You would be presented these same 2 interfaces when you click on the <a id="edittest"><b>Edit Interface</b></a> link in the "Edit Mode Link" column in the "Tests as Creator" listing. Please note that if a test is "Activated", you would only get a read-only view of the test if you click the "Edit Interface" link. To be able to edit the test, you first need to "Deactivate" the test by clicking on the test's "Deactivate Test Now" link. Once the test is deactivated, it would be displayed with a red background. You might need to refresh the screen to update the view.
 </p>
 <p style='color:#505050;'>
-<b><a id="evaluatetest">Evaluate a Test</a></b>:
-
-</p>
-<p style='color:#505050;'>
-<b><a id="edittest">Access an existing test in edit mode</a></b>:
-
+<b><a id="evaluatetest">Evaluate a Test</a></b>: To be able to evaluate a test, you would first need to bring up the "Tests as Evaluator" listing. This listing will feature tests for which the owner/creator of the test has designated you as one of the evaluators. Once you bring up the "Tests as Evaluator" listing, you will see that each of the tests listed have a "Evaluate" link beside the test's name. Once you click this link, you would be presented with the list of entries, each of which represent a submission from a candidate/test taker. In the "Responses" column of this screen, there would be one of 2 types of links: one with the text "Evaluate Responses", and the other with the text "Show Evaluation". <br/><br/>
+Clicking on a link with the text "Evaluate Responses" will bring up a popup containing the challenges and the answers from the respective candidate. Each response from the candidate/test taker would have a space for score and a bit of comment. Evaluate each response in this way, and at the end of the popup, you would find a final comment space and a button to save your evaluation. Beside this button, there is a checkbox with the text "Commit Evaluation". Select this checkbox and click on the "Save" button to commit and save your evaluation.<br/><br/>
+Now if you reopen the evaluation listing again, you would find that the text in the "Responses" column for that candidate has changed to "Show Evaluation". Clicking on this link opens the same popup as before, but this time it would be in read-only mode, since you committed your evaluation in the previous session.<br/><br/>
+Evaluation is a fairly straight forward process on TestYard. However, should you come across any abnormality, please email with your issue description to support@testyard.in.
 </p>
 <p style='color:#505050;'>
 <b><a id="createinterview">Create an Interview</a></b>:
@@ -142,6 +178,7 @@ So now, with terminology out of the way, we can focus on the functional aspects 
 <b><a id="uploadbulk">Upload Tests in Bulk</a></b>:
 
 </p>
+<br/>
 <p style='text-align:center;'><input type='button' name='btnclose' id='btnclose' class='btn btn-primary' value='Close' onclick='javascript:window.close();'></p>
 <!-- Content ends here -->
 	</div>
