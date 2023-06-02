@@ -401,7 +401,6 @@ function signinwithfacebook(){
 
 function emailty(){
   let targeturl = "https://testyard.in/skillstest/contactty/";
-  //let postdata = "name="+document.frmcontactty.name.value + "&email="+document.frmcontactty.email.value + "csrfmiddlewaretoken=" + document.frmcontactty.csrfmiddlewaretoken.value;
   var postdata = new FormData(document.forms.namedItem("frmcontactty"));
   var xmlhttp;
   if (window.XMLHttpRequest){
@@ -423,5 +422,9 @@ function emailty(){
   document.getElementById('sendingimgp').style.display = "";
 }
 
+// Function to make a note to send user an emailer notifying him of a feature update.
+function featureupdate(featureurl){
+
+}
 
 
