@@ -150,13 +150,13 @@ Evaluation is a fairly straight forward process on TestYard. However, should you
 <li><i>Publish this Interview on</i> - mandatory field; This determines the date from which this interview may be scheduled. Please enter the current/today's date.</li>
 <li><i>Allow Realtime</i> - mandatory field; Please check this if you want to conduct the interview. Checking this box displays 3 more fields:
 <ul style="list-style-type: circle;margin-left:20px;">
-<li><i>Enter Email of Candidate:</i> Mandatory field - please enter the email address of the candidate here. Please note that you may enter one email address only. Interviews with multiple candidates at the same time is NOT supported right now.</li>
+<li><i>Enter Email of Candidate:</i> Mandatory field - please enter the email address(es) of the candidate(s) here. Please note that you may enter one email address only. The field allows multiple email addresses separated by commas, but as of now, interviews with multiple candidates at the same time is NOT supported by the interface that is used to attend the interview.</li>
 <li><i>Schedule this Interview on:</i> Please enter the date of the interview.</li>
 <li><i>I want to conduct it right now:</i> Please check this if you wish to conduct the interview right now. This sets the date/time for the interview schedule to the current date/time.</li>
 </ul>
 </li>
 <li><i>This Interview is targeted at candidates with</i> - mandatory field; The default value is "Intermediate". Please change as per your need. This value doesn't affect the interview itself. It would be used for statistical purposes only.</li>
-<li><i>Interview Scope</i> - mandatory field; This determines the visibility of the interview. This value doesn't affect the interview session itself.</li>
+<li><i>Interview Scope</i> - mandatory field, with default value "private"; This determines the visibility of the interview. This value doesn't affect the interview session itself.</li>
 </ul><br/><br/>
 Clicking on the "Create Interview" button will display a popup screen for the interview session if the "I want to conduct it right now" had been checked. Please refer to the help on "<a href="#attendinterviews">Attend an Interview Session</a>" for more on that interface.<br/><br/>
 </p>
@@ -201,10 +201,33 @@ The "Existing Invitations" interface might display 2 tabular structures. These a
 <b><a id="uploadbulk">Upload Tests in Bulk</a></b>: This is an experimental interface to allow users to create tests in bulk. This feature is not available for interviews (actually it makes no sense for interviews). The user may upload upto 10 tests at a time. The formats supported are csv, xml and xls(x). You will find the structure of these formats from the interface itself by clicking the download link for the template of the tests. More help is available from the interface in the form of a text file which you may download from the link for help text for the template file. Also, sample tests in csv, xml and xls are available from the interface.<br/><br/>
 The use case for the scenario in which you might use this feature is a terminal examination of a formal school or an educational institution. Such examinations involve separate tests in multiple subjects over a short period (for example, a week). The creator may generate the xml or csv or xls for each test by downloading the sample test in the desired format and replacing the entries in it with appropriate entries for the tests. Finally, she may upload them at once, and then simply activate the tests in the "Tests as Creator" listing.<br/><br/>
 </p>
+<p style='color:#505050'>
+<a id="progenv" style='font-weight:bold;'>Programming Environments:</a> As of now, TestYard provides a very limited set of programming environments that you may choose from to use in a test. This feature is solely for the perusal by the software technology fraternity, and hence it has only limited use. That is the reason why it has not been implemented with all major programming environments. However, this will definitely not be the case in future. Currently, this feature is being worked on actively, and there would be major additions to this feature within the year 2024. The environments available as of now are as follows:
+<ul style="list-style-type: square;padding-left:20px;">
+<li>Python 3.x</li>
+<li>Perl 5.x</li>
+<li>Bash</li>
+<li>Ruby</li>
+<li>Javascript/TypeScript</li>
+</ul><br/>
+As you might notice, only a few interpreted languages are supported right now. We intend to extend support for the major compiled languages like C/C++, Java and Rust in the near future.<br/><br/>
+<a href="#/" style="color:#0000aa;background-color:#f1f1f1;" onclick="javascript:featureupdate('/skillstest/featureupdate/progenv/');">Please update me when this happens!</a>
+<br/><br/>
+</p>
 <hr style="width:90%;color:blue;">
 <p style='color:#505050'>
-<a id="attendinterviews" style='font-weight:bold;'>Attending an Interview Session:</a>
+<a id="attendinterviews" style='font-weight:bold;'>Attending an Interview Session:</a> An interview session screen opens up as a popup in one of the 2 different ways - you have clicked the "Create Interview" button in the "Enter Interview Metadata" screen, or you have clicked a link for an interview (either as a interview conductor or as an candidate) in your email message from a TestYard user. Either way, you end up with the interview session popup. Let us take a good look at what is available for the user in that popup screen.<br/><br/>
+The popup screen will differ very slightly, based on whether you are the interview conductor or a interview candidate. However, for the most part, it would look the same. We will go over the part that remains same for both roles here, and then we will discuss the difference. Here are the common fields and controls:<br/><br/>
+<ul style="list-style-type: square;">
+<li><i>Screen Name</i> - You need to enter an alphanumeric string that identifies yourself on the peer's interview screen. Your firstname would be a good choice to use here.</li>
+<li><i>Share Screen button</i> - Once the interview starts, you can click on this button to share your screen's view.</li>
+<li><i>Start Recording button</i> - Click on this if you want to record the call.</li>
+</ul>
+Below these controls, you will have the area where you would see the view from the peer's webcam. In the inset, you will have the view from your webcam. Below this, you will find the 2 checkboxes for enabling/disabling the webcam and microphone. <br/>
+If you go further down, you will find the chat area where you can have a text chat with your peer. It also supports sending files both ways. The maximum file size supported now is 5 MB.<br/><br/>
+The difference between the interview conductor and interview candidate/attendee view is the button on the right hand corner of the video display area. For an interview conductor, this button would be "Start", while for the interview candidate/attendee it would be named "Join". So the interview conductor has the privilege to start the session, while the candidate can join such an interview. Also, the candidate would require permission from the conductor to join the interview. This happens when the candidate clicks the "Join" button. An intimation is sent to the interview conductor asking her/him to allow the candidate to join in the call.
 <br/><br/>
+Note: if the interview popup window opens up as fullscreen, please resize it so that your webcam view appears as an inset in the peer's webcam view.
 </p>
 <p style='color:#505050'>
 <a id="takingtest" style='font-weight:bold;'>Taking a Test:</a>
