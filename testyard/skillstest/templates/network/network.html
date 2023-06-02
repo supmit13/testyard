@@ -2067,6 +2067,7 @@
 	    screendiv = document.getElementById('transscreens');
 	    screendiv.innerHTML = "";
 	    screendiv.style.display = 'none';
+	    window.document.body.style.overflow = "scroll"; // very important!
 	}
 
 
@@ -2137,6 +2138,7 @@
       	    idlist.sort(function(a, b){return b-a});
 	    screendiv = document.getElementById("transscreens");
 	    screendiv.style = "display:;height:100%;width:100%;background-color:#e6e6ff;color:#0000aa;position:fixed;top:0;left:0;overflow-y: scroll;";
+	    window.document.body.style.overflow = "hidden";
 	    html = "<center><div class='row' style='padding-left:80px;'><div class='form-group' style='padding-left:15px;padding-right:5px;color:#0000ff;font-weight:bold;font-size:larger;'>Message Inbox &nbsp;&nbsp;</div><div align='right' id='searchspan' class='form-group' style='padding-left:5px;padding-right:5px;'><input type='text' name='msgsearch' id='msgsearch' size='15' max_length='150' value='" + lastsearchphrase + "' class='form-control' style='width:200px;' placeholder='Search Messages'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><input type='button' name='btnmsgsearch' id='btnmsgsearch' value='Search Messages' onClick='javascript:messagesearch();' class='btn btn-primary' style='color:#ffffff;font-size:small;width:140px;height:38px;font-weight:bold;'></div><div class='form-group' style='padding-left:5px;padding-right:5px;'><a href='#/' onClick='javascript:closemessagescreen();' class='btn btn-testyard1' style='background-color:#b3e6ff;color:#0000aa;width:140px;height:38px;font-weight:bold;font-size:smaller;'>Close Screen</a></div></div></center><br><br>";
 	    html += "<center><table border='0' cellspacing='6' cellpadding='6' width='90%'>";
 	    
