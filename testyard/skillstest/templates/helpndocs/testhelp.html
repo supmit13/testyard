@@ -76,7 +76,7 @@ The Tests & Interviews page enables you to use most of the functionality TestYar
 </ul>
 </p>
 <p style='color:#505050;'>
-In this help section, we will go over all the above functionalities, and in addition we will also take a look at the interfaces for taking a test and attending an interview. But first, we need to understand a few entities that we would be refering to quite frequently while discussing all this.
+In this help section, we will go over all the above functionalities, and in addition we will also take a look at the interfaces for <a href="#takingtest">taking a test</a> and <a href="#attendinterviews">attending an interview</a>. But first, we need to understand a few entities that we would be refering to quite frequently while discussing all this.
 </p>
 <p style='color:#505050;'>
 <b>Creator/Owner</b>: A Creator or Owner of a test or interview is the user who creates the test or interview. This entity has to be a user who has signed up on TestYard, and has an active account on the platform.<br/>
@@ -90,7 +90,7 @@ So now, with terminology out of the way, we can focus on the functional aspects 
 </p>
 <p style='color:#505050;'>
 <b><a id="createtest">Create New Test</a></b>: The "Test" creation interface has 2 parts to it. Most of the data that needs to be entered in these 2 interfaces have default values set in the interfaces that would, most likely, be good enough for most users. However, to remain as versatile as possible, we thought it would be helpful to offer the users the chance to edit these fields, should they need it.<br/>
-The two parts of the Test creation interface are the a) Test Metadata interface, and b) The Challenges/Questions interface. When you click on the "Create a Test" button, the overlay interface that appears is the Test Metadata interface. This interface allows you to add/edit the following fields:
+The two parts of the Test creation interface are the a) Test Metadata interface, and b) The Challenges/Questions interface. When you click on the "Create a Test" link, the overlay interface that appears is the Test Metadata interface. This interface allows you to add/edit the following fields:
 <ul style="list-style-type: square;"><u>Test Metadata interface:</u>
 <li><i>Test Name</i> - mandatory field with no default values. This defines an identifier by which you can later refer to the test you are going to create.</li>
 <li><i>Test Type</i> - mandatory field with the default value of "composite". This defines the type of questions/challenges you might add to this test. The available values are self explanatory. The value "composite" allows you to add challenges of all the available types.</li>
@@ -136,8 +136,29 @@ Now if you reopen the evaluation listing again, you would find that the text in 
 Evaluation is a fairly straight forward process on TestYard. However, should you come across any abnormality, please email with your issue description to support@testyard.in.
 </p>
 <p style='color:#505050;'>
-<b><a id="createinterview">Create an Interview</a></b>:
-
+<b><a id="createinterview">Create an Interview</a></b>: Clicking on the "Create an Interview" opens the "Enter Interview Metadata" overlay screen. The input entries in this screen are as follows:
+<ul style="list-style-type: square;">
+<li><i>Interview Title</i> - mandatory field; This should be an alphanumeric text that may be used to uniquely identify this interview.</li>
+<li><i>Number of Interviewers</i> - mandatory field; The default value is 1. You may enter an integer value specifying the number of interviewers here.</li>
+<li><i>Interviewer Email Ids</i> - mandatory field; By default, the creator's email Id is used. You should still enter the email address in which you would like to receive the interview link for an interviewer.</li>
+<li><i>Topic of Interview</i> - mandatory field; No default value. Please enter the topic under which this interview may be classified.</li>
+<li><i>Total Score</i> - mandatory field; The default value is 100. Leave it as it is if you do not have any need for a quantifiable score.</li>
+<li><i>Candidate should start responding to a question in</i> - mandatory field; But it only applies to automated interviews. Please leave it as it is with the default value of 300 seconds. For automated interviews, this determines how long the interviewer automation would wait for a verbal answer to start.</li>
+<li><i>Number of Challenges</i> - mandatory field; The default value is 20. This is valid only for automated interviews. Leave it with the default value of 20.</li>
+<li><i>Interview Duration</i> - mandatory field; This determines how long an interview would last. The default value is 1 hour (or 3600 seconds). Please leave it with the default value. This value is not imposed on the interview.</li>
+<li><i>Medium</i> - mandatory field; At present only 2 mediums are supported: audiovisual and audio. Please select "Audiovisual".</li>
+<li><i>Publish this Interview on</i> - mandatory field; This determines the date from which this interview may be scheduled. Please enter the current/today's date.</li>
+<li><i>Allow Realtime</i> - mandatory field; Please check this if you want to conduct the interview. Checking this box displays 3 more fields:
+<ul style="list-style-type: circle;margin-left:20px;">
+<li><i>Enter Email of Candidate:</i> Mandatory field - please enter the email address of the candidate here. Please note that you may enter one email address only. Interviews with multiple candidates at the same time is NOT supported right now.</li>
+<li><i>Schedule this Interview on:</i> Please enter the date of the interview.</li>
+<li><i>I want to conduct it right now:</i> Please check this if you wish to conduct the interview right now. This sets the date/time for the interview schedule to the current date/time.</li>
+</ul>
+</li>
+<li><i>This Interview is targeted at candidates with</i> - mandatory field; The default value is "Intermediate". Please change as per your need. This value doesn't affect the interview itself. It would be used for statistical purposes only.</li>
+<li><i>Interview Scope</i> - mandatory field; This determines the visibility of the interview. This value doesn't affect the interview session itself.</li>
+</ul><br/><br/>
+Clicking on the "Create Interview" button will display a popup screen for the interview session if the "I want to conduct it right now" had been checked. Please refer to the help on "<a href="#attendinterviews">Attend an Interview Session</a>" for more on that interface.<br/><br/>
 </p>
 <p style='color:#505050;'>
 <b><a id="listtests">List Tests/Interviews based on roles</a></b>: The "Tests & Interviews" page displays 5 role based listing or views - "Tests as Creator", "Tests as Evaluator", "Tests as Candidate", "Interviews Conducted" and "Interviews Attended".<br/><br/>
@@ -147,8 +168,6 @@ The interfaces accessible from the "Tests as Creator" view are: a) Invite Candid
 The interface 'a' (<a id="invitecandidates" style="font-weight:bold;">Invite Candidates Instantly</a>) should be used if you want to invite one or more candidate(s) for a test, but you do not want to schedule a start time for the test. With this type of invitation, the user would be able to take the test whenever she/he chooses to. The test duration will be imposed on the candidate, but it would allow the candidate to take the test between a valiation period set by the creator. For example, Mike invites John to a test named "Test 1", and sets the validation period from 01-06-2023 00:00:01 to 30-06-2023 11:59:59. If the test duration is 2 hours, then John would be able to take the test any time during the validation period. However, the 2 hour duration rule will be imposed on John and the test will conclude 2 hours after John starts writing the test. The text space for email addresses should contain a comma separated list of email addresses. Please keep the checkbox for "Force Create Fresh URL" checked to ensure that invitation to every email address in the above list contains a fresh test URL. Otherwise, if an invitation exists for an email address from a previously sent invitation for the same test to that email address, then the test URL from that invitation would be reused for the current invitation to the same email address. This could be an issue if you have cancelled or deactivated that URL or if the candidate started taking the test from that invitation but could not complete it for some reason, leaving the test URL unusable.<br/><br/>
 The "<a id="scheduletest"><b>Schedule Test</b></a>" interface allows the creator of the test to schedule a start time (and end time) for every candidate. So, from our earlier example, Mike could schedule John's test to start at 10:00 am on 02-06-2023, and since the test duration is 2 hours, the test would conclude at 12:00 Noon on 02-06-2023.<br/><br/>
 The "Schedule Test" interface is quite simple, and consists of a pair of date fields for start and end date/time for the test, and a space of a comma separated list of email addresses. This interface also lists down the schedules along with the email addresses that have been set in the past. If a schedule set in the past has a start time in the future, then such a schedule is editable in the lower section of the interface/screen. So you have the option to update such schedules from this popup view.<br/><br/>
-The "Existing Invitations" interface allow the creator to view the invitations that have been sent out for each of the tests (from either of the 2 scheduling interfaces discussed above). This is a historical view of invitations, but it also allows the creator to activate, deactivate or cancel an existing invitation. Please note that once a test has been taken by the candidate, the deactivation or cancellation of an invitation really doesn't have any significance.<br/><br/>
-The "Existing Invitations" interface might display 2 tabular structures. These are for "Existing Users" and "Users not Registered on TestYard". Remember that a TestYard test may be taken by anyone with an email address. A candidate/test taker may not be a registered user on TestYard. Hence, we display the invitations information in 2 tabular structures.<br/><br/>
 In the "Tests as Evaluator" listing, the user is provided with the "Evaluate" interface and the "Post on Linkedin" interface. We have discussed the "<a href='#evaluatetest'>Evaluate</a>" interface above. It is a popup based interface. It is a fairly simple interface that allows a evaluator user to evaluate responses from candidates for the given test.<br/><br/>
 The "Tests as Candidate" listing presents the "Visibility" interface and the "Post on Linkedin" interface only.<br/><br/>
 The "Visibility" interfaces in "Tests as Creator" and "Tests as Candidates" listings basically allows the user to define the scope of the test's visibility. For example, if I have scored an A+ in a test (as a candidate), then I might want visitors (other TestYard users) to my profile to be able to view it. In such a case, I would set the visibility to "Public". Similarly, for a negative performance, I would want users to not be able to view my failure. In such a case, I might want to set the visibility to "Private". Similarly, if I am a test creator, and I want to be able to certify candidates based on a test I created, then I would want to make its visibility "Public" so that more candidates may take notice of it.<br/><br/>
@@ -157,8 +176,8 @@ THe "Interviews Attended" listing presents the "Post on Linkedin" interface only
 The "Post on Linkedin" interfaces in each of the listing is a way to post the test/interview specifics on your Linkedin profile.<br/><br/>
 </p>
 <p style='color:#505050;'>
-<b><a id="scheduleinterview">Schedule an Interview</a></b>:
-
+<b><a id="scheduleinterview">Schedule an Interview</a></b>: The creator/owner of an interview may schedule the interview by clicking the "Schedules" button for the interview in the "Interviews Conducted" listing. This would open an overlay screen with rows of existing schedules, and a row for adding more schedules. The user may edit the existing schedules if they have not been conducted yet. At present only the time for the interview may be edited. The list of emails cannot be edited once a schedule has been saved. To create a new schedule, please use the last row that provides a date/time field as well as a space for entering a comma separated list of emails. Once the values have been entered, please click on the "Create Schedule" button for the schedule to be saved. The next time you bring up the "Schedules" overlay screen, you would be able to view your newly created schedule.<br/><br/>
+Creating a new schedule sends an email to the creator of the interview containing a link to the interview  session. It also sends emails to each of the candidate email addresses entered while creating the schedule. Each of these emails also contain a link to the interview session screen. The link sent to the creator is different from the link(s) sent to the candidate(s). Please refer to the help section for <a href="#attendinterviews">attending interview sessions</a> for more on this.
 </p>
 <p style='color:#505050;'>
 <b><a id="activatedeactivatetest">Activate/Deactivate a Test</a></b>: The "Activate Test Now" and "Deactivate Test Now" link in the "Tests as Creator" listing enables the test's creator to respectively activate and deactivate a test. When a test is created by a user (test creator/owner), the initial state of the test is inactive. To be able to take the test by a test taker, the test has to be activated by the creator. This may be done by clicking this link. The "Deactivate Test Now" is also necessary since if the creator needs to edit the test for some reason, it has to be deactivated first since an active test cannot be edited. Editing a test may be done for various reasons like change of weightage in the challenges/questions, change or addition of new challenges/questions, etc. This interface allows you to perform these actions.<br/><br/>
@@ -168,8 +187,9 @@ The "Post on Linkedin" interfaces in each of the listing is a way to post the te
 The "protected" visibility status ensures that the test (either the test entity or the candidate's performance in it) is visible only to "connections" the user has accepted in the "Network" page of TestYard. Please refer to "Network" pages help for more on connections and groups on TestYard.<br/><br/>
 </p>
 <p style='color:#505050;'>
-<b><a id="managetestinvitations">Manage Test Invitations</a></b>:
-
+<b><a id="managetestinvitations">Manage Test Invitations</a></b>:The "Manage Invitations" links in the "Existing Invitations" column allow the creator to view the invitations that have been sent out for each of the tests (from any of the 2 scheduling interfaces discussed above). This is a historical view of invitations, and it also allows the creator to activate, deactivate or cancel an existing invitation. Please note that once a test has been taken by the candidate, the deactivation or cancellation of an invitation really doesn't have any significance.<br/><br/>
+The cancellation of an invitation ensures that the URL of the test for the associated candidate is made unusable permanently. If the candidate is to take the test after cancellation of the invitation by the test's creator/owner, then the candidate must request the creator to send a new invitation for the test.<br/><br/>
+The "Existing Invitations" interface might display 2 tabular structures. These are for "Existing Users" and "Users not Registered on TestYard". Remember that a TestYard test may be taken by anyone with an email address. A candidate/test-taker may not be a registered user on TestYard. Hence, we display the invitations information for both types of users in the 2 tabular structures.<br/><br/>
 </p>
 <p style='color:#505050;'>
 <b><a id="searchtestsandinterviews">Search Tests/Interviews</a></b>: The "Search" bar at the top of "Tests & Interviews" listings allow the user to search for tests and interviews with respect to a role. Users may also search tests and interviews from the "Search" page. However, the search feature in this page (Tests & Interviews) allows the user to search tests/interviews with respect to a role. So, if you are using this search feature from the "Tests as Evaluator" listing, then it will only look up tests in which the user is an evaluator. This is a convenient way to look up tests/interviews if you have a lot of tests and interviews on TestYard, and your listings run multiple pages.<br/><br/>
@@ -178,9 +198,19 @@ The "protected" visibility status ensures that the test (either the test entity 
 <b><a id="postonlinkedin">Post a Test on Linkedin Profile</a></b>: This feature simply allows the user to post a notification about a test on the user's Linkedin profile. Exactly how the notification looks will depend on the role the user has with respect to the test. For example, if the user is the creator of the test, then the notification would say that the user has created this test, and call out users visiting the Linkedin profile to take the test. From a candidate's perspective, this notification would display the performance of the user in the test.<br/><br/>
 </p>
 <p style='color:#505050;'>
-<b><a id="uploadbulk">Upload Tests in Bulk</a></b>:
-
+<b><a id="uploadbulk">Upload Tests in Bulk</a></b>: This is an experimental interface to allow users to create tests in bulk. This feature is not available for interviews (actually it makes no sense for interviews). The user may upload upto 10 tests at a time. The formats supported are csv, xml and xls(x). You will find the structure of these formats from the interface itself by clicking the download link for the template of the tests. More help is available from the interface in the form of a text file which you may download from the link for help text for the template file. Also, sample tests in csv, xml and xls are available from the interface.<br/><br/>
+The use case for the scenario in which you might use this feature is a terminal examination of a formal school or an educational institution. Such examinations involve separate tests in multiple subjects over a short period (for example, a week). The creator may generate the xml or csv or xls for each test by downloading the sample test in the desired format and replacing the entries in it with appropriate entries for the tests. Finally, she may upload them at once, and then simply activate the tests in the "Tests as Creator" listing.<br/><br/>
 </p>
+<hr style="width:90%;color:blue;">
+<p style='color:#505050'>
+<a id="attendinterviews" style='font-weight:bold;'>Attending an Interview Session:</a>
+<br/><br/>
+</p>
+<p style='color:#505050'>
+<a id="takingtest" style='font-weight:bold;'>Taking a Test:</a>
+<br/><br/>
+</p>
+<hr style="width:90%;color:blue;">
 <br/>
 <p style='text-align:center;'><input type='button' name='btnclose' id='btnclose' class='btn btn-primary' value='Close' onclick='javascript:window.close();'></p>
 <!-- Content ends here -->
