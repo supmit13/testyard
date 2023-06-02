@@ -460,7 +460,7 @@ def storegoogleuserinfo(request):
         pass
     if userobj is None: # We need to create this user - this is the first time
         userobj = User()
-        username = username.replace("+", " ")
+        username = username.replace("+", "_")
         userobj.displayname = username
         userobj.emailid = emailid
         userobj.password = password
@@ -471,12 +471,12 @@ def storegoogleuserinfo(request):
         userobj.usertype = 'CORP'
         userobj.active = True
         userobj.istest = False
-        userobj.mobileno = ""
+        userobj.mobileno = "9999999999" # We don't get mobile number from google, so we use this dummy number.
         try:
             r = requests.get(profpicurl, stream=True) # Try to get the file, if possible.
             if r.status_code == 200:
                 imgpath = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + username + os.path.sep + "images"
-                imgfile = imgpath + os.path.sep + "profilepic.jpg" # If it is not a jpeg file, suck!
+                imgfile = imgpath + os.path.sep + "profilepic.jpg" # If it is not a jpeg file, $uck!
                 skillutils.mkdir_p(imgpath)
                 with open(imgfile, 'wb') as f:
                     r.raw.decode_content = True
@@ -484,13 +484,15 @@ def storegoogleuserinfo(request):
             userobj.userpic = "profilepic.jpg"
         except:
             userobj.userpic = ""
+            # Create the images directory at least
+            imgpath = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + username + os.path.sep + "images"
+            skillutils.mkdir_p(imgpath)
         userobj.newuser = False # Google users will not need to have verified accounts.
         try:
             userobj.save()
         except:
-            message = "Couldn't save user information for use with TestYard. Please Register on this website to use our services."
-            response = HttpResponse(message)
-            return response
+            message = "Couldn't save user information for use with TestYard. Please Register on this website to use our services. Error: %"%sys.exc_info()[1].__str__()
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     # Now, log the user in.
     authuserobj = authenticate(username, password)
     if not authuserobj: # Incorrect password - return user to login screen with an appropriate message.
