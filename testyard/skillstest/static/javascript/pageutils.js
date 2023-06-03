@@ -388,11 +388,13 @@ function google_signin_callback(response){
       signinform.appendChild(profpiccontainer);
       signinform.appendChild(csrfcontainer);
       signindiv.appendChild(signinform);
+      //alert(signinform);
       signinform.submit();
       break;
     }
   }
 }
+
 
 function signinwithfacebook(){
 
@@ -422,7 +424,8 @@ function emailty(){
   document.getElementById('sendingimgp').style.display = "";
 }
 
-// Function to make a note to send user an emailer notifying him of a feature update.
+
+// Function to enable sending an emailer to notify a user about a feature update.
 function featureupdate(featureurl){
 
 }

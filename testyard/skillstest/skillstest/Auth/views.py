@@ -434,7 +434,7 @@ def storegoogleuserinfo(request):
         message = "Error: %s"%error_msg('1004')
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     # Get all the post data
-    firstname, lastname, username, gender, emailid, profpicurl = "", "", "", "", "", ""
+    firstname, lastname, username, gender, emailid, profpicurl, csrfmiddlewaretoken = "", "", "", "", "", "", ""
     password = mysettings.GOOGLE_SIGNIN_DEFAULT_PASSWORD # This is a special string to be used as password for google authentication users
     if request.POST.has_key('firstname'):
         firstname = request.POST['firstname']
@@ -448,6 +448,8 @@ def storegoogleuserinfo(request):
         username = request.POST['googleid']
     if request.POST.has_key('profpic'):
         profpicurl = request.POST['profpic']
+    if request.POST.has_key('csrfmiddlewaretoken'):
+        csrfmiddlewaretoken = request.POST['csrfmiddlewaretoken']
     sex = "U"
     if gender == "male":
         sex = "M"
@@ -463,7 +465,7 @@ def storegoogleuserinfo(request):
         username = username.replace("+", "_")
         userobj.displayname = username
         userobj.emailid = emailid
-        userobj.password = password
+        userobj.password = make_password(password)
         userobj.sex = sex
         userobj.firstname = firstname
         userobj.middlename = ""
