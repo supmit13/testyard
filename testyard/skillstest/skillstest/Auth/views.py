@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 #from django.utils import simplejson # Since django no longer ships simplejson as a part of it.
-import simplejson
+import simplejson as json
 from django.template.response import TemplateResponse
 from django.utils.http import base36_to_int, is_safe_url
 from django.utils.translation import ugettext as _
@@ -29,6 +29,7 @@ import os, sys, re, time, datetime
 import cPickle, urlparse
 import decimal, math, base64
 import requests, shutil
+import urllib, urllib2
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, EmailValidationKey
@@ -530,7 +531,8 @@ def storegoogleuserinfo(request):
             message = "The user is not active."
             return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     return response
-    
+
+
 # We will receive a GET request from Linkedin
 def linkedinauthcallback(request):
     if request.method != "GET":
@@ -559,6 +561,117 @@ def linkedinauthcallback(request):
     # in this function.
     accesstokenurl = "https://www.linkedin.com/oauth/v2/accessToken"
     # Make a POST request to the above URL with the value of authcode as POST data.
-    requestheader = {'Content-Type' : 'x-www-form-urlencoded', 'Accept' : '*/*'}
+    requestheaders = {'Content-Type' : 'x-www-form-urlencoded', 'Accept' : '*/*'}
     postdata = {'grant_type' : 'authorization_code', 'code' : authcode, 'client_id' : mysettings.LINKEDIN_CLIENT_ID, 'client_secret' : mysettings.LINKEDIN_CLIENT_SECRET, 'redirect_uri' : skillutils.gethosturl(request) + "/" + mysettings.LINKEDIN_REDIRECT_URL}
+    postdataenc = urllib.urlencode(postdata)
+    requestheaders['Content-Length'] = str(postdataenc.__len__())
+    liresponse = requests.post(accesstokenurl, data=postdataenc, headers=requestheaders)
+    liresponsecontent = liresponse.text
+    try:
+        liresponsejson = json.loads(liresponsecontent)
+    except:
+        message = "Error: could not retrieve json content - %s"%sys.exc_info()[1].__str__()
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    accesstoken = ""
+    try:
+        accesstoken = liresponsejson['access_token']
+    except:
+        message = "Error: Could not find access_token in response - %s"%str(liresponsejson)
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    httpheaders = {'Authorization' : 'Bearer %s'%accesstoken, 'Accept' : '*/*'}
+    # Retrieve user's details
+    liteprofileurl = "https://api.linkedin.com/v2/me"
+    emailaddrurl = "https://api.linkedin.com/v2/emailAddress"
+    userinfourl = "https://api.linkedin.com/v2/userinfo"
+    userinfojson = {}
+    try:
+        #liteprofileresponse = requests.get(liteprofileurl, headers=httpheaders)
+        #emailaddrresponse = requests.get(emailaddrurl, headers=httpheaders)
+        userinforesponse = requests.get(userinfourl, headers=httpheaders)
+        userinfojson = json.loads(userinforesponse.text)
+    except:
+        message = "Couldn't retrieve profile or email address, but authenticated user: %s"%sys.exc_info()[1].__str__()
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=" + message)
+    firstname, lastname, emailaddr, profilepic, displayname = "", "", "", "", ""
+    password = mysettings.LINKEDIN_DEFAULT_PASSWORD
+    userobj = None
+    try:
+        firstname = userinfojson['given_name']
+    except:
+        pass
+    try:
+        lastname = userinfojson['family_name']
+    except:
+        pass
+    try:
+        displayname = userinfojson['name'].replace(" ", "_").replace("'", "").replace(".", "_")
+    except:
+        pass
+    try:
+        emailaddr = userinfojson['email']
+    except:
+        pass
+    try:
+        profilepic = userinfojson['picture']
+    except:
+        pass
+    try:
+        userobj = User.objects.get(emailid=emailaddr)
+    except:
+        pass
+    if userobj is None: # User doesn't exist
+        userobj = User()
+        userobj.displayname = displayname
+        userobj.emailid = emailaddr
+        userobj.password = make_password(password)
+        userobj.sex = "U"
+        userobj.firstname = firstname
+        userobj.middlename = ""
+        userobj.lastname = lastname
+        userobj.usertype = 'CORP'
+        userobj.active = True
+        userobj.istest = False
+        userobj.mobileno = "9999999999" # We don't get mobile number from google, so we use this dummy number.
+        userobj.newuser = False
+        userobj.userpic = profilepic
+        try:
+            userobj.save()
+        except:
+            message = "Couldn't save user data: %s"%sys.exc_info()[1].__str__()
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    # Now, log the user in.
+    authuserobj = authenticate(displayname, password)
+    response = None
+    if not authuserobj: # Incorrect password - return user to login screen with an appropriate message.
+        message = error_msg('1002')
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    else: # user will be logged in after checking the 'active' field
+        if authuserobj.active:
+            sessobj = Session()
+            clientip = request.META['REMOTE_ADDR']
+            timestamp = int(time.time())
+            # timestamp will be a 10 digit string.
+            sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip, timestamp.__str__())
+            sessobj.sessioncode = sesscode
+            sessobj.user = authuserobj
+            # sessobj.starttime should get populated on its own when we save this session object.
+            sessobj.endtime = None
+            sessobj.sourceip = clientip
+            if authuserobj.istest: # This session is being performed by a test user, so this must be a test session.
+                sessobj.istest = True
+            elif mysettings.TEST_RUN: # This is a test run as mysettings.TEST_RUN is set to True
+                sessobj.istest = True
+            else:
+                sessobj.istest = False
+            sessobj.useragent = request.META['HTTP_USER_AGENT']
+            # Now save the session...
+            sessobj.save()
+            # ... and redirect to landing page (which happens to be the profile page).
+            response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
+            response.set_cookie('sessioncode', sesscode)
+            response.set_cookie('usertype', authuserobj.usertype)
+        else: # User is not active
+            message = "The user is not active."
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    return response
 
