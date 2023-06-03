@@ -194,10 +194,11 @@
 			     data-logo_alignment="left"
 			     data-width="250">
 		      </div>
-		      
 		      <hr class="my-4">
 		      <!-- <button class="btn btn-lg btn-google btn-block text-uppercase" type="button" onclick='signinwithgoogle();'><i class="fab fa-google mr-2"></i> Sign in with Google</button> -->
-		      <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
+		      <input type='hidden' name='lirandomnonce' id='lirandomnonce' value='{{linkedinrandomstring}}'>
+		      <button class="btn btn-lg btn-facebook btn-block text-block" type="button" onclick="javascript:signinwithlinkedin('{{liclientid}}', '{{liredirecturi}}');"><i class="fab fa-facebook-f mr-2"></i> Sign in with LinkedIn</button><br/>
+      		      <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
       		      </div>
       		      
 		    </form>

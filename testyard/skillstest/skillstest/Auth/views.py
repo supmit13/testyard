@@ -76,7 +76,8 @@ def login(request):
         # Display login form
         curdate = datetime.datetime.now()
         tmpl = get_template("authentication/login.html")
-        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'googleinfourl' : skillutils.gethosturl(request) + "/" + mysettings.GOOGLE_INFO_URL }
+        linkedinrandomstring = skillutils.generate_random_string()
+        c = {'curdate' : curdate, 'msg' : msg, 'register_url' : skillutils.gethosturl(request) + "/" + mysettings.REGISTER_URL, 'googleinfourl' : skillutils.gethosturl(request) + "/" + mysettings.GOOGLE_INFO_URL, 'liclientid' : mysettings.LINKEDIN_CLIENT_ID, 'liredirecturi' : skillutils.gethosturl(request) + "/" + mysettings.LINKEDIN_REDIRECT_URL, 'linkedinrandomstring' : linkedinrandomstring }
         inc_context = skillutils.includedtemplatevars("", request)
         for inc_key in inc_context.keys():
             c[inc_key] = inc_context[inc_key]
@@ -530,4 +531,34 @@ def storegoogleuserinfo(request):
             return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     return response
     
+# We will receive a GET request from Linkedin
+def linkedinauthcallback(request):
+    if request.method != "GET":
+        message = "Error: %s"%error_msg('1004')
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    authcode, csrfstate, errorstr = "", "", ""
+    if 'error' in request.GET.keys():
+        errorstr = request.GET.get('error_description')
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + errorstr)
+    if 'code' not in request.GET.keys():
+        message = "Error: Could not find 'code' parameter in the GET request. Linkedin authentication failed to collect authorization code."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    authcode = request.GET.get('code', '')
+    if authcode == "":
+        message = "Error: LinkedIn authorization code is empty. LinkedIn authentication failed."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    if 'state' not in request.GET.keys():
+        message = "Error: Linkedin did not return a 'state' parameter. Linkedin authentication failed."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    csrfstate = request.GET.get('state', '')
+    if csrfstate == "":
+        message = "Error: Linkedin 'state' parameter is empty. Can't proceed with Linkedin authentication"
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    # So now we have got both 'state' and 'code'. We are supposed to check if the returned 'state' value is same as the
+    # linkedinrandomstring we created in login(). TODO: Figure out a mechanism to get the value of 'linkedinrandomstring'
+    # in this function.
+    accesstokenurl = "https://www.linkedin.com/oauth/v2/accessToken"
+    # Make a POST request to the above URL with the value of authcode as POST data.
+    requestheader = {'Content-Type' : 'x-www-form-urlencoded', 'Accept' : '*/*'}
+    postdata = {'grant_type' : 'authorization_code', 'code' : authcode, 'client_id' : mysettings.LINKEDIN_CLIENT_ID, 'client_secret' : mysettings.LINKEDIN_CLIENT_SECRET, 'redirect_uri' : skillutils.gethosturl(request) + "/" + mysettings.LINKEDIN_REDIRECT_URL}
 

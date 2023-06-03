@@ -7,6 +7,14 @@ String.prototype.trim = function() {
     return a.replace(/\s+$/, '');
 };
 
+// Serialize object/dictionary to urlencoded query string
+function serialize(obj) {
+  var str = [];
+  for(var p in obj)
+     str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+  return str.join("&");
+}
+
 // Function to validate user inputs
 function validate_user_input(formname){
     return true;
@@ -393,6 +401,16 @@ function google_signin_callback(response){
       break;
     }
   }
+}
+
+
+function signinwithlinkedin(clientid, redirecturi){
+  let randomnonce = document.getElementById('lirandomnonce').value; // Assuming that we are being called from the login page (login.html).
+  let authurl = "https://www.linkedin.com/oauth/v2/authorization";
+  let datadict = {'response_type' : 'code', 'client_id' : clientid, 'redirect_uri' : redirecturi, 'state' : randomnonce, 'scope' : 'r_liteprofile r_emailaddress'};
+  let qs = serialize(datadict);
+  authurlqs = authurl + "?" + qs;
+  liwin = window.open(authurlqs, "liauthwindow", "width=640, height=480, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
 }
 
 
