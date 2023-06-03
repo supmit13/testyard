@@ -561,11 +561,12 @@ def linkedinauthcallback(request):
     # in this function.
     accesstokenurl = "https://www.linkedin.com/oauth/v2/accessToken"
     # Make a POST request to the above URL with the value of authcode as POST data.
-    requestheaders = {'Content-Type' : 'x-www-form-urlencoded', 'Accept' : '*/*'}
+    requestheaders = {'Content-Type' : 'x-www-form-urlencoded', 'Accept' : 'application/json'}
     postdata = {'grant_type' : 'authorization_code', 'code' : authcode, 'client_id' : mysettings.LINKEDIN_CLIENT_ID, 'client_secret' : mysettings.LINKEDIN_CLIENT_SECRET, 'redirect_uri' : skillutils.gethosturl(request) + "/" + mysettings.LINKEDIN_REDIRECT_URL}
     postdataenc = urllib.urlencode(postdata)
+    params = {'grant_type' : 'authorization_code', 'client_id' : mysettings.LINKEDIN_CLIENT_ID, 'client_secret' : mysettings.LINKEDIN_CLIENT_SECRET, 'code' : authcode, 'redirect_uri' : skillutils.gethosturl(request) + "/" + mysettings.LINKEDIN_REDIRECT_URL}
     requestheaders['Content-Length'] = str(postdataenc.__len__())
-    liresponse = requests.post(accesstokenurl, data=postdataenc, headers=requestheaders)
+    liresponse = requests.post(accesstokenurl, params=params, data=postdataenc, headers=requestheaders)
     liresponsecontent = liresponse.text
     try:
         liresponsejson = json.loads(liresponsecontent)
@@ -576,43 +577,50 @@ def linkedinauthcallback(request):
     try:
         accesstoken = liresponsejson['access_token']
     except:
-        message = "Error: Could not find access_token in response - %s"%str(liresponsejson)
+        message = "Error: Could not find access_token in response - %s"%sys.exc_info()[1].__str__()
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
-    httpheaders = {'Authorization' : 'Bearer %s'%accesstoken, 'Accept' : '*/*'}
+    httpheaders = {'Authorization' : 'Bearer %s'%accesstoken, 'Accept' : 'application/json'}
     # Retrieve user's details
     liteprofileurl = "https://api.linkedin.com/v2/me"
     emailaddrurl = "https://api.linkedin.com/v2/emailAddress"
     userinfourl = "https://api.linkedin.com/v2/userinfo"
     userinfojson = {}
     try:
-        #liteprofileresponse = requests.get(liteprofileurl, headers=httpheaders)
-        #emailaddrresponse = requests.get(emailaddrurl, headers=httpheaders)
-        userinforesponse = requests.get(userinfourl, headers=httpheaders)
-        userinfojson = json.loads(userinforesponse.text)
+        liteprofileresponse = requests.get(liteprofileurl, headers=httpheaders)
+        emailaddrresponse = requests.get(emailaddrurl, headers=httpheaders)
+        #userinforesponse = requests.get(userinfourl, headers=httpheaders)
+        #userinfojson = json.loads(userinforesponse.text)
+        liteprofilejson = json.loads(liteprofileresponse.text)
+        emailaddressjson = json.loads(emailaddrresponse.text)
     except:
         message = "Couldn't retrieve profile or email address, but authenticated user: %s"%sys.exc_info()[1].__str__()
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=" + message)
     firstname, lastname, emailaddr, profilepic, displayname = "", "", "", "", ""
     password = mysettings.LINKEDIN_DEFAULT_PASSWORD
     userobj = None
+    print(emailaddressjson)
+    if 'error' in liteprofilejson.keys():
+        message = liteprofilejson['error_description']
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     try:
-        firstname = userinfojson['given_name']
+        firstname = str(liteprofilejson[u'localizedFirstName'])
     except:
         pass
     try:
-        lastname = userinfojson['family_name']
+        lastname = str(liteprofilejson[u'localizedLastName'])
     except:
         pass
     try:
-        displayname = userinfojson['name'].replace(" ", "_").replace("'", "").replace(".", "_")
+        displayname = firstname + "_" + lastname
+        displayname = displayname.replace(" ", "_").replace("'", "").replace(".", "_")
     except:
         pass
     try:
-        emailaddr = userinfojson['email']
+        emailaddr = emailaddressjson['email']
     except:
         pass
     try:
-        profilepic = userinfojson['picture']
+        profilepic = liteprofilejson[u'profilePicture'][u'displayImage']
     except:
         pass
     try:
@@ -651,7 +659,7 @@ def linkedinauthcallback(request):
             clientip = request.META['REMOTE_ADDR']
             timestamp = int(time.time())
             # timestamp will be a 10 digit string.
-            sesscode = generatesessionid(username, csrfmiddlewaretoken, clientip, timestamp.__str__())
+            sesscode = generatesessionid(displayname, csrfstate, clientip, timestamp.__str__())
             sessobj.sessioncode = sesscode
             sessobj.user = authuserobj
             # sessobj.starttime should get populated on its own when we save this session object.

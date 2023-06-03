@@ -371,10 +371,30 @@ function google_signin_callback(response){
   for(j=0;j < responsepayload.length;j++){
     datadict = responsepayload[j];
     if(datadict.hasOwnProperty("email")){ // Check if the dictionary has a key named 'email'
-      emailcontainer.value = datadict['email'];
-      firstname = datadict['given_name'];
-      lastname = datadict['family_name'];
-      username = datadict['name'];
+      if(datadict['email'] != null){
+        emailcontainer.value = datadict['email'];
+      }
+      else{
+        emailcontainer.value = "";
+      }
+      if(datadict['given_name'] != null){
+        firstname = datadict['given_name'];
+      }
+      else{
+        firstname = "";
+      }
+      if(datadict['family_name'] != null){
+        lastname = datadict['family_name'];
+      }
+      else{
+        lastname = "";
+      }
+      if(datadict['name'] != null){
+        username = datadict['name'];
+      }
+      else{
+        username = "";
+      }
       firstname = firstname.replace(pluspattern, " ");
       lastname = lastname.replace(pluspattern, " ");
       username = username.replace(pluspattern, "");
@@ -386,7 +406,12 @@ function google_signin_callback(response){
       lastnamecontainer.value = lastname;
       googleidcontainer.value = username;
       gendercontainer.value = "unknown";
-      profpiccontainer.value = datadict['picture'];
+      if(datadict['picture'] != null){
+        profpiccontainer.value = datadict['picture'];
+      }
+      else{
+        profpiccontainer.value = "";
+      }
       csrfcontainer.value = csrf;
       signinform.appendChild(emailcontainer);
       signinform.appendChild(firstnamecontainer);
@@ -405,7 +430,8 @@ function google_signin_callback(response){
 
 
 function signinwithlinkedin(clientid, redirecturi){
-  let randomnonce = document.getElementById('lirandomnonce').value; // Assuming that we are being called from the login page (login.html).
+  //let randomnonce = document.getElementById('lirandomnonce').value; 
+  let randomnonce = document.loginform.csrfmiddlewaretoken.value; // Assuming that we are being called from the login page (login.html).
   let authurl = "https://www.linkedin.com/oauth/v2/authorization";
   let datadict = {'response_type' : 'code', 'client_id' : clientid, 'redirect_uri' : redirecturi, 'state' : randomnonce, 'scope' : 'r_liteprofile r_emailaddress'};
   let qs = serialize(datadict);
