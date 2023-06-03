@@ -582,7 +582,7 @@ def linkedinauthcallback(request):
     httpheaders = {'Authorization' : 'Bearer %s'%accesstoken, 'Accept' : 'application/json'}
     # Retrieve user's details
     liteprofileurl = "https://api.linkedin.com/v2/me"
-    emailaddrurl = "https://api.linkedin.com/v2/emailAddress"
+    emailaddrurl = "https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection=(elements*(true,EMAIL,handle~,emailAddress))"
     userinfourl = "https://api.linkedin.com/v2/userinfo"
     userinfojson = {}
     try:
@@ -616,7 +616,7 @@ def linkedinauthcallback(request):
     except:
         pass
     try:
-        emailaddr = emailaddressjson['email']
+        emailaddr = str(emailaddressjson[u'elements'][0][u'handle~'][u'emailAddress'])
     except:
         pass
     try:
