@@ -156,7 +156,7 @@
 	      <div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
 		<div class="card card-signin my-5">
 		  <div class="card-body">
-		    <p style='font-weight:bold;'><h5 class="card-title text-center">Sign In</h5>&nbsp;&nbsp; |&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
+		    <p style='font-weight:bold;'><h5 class="card-title text-center">Sign In</h5>&nbsp;&nbsp; New user?&nbsp;&nbsp; <a href='{{ register_url }}'>Register here</a></p>
 		    <span id='msgspan' style="font-size:small;font-weight:bold;padding-left:10px;padding-right:5px;padding-top:3px;padding-bottom:3px;">{{ msg }}</span>
 		    <span id='cautionspan' style="font-size:small;font-weight:bold;color:#0000aa;padding-left:10px;padding-right:5px;padding-top:3px;padding-bottom:3px;">* In case of any issue with login, please clear your browser cache for this domain and try again.</span>
 		    <form name='loginform' method='POST' action='/skillstest/login/' class="form-signin">
@@ -174,7 +174,7 @@
 		        <input type="checkbox" class="custom-control-input" id="customCheck1">
 		        <label class="custom-control-label" for="customCheck1">Remember password?</label>
 		      </div> -->
-		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();'>Sign in</button> *
+		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();'>Sign in</button>
 
 		      <hr class="my-4">
 		      <div id="g_id_onload"
@@ -197,8 +197,9 @@
 		      <hr class="my-4">
 		      <!-- <button class="btn btn-lg btn-google btn-block text-uppercase" type="button" onclick='signinwithgoogle();'><i class="fab fa-google mr-2"></i> Sign in with Google</button> -->
 		      <input type='hidden' name='lirandomnonce' id='lirandomnonce' value='{{linkedinrandomstring}}'>
-		      <button class="btn btn-lg btn-facebook btn-block text-block" type="button" onclick="javascript:signinwithlinkedin('{{liclientid}}', '{{liredirecturi}}');"><i class="fab fa-facebook-f mr-2"></i> Sign in with LinkedIn</button><br/>
-      		      <button class="btn btn-lg btn-facebook btn-block text-uppercase" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
+		      <a href='#/' onclick="javascript:signinwithlinkedin('{{liclientid}}', '{{liredirecturi}}');"><img src='/static/images/lisignin.png' style='width:255px;'></a>
+		      <br/><hr class="my-4"><br/>
+      		      <button class="btn btn-lg btn-facebook btn-block text-block" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
       		      </div>
       		      
 		    </form>
