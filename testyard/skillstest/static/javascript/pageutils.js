@@ -463,6 +463,36 @@ function emailty(){
 }
 
 
+// Forgot password handler
+function forgotpassword(){
+  uname = document.loginform.username.value;
+  let targeturl = "https://testyard.in/skillstest/forgotpasswdemail/";
+  var postdata = "uname=" + uname + "&csrfmiddlewaretoken=" + document.loginform.csrfmiddlewaretoken.value;
+  var xmlhttp;
+  if (window.XMLHttpRequest){
+    xmlhttp=new XMLHttpRequest();
+  }
+  else{
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  // Register the handler
+  xmlhttp.onreadystatechange = function(){
+    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+      notifyparatag = document.getElementById('emailnotification');
+      if(xmlhttp.responseText == "sent"){
+        notifyparatag.innerHTML = "An email has been sent to your email address. Please follow the instructions therein.";
+        notifyparatag.style = "display:;font-size:small;color:#0000aa;";
+      }
+      else{
+        notifyparatag.innerHTML = "Failed to send email to your email address. Please contact support at support@testyard.in";
+        notifyparatag.style = "color:#aa0000;font-size:small;";
+      }
+    }
+  }
+  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
+  xmlhttp.send(postdata);
+}
+
 // Function to enable sending an emailer to notify a user about a feature update.
 function featureupdate(featureurl){
 

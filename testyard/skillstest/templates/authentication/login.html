@@ -117,22 +117,32 @@
 function signinwithfacebook(){
   csrftoken = document.loginform.csrfmiddlewaretoken.value;
   FB.login(function(response) {
-    if (response.authResponse) {
+    if (response.authResponse){
+     let accesstoken = response.authResponse['accessToken'];
+     let userid = response.authResponse['userID'];
      // Retrieve user information from facebook
-     FB.api('/me', {fields: 'name, email'}, function(response) {
+     let fbgapiurl = "https://graph.facebook.com/v17.0/" + userid + "/?fields=id,name,email,picture&access_token=" + accesstoken;
+     let meurl = "https://graph.facebook.com/me?access_token=" + accesstoken;
+     //{fields: 'name, email', scope: 'public_profile,email'}, 
+     FB.api(fbgapiurl, {scope: 'public_profile,email'}, function(response) {
        //console.log(JSON.stringify(response));
        var xmlhttp;
        let name = response.name.toString();
        let nameparts = name.split(" ");
        let firstname = name[0];
        let lastname = '';
-       let email = response.email.toString();
+       let email = "";
+       if(response.email != null){
+         email = response.email;
+       }
+       //alert(email);
        if(nameparts.length > 1){
          lastname = name[1];
        }
        let username = firstname + lastname;
        username = username.replace(/[^a-zA-Z\d_]+/g, ""); // remove all non-alphanumeric characters
-       let postdata = "username=" + username + "&firstname=" + encodeURIComponent(firstname) + "&lastname=" + encodeURIComponent(lastname) + "&csrfmiddlewaretoken=" + csrftoken + "&emailaddress=" + email;
+       let profpic = response.picture.data.url;
+       let postdata = "username=" + username + "&firstname=" + encodeURIComponent(firstname) + "&lastname=" + encodeURIComponent(lastname) + "&csrfmiddlewaretoken=" + csrftoken + "&emailaddress=" + email + "&profilepic=" + profpic;
        if (window.XMLHttpRequest){
          xmlhttp=new XMLHttpRequest();
        }
@@ -142,7 +152,8 @@ function signinwithfacebook(){
        // Register the handler
        xmlhttp.onreadystatechange = function(){
          if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-	    window.location.reload();
+           //alert("Done");
+	    window.location.href="/skillstest/index/";
 	 }
        }
        xmlhttp.open("POST", "/skillstest/facebookinfo/", true); // ajax call (async=true)
@@ -152,7 +163,7 @@ function signinwithfacebook(){
     else {
       console.log('User cancelled login or did not fully authorize.');
     }
-  }, {scope: 'public_profile,email'});
+  });
 }
 </script>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
@@ -228,7 +239,8 @@ function signinwithfacebook(){
 		        <input type="checkbox" class="custom-control-input" id="customCheck1">
 		        <label class="custom-control-label" for="customCheck1">Remember password?</label>
 		      </div> -->
-		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:8px;padding-top:5px;">Sign In</button>
+		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:10px;padding-top:5px;">Sign In</button>
+		      <div id="forgotpasswd"><a href="#/" onclick='javascript:forgotpassword();' style="font-size:small;">Forgot Password</a><p id='emailnotification' style='color:#0000aa;font-size:small;display:none;'>An email has been sent to your email address. Please follow the instructions therein.</p></div>
 
 		      <hr class="my-4">
 		      <div id="g_id_onload"
@@ -253,7 +265,8 @@ function signinwithfacebook(){
 		      <input type='hidden' name='lirandomnonce' id='lirandomnonce' value='{{linkedinrandomstring}}'>
 		      <a href='#/' onclick="javascript:signinwithlinkedin('{{liclientid}}', '{{liredirecturi}}');"><img src='/static/images/lisignin.png' style='width:255px;'></a>
 		      <br/><hr class="my-4"><br/>
-      		      <button class="btn btn-lg btn-facebook btn-block text-block" type="button" onclick='signinwithfacebook();'><i class="fab fa-facebook-f mr-2"></i> Sign in with Facebook</button>
+		      <a href="#/" onclick="javascript:signinwithfacebook();"><img src="/static/images/fblogin.png" style="width:255px;"></a>
+      		      
       		      </div>
       		      
 		    </form>

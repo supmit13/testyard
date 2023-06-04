@@ -704,6 +704,7 @@ def facebookauthcallback(request):
     firstname = request.POST['firstname']
     lastname = request.POST['lastname']
     emailaddress = request.POST['emailaddress']
+    profilepic = request.POST['profilepic']
     password = mysettings.FACEBOOK_DEFAULT_PASSWORD
     csrfstate = request.POST['csrfmiddlewaretoken']
     userobj = None
@@ -725,6 +726,18 @@ def facebookauthcallback(request):
         userobj.istest = False
         userobj.mobileno = "9999999999" # We don't get mobile number from google, so we use this dummy number.
         userobj.newuser = False
+        try:
+            r = requests.get(profilepic, stream=True) # Try to get the file, if possible.
+            if r.status_code == 200:
+                imgpath = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + username + os.path.sep + "images"
+                imgfile = imgpath + os.path.sep + "profilepic.jpg" # If it is not a jpeg file, $uck!
+                skillutils.mkdir_p(imgpath)
+                with open(imgfile, 'wb') as f:
+                    r.raw.decode_content = True
+                    shutil.copyfileobj(r.raw, f)
+            userobj.userpic = "profilepic.jpg"
+        except:
+            userobj.userpic = ""
         userobj.userpic = profilepic
         try:
             userobj.save()
@@ -767,5 +780,49 @@ def facebookauthcallback(request):
             return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     return response
 
+@csrf_protect
+def sendforgotpasswdemail(request):
+    if request.method != 'POST':
+        message = "Invalid request method"
+        return HttpResponse(message)
+    uname = ""
+    if 'uname' in request.POST.keys():
+        uname = request.POST['uname']
+    if uname == "":
+        message = "Required parameter missing"
+        return HttpResponse(message)
+    emailaddress = ""
+    uobj = None
+    try:
+        uobj = User.objects.get(displayname=uname)
+    except:
+        message = "Error: %s"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    if uobj = None:
+        message = "Could not find username"
+        return HttpResponse(message)
+    emailaddress = uobj.emailid
+    passwdreseturl = skillutils.gethosturl(request) + "/" + mysettings.RESET_PASSWORD
+    emailmessage = """
+    Hi,
+    
+    Please click  on the hyperlink below to reset your password and set a new one:
+    
+    <a href='%s'>Reset Password</a>
+    
+    Thanks,
+    TestYard Support
+    """%passwdreseturl
+    subject = "TestYard Account - Forgot Password"
+    fromaddr = "support@testyard.in"
+    retval = skillutils.sendemail(uobj, subject, emailmessage, fromaddr)
+    if retval is None:
+        message = "failed"
+        return HttpResponse(message)
+    message = "sent"
+    return HttpResponse(message)
 
+
+def resetpassword(request):
+    pass
 
