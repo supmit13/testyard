@@ -493,6 +493,40 @@ function forgotpassword(){
   xmlhttp.send(postdata);
 }
 
+
+function resetpassword(){
+  newpassword = document.frmresetpasswd.newpasswd.value;
+  repeatnewpassword = document.frmresetpasswd.repeatnewpasswd.value;
+  trxkeyval = document.frmresetpasswd.trxkey.value;
+  targeturl = document.frmresetpasswd.action;
+  if(newpassword.trim() == "" || repeatnewpassword.trim() == ""){
+    alert("New password or Confirm password should not be empty");
+    document.frmresetpasswd.newpasswd.focus();
+    return (false);
+  }
+  if(newpassword != repeatnewpassword){
+    alert("The passwords do not match!");
+    return (false);
+  }
+  var postdata = "newpasswd=" + encodeURIComponent(newpassword) + "&repeatnewpasswd=" + encodeURIComponent(repeatnewpassword) + "&csrfmiddlewaretoken=" + document.frmresetpasswd.csrfmiddlewaretoken.value + "&trxkey=" + trxkeyval;
+  var xmlhttp;
+  if (window.XMLHttpRequest){
+    xmlhttp=new XMLHttpRequest();
+  }
+  else{
+    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  // Register the handler
+  xmlhttp.onreadystatechange = function(){
+    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+      alert(xmlhttp.responseText);
+      window.close();
+    }
+  }
+  xmlhttp.open("POST",targeturl,true); // ajax call (async=true)
+  xmlhttp.send(postdata);
+}
+
 // Function to enable sending an emailer to notify a user about a feature update.
 function featureupdate(featureurl){
 

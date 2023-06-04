@@ -840,7 +840,9 @@ def resetpassword(request):
             message = "Required parameter missing"
             return HttpResponse(message)
         trxkey = request.GET['trxkey']
-        reset_passwd_dict = {'trxkey' : trxkey}
+        curdatetime = datetime.datetime.now()
+        curdatetimestr = curdatetime.strftime("%m %d %Y %H:%M:%S")
+        reset_passwd_dict = {'trxkey' : trxkey, 'reset_passwd_url' : mysettings.RESET_PASSWORD, 'curdate' : curdatetimestr}
         tmpl = get_template("user/reset_password.html")
         reset_passwd_dict.update(csrf(request))
         cxt = Context(reset_passwd_dict)
@@ -862,7 +864,7 @@ def resetpassword(request):
             return HttpResponse(message)
         forgotpasswdtrxqset = None
         try:
-            forgotpasswdtrxqset = ForgotPasswdTransactions.objects.filter(trxkey=trxkey)
+            forgotpasswdtrxqset = ForgotPasswdTransactions.objects.filter(transactionkey=trxkey)
         except:
             message = "DB failure"
             return HttpResponse(message)
@@ -871,6 +873,7 @@ def resetpassword(request):
             return HttpResponse(message)
         forgotpasswdtrx = forgotpasswdtrxqset[0]
         userobj = forgotpasswdtrx.user
+        print("############### %s ##############"%newpasswd)
         userobj.password = make_password(newpasswd)
         try:
             userobj.save()

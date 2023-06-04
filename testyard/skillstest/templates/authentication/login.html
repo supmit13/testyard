@@ -1,5 +1,4 @@
-
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+<!DOCTYPE html> 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="content-type" content="application/xhtml+xml; charset=utf-8" />
@@ -239,7 +238,7 @@ function signinwithfacebook(){
 		        <input type="checkbox" class="custom-control-input" id="customCheck1">
 		        <label class="custom-control-label" for="customCheck1">Remember password?</label>
 		      </div> -->
-		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:10px;padding-top:5px;">Sign In</button>
+		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:10px;padding-top:5px;border:0px radius 5px;">Sign In</button>
 		      <div id="forgotpasswd"><a href="#/" onclick='javascript:forgotpassword();' style="font-size:small;">Forgot Password</a><p id='emailnotification' style='color:#0000aa;font-size:small;display:none;'>An email has been sent to your email address. Please follow the instructions therein.</p></div>
 
 		      <hr class="my-4">
@@ -261,10 +260,9 @@ function signinwithfacebook(){
 			     data-width="250">
 		      </div>
 		      <hr class="my-4">
-		      <!-- <button class="btn btn-lg btn-google btn-block text-uppercase" type="button" onclick='signinwithgoogle();'><i class="fab fa-google mr-2"></i> Sign in with Google</button> -->
 		      <input type='hidden' name='lirandomnonce' id='lirandomnonce' value='{{linkedinrandomstring}}'>
 		      <a href='#/' onclick="javascript:signinwithlinkedin('{{liclientid}}', '{{liredirecturi}}');"><img src='/static/images/lisignin.png' style='width:255px;'></a>
-		      <br/><hr class="my-4"><br/>
+		      <hr class="my-4">
 		      <a href="#/" onclick="javascript:signinwithfacebook();"><img src="/static/images/fblogin.png" style="width:255px;"></a>
       		      
       		      </div>
@@ -310,10 +308,10 @@ function signinwithfacebook(){
 	</div>
 
 <div id="content2">
-	<p>Copyright &copy; 2010 YourSite.com 
+	<p>Copyright &copy; 2023 testyard.in 
 
 	<!-- ##### Please leave this small link back to my site. Thank You! ##### -->
-	<br />Design: <a href="http://www.tech-questions.net/">Tech-Questions</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
+	<br />Design: <a href="http://testyard.in/">TestYard</a> - Valid <a href="http://validator.w3.org/check?uri=referer">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/check/referer">CSS</a></p>
 
 </div>
 
