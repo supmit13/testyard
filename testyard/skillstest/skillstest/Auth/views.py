@@ -798,7 +798,7 @@ def sendforgotpasswdemail(request):
     except:
         message = "Error: %s"%sys.exc_info()[1].__str__()
         return HttpResponse(message)
-    if uobj = None:
+    if uobj is None:
         message = "Could not find username"
         return HttpResponse(message)
     emailaddress = uobj.emailid
