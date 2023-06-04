@@ -32,7 +32,7 @@ import requests, shutil
 import urllib, urllib2
 
 # Application specific libraries...
-from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, EmailValidationKey
+from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, EmailValidationKey, ForgotPasswdTransactions
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
@@ -802,18 +802,27 @@ def sendforgotpasswdemail(request):
         message = "Could not find username"
         return HttpResponse(message)
     emailaddress = uobj.emailid
-    passwdreseturl = skillutils.gethosturl(request) + "/" + mysettings.RESET_PASSWORD
+    forgotpasstrx = ForgotPasswdTransactions()
+    trxkey = skillutils.generate_random_string()
+    forgotpasstrx.user = uobj
+    forgotpasstrx.transactionkey = trxkey
+    try:
+        forgotpasstrx.save()
+    except:
+        message = "DB failure"
+        return HttpResponse(message)
+    passwdreseturl = skillutils.gethosturl(request) + "/" + mysettings.RESET_PASSWORD + "?trxkey=" + trxkey
     emailmessage = """
     Hi,
     
     Please click  on the hyperlink below to reset your password and set a new one:
     
-    <a href='%s'>Reset Password</a>
+    <a href='%s' target=blank>Reset Password</a>
     
     Thanks,
     TestYard Support
     """%passwdreseturl
-    subject = "TestYard Account - Forgot Password"
+    subject = "TestYard Account - Reset Password"
     fromaddr = "support@testyard.in"
     retval = skillutils.sendemail(uobj, subject, emailmessage, fromaddr)
     if retval is None:
@@ -824,5 +833,54 @@ def sendforgotpasswdemail(request):
 
 
 def resetpassword(request):
-    pass
+    trxkey = ""
+    userobj = None
+    if request.method == "GET":
+        if 'trxkey' not in request.GET.keys():
+            message = "Required parameter missing"
+            return HttpResponse(message)
+        trxkey = request.GET['trxkey']
+        reset_passwd_dict = {'trxkey' : trxkey}
+        tmpl = get_template("user/reset_password.html")
+        reset_passwd_dict.update(csrf(request))
+        cxt = Context(reset_passwd_dict)
+        resetpasswdhtml = tmpl.render(cxt)
+        return HttpResponse(resetpasswdhtml)
+    elif  request.method == 'POST':
+        if 'trxkey' not in request.POST.keys():
+            message = "Required parameter missing"
+            return HttpResponse(message)
+        trxkey = request.POST['trxkey']
+        newpasswd, repeatnewpasswd = "", ""
+        if 'newpasswd' not in request.POST.keys() or 'repeatnewpasswd' not in request.POST.keys():
+            message = "One or more parameters missing"
+            return HttpResponse(message)
+        newpasswd = request.POST['newpasswd']
+        repeatnewpasswd = request.POST['repeatnewpasswd']
+        if newpasswd != repeatnewpasswd:
+            message = "The passwords don't match"
+            return HttpResponse(message)
+        forgotpasswdtrxqset = None
+        try:
+            forgotpasswdtrxqset = ForgotPasswdTransactions.objects.filter(trxkey=trxkey)
+        except:
+            message = "DB failure"
+            return HttpResponse(message)
+        if forgotpasswdtrxqset.__len__() > 1:
+            message = "Security incident"
+            return HttpResponse(message)
+        forgotpasswdtrx = forgotpasswdtrxqset[0]
+        userobj = forgotpasswdtrx.user
+        userobj.password = make_password(newpasswd)
+        try:
+            userobj.save()
+            forgotpasswdtrx.resetstatus = True
+            forgotpasswdtrx.endtime = datetime.datetime.now()
+            forgotpasswdtrx.save()
+        except:
+            message = "Password could not be changed"
+            return HttpResponse(message)
+        message = "Password changed successfully"
+        return HttpResponse(message)
+    
 

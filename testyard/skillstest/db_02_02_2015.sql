@@ -1113,6 +1113,15 @@ ALTER TABLE `Network_payouts` ADD COLUMN `gw_utr` VARCHAR(100) DEFAULT '';
 
 ALTER TABLE `Network_group` ADD COLUMN `subscriptionperiod` INT DEFAULT 0;
 
+CREATE TABLE Auth_forgotpasswdtransaction (
+	id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	user_id int NOT NULL,
+	transactionkey VARCHAR(255) NOT NULL,
+	resetstatus BOOLEAN NOT NULL DEFAULT FALSE,
+	starttime DATETIME NOT NULL DEFAULT NOW(),
+	endtime DATETIME DEFAULT NULL
+);
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;

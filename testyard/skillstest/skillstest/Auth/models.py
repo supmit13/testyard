@@ -137,4 +137,16 @@ class OptionalUserInfo(models.Model):
 
 
 
+class ForgotPasswdTransactions(models.Model):
+    user = models.ForeignKey(User, null=False, blank=False, db_column='user_id')
+    transactionkey = models.CharField(max_length=255, null=False, blank=False)
+    starttime = models.DateTimeField(auto_now_add=True)
+    resetstatus = models.BooleanField(default=False)
+    endtime = models.DateTimeField(default=None)
+    
+    class Meta:
+        verbose_name = "Forgot Password Transaction"
+        db_table = 'Auth_forgotpasswdtransaction'
 
+    def __unicode__(self):
+        return "%s - %s"%(self.user.displayname, self.transactionkey)
