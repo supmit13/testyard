@@ -102,6 +102,60 @@
 </style>
 </head>
 <body>
+<!-- Facebook JavaScript SDK -->
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId            : '789391122779055',
+      autoLogAppEvents : true,
+      xfbml            : true,
+      version          : 'v17.0'
+    });
+  };
+  
+  
+function signinwithfacebook(){
+  csrftoken = document.loginform.csrfmiddlewaretoken.value;
+  FB.login(function(response) {
+    if (response.authResponse) {
+     // Retrieve user information from facebook
+     FB.api('/me', {fields: 'name, email'}, function(response) {
+       //console.log(JSON.stringify(response));
+       var xmlhttp;
+       let name = response.name.toString();
+       let nameparts = name.split(" ");
+       let firstname = name[0];
+       let lastname = '';
+       let email = response.email.toString();
+       if(nameparts.length > 1){
+         lastname = name[1];
+       }
+       let username = firstname + lastname;
+       username = username.replace(/[^a-zA-Z\d_]+/g, ""); // remove all non-alphanumeric characters
+       let postdata = "username=" + username + "&firstname=" + encodeURIComponent(firstname) + "&lastname=" + encodeURIComponent(lastname) + "&csrfmiddlewaretoken=" + csrftoken + "&emailaddress=" + email;
+       if (window.XMLHttpRequest){
+         xmlhttp=new XMLHttpRequest();
+       }
+       else{
+         xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+       }
+       // Register the handler
+       xmlhttp.onreadystatechange = function(){
+         if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+	    window.location.reload();
+	 }
+       }
+       xmlhttp.open("POST", "/skillstest/facebookinfo/", true); // ajax call (async=true)
+       xmlhttp.send(postdata);
+      });
+    } 
+    else {
+      console.log('User cancelled login or did not fully authorize.');
+    }
+  }, {scope: 'public_profile,email'});
+}
+</script>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
 
 <div id="container">
 
@@ -174,7 +228,7 @@
 		        <input type="checkbox" class="custom-control-input" id="customCheck1">
 		        <label class="custom-control-label" for="customCheck1">Remember password?</label>
 		      </div> -->
-		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:8px;padding-top:5px;">Sign in</button>
+		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:8px;padding-top:5px;">Sign In</button>
 
 		      <hr class="my-4">
 		      <div id="g_id_onload"

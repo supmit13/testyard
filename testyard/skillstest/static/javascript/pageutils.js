@@ -439,12 +439,6 @@ function signinwithlinkedin(clientid, redirecturi){
   liwin = window.open(authurlqs, "liauthwindow", "width=640, height=480, location=no, status=yes, menubar=no, scrollbars=yes,toolbar=no, titlebar=yes, resizable=false");
 }
 
-
-function signinwithfacebook(){
-
-}
-
-
 function emailty(){
   let targeturl = "https://testyard.in/skillstest/contactty/";
   var postdata = new FormData(document.forms.namedItem("frmcontactty"));

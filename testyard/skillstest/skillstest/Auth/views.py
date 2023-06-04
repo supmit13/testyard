@@ -500,7 +500,8 @@ def storegoogleuserinfo(request):
     # Now, log the user in.
     authuserobj = authenticate(username, password)
     if not authuserobj: # Incorrect password - return user to login screen with an appropriate message.
-        message = error_msg('1002')
+        message = "This email address exists in our records. Please login with your TestYard username and password."
+        #message = error_msg('1002')
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     else: # user will be logged in after checking the 'active' field
         if authuserobj.active:
@@ -598,7 +599,7 @@ def linkedinauthcallback(request):
     firstname, lastname, emailaddr, profilepic, displayname = "", "", "", "", ""
     password = mysettings.LINKEDIN_DEFAULT_PASSWORD
     userobj = None
-    print(emailaddressjson)
+    #print(emailaddressjson)
     if 'error' in liteprofilejson.keys():
         message = liteprofilejson['error_description']
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
@@ -651,7 +652,8 @@ def linkedinauthcallback(request):
     authuserobj = authenticate(displayname, password)
     response = None
     if not authuserobj: # Incorrect password - return user to login screen with an appropriate message.
-        message = error_msg('1002')
+        message = "This email address exists in our records. Please login with your TestYard username and password."
+        #message = error_msg('1002')
         return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     else: # user will be logged in after checking the 'active' field
         if authuserobj.active:
@@ -682,4 +684,88 @@ def linkedinauthcallback(request):
             message = "The user is not active."
             return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
     return response
+
+
+def facebookauthcallback(request):
+    if request.method != "POST":
+        message = "Error: %s"%error_msg('1004')
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    username, firstname, lastname, emailaddress, profilepic, csrfstate = "", "", "", "", "", ""
+    if 'username' not in request.POST.keys() or request.POST['username'] == "":
+        message = "Could not get a valid username. Can't proceed with the authentication."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    if 'firstname' not in request.POST.keys() or request.POST['firstname'] == "":
+        message = "Could not get a valid firstname. Can't proceed with the authentication."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    if 'emailaddress' not in request.POST.keys() or request.POST['emailaddress'] == "":
+        message = "Could not get a valid emailaddress. Can't proceed with the authentication."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    username = request.POST['username']
+    firstname = request.POST['firstname']
+    lastname = request.POST['lastname']
+    emailaddress = request.POST['emailaddress']
+    password = mysettings.FACEBOOK_DEFAULT_PASSWORD
+    csrfstate = request.POST['csrfmiddlewaretoken']
+    userobj = None
+    try:
+        userobj = User.objects.get(emailid=emailaddress)
+    except:
+        pass
+    if userobj is None: # User doesn't exist
+        userobj = User()
+        userobj.displayname = username
+        userobj.emailid = emailaddress
+        userobj.password = make_password(password)
+        userobj.sex = "U"
+        userobj.firstname = firstname
+        userobj.middlename = ""
+        userobj.lastname = lastname
+        userobj.usertype = 'CORP'
+        userobj.active = True
+        userobj.istest = False
+        userobj.mobileno = "9999999999" # We don't get mobile number from google, so we use this dummy number.
+        userobj.newuser = False
+        userobj.userpic = profilepic
+        try:
+            userobj.save()
+        except:
+            message = "Couldn't save user data: %s"%sys.exc_info()[1].__str__()
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    # Now, log the user in.
+    authuserobj = authenticate(username, password)
+    response = None
+    if not authuserobj: # Incorrect password - return user to login screen with an appropriate message.
+        message = "This email address exists in our records. Please login with your TestYard username and password."
+        return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    else: # user will be logged in after checking the 'active' field
+        if authuserobj.active:
+            sessobj = Session()
+            clientip = request.META['REMOTE_ADDR']
+            timestamp = int(time.time())
+            # timestamp will be a 10 digit string.
+            sesscode = generatesessionid(username, csrfstate, clientip, timestamp.__str__())
+            sessobj.sessioncode = sesscode
+            sessobj.user = authuserobj
+            # sessobj.starttime should get populated on its own when we save this session object.
+            sessobj.endtime = None
+            sessobj.sourceip = clientip
+            if authuserobj.istest: # This session is being performed by a test user, so this must be a test session.
+                sessobj.istest = True
+            elif mysettings.TEST_RUN: # This is a test run as mysettings.TEST_RUN is set to True
+                sessobj.istest = True
+            else:
+                sessobj.istest = False
+            sessobj.useragent = request.META['HTTP_USER_AGENT']
+            # Now save the session...
+            sessobj.save()
+            # ... and redirect to landing page (which happens to be the profile page).
+            response = HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_REDIRECT_URL)
+            response.set_cookie('sessioncode', sesscode)
+            response.set_cookie('usertype', authuserobj.usertype)
+        else: # User is not active
+            message = "The user is not active."
+            return HttpResponseRedirect(skillutils.gethosturl(request) + "/" + mysettings.LOGIN_URL + "?msg=" + message)
+    return response
+
+
 
