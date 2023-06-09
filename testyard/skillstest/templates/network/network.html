@@ -591,7 +591,7 @@
 	    	html += "</select></td></tr>";
 	 	
 	    	html += "<tr><td nowrap><font color='#0000AA'>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' maxlength='200' size='10' class='form-control'></td></tr>";
-	    	html += "<tr><td nowrap><font color='#0000AA'>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' maxlength='10' class='form-control'></td></tr>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' maxlength='20' class='form-control'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA'>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' maxlength='255' size='20' class='form-control'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA'>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' maxlength='255' size='20' class='form-control'></td></tr>";
 		//html += "<tr><td nowrap><font color='#0000AA'>Currency: </font></td><td><select name='currency'>";
@@ -731,7 +731,7 @@
 		    document.frmcreategroup.subscriptionperiod.focus();
 		    return(false);
 	    	}
-		if(gstin == "" || !alphanumericpattern.test(gstin)){
+		if((bankname != "PayPal" && bankname != "Wise") && gstin == "" || !alphanumericpattern.test(gstin)){
 		    alert("GSTIN missing or invalid GSTIN.");
 		    document.frmcreategroup.gstin.value = "";
 		    document.frmcreategroup.gstin.focus();
