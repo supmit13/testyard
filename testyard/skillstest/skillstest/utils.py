@@ -1078,3 +1078,31 @@ def gettargeturl(key):
 
 
 
+def paypal_get_accesstoken():
+    oauth2url = "%s/v1/oauth2/token"%mysettings.PAYPAL_SANDBOX_URL
+    oauth2user = mysettings.PAYPAL_CLIENT_ID + ":" + mysettings.PAYPAL_SECRET_01
+    httpheaders = {'Content-Type' : 'application/x-www-form-urlencoded', 'Accept' : '*/*', 'User-Agent' : 'TestYard 1.1', 'Authorization' : 'Bearer %s'%base64.b64encode(oauth2user)}
+    postdata = "grant_type=client_credentials"
+    try:
+        resp = requests.post(oauth2url, headers=httpheaders, data=postdata)
+        access_token = resp.json()['access_token']
+        return access_token
+    except:
+        return None
+
+
+# API Docs: https://developer.paypal.com/docs/multiparty/seller-onboarding/before-payment/
+def paypal_seller_onboarding(request):
+    """
+        Implement PayPal seller's onboarding:
+        1. Get an Access Token by authenticating using OAuth2.
+        2. Generate a sign-up link for the seller on your platform.
+        3. Use the "action_url" from the response to redirect seller to the paypal signup page.
+        4. Once  signup flow is completed, the seller is returned to -
+        partner_config_override/return_url field of the Partner Referrals API.
+    """
+    accesstoken = paypal_get_accesstoken()
+    if accesstoken is None:
+        message = "Couldn't retrieve access token from paypal. Please contact the site admins."
+        return HttpResponse(message)
+

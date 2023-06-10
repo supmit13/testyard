@@ -591,7 +591,7 @@ def creategroup(request):
             response = HttpResponse(message)
             return response
     if ispaid == 1 and bankname == "PayPal":
-        pass # Implement PayPal user creation
+        return skillutils.paypal_seller_onboarding(request)
         # Return response for this case
     elif ispaid == 1 and bankname == "Wise":
         pass # Implement Wise user creation
