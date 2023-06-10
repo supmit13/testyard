@@ -576,6 +576,38 @@
 	}
 
 
+        function handlepaymentmode(){
+            selectedpaymentmode = document.frmcreategroup.bankname.options[document.frmcreategroup.bankname.options.selectedIndex].value;
+            if(selectedpaymentmode == "PayPal" || selectedpaymentmode == "Wise"){
+                document.frmcreategroup.branchname.value = "NA";
+                document.frmcreategroup.branchname.disabled = true;
+                document.frmcreategroup.ifsccode.value = "NA";
+                document.frmcreategroup.ifsccode.disabled = true;
+                document.frmcreategroup.acctnumber.value = "NA";
+                document.frmcreategroup.acctnumber.disabled = true;
+                document.frmcreategroup.gstin.value = "0000000000";
+                document.frmcreategroup.gstin.disabled = true;
+                if(selectedpaymentmode == "PayPal"){
+                    document.getElementById('namespan').innerHTML = "PayPal Username:";
+                }
+                else if(selectedpaymentmode == "Wise"){
+                    document.getElementById('namespan').innerHTML = "Wise Username:";
+                }
+            }
+            else{
+                document.frmcreategroup.branchname.value = "";
+                document.frmcreategroup.branchname.disabled = false;
+                document.frmcreategroup.ifsccode.value = "";
+                document.frmcreategroup.ifsccode.disabled = false;
+                document.frmcreategroup.acctnumber.value = "";
+                document.frmcreategroup.acctnumber.disabled = false;
+                document.frmcreategroup.gstin.value = "";
+                document.frmcreategroup.gstin.disabled = false;
+                document.getElementById('namespan').innerHTML = "Name in Account:";
+            }
+        }
+        
+
 	function showpaymentoption(screendivid){
             screendiv = document.getElementById(screendivid);
 	    ispaid = document.getElementById('ispaid');
@@ -584,7 +616,9 @@
 	    	paymentdiv = document.getElementById('paymentdiv');
 	    	// Create the HTML for innerHTML
 	    	html = "<table border='0' cellspacing='2' cellpadding='8'>";
-	    	html += "<tr><td nowrap><font color='#0000AA'>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname' class='form-control'>";
+	    	html += "<tr><td nowrap><font color='#0000AA'>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname' class='form-control' onchange='javascript:handlepaymentmode();'>";
+	    	html += "<option value='PayPal'>PayPal Account</option>";
+	    	html += "<option value='Wise'>Wise Account</option>";
 	    	{% for bankcode, bankname in availablebanks.iteritems %}
 			html += "<option value='{{ bankcode }}'>{{ bankname }}</option>";
 	    	{% endfor %}
@@ -592,7 +626,7 @@
 	 	
 	    	html += "<tr><td nowrap><font color='#0000AA'>Enter Branch: </font></td><td><input type='text' name='branchname' value='' id='branchname' maxlength='200' size='10' class='form-control'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA'>IFSC Code: </font></td><td><input type='text' name='ifsccode' value='' id='ifsccode' max_length='50' maxlength='20' class='form-control'></td></tr>";
-	    	html += "<tr><td nowrap><font color='#0000AA'>Name in Account: </font></td><td><input type='text' name='acctownername' value='' id='acctownername' maxlength='255' size='20' class='form-control'></td></tr>";
+	    	html += "<tr><td nowrap><span id='namespan' style='color:#0000AA;'>Name in Account: </span></td><td><input type='text' name='acctownername' value='' id='acctownername' maxlength='255' size='20' class='form-control'></td></tr>";
 	    	html += "<tr><td nowrap><font color='#0000AA'>Account Number: </font></td><td><input type='text' name='acctnumber' value='' id='acctnumber' maxlength='255' size='20' class='form-control'></td></tr>";
 		//html += "<tr><td nowrap><font color='#0000AA'>Currency: </font></td><td><select name='currency'>";
 		//{% for currency in allcurrencies %}

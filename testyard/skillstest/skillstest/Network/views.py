@@ -590,6 +590,12 @@ def creategroup(request):
             message = "Error occurred: %s"%sys.exc_info()[1].__str__()
             response = HttpResponse(message)
             return response
+    if ispaid == 1 and bankname == "PayPal":
+        pass # Implement PayPal user creation
+        # Return response for this case
+    elif ispaid == 1 and bankname == "Wise":
+        pass # Implement Wise user creation
+        # Return response for this case
     # If ispaid == 1, create a "Connected Account" on stripe. Payments to the group owner cannot be processed without a "Connected Account"
     # Note: Express Onboarding is currently unavailable in India, so we need to use a Stripe US account. First, we need to complete profile info to start using Connect. Docs: https://stripe.com/docs/connect/collect-then-transfer-guide
     try:
