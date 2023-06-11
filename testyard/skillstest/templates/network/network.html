@@ -105,7 +105,7 @@
                     const urlpattern = /^https?/i;
                     res = urlpattern.test(xmlhttp.responseText);
                     if(res == true){
-			// Redirect to this url - this would be a stripe url for creating connected account
+			// Redirect to this url - this would be a stripe url for creating connected account or a paypal signup url
 			window.location.href = xmlhttp.responseText;
 		    }
 		    else{ // Just display the content in an alert. This would be the result of an operation.
@@ -617,6 +617,7 @@
 	    	// Create the HTML for innerHTML
 	    	html = "<table border='0' cellspacing='2' cellpadding='8'>";
 	    	html += "<tr><td nowrap><font color='#0000AA'>Select Bank: </font></td><td nowrap><select name='bankname' id='bankname' class='form-control' onchange='javascript:handlepaymentmode();'>";
+	    	html += "<option value=''>----  Select  ----</option>";
 	    	html += "<option value='PayPal'>PayPal Account</option>";
 	    	html += "<option value='Wise'>Wise Account</option>";
 	    	{% for bankcode, bankname in availablebanks.iteritems %}
@@ -794,7 +795,33 @@
 	    //alert(postdata);
 	    waiter = document.getElementById('waitspan');
 	    waiter.innerHTML = "<img src='static/images/loading_small.gif'>";
-	    senddataasync(postdata, "POST", '{{ creategroupurl }}', waiter);
+	    if(bankname != "PayPal" && bankname != "Wise"){
+	        senddataasync(postdata, "POST", '{{ creategroupurl }}', waiter);
+	    }
+	    else{
+	        var xmlhttp;
+	        if (window.XMLHttpRequest){
+	            xmlhttp=new XMLHttpRequest();
+	        }
+	        else{
+	            xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+	        }
+	        xmlhttp.onreadystatechange = function(){
+                    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+                        redirecturl = xmlhttp.responseText;
+                        // If it is not an URL, simply show an alert
+                        urppattern = new RegExp("^https\:\/\/");
+                        if(urppattern.test(redirecturl)){
+                            redwin = window.open(redirecturl, "", "width=800, height=600, location=no, menubar=no, scrollbars=yes,toolbar=no, titlebar=no, resizable=yes, status=no");
+                        }
+                        else{
+                            alert(redirecturl);
+                        }
+                    }
+                }
+                xmlhttp.open('POST', '{{creategroupurl}}', true);
+	        xmlhttp.send(postdata);
+	    }
 	    
 	}
 

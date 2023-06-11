@@ -1083,6 +1083,7 @@ def paypal_get_accesstoken():
     oauth2user = mysettings.PAYPAL_CLIENT_ID + ":" + mysettings.PAYPAL_SECRET_01
     httpheaders = {'Content-Type' : 'application/x-www-form-urlencoded', 'Accept' : '*/*', 'User-Agent' : 'TestYard 1.1', 'Authorization' : 'Bearer %s'%base64.b64encode(oauth2user)}
     postdata = "grant_type=client_credentials"
+    httpheaders['Content-Length'] = postdata.__len__()
     try:
         resp = requests.post(oauth2url, headers=httpheaders, data=postdata)
         access_token = resp.json()['access_token']
@@ -1092,6 +1093,7 @@ def paypal_get_accesstoken():
 
 
 # API Docs: https://developer.paypal.com/docs/multiparty/seller-onboarding/before-payment/
+# Form for using multiparty sellers: https://developer.paypal.com/docs/multiparty/#tell-us-about-your-platform
 def paypal_seller_onboarding(request):
     """
         Implement PayPal seller's onboarding:
@@ -1103,6 +1105,21 @@ def paypal_seller_onboarding(request):
     """
     accesstoken = paypal_get_accesstoken()
     if accesstoken is None:
-        message = "Couldn't retrieve access token from paypal. Please contact the site admins."
+        message = "Couldn't retrieve access token from paypal: %s"%sys.exc_info()[1].__str__()
+        return HttpResponse(message)
+    signuplinkurl = "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals"
+    httpheaders = {'Content-Type' : 'application/json', 'Authorization' : 'Bearer %s'%accesstoken, 'Content-Length' : ''}
+    trackingid = randomstringgen() # Need to save this in the DB
+    jsondata = {'tracking_id' : trackingid, 'operations' : [{'operation' : 'API_INTEGRATION', 'api_integration_preference' : {'rest_api_integration' : {'integration_method' : 'PAYPAL', 'integration_type' : 'THIRD_PARTY', 'third_party_details' : {'features' : ["PAYMENT", "REFUND"]}}}}], 'products' : ["EXPRESS_CHECKOUT",], 'legal_consents' : [{"type": "SHARE_DATA_CONSENT", "granted": True}]}
+    postdata = json.dumps(jsondata)
+    httpheaders['Content-Length'] = postdata.__len__()
+    try:
+        signuplinkresponse = requests.post(signuplinkurl, headers=httpheaders, data=postdata)
+        responsejson = signuplinkresponse.json()
+        referraldataurl = responsejson['links'][0]['href']
+        redirecturl = responsejson['links'][1]['href']
+        return HttpResponse(str(redirecturl)) # Send the signup link back to the caller and from there to the javascript caller
+    except:
+        message = "Could not retrieve sign up link response: %s"%sys.exc_info()[1].__str__()
         return HttpResponse(message)
 
