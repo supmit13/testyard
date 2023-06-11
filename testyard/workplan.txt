@@ -98,7 +98,7 @@ Immediate Plans:
 33. Allow user to search a test/interview in the Tests section for all 5 roles separately. [Done]
 34. Bugs in Evaluation Screen: #6. Needs to be identified and fixed.
 35. Create a ChatGPT based automated support assistant that will dispatch issues from users to support staff members automatically. This will include the following functionalities: i) Engaging with a user requesting support, ii) Classifying/Categorizing the type of support required by the user, iii) Get a description of the issue/help required by the user, iv) Docketing it in a "task management system" or "issue tracker system", v) Assigning it to a support staff member (with some load balancing logic), vi) Tracking down an issue given its ID, vii) Send a resolution success/failure email to the user once an issue is resolved by a support staff member. viii) Maintain a log of every issue created (possibly, this will be a feature of the issue tracker or task manager system.)
-36. Sign in with Google, Facebook, Apple. 
+36. Sign in with Google, Facebook, Apple. [WIP]
 37. Test/Fix "Add to LinkedIn" feature for tests and interviews. 
 
 
@@ -112,18 +112,34 @@ Immediate Plans:
 400. Export tests created by user to a google sheet/doc. (Low priority)
 410. Reimplement Bitly for v4. (https://dev.bitly.com/)  [Done]
 450. Debug code running mechanisms. (High priority)
-500. Licensing and Plans. [WIP]
+500. Licensing and Pricing Plans. [WIP]
 550. Integrating ChatGPT based support assistant and an issue tracker system.
 600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether. [Done]
 650. Eliminate vulnerabilities: GitHub found 5 vulnerabilities on supmit13/testyard's default branch (1 high, 4 moderate). (Check https://github.com/supmit13/testyard/security/dependabot) (High priority)
 700. Interface Refinement - Phase I(Add/Edit Challenges, Add/Edit Tests, Interviews, etc) [Done]
-750. Error Messages Display from backend to UI.
+750. Error Messages Display from backend to UI. [High Priority]
 800. Create Youtube videos demonstrating the usage of each app (with particular emphasis on Test and Network apps).
 850. About Us Write Up [Done]
-900. Help on Topics [WIP]
-950. Refine Test Creation Interface - Phase II. Window positioning to be done. [Very high priority]
+900. Help on Topics [Done]
+950. Refine Test and Interview Creation Interfaces - Phase II. Window positioning and unnecessary field hiding to be done. [Very high priority]
 1000. Refine Test Taker's Screen - Phase II. Window positioning to be done. [Very high priority]
-1050. PayPal and Wise integration in Network (Create Group).
+1050. PayPal and Wise integration in Network (Create Group). [Very high priority] [WIP]
+1100. Implement Feature Update Notification System [Low Priority]
+1150. System to Manage Commercial Spaces on the website [Low Priority]
+1200. PayPal and Wise Integration during making Payments to join groups. [Very high priority]
+1250. Certificate of Incorporation (as Limited Liability Partnership), PAN card creation, GST Registration. [High priority]
+
+
+Scope of #500 - Licensing and Pricing Plans:
+--------------------------------------------
+501. Implement scripts necessary to create an EC2 instance on AWS (t2.micro or aws lambda, also check out other EC2 instance types)
+502. Implement scripts to create the environment necessary to run TestYard on aws instance. (python virtual env, install python modules, install servers, install certificates, etc)
+503. Implement scripts to deploy TestYard on aws instance. Investigate a docker based solution - Check if and how to run a docker container on EC2 instances.
+504. Implement mechanism to track and limit the number of tests, interviews, and invitations for both. This should be done on a separate fork of the main TestYard github repo.
+505. Formulate 3 types of plans (All premium plans. The free version would be the main TestYard installation on https://testyard.in/). Plan value would be based on expected usage cost of EC2 instances + cost of SSL certificate. Formulate terms and conditions for each plan. EC2 instance would be under TestYard's control. Users would only get access to the service using IP based URL. TestYard would have access to the data, and may use it for statistical analysis purposes. However, data would be owned by the user. Also, the EC2 instance and all data in it will be destroyed after n days from the end of the subscription period. Users may download tests and interviews data (as a zip of csv or xml or json) before that.
+506. Create DB to store and manage Plans related data - which client subscribed to which plan, their limits, usage information, etc.
+507. Add Plans and Pricing page and Plan status/dashboard page in main TestYard codebase (free version). 
+508. Integrate Payment Gateway for the Plans and Pricing Page (above).
 
 
 Scope of #50 - Pagination:
@@ -189,7 +205,7 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 **** Edit Challenge Screen is too wide for multiple choice type challenge. The input elements need to be arranged appropriately. [Done]
 **** Facility to schedule/reschedule an existing interview. [High priority] [Done]
 **** Create interface to display interview schedules. [High priority] [Done]
-**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible). [High priority] [WIP]
+**** Sign in with Google, Facebook, LinkedIn (and Yahoo, if possible). [High priority] [Done]
 **** Verify all statistics computation in Analytics app. [High priority] [Done]
 **** Check if interview link email is sent to the interview creator (interviewer). If not, implement it. [Very high priority] [Done]
 **** Replace "Interview Id" field with "Interview URL" field on "Interviews Conducted" tab (with a 'copy' link beside it). [Very high priority] [Redundant requirement, as we are sending emails with the interview URL to all interviewers now. Won't implement.]
@@ -202,8 +218,16 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 **** Social media integration [WIP]
 **** Handle Footer Contact Form [Done]
 **** All static content should be in new format. [Done]
-**** Inbox screen (Network app) has a problem with scrollbars.
+**** Inbox screen (Network app) has a problem with scrollbars. [Very High Priority] [Done]
+**** Create Basic Usage Video and upload on Youtube. [To be done after UI refinement Phase II]
+**** Forgot password. [Very High Priority] [Done]
+**** Fix bug in Social logins (Google and LinkedIn) where user is not authenticated if the email Id exists in TestYard DB. [Done]
+**** PayPal partner referrals need to be enabled (https://developer.paypal.com/docs/multiparty/#tell-us-about-your-platform)
+**** Allow '@', '#', '-' and a few other special chars in paypal username in group creation screen.
+
 
 
 https://192.168.1.6/skillstest/privacypolicy/ [Done]
 https://192.168.1.6/skillstest/termsofuse/ [Done]
+
+
