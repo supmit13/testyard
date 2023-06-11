@@ -1106,7 +1106,7 @@ def paypal_seller_onboarding(request):
     accesstoken = paypal_get_accesstoken()
     if accesstoken is None:
         message = "Couldn't retrieve access token from paypal: %s"%sys.exc_info()[1].__str__()
-        return HttpResponse(message)
+        return message
     signuplinkurl = "https://api-m.sandbox.paypal.com/v2/customer/partner-referrals"
     httpheaders = {'Content-Type' : 'application/json', 'Authorization' : 'Bearer %s'%accesstoken, 'Content-Length' : ''}
     trackingid = randomstringgen() # Need to save this in the DB
@@ -1118,8 +1118,8 @@ def paypal_seller_onboarding(request):
         responsejson = signuplinkresponse.json()
         referraldataurl = responsejson['links'][0]['href']
         redirecturl = responsejson['links'][1]['href']
-        return HttpResponse(str(redirecturl)) # Send the signup link back to the caller and from there to the javascript caller
+        return str(redirecturl) # Send the signup link back to the caller and from there to the javascript caller
     except:
         message = "Could not retrieve sign up link response: %s"%sys.exc_info()[1].__str__()
-        return HttpResponse(message)
+        return message
 

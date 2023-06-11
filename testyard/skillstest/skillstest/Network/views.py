@@ -591,8 +591,17 @@ def creategroup(request):
             response = HttpResponse(message)
             return response
     if ispaid == 1 and bankname == "PayPal":
-        return skillutils.paypal_seller_onboarding(request)
-        # Return response for this case
+        redirecturl = skillutils.paypal_seller_onboarding(request)
+        # Return response for this case: we expect a url for redirection, but if that is not the case, then we need to clean up our act.
+        urlpattern = re.compile("^https\:\/\/", re.IGNORECASE)
+        if re.search(urlpattern, redirecturl):
+            return HttpResponse(redirecturl)
+        else:
+            grpmember.delete()
+            grpobj.delete()
+            if ownerbankacctobj is not None:
+                ownerbankacctobj.delete()
+            return HttpResponse(redirecturl) # We still need to return what we received.
     elif ispaid == 1 and bankname == "Wise":
         pass # Implement Wise user creation
         # Return response for this case
