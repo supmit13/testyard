@@ -23,11 +23,18 @@ def getinstances(ec2client):
     return response
     
     
-def createinstance(ec2client, hosttype='ec2', region='ap-south-1'):
+def createinstance(ec2client, hosttype='ec2', region='ap-south-1', keypair='ec2-keypair'):
     """
-    Function to create an aws instance of type 'hosttype' at region 'region'
+    Function to create an aws instance of type 'hosttype' at region 'region';
+    The Turn-server image Id is being used - Ubuntu 22.04.
+    MinCount and MaxCount are both 1, so only 1 instance will be created.
     """
-    pass
+    try:
+        instanceobjs = ec2client.create_instances(ImageId='ami-024c319d5d14b463e', MinCount=1, MaxCount=1, InstanceType='t2.micro', KeyName=keypair) # TODO: See how to pass hosttype and region as parameters
+        return instanceobjs
+    except:
+        print("Error occurred while creating instances: %s"%sys.exc_info()[1].__str__())
+        return None
 
 
 def startinstance(instanceid, ec2client):
