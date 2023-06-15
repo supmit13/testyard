@@ -1,46 +1,94 @@
-# User: testyard@aws
-# Console Sign-in URL: https://294493204888.signin.aws.amazon.com/console
-# Password: @kK70(#0
-# AWS Account ID: 294493204888
-# Access Key ID: AKIAUJEJJWGMB76V73J2
-# Secret Access Key: 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
-# Region: ap-south-1
-
 # Tutorial: https://www.geeksforgeeks.org/launching-aws-ec2-instance-using-python/
+# Doc: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/quickstart.html
 
 import os, sys, re, time
 import boto3
+from botocore.exceptions import ClientError
 
 
-def getinstances(access_key_id, secret_access_key, hosttype='ec2', region='ap-south-1'):
+def createawsclient(access_key_id, secret_access_key, hosttype='ec2', region='ap-south-1'):
+    """
+    Create an aws boto3 client object and return it.
+    """
+    clientobj = boto3.client(hosttype, region, aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
+    return clientobj
+    
+
+def getinstances(ec2client):
     """
     Get a dictionary containing the information pertaining to the existing instances
     on the account (identified by access_key_id).
     """
-    host = boto3.client(hosttype, region, aws_access_key_id=access_key_id, aws_secret_access_key=secret_access_key)
-    response = host.describe_instances()
+    response = ec2client.describe_instances()
     return response
     
     
-def createinstance(access_key_id, secret_access_key, hosttype='ec2', region='ap-south-1'):
+def createinstance(ec2client, hosttype='ec2', region='ap-south-1'):
     """
     Function to create an aws instance of type 'hosttype' at region 'region'
     """
     pass
 
 
-def startinstance(instanceid, access_key_id, secret_access_key):
+def startinstance(instanceid, ec2client):
     """
-    Function to start an aws instance identified by 'instanceid'
+    Function to start an aws instance identified by 'instanceid'.
+    ec2client is an object of boto3.client, and it is used to 
+    perform the operation.
     """
-    pass
+    try:
+        ec2client.start_instances(InstanceIds=[instanceid], DryRun=True)
+    except ClientError as e:
+        if 'DryRunOperation' not in str(e):
+            raise
+    # If we are here, then the above executed successfully
+    try:
+        response = ec2client.start_instances(InstanceIds=[instanceid], DryRun=False)
+        print(response)
+        return response
+    except ClientError as e:
+        print(e)
 
 
-def stopinstance(instanceid, access_key_id, secret_access_key):
+def stopinstance(instanceid, ec2client):
     """
-    Function to stop an aws instance identified by 'instanceid'
+    Function to stop an aws instance identified by 'instanceid'.
+    ec2client is an object of boto3.client, and it performs the
+    stop operation.
     """
-    pass
+    try:
+        ec2client.stop_instances(InstanceIds=[instanceid], DryRun=True)
+    except ClientError as e:
+        if 'DryRunOperation' not in str(e):
+            raise
+    # Above code executed successfully if we are here.
+    try:
+        response = ec2client.stop_instances(InstanceIds=[instanceid], DryRun=False)
+        print(response)
+        return response
+    except ClientError as e:
+        print(e)
+
+
+def rebootinstance(instanceid, ec2client):
+    """
+    Reboots an ec2 instance identified by 'instanceid'.
+    ec2client is an object of boto3.client
+    """
+    try:
+        ec2client.reboot_instances(InstanceIds=[instanceid,], DryRun=True)
+    except ClientError as e:
+        if 'DryRunOperation' not in str(e):
+            print("You don't have permission to reboot instances.")
+            raise
+    # Dry run is successfully completed
+    try:
+        response = ec2client.reboot_instances(InstanceIds=[instanceid,], DryRun=False)
+        print('Success', response)
+        return response
+    except ClientError as e:
+        print('Error', e)
+
 
 
 def preparehost(instanceid, iamuser, iampasswd, access_key_id, secret_access_key):
@@ -92,7 +140,8 @@ def _sendemail(fromaddr, toaddr, subject, message, cc="", bcc=""):
 
 
 if __name__ == "__main__":
-    instdict = getinstances('AKIAUJEJJWGMB76V73J2', '4DN7ZkXQ3NV9m4ZLVQeXOyPb+b8rjYWzr2EX5/Nh')
+    ec2client = createawsclient('ACCESS_KEY_ID', 'SECRET_ACCESS_KEY')
+    instdict = getinstances(ec2client)
     print(instdict)
     
 

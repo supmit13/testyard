@@ -3,7 +3,7 @@
 # Targets:
 # --------
 # Install docker on AWS EC2 Ubuntu 22.04 host. 
-# Then import docker image from images repository.
+# Import docker image from Images repository.
 # Create a container from that image by running it.
 # -------------------------------------------------
 
@@ -36,5 +36,11 @@ usermod -aG docker $USER
 
 # Reload shell session
 newgrp docker
+
+# Copy docker image from Images repo
+
+
+# Run the image to create a container. Note/Print the container Id.
+
 
 # Done!
