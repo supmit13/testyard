@@ -564,6 +564,7 @@ def includedtemplatevars(pagetitle, request):
     select_aboutus = ""
     select_helpndoc = ""
     select_careers = ""
+    select_plans = ""
     if pagetitle == 'Profile':
         select_profile = " class=\"highlight\""
     elif pagetitle == 'Dashboard':
@@ -584,11 +585,13 @@ def includedtemplatevars(pagetitle, request):
         select_helpndoc = " class=\"highlight\""
     elif pagetitle == 'Careers/Jobs':
         select_careers = " class=\"highlight\""
+    elif pagetitle == 'Plans & Pricing':
+        select_plans = " class=\"highlight\""
     else: # Invalid tab, control should not have come here. Skip quietly.
         pass
     cntxt = { 'pagetitle' : pagetitle, 'select_profile' : select_profile, 'select_dashboard' : select_dashboard, 'select_subscription' : select_subscription, \
               'select_tests' : select_tests, 'select_search' : select_search, 'select_socnet' : select_socnet, 'select_analytics' : select_analytics, \
-              'select_aboutus' : select_aboutus, 'select_helpndoc' : select_helpndoc, 'select_careers' : select_careers, }
+              'select_aboutus' : select_aboutus, 'select_helpndoc' : select_helpndoc, 'select_careers' : select_careers, 'select_plans' : select_plans,}
     # Add the page URLs from mysettings in context
     cntxt['profile_url'] = gethosturl(request) + "/" + mysettings.PROFILE_URL
     cntxt['dashboard_url'] = gethosturl(request) + "/" + mysettings.DASHBOARD_URL
@@ -600,6 +603,7 @@ def includedtemplatevars(pagetitle, request):
     cntxt['aboutus_url'] = gethosturl(request) + "/" + mysettings.ABOUTUS_URL
     cntxt['helpndoc_url'] = gethosturl(request) + "/" + mysettings.HELP_URL
     cntxt['careers_url'] = gethosturl(request) + "/" + mysettings.CAREER_URL
+    cntxt['plans_url'] = gethosturl(request) + "/" + mysettings.PLANS_URL
     cntxt['logout_url'] = gethosturl(request) + "/" + mysettings.LOGOUT_URL
     cntxt['privacypolicy_url'] = gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
     cntxt['tou_url'] = gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
