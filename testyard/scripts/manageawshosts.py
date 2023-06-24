@@ -220,9 +220,13 @@ def _sendemail(fromaddr, toaddr, subject, message, cc="", bcc=""):
 
 
 if __name__ == "__main__":
-    ec2client = createawsclient('ACCESS_KEY_ID', 'SECRET_ACCESS_KEY')
-    instdict = getinstances(ec2client)
-    print(instdict)
+    try:
+        ec2client = createawsclient('ACCESS_KEY_ID', 'SECRET_ACCESS_KEY')
+        instdict = getinstances(ec2client)
+        print(instdict)
+    except:
+        print("Error: %s"%sys.exc_info()[1].__str__())
+        # Log the error with user information - which user request was being processed.
     
 
 
