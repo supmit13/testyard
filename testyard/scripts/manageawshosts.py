@@ -8,12 +8,20 @@ import os, sys, re, time
 import uuid, glob, random
 import boto3
 from botocore.exceptions import ClientError
+import mysql.connector
+import simplejson as json
 
 
 TARGET_AMI = 'ami-0bafdc79150fae5df' # This AMI has docker-CE installed on it along with an updated apt repo.
 TARGET_INSTANCE_TYPE = 't2.micro'
 TY_SECURITY_GROUP = "sg-0fad5a10d984b4a78" # HTTP/HTTPS from anywhere, ssh from anywhere. Also port 8888 open for incoming traffic for signal server from local. (launch-wizard-6)
 SVC_SECURITY_GROUP = "" # Port for coturn and urlshortener (8080) - access from anywhere.
+KEYS_DIR = "./keys"
+
+
+def createdbconnection(dbuser='root', dbpasswd='Spmprx13@', dbhost='localhost', dbport='3306', dbname='amazondb'):
+    dbconn = mysql.connector.connect(host=dbhost, user=dbuser, password=dbpasswd, port=dbport, database=dbname, auth_plugin='mysql_native_password', autocommit=True)
+    return dbconn
 
 
 def _genrandomstring():
@@ -71,7 +79,7 @@ def createkeypair(ec2client, keyname=None):
         return (keyname, response)
     except:
         print("Error while creating keypair with name '%s': %s"%(keyname, sys.exc_info()[1].__str__()))
-        return None
+        return ()
 
     
 def createinstance(ec2client, keypairname, elasticipaddr, secgroup=TY_SECURITY_GROUP):
@@ -221,9 +229,30 @@ def _sendemail(fromaddr, toaddr, subject, message, cc="", bcc=""):
 
 if __name__ == "__main__":
     try:
+        dbconn = createdbconnection()
+        dbcursor = dbconn.cursor()
         ec2client = createawsclient('ACCESS_KEY_ID', 'SECRET_ACCESS_KEY')
-        instdict = getinstances(ec2client)
-        print(instdict)
+        #instdict = getinstances(ec2client)
+        #print(instdict)
+        rtup = createkeypair(ec2client)
+        if rtup.__len__() > 1:
+            jsondata = rtup[1]
+            if 'KeyFingerprint' in jsondata.keys():
+                keyfingerprint = jsondata['KeyFingerprint']
+                keyfilename = keyfingerprint.replace(":", "_") + ".pem"
+                keyfilepath = KEYS_DIR + os.path.sep + keyfilename
+                privatekey = str(jsondata['KeyMaterial'])
+                kfp = open(keyfilepath, "w")
+                kfp.write(privatekey)
+                kfp.close()
+                keyname = jsondata['KeyName']
+                keypairid = jsondata['KeyPairId']
+                keysql = "insert into aws_keypairs (fingerprint, keyfilename, keyname, keypairid) values ('%s', '%s', '%s', '%s')"%(keyfingerprint, keyfilename, keyname, keypairid)
+                dbcursor.execute(keysql)
+                lastid = dbcursor.lastrowid
+                print(lastid)
+            else:
+                print("Failed to create keypair - %s"%keyresponse)
     except:
         print("Error: %s"%sys.exc_info()[1].__str__())
         # Log the error with user information - which user request was being processed.
