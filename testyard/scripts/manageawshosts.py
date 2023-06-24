@@ -64,7 +64,7 @@ def createelasticip(ec2client):
     return addr['PublicIp'] # This is the elastic IP returned.
     
 
-def createkeypair(ec2client, keyname=None):
+def _createkeypair(ec2client, keyname=None):
     """
     Doc: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/ec2-example-key-pairs.html
     Generate a key pair to use with a ec2 instance. 
@@ -81,8 +81,46 @@ def createkeypair(ec2client, keyname=None):
         print("Error while creating keypair with name '%s': %s"%(keyname, sys.exc_info()[1].__str__()))
         return ()
 
+
+def createkeypair(ec2client, keyname=None):
+    """
+    Function to create keypair on aws: Calls _createkeypair with the ec2 client object
+    and optionally a keyname. Once keypair is created, it records it in the DB after
+    storing the private key in a file.
+    """
+    try:
+        dbconn = createdbconnection()
+        dbcursor = dbconn.cursor()
+    except:
+        print("Error creating DB connection or DB cursor object: %s"%sys.exc_info()[1].__str__())
+        return None
+    try:
+        rtup = _createkeypair(ec2client, keyname)
+        if rtup.__len__() > 1:
+            jsondata = rtup[1]
+            if 'KeyFingerprint' in jsondata.keys():
+                keyfingerprint = jsondata['KeyFingerprint']
+                keyfilename = keyfingerprint.replace(":", "_") + ".pem"
+                keyfilepath = KEYS_DIR + os.path.sep + keyfilename
+                privatekey = str(jsondata['KeyMaterial'])
+                kfp = open(keyfilepath, "w")
+                kfp.write(privatekey)
+                kfp.close()
+                keyname = jsondata['KeyName']
+                keypairid = jsondata['KeyPairId']
+                keysql = "insert into aws_keypairs (fingerprint, keyfilename, keyname, keypairid) values ('%s', '%s', '%s', '%s')"%(keyfingerprint, keyfilename, keyname, keypairid)
+                dbcursor.execute(keysql)
+                lastid = dbcursor.lastrowid
+                print(lastid)
+            else:
+                print("Failed to create keypair - %s"%keyresponse)
+    except:
+        print("Failed to create keypair: %s"%sys.exc_info()[1].__str__())
+        keyname = ""
+    return keyname
+
     
-def createinstance(ec2client, keypairname, elasticipaddr, secgroup=TY_SECURITY_GROUP):
+def _createinstance(ec2client, keypairname, elasticipaddr, secgroup=TY_SECURITY_GROUP):
     """
     Function to create an aws instance of type 'hosttype' at region 'region';
     The Turn-server image Id is being used - Ubuntu 22.04.
@@ -99,6 +137,55 @@ def createinstance(ec2client, keypairname, elasticipaddr, secgroup=TY_SECURITY_G
     except:
         print("Error occurred while creating instances: %s"%sys.exc_info()[1].__str__())
         return None
+
+
+def createinstance(ec2client, keypairname, elasticipaddr, secgroup=TY_SECURITY_GROUP):
+    """
+    Function to create an aws ec2 instance of type t2.micro (or as specified by TARGET_INSTANCE_TYPE).
+    Calls _createinstance() and stores the instance details in DB.
+    """
+    try:
+        dbconn = createdbconnection()
+        dbcursor = dbconn.cursor()
+    except:
+        print("Error creating DB connection or DB cursor object: %s"%sys.exc_info()[1].__str__())
+        return None
+    try:
+        instobj = _createinstance(ec2client, keypairname, elasticipaddr, secgroup)
+        instanceid = instobj['InstanceId']
+        instancetype = instobj['InstanceType']
+        keyname = instobj['KeyName']
+        launchdatetime = instobj['LaunchTime']
+        pvtdnsname = instobj['PrivateDnsName']
+        pvtipaddress = instobj['PrivateIpAddress']
+        pubdnsname = instobj['PublicDnsName']
+        pubipaddress = instobj['PublicIpAddress']
+        subnetid = instobj['SubnetId']
+        vpcid = instobj['VpcId']
+        architecture = instobj['Architecture']
+        blockdevicename = instobj['BlockDeviceMappings'][0]['DeviceName']
+        volumeid = instobj['BlockDeviceMappings'][0]['Ebs']['VolumeId']
+        hypervisor = instobj['Hypervisor']
+        netifaceattachmentid = instobj['NetworkInterfaces'][0]['Attachment']['AttachmentId']
+        networkgroups = json.dumps(instobj['NetworkInterfaces'][0]['Groups'])
+        netmacaddress = instobj['NetworkInterfaces'][0]['MacAddress']
+        netifaceid = instobj['NetworkInterfaces'][0]['NetworkInterfaceId']
+        netownerid = instobj['NetworkInterfaces'][0]['OwnerId']
+        subnetid = instobj['NetworkInterfaces'][0]['SubnetId']
+        netvpcid = instobj['NetworkInterfaces'][0]['VpcId']
+        rootdevicename = instobj['RootDeviceName']
+        rootdevicetype = instobj['RootDeviceType']
+        securitygroups = json.dumps(instobj['SecurityGroups'])
+        platformdetails = instobj['PlatformDetails']
+        instownerid = instobj['OwnerId']
+        instreservationid = instobj['ReservationId']
+        instancesql = "insert into aws_instance () values ()"
+        dbcursor.execute(instancesql)
+        lastid = dbcursor.lastrowid
+        print(lastid)
+    except:
+        print("Failed to create instance object: %s"%sys.exc_info()[1].__str__())
+
 
 
 def startinstance(instanceid, ec2client):
@@ -228,31 +315,15 @@ def _sendemail(fromaddr, toaddr, subject, message, cc="", bcc=""):
 
 
 if __name__ == "__main__":
+    if sys.argv.__len__() > 1:
+        keyname = sys.argv[1]
+    else:
+        keyname = None
     try:
-        dbconn = createdbconnection()
-        dbcursor = dbconn.cursor()
         ec2client = createawsclient('ACCESS_KEY_ID', 'SECRET_ACCESS_KEY')
-        #instdict = getinstances(ec2client)
-        #print(instdict)
-        rtup = createkeypair(ec2client)
-        if rtup.__len__() > 1:
-            jsondata = rtup[1]
-            if 'KeyFingerprint' in jsondata.keys():
-                keyfingerprint = jsondata['KeyFingerprint']
-                keyfilename = keyfingerprint.replace(":", "_") + ".pem"
-                keyfilepath = KEYS_DIR + os.path.sep + keyfilename
-                privatekey = str(jsondata['KeyMaterial'])
-                kfp = open(keyfilepath, "w")
-                kfp.write(privatekey)
-                kfp.close()
-                keyname = jsondata['KeyName']
-                keypairid = jsondata['KeyPairId']
-                keysql = "insert into aws_keypairs (fingerprint, keyfilename, keyname, keypairid) values ('%s', '%s', '%s', '%s')"%(keyfingerprint, keyfilename, keyname, keypairid)
-                dbcursor.execute(keysql)
-                lastid = dbcursor.lastrowid
-                print(lastid)
-            else:
-                print("Failed to create keypair - %s"%keyresponse)
+        instdict = getinstances(ec2client)
+        print(instdict)
+        createkeypair(ec2client)
     except:
         print("Error: %s"%sys.exc_info()[1].__str__())
         # Log the error with user information - which user request was being processed.
