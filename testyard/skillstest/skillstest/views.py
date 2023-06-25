@@ -776,7 +776,7 @@ def contactty(request):
     
 
 def plansnpricing(request):
-    if request.method != 'POST':
+    if request.method != 'GET':
         message = error_msg('1004')
         return HttpResponseBadRequest(message)
     sesscode, usertype = "", ""
