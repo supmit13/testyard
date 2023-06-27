@@ -1,0 +1,663 @@
+ /*!
+Template Name: Business Saas Pricing Page Template
+Template URI: https://www.template.net
+Author: Template.net
+Author URI: https://www.template.net
+License: Template.net
+License URI: https://www.template.net/license-agreement
+*/
+
+
+ * {
+     -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+     box-sizing: border-box;
+ }
+
+ *:before,
+ *:after {
+     -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+     box-sizing: border-box;
+ }
+
+ body {
+     margin: 0px;
+     padding: 0px;
+     color: black;
+     position: relative;
+     overflow-x: hidden;
+     background-color: white;
+     font-family: 'Montserrat', sans-serif;
+     position: relative;
+ }
+
+ body,
+ html {
+     height: 100%;
+ }
+ h1,
+ h2,
+ h3,
+ h4,
+ h5,
+ h6,
+ p{
+    margin: 0;
+    padding: 0;
+ }
+ a,a:hover{
+    text-decoration: none;
+ }
+ .container{
+    max-width: 1180px;
+ }
+
+    
+
+    /*-- css styles start --*/
+
+/*-- pricing-banner start --*/
+ .pricing-banner {
+     background-image: url(../images/banner-bg.jpg);
+     background-repeat: no-repeat;
+     background-size: cover;
+     background-position: top;
+     position: relative;
+     width: 100%;
+     height: auto;
+ }
+
+ .gradient {
+     position: absolute;
+     width: 100%;
+     height: 100%;
+     top: 0;
+     background-color: #49b9f1;
+     opacity: 0.41;
+ }
+
+ .pricing-header{
+  padding:159px 0;
+ }
+
+.pricing-banner h1,h2{
+    font-size: 62px;
+    color: #fff;
+    font-weight: bold;
+}
+
+.pricing-banner h2{
+    margin-bottom: 35px;
+}
+
+.pricing-banner p{
+    font-size: 18px;
+    line-height: 26px;
+    color: #fff;
+    font-weight: 500;
+    width: 72%;
+}
+/*-- pricing-banner end --*/
+
+
+
+
+
+/*-- pricing start --*/
+.pricing{
+    margin-top:85px;
+    margin-bottom: 118px;
+}
+
+.pricing h2{
+    font-size: 38px;
+    font-weight:bold;
+    color: #000000;
+    text-align: center;
+    margin-bottom: 60px;
+}
+
+.card{
+    border:0;
+    padding-bottom: 80px;
+    padding-right: 25px;
+}
+
+.card-header{
+    background-color: #ffffff;
+    border-bottom: 0;
+    padding: 0;
+}
+
+.pricing .card-header h3{
+    font-size: 20px;
+    color: #000000;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.pricing .card-header .users{
+    font-size: 14px;
+    color: #00000087;
+    font-weight: bold;
+    margin-left: 7px;
+}
+
+.pricing .card-header .currency{
+    font-size: 44px;
+    font-weight: bold;
+    color: #0000aa;
+    margin-bottom: 7px;
+}
+
+.pricing .card-header p{
+    font-size: 16px;
+    line-height: 22px;
+    color: #00000096;
+    font-family: arial;
+    border-bottom:1px solid #00000087;
+   padding-bottom: 15px;
+   padding-right: 60px;
+}
+
+.pricing .card-header h6{
+    font-size: 14px;
+    line-height: 20px;
+    color: #00000087;
+    font-family: arial;
+    letter-spacing: 3.8px;
+    text-transform: uppercase;
+    margin-top:3px;
+    margin-bottom: 25px;
+}
+
+.pricing .card-header .btn{
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #ffffff;
+    display: inline-block;
+    padding: 11px 47px;
+    background-color: #464646;
+    border-radius: 5px;
+    transition: all 0.7s;
+}
+
+.pricing .pricing-content{
+    padding-bottom: 80px;
+    display: flex;
+}
+
+.pricing  h5{
+    font-size: 20px;
+    color: #000000;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 75px;
+}
+
+.pricing .pricing-content .box{
+    border-right: 1px solid #c2c2c2;
+    padding:0 0 0 30px;
+}
+
+.pricing .pricing-content .box:first-child{
+    padding-left: 0;
+}
+
+.pricing .pricing-content .box:nth-child(2){
+    padding-right: 40px;
+}
+
+.pricing .pricing-content .box:last-child{
+    border-right: 0;
+}
+
+.pricing .pricing-content li{
+    list-style: none;
+    font-size: 16px;
+    font-weight: bold;
+    color: #000000;
+    margin-bottom: 35px;
+    display: flex;
+}
+
+.pricing .pricing-content li:last-child{
+    margin-bottom: 0;
+}
+
+.pricing .pricing-content i{
+    font-size: 16px;
+    color: #8dc63f;
+    vertical-align: middle;
+    margin-top:3px;
+    margin-right: 10px;
+}
+
+.pricing-bottom h3{
+    font-size: 32px;
+    color: #464646;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.pricing-bottom p{
+    font-size: 16px;
+    line-height: 26px;
+    color: #00000085;
+    font-family: arial;
+    width: 715px;
+    margin:0 auto;
+    padding-bottom: 35px;
+}
+
+.pricing-bottom a{
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #0000aa;
+    padding: 20px 74px;
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+    text-transform: uppercase;
+    transition: all 0.7s;
+}
+
+/*-- pricing end --*/
+
+
+/*-- footer-content start --*/
+.footer-content {
+     padding: 118px 0;
+     background-color: #6dcff6;
+ }
+
+ .footer-content h2 {
+     font-size: 24px;
+     color: #000000;
+     padding-bottom: 52px;
+     font-weight: bold;
+ }
+
+ .footer-content h4{
+     font-size: 18px;
+     color: #000000;
+     padding-bottom: 14px;
+      font-weight: bold;
+      display: inline-block;
+ }
+
+ .footer-content p {
+     font-size: 18px;
+     line-height: 32px;
+     color: #000;
+     font-family: arial;
+     margin:0 45px 47px 0; 
+ }
+ .footer-content span{
+    width: 8%;
+ }
+ .footer-content .icon-body{
+    width: 92%;
+    margin-top: 2px;
+ }
+ .footer-content i{
+     font-size: 28px;
+    color: #000000;
+ }
+ .footer-content .icon {
+   display: flex;
+ }
+
+ 
+ /*-- footer-content end --*/
+
+  /* Hover Effects start*/
+ 
+ .pricing .card-header .btn:hover{
+    background: #464646c7;
+    -webkit-box-shadow: 0 6px 6px -6px #000;
+     -moz-box-shadow: 0 6px 6px -6px black;
+     box-shadow: 0 6px 6px -6px #000;
+ }
+  .pricing-bottom a:hover{
+    background: #c74b30;
+    -webkit-box-shadow: 0 8px 8px -6px #0000aa;
+    -moz-box-shadow: 0 8px 8px -6px #0000aa;
+    box-shadow: 0 8px 8px -6px #0000aa;
+  }  
+
+
+
+  /* Hover Effects end*/
+
+ 
+
+       /*=======================
+        media query styles start
+        ========================*/
+
+ /*-- 1920 to 1430 styles start --*/
+@media only screen and (max-width: 1920px) and (min-width: 1430px) {
+     .container {
+         max-width: 1180px;
+     }
+ }
+ 
+
+@media only screen and (max-width: 1440px) {
+.container{
+    max-width: 1300px;
+}
+.pricing-header {
+    padding: 110px 0;
+}
+.pricing-banner h1, h2{
+    font-size: 50px;
+}
+.pricing-banner p{
+    width: 59%;
+    line-height: 27px;
+}
+.pricing {
+    margin-top: 70px;
+    margin-bottom: 80px;
+}
+.pricing h2{
+    font-size: 35px;
+    margin-bottom:50px; 
+}
+.pricing h5{
+    margin-bottom: 65px;
+}
+.pricing .pricing-content li{
+    margin-bottom: 30px;
+}
+.footer-content{
+    padding: 100px 0;
+}
+.footer-content p{
+    font-size: 17px;
+    line-height: 28px;
+}
+}
+ 
+ @media only screen and (max-width: 1024px){
+.container{
+    max-width: 100%;
+}
+.pricing-header {
+    padding: 90px 0;
+}
+.pricing-banner h1, h2 {
+    font-size: 40px;
+}
+.pricing-banner h2 {
+    margin-bottom: 20px;
+}
+.pricing-banner p {
+    font-size: 16px;
+    width: 70%;
+    line-height: 24px;
+}
+.pricing {
+    margin-top: 50px;
+    margin-bottom: 70px;
+}
+.pricing h2 {
+    font-size: 30px;
+    margin-bottom: 45px;
+}
+.pricing .card-header h3{
+    font-size: 18px;
+ }    
+ .pricing .card-header .users{
+    font-size: 13px;
+ }
+ .pricing .card-header .currency{
+    font-size: 40px;
+ }
+ .pricing .card-header p{
+    font-size: 15px;
+ }
+ .pricing .card-header h6{
+    font-size: 13px;
+ }
+ .pricing .card-header .btn{
+    padding: 10px 37px;
+ }
+ .pricing .pricing-content .box:nth-child(2) {
+    padding-right: 23px;
+}
+.pricing .pricing-content li {
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+.pricing .pricing-content {
+    padding-bottom: 70px;
+}
+.pricing-bottom h3{
+    font-size: 28px;
+}
+.pricing-bottom a{
+    font-size: 15px;
+    padding: 18px 50px;
+}
+.footer-content {
+    padding: 80px 0;
+}
+.footer-content span i{
+    font-size: 23px;
+}
+.footer-content h4{
+    font-size: 17px;
+}
+.footer-content p {
+    font-size: 16px;
+    line-height: 26px;
+    margin: 0 40px 47px 0;
+}
+}
+
+
+@media only screen and (max-width:814px){
+.pricing-header {
+    padding: 70px 0;
+}
+.pricing-banner h1, h2 {
+    font-size: 35px;
+}
+.pricing-banner h2 {
+    margin-bottom: 20px;
+}
+.pricing-banner p {
+    font-size: 15px;
+    width: 76%;
+    line-height: 22px;
+}
+
+
+.pricing {
+    margin-top: 40px;
+    margin-bottom: 60px;
+}
+.pricing h2 {
+    font-size: 28px;
+    margin-bottom: 40px;
+}
+.pricing .card-header h3{
+    font-size: 15px;
+ }    
+ .pricing .card-header .users{
+    font-size: 12px;
+    margin-left: 4px;
+ }
+ .pricing .card-header .currency{
+    font-size: 38px;
+ }
+ .pricing .card-header p{
+    font-size: 14px;
+   padding-right: 10px;
+ }
+ .pricing .card-header h6{
+    font-size: 12px;
+    margin-bottom: 20px;
+ }
+ .pricing .card-header .btn{
+    padding: 10px 30px;
+ }
+ .card {
+    padding-right: 15px;
+    padding-bottom: 70px;
+ }
+
+ .pricing .pricing-content .box:nth-child(2) {
+    padding-right:15px;
+}
+.pricing .pricing-content li {
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+.pricing .pricing-content {
+    padding-bottom: 70px;
+}
+.pricing-bottom h3{
+    font-size: 25px;
+}
+.pricing-bottom p{
+    font-size: 15px;
+    line-height: 24px;
+    padding-bottom: 25px;
+}
+.pricing-bottom a{
+    font-size: 14px;
+    padding: 15px 25px;
+}
+
+
+.footer-content {
+    padding: 60px 0;
+}
+.footer-content .icon-body {
+    width: 92%;
+    margin-top: 0;
+}
+.footer-content span i{
+    font-size: 20px;
+    margin-right: 8px;
+}
+.footer-content h4{
+    font-size: 16px;
+}
+.footer-content p {
+    font-size: 15px;
+    line-height: 24px;
+    margin: 0 27px 25px 0;
+}
+
+}
+
+@media only screen and (max-width:640px){
+.pricing-banner p {
+    font-size: 14px;
+    width: 100%;
+}
+.card{
+    text-align: center;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+.pricing-bottom p{
+    width: 100%;
+}
+.footer-content span i {
+    vertical-align: middle;
+    margin-right: 0;
+}
+}
+
+@media only screen and (max-width:480px){
+.pricing-banner h1, h2{
+    font-size: 30px;
+}
+.pricing h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+.pricing h5{
+    font-size: 19px;
+}
+.card {
+    padding-left: 0;
+    padding-right: 0;
+}
+.pricing h5 {
+    margin-bottom: 30px;
+}
+.pricing .pricing-content{
+    display: block;
+}
+.pricing .pricing-content .box{
+    padding:20px 0 0 0;
+    border:0;
+    text-align: center;
+}
+.pricing .pricing-content .box:nth-child(2){
+    padding-right: 0;
+}
+.pricing-bottom p {
+    font-size: 14px;
+    line-height: 22px;
+}
+.footer-content h2 {
+    font-size: 21px;
+    color: #000000;
+    padding-bottom: 40px;
+    font-weight: bold;
+}
+.footer-content h4 {
+    font-size: 15px;
+}
+.footer-content p {
+    font-size: 14px;
+    line-height: 23px;
+    margin: 0 0 25px 0;
+}
+}
+
+@media only screen and (max-width:375px){
+.pricing-header {
+    padding: 60px 0;
+}
+.pricing-banner h1, h2 {
+    font-size: 27px;
+}
+.pricing-banner p{
+    font-size: 13px;
+    line-height: 20px;
+}
+.pricing {
+    margin-top: 25px;
+    margin-bottom: 50px;
+}
+.pricing h2 {
+    font-size: 21px;
+}
+.pricing-bottom h3 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+.pricing-bottom a {
+    font-size: 13px;
+    padding: 15px 15px;
+}
+.footer-content h4{
+    padding-bottom: 10px;
+}
+.footer-content h2 {
+    font-size: 20px;
+    text-align: center;
+}
+}
