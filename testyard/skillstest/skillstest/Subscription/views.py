@@ -214,6 +214,13 @@ def subscribeplan(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
+def cancelsubscription(request):
+    pass
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
 def subscribepaypal():
     message = ''
     if request.method != 'POST': # Illegal bad request... 
