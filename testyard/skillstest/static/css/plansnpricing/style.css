@@ -147,7 +147,7 @@ License URI: https://www.template.net/license-agreement
 .pricing .card-header .currency{
     font-size: 44px;
     font-weight: bold;
-    color: #0000aa;
+    color: #6dcff6;
     margin-bottom: 7px;
 }
 
@@ -256,7 +256,7 @@ License URI: https://www.template.net/license-agreement
     font-size: 16px;
     font-weight: bold;
     color: #fff;
-    background-color: #0000aa;
+    background-color: #6dcff6;
     padding: 20px 74px;
     border-radius: 5px;
     display: inline-block;
@@ -324,9 +324,9 @@ License URI: https://www.template.net/license-agreement
  }
   .pricing-bottom a:hover{
     background: #c74b30;
-    -webkit-box-shadow: 0 8px 8px -6px #0000aa;
-    -moz-box-shadow: 0 8px 8px -6px #0000aa;
-    box-shadow: 0 8px 8px -6px #0000aa;
+    -webkit-box-shadow: 0 8px 8px -6px #6dcff6;
+    -moz-box-shadow: 0 8px 8px -6px #6dcff6;
+    box-shadow: 0 8px 8px -6px #6dcff6;
   }  
 
 
