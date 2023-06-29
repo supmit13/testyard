@@ -452,8 +452,27 @@ def payunotify(request):
 
 
 
-
-
+def showsubscriptiondashboard(request):
+    message = ''
+    if request.method != 'GET': # Illegal bad request... 
+        message = error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionobj = Session.objects.filter(sessioncode=sesscode)
+    userobj = sessionobj[0].user
+    context = {}
+    # TODO: Populate dashboard context here...
+    
+    tmpl = get_template("subscription/plansndashboard.html")
+    context.update(csrf(request))
+    cxt = Context(context)
+    plansdashboardhtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        plansdashboardhtml = plansdashboardhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(plansdashboardhtml)
+    
 
 
 
