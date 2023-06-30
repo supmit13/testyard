@@ -805,6 +805,7 @@ def plansnpricing(request):
     plans_dict['tou_url'] = skillutils.gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
     if skillutils.isloggedin(request):
         plans_dict['logged_in_as'] = userobj.displayname
+    plans_dict['plans_dashboard_url'] = mysettings.SUBSCRIPTION_URL
     tmpl = get_template("subscription/plansnpricing.html")
     plans_dict.update(csrf(request))
     cxt = Context(plans_dict)

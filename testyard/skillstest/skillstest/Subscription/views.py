@@ -523,7 +523,7 @@ def showsubscriptiondashboard(request):
     dbconn, dbcursor = skillutils.connectdb()
     userplanssql = "select p.planname as planname, u.displayname as username, u.id as userid, up.totalcost as totalcost, up.amountpaid as amountpaid, up.planstatus as planstatus, up.subscribedon as subscribedon, up.discountamountapplied as discountamountapplied, up.planstartdate as planstartdate, up.planenddate as planenddate, up.amountdue as amountdue, up.id as userplanid, p.id as planid from Subscription_plan p, Subscription_userplan up, Auth_user u where up.user_id=%s and up.user_id=u.id and up.plan_id=p.id order by up.subscribedon desc"%uid
     dbcursor.execute(userplanssql)
-    userplanrows = dbcurcor.fetchall()
+    userplanrows = dbcursor.fetchall()
     userplanslist = []
     for userplan in userplanrows:
         updict = {}
@@ -562,12 +562,12 @@ def showsubscriptiondashboard(request):
         updict['userplanid'] = userplan[11]
         updict['planid'] = userplan[12]
         userplanslist.append(updict)
-    context['message'] = "You do not have any subscriptions"
-    if userplanslist.__len__() > 0:
+    context['message'] = "You are subscribed to our Free Plan."
+    if userplanslist.__len__() > 1:
         context['message'] = "You have subscribed %s times in the past"%userplanslist.__len__()
     context['userplanslist'] = userplanslist
     skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
-    tmpl = get_template("subscription/plansndashboard.html")
+    tmpl = get_template("subscription/plansdashboard.html")
     context.update(csrf(request))
     cxt = Context(context)
     plansdashboardhtml = tmpl.render(cxt)
