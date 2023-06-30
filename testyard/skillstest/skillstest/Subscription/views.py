@@ -525,9 +525,33 @@ def showsubscriptiondashboard(request):
     dbcursor.execute(userplanssql)
     userplanrows = dbcursor.fetchall()
     userplanslist = []
+    basicplan_aggregated_spending = 0
+    businessplan_aggregated_spending = 0
+    unlimitedplan_aggregated_spending = 0
+    basicplan_tests_count = 0
+    basicplan_interviews_count = 0
+    businessplan_tests_count = 0
+    businessplan_interviews_count = 0
+    unlimitedplan_tests_count = 0
+    unlimitedplan_interviews_count = 0
     for userplan in userplanrows:
         updict = {}
         updict['planname'] = userplan[0]
+        if userplan[0] == "Basic Plan":
+            try:
+                basicplan_aggregated_spending += float(userplan[4])
+            except:
+                pass
+        if userplan[0] == "Business Plan":
+            try:
+                businessplan_aggregated_spending += float(userplan[4])
+            except:
+                pass
+        if userplan[0] == "Unlimited Plan":
+            try:
+                unlimitedplan_aggregated_spending += float(userplan[4])
+            except:
+                pass
         updict['username'] = userplan[1]
         updict['userid'] = userplan[2]
         try:
@@ -555,6 +579,8 @@ def showsubscriptiondashboard(request):
             updict['planenddate'] = userplan[9].strftime("%Y-%m-%d %H:%M:%S")
         except:
             updict['planenddate'] = userplan[9]
+        # TODO: Find out how many tests and interviews were created during this period
+        # Add it to the aggregated tests and interviews counts for the plan.
         try:
             updict['amountdue'] = format(userplan[10], ".2f")
         except:
@@ -566,6 +592,18 @@ def showsubscriptiondashboard(request):
     if userplanslist.__len__() > 1:
         context['message'] = "You have subscribed %s times in the past"%userplanslist.__len__()
     context['userplanslist'] = userplanslist
+    context['basicplan_aggregated_spending'] = format(basicplan_aggregated_spending, ".2f")
+    context['businessplan_aggregated_spending'] = format(businessplan_aggregated_spending, ".2f")
+    context['unlimitedplan_aggregated_spending'] = format(unlimitedplan_aggregated_spending, ".2f")
+    context['basicplan_tests_count'] = basicplan_tests_count
+    context['basicplan_interviews_count'] = basicplan_interviews_count
+    context['businessplan_tests_count'] = businessplan_tests_count
+    context['businessplan_interviews_count'] = businessplan_interviews_count
+    context['unlimitedplan_tests_count'] = unlimitedplan_tests_count
+    context['unlimitedplan_interviews_count'] = unlimitedplan_interviews_count
+    inc_context = skillutils.includedtemplatevars("", request)
+    for inc_key in inc_context.keys():
+        context[inc_key] = inc_context[inc_key]
     skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
     tmpl = get_template("subscription/plansdashboard.html")
     context.update(csrf(request))
