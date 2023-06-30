@@ -814,43 +814,5 @@ def plansnpricing(request):
     return HttpResponse(planshtml)
 
 
-def buyplan(request):
-    if request.method != 'GET':
-        message = error_msg('1004')
-        return HttpResponseBadRequest(message)
-    sesscode, usertype = "", ""
-    if request.COOKIES.has_key('sessioncode'):
-        sesscode = request.COOKIES['sessioncode']
-    if request.COOKIES.has_key('usertype'):
-        usertype = request.COOKIES['usertype']
-    sessionobj, userobj = None, None
-    if sesscode != "":
-        sessionobj = Session.objects.filter(sessioncode=sesscode)
-        userobj = sessionobj[0].user
-    plans_dict = {}
-    curdate = datetime.datetime.now()
-    plans_dict['curdate'] = curdate
-    plans_dict['login_url'] = mysettings.LOGIN_URL
-    plans_dict['register_url'] = "/" + mysettings.REGISTER_URL
-    plans_dict['logged_in_as'] = ""
-    if sesscode != "" and sessionobj is not None:
-        plans_dict['profile_image_tag'] = skillutils.getprofileimgtag(request)
-    else:
-        plans_dict['profile_image_tag'] = ""
-    inc_context = skillutils.includedtemplatevars("", request)
-    for inc_key in inc_context.keys():
-        plans_dict[inc_key] = inc_context[inc_key]
-    # TODO: Buy plan logic goes here....
-    
-    plans_dict['privacypolicy_url'] = skillutils.gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
-    plans_dict['tou_url'] = skillutils.gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
-    if skillutils.isloggedin(request):
-        plans_dict['logged_in_as'] = userobj.displayname
-    tmpl = get_template("subscription/plansnpricing.html")
-    plans_dict.update(csrf(request))
-    cxt = Context(plans_dict)
-    planshtml = tmpl.render(cxt)
-    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
-        planshtml = planshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
-    return HttpResponse(planshtml)
+
  

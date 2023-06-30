@@ -31,8 +31,8 @@ as a service from which candidates stand to gain financially and intellectually 
 """
 class Plan(models.Model):
     planname = models.CharField(max_length=200, null=False,blank=False)
-    tests = models.IntegerField(null=False, blank=False, default=0) # Number of tests included in the plan.
-    interviews = models.IntegerField(null=False, blank=False, default=0) # Number of interviews included in the plan.
+    testsninterviews = models.IntegerField(null=False, blank=False, default=10) # Number of tests included in the plan. Default is 10 for 'Free' plan.
+    #interviews = models.IntegerField(null=False, blank=False, default=0) # Number of interviews included in the plan. Note: This has been removed and the 'tests' field has been renamed as 'testsninterviews'
     plandescription = models.TextField(default='')
     candidates = models.IntegerField(null=False, blank=False, default=0) # Number of candidates to whom each test may be given.
     price = models.DecimalField(max_digits=10, decimal_places=2) # Price per unit. Unit would be based on context, fixed by the 'admin '.

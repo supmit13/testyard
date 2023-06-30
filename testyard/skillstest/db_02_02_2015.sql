@@ -1122,6 +1122,11 @@ CREATE TABLE Auth_forgotpasswdtransaction (
 	endtime DATETIME DEFAULT NULL
 );
 
+
+alter table Subscription_plan rename column tests to testsninterviews;
+
+alter table Subscription_plan drop column interviews;
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
