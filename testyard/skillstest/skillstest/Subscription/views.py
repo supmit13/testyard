@@ -512,7 +512,11 @@ def showsubscriptiondashboard(request):
     userobj = sessionobj[0].user
     context = {}
     # TODO: Populate dashboard context here...
-    
+    userplansqset = UserPlan.objects.filter(user=userobj).order_by('-subscribedon')
+    #plansqset = Plan.objects.filter(status=True)
+    userplanslist = []
+    for userplanobj in userplansqset:
+        pass
     tmpl = get_template("subscription/plansndashboard.html")
     context.update(csrf(request))
     cxt = Context(context)
