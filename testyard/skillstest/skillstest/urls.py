@@ -226,7 +226,7 @@ urlpatterns += patterns('',
     url(r'%s$'%mysettings.EVALUATOR_COUNT_TESTS_URL, 'skillstest.Analytics.views.evaluatorcounttests', name='evaluatorcounttests'),
     url(r'%s$'%mysettings.EVALUATOR_ANSTIME_URL, 'skillstest.Analytics.views.evaluatoranswerscriptsbytime', name='evaluatoranswerscriptsbytime'),
     
-    url(r'%s$'%mysettings.PLAN_SUBSCRIBE_URL, 'skillstest.Subscription.views.subscribeplan', name='subscribeplan'),
+    url(r'%s$'%mysettings.PLAN_SUBSCRIBE_URL, 'skillstest.Subscription.views.buyplan', name='subscribeplan'),
     url(r'%s$'%mysettings.PAYMENT_GW_OPTIONS_URL, 'skillstest.Subscription.views.showpaymentgwoptions', name='showpaymentgwoptions'),
     url(r'%s$'%mysettings.PAYU_NOTIFY_URL, 'skillstest.Subscription.views.payunotify', name='payunotify'),
     url(r'%s$'%mysettings.SUBSCRIBE_PAYPAL_URL, 'skillstest.Subscription.views.subscribepaypal', name='subscribepaypal'),
