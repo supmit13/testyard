@@ -36,6 +36,7 @@ class Plan(models.Model):
     plandescription = models.TextField(default='')
     candidates = models.IntegerField(null=False, blank=False, default=0) # Number of candidates to whom each test may be given.
     price = models.DecimalField(max_digits=10, decimal_places=2) # Price per unit. Unit would be based on context, fixed by the 'admin '.
+    fixedcost = models.DecimalField(max_digits=10, decimal_places=2, default=0.00) # The fixed cost, if any, for the plan.
     # The privilege of the user is determined from the UserPrivilege model. Normal users, like test creators, evaluator, assessees, etc
     # will NOT have an entry in the UserPrivilege table. The only entries in the UserPrivilege table will be that of site-admins.
     validfor_unit = models.CharField(max_length=12, choices=(('D', 'Days'),('M', 'Months'),('Y', 'Years')), default='M')
