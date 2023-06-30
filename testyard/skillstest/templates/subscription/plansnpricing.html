@@ -100,7 +100,10 @@
       </div>
 
 	<div class="row">
-      <h3 style="color:#505050;font-style:italic;font-weight:bold;font-size:+4;">We Have Plans for Your Team</h3>&nbsp;&nbsp;<span style="padding-left:30px;text-align:right;float:right;vertical-align:top;display:inline-block;width:57%;"><a href="{{plans_dashboard_url}}" class="ui-btn ui-shadow ui-corner-all ui-btn-inline btn-primary" style="text-align:right;padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;border-radius:5px;color:#ffffff;">View Your Subscriptions</a></span>
+      <h3 style="color:#505050;font-style:italic;font-weight:bold;font-size:+4;">We Have Plans for Your Team</h3>&nbsp;&nbsp;
+      {% if logged_in_as != "" %}
+      <span style="padding-left:30px;text-align:right;float:right;vertical-align:top;display:inline-block;width:57%;"><a href="{{plans_dashboard_url}}" class="ui-btn ui-shadow ui-corner-all ui-btn-inline btn-primary" style="text-align:right;padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;border-radius:5px;color:#ffffff;">View Your Subscriptions</a></span>
+      {% endif %}
 	</div>
 	<!-- Plans and Pricing Content here -->
 	

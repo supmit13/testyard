@@ -506,13 +506,19 @@ def showsubscriptiondashboard(request):
         message = error_msg('1004')
         response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
         return response
-    sesscode = request.COOKIES['sessioncode']
-    usertype = request.COOKIES['usertype']
-    sessionobj = Session.objects.filter(sessioncode=sesscode)
-    userobj = sessionobj[0].user
+    sesscode = ""
+    try:
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    except:
+        sessionobj = None
+        userobj = None
     uid = -1
-    if userobj is None:
-        uid = -1
+    if userobj is None or sessionobj is None:
+        # Redirect to login page
+        return HttpResponseRedirect(mysettings.LOGIN_URL)
     else:
         try:
             uid = int(userobj.id)
@@ -589,8 +595,10 @@ def showsubscriptiondashboard(request):
         updict['planid'] = userplan[12]
         userplanslist.append(updict)
     context['message'] = "You are subscribed to our Free Plan."
+    context['noplans'] = 0 # Set it to 1 when ready with some subscription to show
     if userplanslist.__len__() > 1:
         context['message'] = "You have subscribed %s times in the past"%userplanslist.__len__()
+        context['noplans'] = 0
     context['userplanslist'] = userplanslist
     context['basicplan_aggregated_spending'] = format(basicplan_aggregated_spending, ".2f")
     context['businessplan_aggregated_spending'] = format(businessplan_aggregated_spending, ".2f")
