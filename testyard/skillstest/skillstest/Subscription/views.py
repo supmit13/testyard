@@ -510,13 +510,59 @@ def showsubscriptiondashboard(request):
     usertype = request.COOKIES['usertype']
     sessionobj = Session.objects.filter(sessioncode=sesscode)
     userobj = sessionobj[0].user
+    uid = -1
+    if userobj is None:
+        uid = -1
+    else:
+        try:
+            uid = int(userobj.id)
+        except:
+            pass
     context = {}
     # TODO: Populate dashboard context here...
-    userplansqset = UserPlan.objects.filter(user=userobj).order_by('-subscribedon')
-    #plansqset = Plan.objects.filter(status=True)
+    dbconn, dbcursor = skillutils.connectdb()
+    userplanssql = "select p.planname as planname, u.displayname as username, u.id as userid, up.totalcost as totalcost, up.amountpaid as amountpaid, up.planstatus as planstatus, up.subscribedon as subscribedon, up.discountamountapplied as discountamountapplied, up.planstartdate as planstartdate, up.planenddate as planenddate, up.amountdue as amountdue, up.id as userplanid from Subscription_plan p, Subscription_userplan up, Auth_user u where up.user_id=%s and up.user_id=u.id and up.plan_id=p.id order by up.subscribedon desc"%uid
+    dbcursor.execute(userplanssql)
+    userplanrows = dbcurcor.fetchall()
     userplanslist = []
-    for userplanobj in userplansqset:
-        pass
+    for userplan in userplanrows:
+        updict = {}
+        updict['planname'] = userplan[0]
+        updict['username'] = userplan[1]
+        updict['userid'] = userplan[2]
+        try:
+            updict['totalcost'] = format(userplan[3], ".2f")
+        except:
+            updict['totalcost'] = userplan[3]
+        try:
+            updict['amountpaid'] = format(userplan[4], ".2f")
+        except:
+            updict['amountpaid'] = userplan[4]
+        updict['planstatus'] = userplan[5]
+        try:
+            updict['subscribedon'] = userplan[6].strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            updict['subscribedon'] = userplan[6]
+        try:
+            updict['discountamountapplied'] = format(userplan[7], ".2f")
+        except:
+            updict['discountamountapplied'] = userplan[7]
+        try:
+            updict['planstartdate'] = userplan[8].strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            updict['planstartdate'] = userplan[8]
+        try:
+            updict['planenddate'] = userplan[9].strftime("%Y-%m-%d %H:%M:%S")
+        except:
+            updict['planenddate'] = userplan[9]
+        try:
+            updict['amountdue'] = format(userplan[10], ".2f")
+        except:
+            updict['amountdue'] = userplan[10]
+        updict['userplanid'] = userplan[11]
+        userplanslist.append(updict)
+    context['userplanslist'] = userplanslist
+    skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
     tmpl = get_template("subscription/plansndashboard.html")
     context.update(csrf(request))
     cxt = Context(context)
