@@ -527,9 +527,8 @@ def showsubscriptiondashboard(request):
     context = {}
     if skillutils.isloggedin(request):
         context['logged_in_as'] = userobj.displayname
-    # TODO: Populate dashboard context here...
     dbconn, dbcursor = skillutils.connectdb()
-    userplanssql = "select p.planname as planname, u.displayname as username, u.id as userid, up.totalcost as totalcost, up.amountpaid as amountpaid, up.planstatus as planstatus, up.subscribedon as subscribedon, up.discountamountapplied as discountamountapplied, up.planstartdate as planstartdate, up.planenddate as planenddate, up.amountdue as amountdue, up.id as userplanid, p.id as planid from Subscription_plan p, Subscription_userplan up, Auth_user u where up.user_id=%s and up.user_id=u.id and up.plan_id=p.id order by up.subscribedon desc"%uid
+    userplanssql = "select p.planname as planname, u.displayname as username, u.id as userid, up.totalcost as totalcost, up.amountpaid as amountpaid, up.planstatus as planstatus, up.subscribedon as subscribedon, up.discountamountapplied as discountamountapplied, up.planstartdate as planstartdate, up.planenddate as planenddate, up.amountdue as amountdue, up.id as userplanid, p.id as planid from Subscription_plan p, Subscription_userplan up, Auth_user u where up.user_id=%s and up.user_id=u.id and up.plan_id=p.id order by up.subscribedon desc"%uid    
     dbcursor.execute(userplanssql)
     userplanrows = dbcursor.fetchall()
     userplanslist = []
@@ -542,6 +541,7 @@ def showsubscriptiondashboard(request):
     businessplan_interviews_count = 0
     unlimitedplan_tests_count = 0
     unlimitedplan_interviews_count = 0
+    newcursor = dbconn.cursor()
     for userplan in userplanrows:
         updict = {}
         updict['planname'] = userplan[0]
@@ -587,8 +587,30 @@ def showsubscriptiondashboard(request):
             updict['planenddate'] = userplan[9].strftime("%Y-%m-%d %H:%M:%S")
         except:
             updict['planenddate'] = userplan[9]
-        # TODO: Find out how many tests and interviews were created during this period
-        # Add it to the aggregated tests and interviews counts for the plan.
+        testscountsql = "select count(*) from Tests_test where createdate >= '%s' and createdate < '%s' and creator_id=%s"%(updict['planstartdate'], updict['planenddate'], uid)
+        newcursor.execute(testscountsql)
+        alltestrows = newcursor.fetchall()
+        testscount = 0
+        if alltestrows.__len__() > 0:
+            testscount = alltestrows[0][0]
+        if userplan[0] == "Basic Plan":
+            basicplan_tests_count += testscount
+        elif userplan[0] == "Business Plan":
+            businessplan_tests_count += testscount
+        elif userplan[0] == "Unlimited Plan":
+            unlimitedplan_tests_count += testscount
+        interviewscountsql = "select count(*) from Tests_interview where createdate >= '%s' and createdate < '%s' and interviewer_id=%s"%(updict['planstartdate'], updict['planenddate'], uid)
+        newcursor.execute(interviewscountsql)
+        allinterviewrows = newcursor.fetchall()
+        interviewscount = 0
+        if allinterviewrows.__len__() > 0:
+            interviewscount = allinterviewrows[0][0]
+        if userplan[0] == "Basic Plan":
+            basicplan_interviews_count += interviewscount
+        elif userplan[0] == "Business Plan":
+            businessplan_interviews_count += interviewscount
+        elif userplan[0] == "Unlimited Plan":
+            unlimitedplan_interviews_count += interviewscount
         try:
             updict['amountdue'] = format(userplan[10], ".2f")
         except:
