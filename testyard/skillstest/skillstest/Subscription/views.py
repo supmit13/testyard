@@ -525,6 +525,8 @@ def showsubscriptiondashboard(request):
         except:
             pass
     context = {}
+    if skillutils.isloggedin(request):
+        context['logged_in_as'] = userobj.displayname
     # TODO: Populate dashboard context here...
     dbconn, dbcursor = skillutils.connectdb()
     userplanssql = "select p.planname as planname, u.displayname as username, u.id as userid, up.totalcost as totalcost, up.amountpaid as amountpaid, up.planstatus as planstatus, up.subscribedon as subscribedon, up.discountamountapplied as discountamountapplied, up.planstartdate as planstartdate, up.planenddate as planenddate, up.amountdue as amountdue, up.id as userplanid, p.id as planid from Subscription_plan p, Subscription_userplan up, Auth_user u where up.user_id=%s and up.user_id=u.id and up.plan_id=p.id order by up.subscribedon desc"%uid

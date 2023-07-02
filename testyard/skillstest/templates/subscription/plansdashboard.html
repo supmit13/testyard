@@ -117,7 +117,7 @@
                     <div class="col-lg-8">
                         <div>
                             <div class="card-body">
-                                <h4 class="card-title">Aggregate Figures</h4>
+                                <h4 class="card-title" style="font-weight:bold;">Aggregate Figures</h4>
                                 <div class="sales ct-charts mt-3"></div>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
-                                <h4 class="card-title">Subscription History</h4>
+                                <h4 class="card-title" style="font-weight:bold;">Subscription History</h4>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -185,14 +185,20 @@
                                     <tbody>{{message}}</tbody>
                                     {% else %}
                                     <tbody>
+                                        {% for userplan in userplanslist %}
                                         <tr>
-                                            <td class="txt-oflo">Elite admin</td>
-                                            <td><span class="label label-success label-rounded">SALE</span> </td>
-                                            <td class="txt-oflo">April 18, 2021</td>
-                                            <td><span class="font-medium">$24</span></td>
-                                            <td><span class="font-medium">Active</span></td>
+                                            <td class="txt-oflo">{{userplan.planname}}</td>
+                                            <td><span class="font-medium">{{userplan.planstartdate}}</span> </td>
+                                            <td class="txt-oflo">{{userplan.planenddate}}</td>
+                                            <td><span class="font-medium">${{userplan.amountpaid}}</span></td>
+                                            {% if userplan.planstatus == 1 %}
+                                            <td><span class="label label-success label-rounded">Active</span></td>
+                                            {% else %}
+                                            <td><span class="font-medium">Expired</span></td>
+                                            {% endif %}
                                         </tr>
-                                        <tr>
+                                        {% endfor %}
+                                        <!-- <tr>
                                             <td class="txt-oflo">Real Homes WP Theme</td>
                                             <td><span class="label label-info label-rounded">EXTENDED</span></td>
                                             <td class="txt-oflo">April 19, 2021</td>
@@ -226,7 +232,7 @@
                                             <td class="txt-oflo">April 23, 2021</td>
                                             <td><span class="font-medium">-$14</span></td>
                                             <td><span class="font-medium">Expired</span></td>
-                                        </tr>
+                                        </tr> -->
                                     </tbody>
                                     {% endif %}
                                 </table>

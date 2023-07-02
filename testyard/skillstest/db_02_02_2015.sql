@@ -1127,6 +1127,10 @@ alter table Subscription_plan rename column tests to testsninterviews;
 
 alter table Subscription_plan drop column interviews;
 
+alter table Subscription_plan add column fixedcost decimal(10,2) default 0.00;
+
+insert into Subscription_coupon (id, coupon_code, coupon_description, valid_from, valid_till, discount_value, max_use_count, status, currency_unit) values (-1, 'NO_COUPON', 'Absence of any coupon', '2023-07-01 00:00:00', '2099-12-31 11:59:59', 0, 999999999, 1, 'USD');
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
