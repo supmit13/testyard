@@ -121,8 +121,9 @@ def get_network_template_vars(userobj):
         grouptypes[grptype] = mysettings.GROUP_TYPES_DICT[grptype]
     templatevars['grouptypes'] = grouptypes
     availablebanks = {}
-    for bankcode in mysettings.BANKS_DICT.keys():
-        availablebanks[bankcode] = mysettings.BANKS_DICT[bankcode]
+    #for bankcode in mysettings.BANKS_DICT.keys():
+    for bankcode in mysettings.PAYMENT_PROCESSORS_DICT.keys():
+        availablebanks[bankcode] = mysettings.PAYMENT_PROCESSORS_DICT[bankcode]
     templatevars['availablebanks'] = availablebanks
     alltestsqset = Test.objects.filter(creator=userobj)
     alltests = {}
