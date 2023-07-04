@@ -1672,13 +1672,61 @@ def create(request):
         exist_test_id = request.POST['exist_test_id']
     testqueryset = Test.objects.filter(testlinkid=testlinkid, creator=userobj) # Returns a Queryset object
     testobj = None
+    todaynow = datetime.datetime.now()
     if testqueryset.__len__() == 0: # This is a new test being created.
         testobj = Test()
-        testobj.createdate = datetime.datetime.now()
+        testobj.createdate = todaynow
     else:
         testobj = testqueryset[0]
         if exist_test_id and exist_test_id != "":
             testobj = Test.objects.filter(id=exist_test_id)[0]
+    # Check the allowed number of tests for this user - only in case of new tests
+    if exist_test_id is None or exist_test_id == "":
+        dbconn, dbcursor = skillutils.connectdb()
+        userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
+        dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
+        allrecords = dbcursor.fetchall()
+        if allrecords.__len__() > 0:
+            testsandinterviewsquota = allrecords[0][0]
+            planid = allrecords[0][1]
+            planname = allrecords[0][2]
+            amtdue = allrecords[0][3]
+            planstartdate = allrecords[0][4]
+            if planstartdate is None or planstartdate == "":
+                message = "Error: Plan start date is missing for user '%s'. Please contact support with this error message."%userobj.displayname
+                return HttpResponse(message)
+            planenddate = allrecords[0][5]
+            if planenddate is None or planenddate == "":
+                message = "Error: Plan end date is missing for user '%s'. Please contact support with this error message."%userobj.displayname
+                return HttpResponse(message)
+            if amtdue > 0.00: # User has not paid the total amount for this plan.
+                message = "Error: You have an amount due for the '%s' subscription. Please clear the amount and try again."%planname
+                return HttpResponse(message)
+            # Check how many tests and interviews this user has created using the subscribed plan.
+            testscount, interviewscount, testsninterviewscount = 0, 0, 0
+            testsql = "select count(*) from Tests_test where creator_id=%s and createdate > %s and createdate < %s"
+            dbcursor.execute(testsql, (userobj.id, planstartdate, planenddate))
+            alltestrecs = dbcursor.fetchall()
+            if alltestrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                testscount = 0
+            else:
+                testscount = int(alltestrecs[0][0])
+            interviewsql = "select count(*) from Tests_interview where interviewer_id=%s and createdate > %s and createdate < %s"
+            dbcursor.execute(interviewsql, (userobj.id, planstartdate, planenddate))
+            allinterviewrecs = dbcursor.fetchall()
+            if allinterviewrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                interviewscount = 0
+            else:
+                interviewscount = int(allinterviewrecs[0][0])
+            testsninterviewscount = testscount + interviewscount
+            if testsninterviewscount >= testsandinterviewsquota and planname != "Free Plan": # User has already consumed the allocated quota.
+                message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
+                return HttpResponse(message)
+            else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
+                pass
+        else:
+            pass
+        skillutils.disconnectdb(dbconn, dbcursor)
     testobj.testname = testname
     if testname.__len__() > 100:
         message = "Error: Couldn't create test as the test name is too long. Please keep it within 100 characters."
@@ -7336,6 +7384,51 @@ def createinterview(request):
     if intqset.__len__() > 0:
         resp = HttpResponse(error_msg('1170'))
         return resp
+    else: # User is trying to create a new interview. Check quotas as per subscription plan
+        dbconn, dbcursor = skillutils.connectdb()
+        todaynow = datetime.datetime.now()
+        userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
+        dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
+        allrecords = dbcursor.fetchall()
+        if allrecords.__len__() > 0:
+            testsandinterviewsquota = allrecords[0][0]
+            planid = allrecords[0][1]
+            planname = allrecords[0][2]
+            amtdue = float(allrecords[0][3])
+            planstartdate = allrecords[0][4]
+            if planstartdate is None or planstartdate == "":
+                message = "Error: Plan start date is missing for user '%s'. Please contact support with this error message."%userobj.displayname
+                return HttpResponse(message)
+            planenddate = allrecords[0][5]
+            if planenddate is None or planenddate == "":
+                message = "Error: Plan end date is missing for user '%s'. Please contact support with this error message."%userobj.displayname
+                return HttpResponse(message)
+            if amtdue > 0.00: # User has not paid the total amount for this plan.
+                message = "Error: You have an amount due for the '%s' subscription. Please clear the amount and try again."%planname
+                return HttpResponse(message)
+            # Check how many tests and interviews this user has created using the subscribed plan.
+            testscount, interviewscount, testsninterviewscount = 0, 0, 0
+            testsql = "select count(*) from Tests_test where creator_id=%s and createdate > %s and createdate < %s"
+            dbcursor.execute(testsql, (userobj.id, planstartdate, planenddate))
+            alltestrecs = dbcursor.fetchall()
+            if alltestrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                testscount = 0
+            else:
+                testscount = int(alltestrecs[0][0])
+            interviewsql = "select count(*) from Tests_interview where interviewer_id=%s and createdate > %s and createdate < %s"
+            dbcursor.execute(interviewsql, (userobj.id, planstartdate, planenddate))
+            allinterviewrecs = dbcursor.fetchall()
+            if allinterviewrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                interviewscount = 0
+            else:
+                interviewscount = int(allinterviewrecs[0][0])
+            testsninterviewscount = testscount + interviewscount
+            if testsninterviewscount >= testsandinterviewsquota and planname != "Free Plan": # User has already consumed the allocated quota.
+                message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
+                return HttpResponse(message)
+            else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
+                pass
+        skillutils.disconnectdb(dbconn, dbcursor)
     interviewobj = Interview()
     if introbtntext == 'Add Intro'  or introbtntext == 'Create Interview': # We are here for the first time
         interviewobj.title = interviewtitle
