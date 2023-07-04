@@ -262,9 +262,13 @@ def session_location_match(func):
     Decorator to match the session and location info stored in DB and the ones retrieved from the request
     """
     def checkconsistency(request):
-        sesscode = request.COOKIES['sessioncode']
-        usertype = request.COOKIES['usertype']
-        clientIP_fromheader = request.META['REMOTE_ADDR']
+        sesscode, usertype, clientIP_fromheader = None, "", ""
+        try:
+            sesscode = request.COOKIES['sessioncode']
+            usertype = request.COOKIES['usertype']
+            clientIP_fromheader = request.META['REMOTE_ADDR']
+        except:
+            pass
         # Check to see if the values for this session stored in DB are identical to those we extracted from the headers just now.
         try:
             session_obj = Session.objects.get(sessioncode=sesscode)
@@ -617,11 +621,11 @@ def getcurrentplans(userobj):
     currentplans = {}
     userplans = UserPlan.objects.filter(user=userobj).order_by('-subscribedon') # Getting all UserPlans for the User.
     for usrpln in userplans: # userplans is a queryset object...
-        planstart = usrpln.planstartdate
+        planstart = usrpln.planstartdate.strftime("%Y-%m-%d %H:%M:%S")
         startdate, starttime = planstart.split(" ")
         startyyyy, startmon, startdd = startdate.split("-")
         starthh, startmm, startss = starttime.split(":")
-        planend = usrpln.planenddate
+        planend = usrpln.planenddate.strftime("%Y-%m-%d %H:%M:%S")
         enddate, endtime = planend.split(" ")
         endyyyy, endmon, enddd = enddate.split("-")
         endhh, endmm, endss = endtime.split(":")
@@ -631,7 +635,7 @@ def getcurrentplans(userobj):
         # For this plan to be the current plan, the current datetime value should be between planstart and planend.
         curdatetime = datetime.datetime.now()
         if curdatetime > datetime.datetime(int(startyyyy), int(startmon), int(startdd), int(starthh), int(startmm), int(startss)) and curdatetime < datetime.datetime(int(endyyyy), int(endmon), int(enddd), int(endhh), int(endmm), int(endss)) and planstatus:
-            tests = usrpln.plan.tests
+            tests = usrpln.plan.testsninterviews
             price = usrpln.plan.price
             currentplans[planname] = ( planstart, planend, price, usrpln.totalcost, usrpln.amountpaid, usrpln.amountdue, usrpln.discountpercentapplied )
             """
@@ -1041,7 +1045,6 @@ def connectdb(user='root', passwd='Spmprx13@', dbname='testyard', host='localhos
 def disconnectdb(dbconn, cursor):
     cursor.close()
     dbconn.close()
-
 
 
 def createopener():
