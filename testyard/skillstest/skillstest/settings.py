@@ -21,7 +21,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql', 
         'NAME': 'testyard', 
         'USER': 'root',  
-        'PASSWORD': 'spmprx', 
+        'PASSWORD': 'Spmprx13@', 
         'HOST': 'localhost',  
         'PORT': '3306',
     }
@@ -29,7 +29,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['192.168.1.4', '*']
+ALLOWED_HOSTS = ['192.168.1.6', '*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -106,6 +106,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'skillstest.tySecurityMiddleware.TestYardSecurityMiddleware',
 )
 
 ROOT_URLCONF = 'skillstest.urls'
