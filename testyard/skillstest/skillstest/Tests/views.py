@@ -1719,6 +1719,7 @@ def create(request):
             else:
                 interviewscount = int(allinterviewrecs[0][0])
             testsninterviewscount = testscount + interviewscount
+            #print("%s ### %s =============== %s"%(planstartdate.strftime("%Y-%m-%d %H:%M:%S"), planenddate.strftime("%Y-%m-%d %H:%M:%S"), testsninterviewscount))
             if testsninterviewscount >= testsandinterviewsquota and planname != "Free Plan": # User has already consumed the allocated quota.
                 message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
                 return HttpResponse(message)
