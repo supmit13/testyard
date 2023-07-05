@@ -1682,7 +1682,7 @@ def create(request):
             testobj = Test.objects.filter(id=exist_test_id)[0]
     # Check the allowed number of tests for this user - only in case of new tests
     if exist_test_id is None or exist_test_id == "":
-        dbconn, dbcursor = skillutils.connectdb()
+        dbconn, dbcursor = connectdb()
         userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
         dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
         allrecords = dbcursor.fetchall()
@@ -1727,7 +1727,7 @@ def create(request):
                 pass
         else:
             pass
-        skillutils.disconnectdb(dbconn, dbcursor)
+        disconnectdb(dbconn, dbcursor)
     testobj.testname = testname
     if testname.__len__() > 100:
         message = "Error: Couldn't create test as the test name is too long. Please keep it within 100 characters."
@@ -4134,6 +4134,33 @@ def sendtestinvitations(request):
         message = "Error: " + error_msg('1070')
         response = HttpResponse(message)
         return response
+    """
+    # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates to permitted by that plan.
+    testcreateddate = testobj.createdate
+    dbconn, dbcursor = connectdb()
+    candidatescount = 5
+    freeplansql = "select candidates from Subscription_plan where planname='Free Plan'"
+    dbcursor.execute(freeplansql)
+    allplanrecs = dbcursor.fetchall()
+    if allplanrecs.__len__() > 0:
+        candidatescount = allplanrecs[0][0]
+    else:
+        pass
+    subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
+    # Note that the plan in question may have expired, but the user still has the right to send invitations to candidates in order to use the test created during the period of the plan.
+    dbcursor.execute(subsuserplansql)
+    allusrplanrecs = dbcursor.fetchall()
+    if allusrplanrecs.__len__() == 0: # If no userplan is found, we should consider it to be a free plan.
+        pass
+    else:
+        planname = allusrplanrecs[0][0]
+        candidatescount = int(allusrplanrecs[0][1])
+        planstartdate = allusrplanrecs[0][2]
+        planenddate = allusrplanrecs[0][3]
+    # TODO: Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
+    # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
+    disconnectdb(dbconn, dbcursor)
+    """
     validfrom = ""
     if request.POST.has_key('validfrom') and request.POST['validfrom'] != "":
         validfromdt = request.POST['validfrom']
@@ -7386,7 +7413,7 @@ def createinterview(request):
         resp = HttpResponse(error_msg('1170'))
         return resp
     else: # User is trying to create a new interview. Check quotas as per subscription plan
-        dbconn, dbcursor = skillutils.connectdb()
+        dbconn, dbcursor = connectdb()
         todaynow = datetime.datetime.now()
         userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
         dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
@@ -7429,7 +7456,7 @@ def createinterview(request):
                 return HttpResponse(message)
             else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
                 pass
-        skillutils.disconnectdb(dbconn, dbcursor)
+        disconnectdb(dbconn, dbcursor)
     interviewobj = Interview()
     if introbtntext == 'Add Intro'  or introbtntext == 'Create Interview': # We are here for the first time
         interviewobj.title = interviewtitle
