@@ -4139,8 +4139,9 @@ def sendtestinvitations(request):
     testcreateddate = testobj.createdate
     dbconn, dbcursor = connectdb_p()
     candidatescount = 5
-    freeplansql = "select candidates from Subscription_plan where planname='Free Plan'"
-    dbcursor.execute(freeplansql)
+    plnname = 'Free Plan'
+    freeplansql = "select candidates from Subscription_plan where planname='%s'"
+    dbcursor.execute(freeplansql, (plnname,))
     allplanrecs = dbcursor.fetchall()
     if allplanrecs.__len__() > 0:
         candidatescount = allplanrecs[0][0]
@@ -4148,7 +4149,7 @@ def sendtestinvitations(request):
         pass
     subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
     # Note that the plan in question may have expired, but the user still has the right to send invitations to candidates in order to use the test created during the period of the plan.
-    dbcursor.execute(subsuserplansql)
+    dbcursor.execute(subsuserplansql, (userobj.id, testcreateddate, testcreateddate))
     allusrplanrecs = dbcursor.fetchall()
     if allusrplanrecs.__len__() == 0: # If no userplan is found, we should consider it to be a free plan.
         pass
@@ -4159,6 +4160,7 @@ def sendtestinvitations(request):
         planenddate = allusrplanrecs[0][3]
     # TODO: Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
     # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
+    
     disconnectdb(dbconn, dbcursor)
     """
     validfrom = ""
