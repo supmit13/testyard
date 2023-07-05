@@ -55,7 +55,7 @@ from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, 
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
-from skillstest.utils import Logger, connectdb, disconnectdb
+from skillstest.utils import Logger, connectdb, disconnectdb, connectdb_p
 from skillstest.Tests.tasks import send_emails
 
 
@@ -1682,7 +1682,7 @@ def create(request):
             testobj = Test.objects.filter(id=exist_test_id)[0]
     # Check the allowed number of tests for this user - only in case of new tests
     if exist_test_id is None or exist_test_id == "":
-        dbconn, dbcursor = connectdb()
+        dbconn, dbcursor = connectdb_p()
         userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
         dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
         allrecords = dbcursor.fetchall()
@@ -4137,7 +4137,7 @@ def sendtestinvitations(request):
     """
     # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates to permitted by that plan.
     testcreateddate = testobj.createdate
-    dbconn, dbcursor = connectdb()
+    dbconn, dbcursor = connectdb_p()
     candidatescount = 5
     freeplansql = "select candidates from Subscription_plan where planname='Free Plan'"
     dbcursor.execute(freeplansql)
@@ -7413,7 +7413,7 @@ def createinterview(request):
         resp = HttpResponse(error_msg('1170'))
         return resp
     else: # User is trying to create a new interview. Check quotas as per subscription plan
-        dbconn, dbcursor = connectdb()
+        dbconn, dbcursor = connectdb_p()
         todaynow = datetime.datetime.now()
         userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
         dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))

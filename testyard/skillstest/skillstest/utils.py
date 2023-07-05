@@ -1040,6 +1040,15 @@ def connectdb(user='root', passwd='Spmprx13@', dbname='testyard', host='localhos
     dbconn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname, port=port)
     cursor = dbconn.cursor()
     return (dbconn, cursor)
+
+
+def connectdb_p(user='root', passwd='Spmprx13@', dbname='testyard', host='localhost', port=3306):
+    """
+    Returns the dbconnection and 'MySQLCursorPrepared' cursor object
+    """
+    dbconn = MySQLdb.connect(host=host, user=user, passwd=passwd, db=dbname, port=port)
+    cursor = dbconn.cursor(prepared=True)
+    return (dbconn, cursor)
     
     
 def disconnectdb(dbconn, cursor):
