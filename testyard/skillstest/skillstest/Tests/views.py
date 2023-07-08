@@ -1729,7 +1729,7 @@ def create(request):
                     return HttpResponse(message)
                 elif planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsandinterviewsquota:
                      message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
-                    return HttpResponse(message)
+                     return HttpResponse(message)
                 else:
                     pass # User's free quota of tests and interviews is not exhausted yet. So let the user continue.
         else: # So this is a free user
@@ -4174,7 +4174,7 @@ def sendtestinvitations(request):
     # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
     testcreateddate = testobj.createdate
     dbconn, dbcursor = connectdb_p()
-    candidatescount = 5
+    candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
     freeplansql = "select candidates from Subscription_plan where planname='%s'"
     dbcursor.execute(freeplansql, (plnname,))
@@ -4196,17 +4196,17 @@ def sendtestinvitations(request):
         planenddate = allusrplanrecs[0][3]
     # Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
     # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
-    reguserinvitations_sql = "select distinct emailaddr from Tests_usertest where test_id=%s"
+    reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s"
     dbcursor.execute(reguserinvitations_sql, (testobj.id,))
     allreguserinvitations = dbcursor.fetchall()
-    unreguserinvitations_sql = "select distinct emailaddr from Tests_wouldbeusers where test_id=%s"
+    unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s"
     dbcursor.execute(reguserinvitations_sql, (testobj.id,))
     allunreguserinvitations = dbcursor.fetchall()
     totalcandidates = 0
-    for reguserinvitation in allreguserinvitations:
-        totalcandidates += 1
-    for unreguserinvitation in allunreguserinvitations:
-        totalcandidates += 1
+    if allreguserinvitations.__len__() > 0:
+        totalcandidates += allreguserinvitations[0][0]
+    if allunreguserinvitations.__len__() > 0:
+        totalcandidates += allunreguserinvitations[0][0]
     if totalcandidates >= candidatescount:
         message = "Error: You have exhausted the allocated quota of test invitations for this test."
         return HttpResponse(message)
@@ -7511,7 +7511,7 @@ def createinterview(request):
                     return HttpResponse(message)
                 elif planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsandinterviewsquota:
                      message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
-                    return HttpResponse(message)
+                     return HttpResponse(message)
                 else:
                     pass # User's free quota of tests and interviews is not exhausted yet. So let the user continue.
         else: # So this is a free user
