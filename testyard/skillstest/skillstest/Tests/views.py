@@ -4171,8 +4171,7 @@ def sendtestinvitations(request):
         message = "Error: " + error_msg('1070')
         response = HttpResponse(message)
         return response
-    """
-    # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates to permitted by that plan.
+    # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
     testcreateddate = testobj.createdate
     dbconn, dbcursor = connectdb_p()
     candidatescount = 5
@@ -4195,11 +4194,24 @@ def sendtestinvitations(request):
         candidatescount = int(allusrplanrecs[0][1])
         planstartdate = allusrplanrecs[0][2]
         planenddate = allusrplanrecs[0][3]
-    # TODO: Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
+    # Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
     # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
-    
+    reguserinvitations_sql = "select distinct emailaddr from Tests_usertest where test_id=%s"
+    dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+    allreguserinvitations = dbcursor.fetchall()
+    unreguserinvitations_sql = "select distinct emailaddr from Tests_wouldbeusers where test_id=%s"
+    dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+    allunreguserinvitations = dbcursor.fetchall()
+    totalcandidates = 0
+    for reguserinvitation in allreguserinvitations:
+        totalcandidates += 1
+    for unreguserinvitation in allunreguserinvitations:
+        totalcandidates += 1
+    if totalcandidates >= candidatescount:
+        message = "Error: You have exhausted the allocated quota of test invitations for this test."
+        return HttpResponse(message)
     disconnectdb(dbconn, dbcursor)
-    """
+    # Done checking invitations quota.
     validfrom = ""
     if request.POST.has_key('validfrom') and request.POST['validfrom'] != "":
         validfromdt = request.POST['validfrom']
