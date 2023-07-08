@@ -1724,9 +1724,46 @@ def create(request):
                 message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
                 return HttpResponse(message)
             else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
-                pass
-        else:
-            pass
+                if planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
+                    message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                    return HttpResponse(message)
+                elif planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsandinterviewsquota:
+                     message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                    return HttpResponse(message)
+                else:
+                    pass # User's free quota of tests and interviews is not exhausted yet. So let the user continue.
+        else: # So this is a free user
+            testscount, interviewscount, testsninterviewscount = 0, 0, 0
+            testsql = "select count(*) from Tests_test where creator_id=%s"
+            dbcursor.execute(testsql, (userobj.id,))
+            alltestrecs = dbcursor.fetchall()
+            if alltestrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                testscount = 0
+            else:
+                testscount = int(alltestrecs[0][0])
+            interviewsql = "select count(*) from Tests_interview where interviewer_id=%s"
+            dbcursor.execute(interviewsql, (userobj.id,))
+            allinterviewrecs = dbcursor.fetchall()
+            if allinterviewrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                interviewscount = 0
+            else:
+                interviewscount = int(allinterviewrecs[0][0])
+            testsninterviewscount = testscount + interviewscount
+            freeplansql = "select testsninterviews from Subscription_plan where planname='Free Plan'"
+            dbcursor.execute(freeplansql)
+            planrecords = dbcursor.fetchall()
+            if planrecords.__len__() >= 0:
+                testsninterviewsquota = planrecords[0][0]
+            else:
+                testsninterviewsquota = 5 # Default free quota is this value.
+            if int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
+                message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                return HttpResponse(message)
+            elif int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsninterviewsquota:
+                message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                return HttpResponse(message)
+            else:
+                pass # Allow user to continue creating tests and interviews.
         disconnectdb(dbconn, dbcursor)
     testobj.testname = testname
     if testname.__len__() > 100:
@@ -7457,7 +7494,46 @@ def createinterview(request):
                 message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
                 return HttpResponse(message)
             else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
-                pass
+                if planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
+                    message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                    return HttpResponse(message)
+                elif planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsandinterviewsquota:
+                     message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                    return HttpResponse(message)
+                else:
+                    pass # User's free quota of tests and interviews is not exhausted yet. So let the user continue.
+        else: # So this is a free user
+            testscount, interviewscount, testsninterviewscount = 0, 0, 0
+            testsql = "select count(*) from Tests_test where creator_id=%s"
+            dbcursor.execute(testsql, (userobj.id,))
+            alltestrecs = dbcursor.fetchall()
+            if alltestrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                testscount = 0
+            else:
+                testscount = int(alltestrecs[0][0])
+            interviewsql = "select count(*) from Tests_interview where interviewer_id=%s"
+            dbcursor.execute(interviewsql, (userobj.id,))
+            allinterviewrecs = dbcursor.fetchall()
+            if allinterviewrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+                interviewscount = 0
+            else:
+                interviewscount = int(allinterviewrecs[0][0])
+            testsninterviewscount = testscount + interviewscount
+            freeplansql = "select testsninterviews from Subscription_plan where planname='Free Plan'"
+            dbcursor.execute(freeplansql)
+            planrecords = dbcursor.fetchall()
+            if planrecords.__len__() >= 0:
+                testsninterviewsquota = planrecords[0][0]
+            else:
+                testsninterviewsquota = 5 # Default free quota is this value.
+            if int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
+                message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                return HttpResponse(message)
+            elif int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsninterviewsquota:
+                message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                return HttpResponse(message)
+            else:
+                pass # Allow user to continue creating tests and interviews.
         disconnectdb(dbconn, dbcursor)
     interviewobj = Interview()
     if introbtntext == 'Add Intro'  or introbtntext == 'Create Interview': # We are here for the first time
