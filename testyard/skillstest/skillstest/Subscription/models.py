@@ -102,6 +102,27 @@ class UserPlan(models.Model):
     def __unicode__(self):
         return "Plan Name: %s of User: %s\n"%(self.plan.planname, self.user.displayname)
 
+class PlanExtensions(models.Model):
+    userplan = models.ForeignKey(UserPlan, null=False, blank=False)
+    user = models.ForeignKey(User, null=False, blank=False) # Convenience field.
+    periodstart = models.DateTimeField(default=datetime.datetime.now(), null=False, blank=False)
+    periodend = models.DateTimeField(default=None, null=True, blank=False)
+    allowedinvites = models.IntegerField(default=5, null=False, blank=False)
+    amountpaid = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, default=0.00)
+    paymentdate = models.DateTimeField(auto_now_add=True)
+    extensionstatus = models.BooleanField(default=True) # extensionstatus would be True for the period defined by periodstart and periodend.
+    discountpercent = models.FloatField(null=True, blank=True, default=0.0)
+    discountamount = models.FloatField(null=True, blank=True, default=0.0)
+    coupon = models.ForeignKey(Coupon, null=True, blank=True)
+    blocked = models.BooleanField(default=False) # Default value is False. TestYard has the right to block an extension if it deems fit.
+    
+    class Meta:
+        verbose_name = "UserPlan Extensions Table"
+        db_table = 'Subscription_planextensions'
+    
+    def __unicode__(self):
+        return "Plan Name: %s of User: %s\n"%(self.userplan.plan.planname, self.user.displayname)
+
 
 """
 Validator to ensure that the user with the displayname actually exists.

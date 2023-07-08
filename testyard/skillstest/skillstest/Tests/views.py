@@ -50,7 +50,7 @@ import socket
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
-from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Subscription.models import Plan, UserPlan, Transaction, PlanExtensions
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates, PostLinkedin
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
@@ -4183,10 +4183,13 @@ def sendtestinvitations(request):
         candidatescount = allplanrecs[0][0]
     else:
         pass
-    subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
+    userplanid = -1
+    subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate, up.id from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
     # Note that the plan in question may have expired, but the user still has the right to send invitations to candidates in order to use the test created during the period of the plan.
     dbcursor.execute(subsuserplansql, (userobj.id, testcreateddate, testcreateddate))
     allusrplanrecs = dbcursor.fetchall()
+    planstartdate = None
+    planenddate = None
     if allusrplanrecs.__len__() == 0: # If no userplan is found, we should consider it to be a free plan.
         pass
     else:
@@ -4194,13 +4197,23 @@ def sendtestinvitations(request):
         candidatescount = int(allusrplanrecs[0][1])
         planstartdate = allusrplanrecs[0][2]
         planenddate = allusrplanrecs[0][3]
+        userplanid = allusrplanrecs[0][4]
+    rightnow = datetime.datetime.now()
+    if userplanid > 0: # Check to see if the user has extended his plan at present.
+        planextsql = "select allowedinvites, periodstart, periodend from Subscription_planextensions where userplan_id=%s and user_id=%s and periodstart <= %s and periodend > %s"
+        dbcursor.execute(planextsql, (userplanid, userobj.id, rightnow, rightnow))
+        allextensionrecs = dbcursor.fetchall()
+        if allextensionrecs.__len__() > 0:
+            candidatescount = allextensionrecs[0][0]
+            planstartdate = allextensionrecs[0][1]
+            planenddate = allextensionrecs[0][2]
     # Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
     # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
-    reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s"
-    dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+    reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s and dateadded > %s and dateadded < %s"
+    dbcursor.execute(reguserinvitations_sql, (testobj.id, planstartdate, planenddate))
     allreguserinvitations = dbcursor.fetchall()
-    unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s"
-    dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+    unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s and dateadded > %s and dateadded < %s"
+    dbcursor.execute(reguserinvitations_sql, (testobj.id, planstartdate, planenddate))
     allunreguserinvitations = dbcursor.fetchall()
     totalcandidates = 0
     if allreguserinvitations.__len__() > 0:
@@ -6931,7 +6944,7 @@ def setschedule(request):
             emails_new = ""
         validfrom, validtill = start_new, end_new
         new_emails_list = emails_new.split(",")
-        # Check subscription plan quota now.
+        # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
         testcreateddate = testobj.createdate
         dbconn, dbcursor = connectdb_p()
         candidatescount = 5 # Default candidates count for Free Plan.
@@ -6943,10 +6956,13 @@ def setschedule(request):
             candidatescount = allplanrecs[0][0]
         else:
             pass
-        subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
+        userplanid = -1
+        subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate, up.id from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
         # Note that the plan in question may have expired, but the user still has the right to send invitations to candidates in order to use the test created during the period of the plan.
         dbcursor.execute(subsuserplansql, (userobj.id, testcreateddate, testcreateddate))
         allusrplanrecs = dbcursor.fetchall()
+        planstartdate = None
+        planenddate = None
         if allusrplanrecs.__len__() == 0: # If no userplan is found, we should consider it to be a free plan.
             pass
         else:
@@ -6954,13 +6970,23 @@ def setschedule(request):
             candidatescount = int(allusrplanrecs[0][1])
             planstartdate = allusrplanrecs[0][2]
             planenddate = allusrplanrecs[0][3]
+            userplanid = allusrplanrecs[0][4]
+        rightnow = datetime.datetime.now()
+        if userplanid > 0: # Check to see if the user has extended his plan at present.
+            planextsql = "select allowedinvites, periodstart, periodend from Subscription_planextensions where userplan_id=%s and user_id=%s and periodstart <= %s and periodend > %s"
+            dbcursor.execute(planextsql, (userplanid, userobj.id, rightnow, rightnow))
+            allextensionrecs = dbcursor.fetchall()
+            if allextensionrecs.__len__() > 0:
+                candidatescount = allextensionrecs[0][0]
+                planstartdate = allextensionrecs[0][1]
+                planenddate = allextensionrecs[0][2]
         # Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
         # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
-        reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s"
-        dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+        reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s and dateadded > %s and dateadded < %s"
+        dbcursor.execute(reguserinvitations_sql, (testobj.id, planstartdate, planenddate))
         allreguserinvitations = dbcursor.fetchall()
-        unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s"
-        dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+        unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s and dateadded > %s and dateadded < %s"
+        dbcursor.execute(reguserinvitations_sql, (testobj.id, planstartdate, planenddate))
         allunreguserinvitations = dbcursor.fetchall()
         totalcandidates = 0
         if allreguserinvitations.__len__() > 0:
@@ -6968,13 +6994,13 @@ def setschedule(request):
         if allunreguserinvitations.__len__() > 0:
             totalcandidates += allunreguserinvitations[0][0]
         if totalcandidates >= candidatescount:
-            message = "Error: You have exhausted the allocated quota of test invitations %s for this test."%candidatescount
+            message = "Error: You have exhausted the allocated quota of test invitations for this test."
             return HttpResponse(message)
-        # Now, additionally, we need to check if the number of users being invited now would surpass the allocated quota of invitations.
-        userscountpostoperation = totalcandidates + new_emails_list.__len__()
-        if userscountpostoperation > candidatescount:
-            decrementfactor = userscountpostoperation - candidatescount
-            message = "Error: The number of invitations you are about to send surpasses the number of invitations you are allowed to send for this test. Please remove %s email addresses and try again."%decrementfactor
+        # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
+        postoperationuserinvitations = totalcandidates + emailslist.__len__()
+        if postoperationuserinvitations > candidatescount:
+            decrementfactor = postoperationuserinvitations - candidatescount
+            message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
             return HttpResponse(message)
         disconnectdb(dbconn, dbcursor)
         # Done checking invitations quota.
@@ -9140,7 +9166,7 @@ def mobile_setschedule(request):
         message = "Error: " + error_msg('1070')
         response = HttpResponse(message)
         return response
-    # Check subscription plan quota now.
+    # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
     testcreateddate = testobj.createdate
     dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
@@ -9152,10 +9178,13 @@ def mobile_setschedule(request):
         candidatescount = allplanrecs[0][0]
     else:
         pass
-    subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
+    userplanid = -1
+    subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate, up.id from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
     # Note that the plan in question may have expired, but the user still has the right to send invitations to candidates in order to use the test created during the period of the plan.
     dbcursor.execute(subsuserplansql, (userobj.id, testcreateddate, testcreateddate))
     allusrplanrecs = dbcursor.fetchall()
+    planstartdate = None
+    planenddate = None
     if allusrplanrecs.__len__() == 0: # If no userplan is found, we should consider it to be a free plan.
         pass
     else:
@@ -9163,13 +9192,23 @@ def mobile_setschedule(request):
         candidatescount = int(allusrplanrecs[0][1])
         planstartdate = allusrplanrecs[0][2]
         planenddate = allusrplanrecs[0][3]
+        userplanid = allusrplanrecs[0][4]
+    rightnow = datetime.datetime.now()
+    if userplanid > 0: # Check to see if the user has extended his plan at present.
+        planextsql = "select allowedinvites, periodstart, periodend from Subscription_planextensions where userplan_id=%s and user_id=%s and periodstart <= %s and periodend > %s"
+        dbcursor.execute(planextsql, (userplanid, userobj.id, rightnow, rightnow))
+        allextensionrecs = dbcursor.fetchall()
+        if allextensionrecs.__len__() > 0:
+            candidatescount = allextensionrecs[0][0]
+            planstartdate = allextensionrecs[0][1]
+            planenddate = allextensionrecs[0][2]
     # Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
     # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
-    reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s"
-    dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+    reguserinvitations_sql = "select count(distinct emailaddr) from Tests_usertest where test_id=%s and dateadded > %s and dateadded < %s"
+    dbcursor.execute(reguserinvitations_sql, (testobj.id, planstartdate, planenddate))
     allreguserinvitations = dbcursor.fetchall()
-    unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s"
-    dbcursor.execute(reguserinvitations_sql, (testobj.id,))
+    unreguserinvitations_sql = "select count(distinct emailaddr) from Tests_wouldbeusers where test_id=%s and dateadded > %s and dateadded < %s"
+    dbcursor.execute(reguserinvitations_sql, (testobj.id, planstartdate, planenddate))
     allunreguserinvitations = dbcursor.fetchall()
     totalcandidates = 0
     if allreguserinvitations.__len__() > 0:
@@ -9177,13 +9216,13 @@ def mobile_setschedule(request):
     if allunreguserinvitations.__len__() > 0:
         totalcandidates += allunreguserinvitations[0][0]
     if totalcandidates >= candidatescount:
-        message = "Error: You have exhausted the allocated quota of test invitations %s for this test."%candidatescount
+        message = "Error: You have exhausted the allocated quota of test invitations for this test."
         return HttpResponse(message)
-    # Now, additionally, we need to check if the number of users being invited now would surpass the allocated quota of invitations.
-    userscountpostoperation = totalcandidates + emailsList.__len__()
-    if userscountpostoperation > candidatescount:
-        decrementfactor = userscountpostoperation - candidatescount
-        message = "Error: The number of invitations you are about to send surpasses the number of invitations you are allowed to send for this test. Please remove %s email addresses and try again."%decrementfactor
+    # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
+    postoperationuserinvitations = totalcandidates + emailslist.__len__()
+    if postoperationuserinvitations > candidatescount:
+        decrementfactor = postoperationuserinvitations - candidatescount
+        message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
         return HttpResponse(message)
     disconnectdb(dbconn, dbcursor)
     # Done checking invitations quota.

@@ -178,6 +178,7 @@ class UserTest(models.Model):
     disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
     schedule = models.ForeignKey(Schedule, related_name="+", null=True, blank=True, default=None)
     windowchangeattempts = models.IntegerField(default=0)
+    dateadded = models.DateTimeField(auto_now_add=True)
 
 
     class Meta:
@@ -348,6 +349,7 @@ class WouldbeUsers(models.Model):
     disqualified = models.BooleanField(default=False) # A test taker may be disqualified only by the creator/owner of the test.
     schedule = models.ForeignKey(Schedule, related_name="+", null=True, blank=True, default=None)
     windowchangeattempts = models.IntegerField(default=0)
+    dateadded = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "wouldbeusers Table"

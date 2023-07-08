@@ -1131,6 +1131,30 @@ alter table Subscription_plan add column fixedcost decimal(10,2) default 0.00;
 
 insert into Subscription_coupon (id, coupon_code, coupon_description, valid_from, valid_till, discount_value, max_use_count, status, currency_unit) values (-1, 'NO_COUPON', 'Absence of any coupon', '2023-07-01 00:00:00', '2099-12-31 11:59:59', 0, 999999999, 1, 'USD');
 
+create table Subscription_planextensions (
+	id int NOT NULL PRIMARY KEY AUTO_INCREMENT,
+	userplan_id int NOT NULL,
+	user_id int NOT NULL,
+	extensionstatus BOOLEAN NOT NULL DEFAULT TRUE,
+	periodstart DATETIME NOT NULL DEFAULT NOW(),
+	periodend DATETIME DEFAULT NULL,
+	amountpaid DECIMAL(10,2) NOT NULL,
+	paymentdate DATETIME NOT NULL DEFAULT NOW(),
+	discountpercent DECIMAL(10,2) DEFAULT 0.0,
+	discountamount DECIMAL(10,2) DEFAULT 0.00,
+	coupon_id int DEFAULT -1,
+	blocked BOOLEAN NOT NULL DEFAULT FALSE,
+	FOREIGN KEY (userplan_id) REFERENCES Subscription_userplan(id),
+	FOREIGN KEY (user_id) REFERENCES Auth_user(id),
+	FOREIGN KEY (coupon_id) REFERENCES Subscription_coupon(id)
+);
+
+alter table Subscription_planextensions ADD COLUMN allowedinvites INT NOT NULL DEFAULT 5;
+
+alter table Tests_usertest ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NOW();
+
+alter table Tests_wouldbeusers ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NOW();
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;

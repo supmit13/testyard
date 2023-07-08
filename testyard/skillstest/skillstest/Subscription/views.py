@@ -24,7 +24,7 @@ import md5
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
-from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon
+from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon, PlanExtensions
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
@@ -636,6 +636,7 @@ def showsubscriptiondashboard(request):
     inc_context = skillutils.includedtemplatevars("", request)
     for inc_key in inc_context.keys():
         context[inc_key] = inc_context[inc_key]
+    context['plan_extension_url'] = skillutils.gethosturl(request) + "/" + mysettings.PLAN_EXTEND_URL
     skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
     tmpl = get_template("subscription/plansdashboard.html")
     context.update(csrf(request))
@@ -644,7 +645,11 @@ def showsubscriptiondashboard(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         plansdashboardhtml = plansdashboardhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(plansdashboardhtml)
+
     
-
-
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def extenduserplan(request):
+    pass
 

@@ -38,7 +38,14 @@
     <link href="/static/plans_assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
     
   <!-- Dashboard static files end -->
+  <script language="JavaScript">
   
+    function extendplan(userplanid){
+      //Send request to {{plan_extension_url}}
+    
+    }
+  </script>
+    
 </head>
 <body id="page-top" >
 
@@ -194,7 +201,12 @@
                                             {% if userplan.planstatus == 1 %}
                                             <td><span class="label label-success label-rounded">Active</span></td>
                                             {% else %}
-                                            <td><span class="font-medium">Expired</span></td>
+                                            <td><span class="label label-danger label-rounded">Expired</span></td>
+                                            {% endif %}
+                                            {% if userplan.planname != "Free Plan" %}
+                                            <td><span class="font-medium">&nbsp;**&nbsp;<input type='button' name='btnextend' value='Extend Plan' onclick="javascript:extendplan({{userplan.userplanid}});"></span></td>
+                                            {% else %}
+                                            <td><span class="font-medium">&nbsp;*&nbp;</span></td>
                                             {% endif %}
                                         </tr>
                                         {% endfor %}
@@ -238,6 +250,7 @@
                                 </table>
                             </div>
                         </div>
+                        <span>* Free Plan cannot be extended.</span><br/><span>** Extending a Subscription Plan would allow you to send more invitations for the Tests and Interviews created during the plan period.</span><br/>
                     </div>
                 </div>      
       		<!-- column -->
