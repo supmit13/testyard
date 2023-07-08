@@ -5254,11 +5254,130 @@ def createtestbulkupload(request):
     return HttpResponse("%s tests created"%testcount.__str__())
 
 
+def _check_subscription_plan_limits(userobj, filepath, filetype="csv"):
+    todaynow = datetime.datetime.now()
+    # Check the allowed number of tests for this user - only in case of new tests
+    dbconn, dbcursor = connectdb_p()
+    userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
+    dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
+    allrecords = dbcursor.fetchall()
+    if allrecords.__len__() > 0:
+        testsandinterviewsquota = allrecords[0][0]
+        planid = allrecords[0][1]
+        planname = allrecords[0][2]
+        amtdue = allrecords[0][3]
+        planstartdate = allrecords[0][4]
+        if planstartdate is None or planstartdate == "":
+            message = "Error: Plan start date is missing for user '%s'. Please contact support with this error message."%userobj.displayname
+            return (False, message)
+        planenddate = allrecords[0][5]
+        if planenddate is None or planenddate == "":
+            message = "Error: Plan end date is missing for user '%s'. Please contact support with this error message."%userobj.displayname
+            return (False, message)
+        if amtdue > 0.00: # User has not paid the total amount for this plan.
+            message = "Error: You have an amount due for the '%s' subscription. Please clear the amount and try again."%planname
+            return (False, message)
+        # Check how many tests and interviews this user has created using the subscribed plan.
+        testscount, interviewscount, testsninterviewscount = 0, 0, 0
+        testsql = "select count(*) from Tests_test where creator_id=%s and createdate > %s and createdate < %s"
+        dbcursor.execute(testsql, (userobj.id, planstartdate, planenddate))
+        alltestrecs = dbcursor.fetchall()
+        if alltestrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+            testscount = 0
+        else:
+            testscount = int(alltestrecs[0][0])
+        interviewsql = "select count(*) from Tests_interview where interviewer_id=%s and createdate > %s and createdate < %s"
+        dbcursor.execute(interviewsql, (userobj.id, planstartdate, planenddate))
+        allinterviewrecs = dbcursor.fetchall()
+        if allinterviewrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+            interviewscount = 0
+        else:
+            interviewscount = int(allinterviewrecs[0][0])
+        testsninterviewscount = testscount + interviewscount
+        # Add the number of tests that would be created if the operation succeeds
+        if filetype == "xlsx":
+            try:
+                wb = load_workbook(filename=filepath)
+                ws = wb.worksheets[0]
+                numtests = ws.rows.__len__() - 1
+                testsninterviewscount = testsninterviewscount + numtests
+            except:
+                pass
+        elif filetype == "xls":
+            wb = open_workbook(filepath)
+            numtests = 0
+            for sheet in wb.sheets():
+                numtests = sheet.nrows.__len__() - 1
+                break
+            testsninterviewscount = testsninterviewscount + numtests
+        elif filetype == "csv":
+            try:
+                with open(filepath, 'rb') as csvfile:
+                    csvreader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+                    rowctr = 0
+                    for row in csvreader:
+                        rowctr += 1
+                    testsninterviewscount = testsninterviewscount + rowctr - 1
+            except:
+                pass
+        elif filetype == "xml":
+            pass
+        #print("%s ### %s =============== %s"%(planstartdate.strftime("%Y-%m-%d %H:%M:%S"), planenddate.strftime("%Y-%m-%d %H:%M:%S"), testsninterviewscount))
+        if testsninterviewscount >= testsandinterviewsquota and planname != "Free Plan": # User has already consumed the allocated quota.
+            message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
+            return (False, message)
+        else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
+            if planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
+                message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                return (False, message)
+            elif planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsandinterviewsquota:
+                message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+                return (False, message)
+            else: 
+                return (True, "success") # User's free quota of tests and interviews is not exhausted yet. So let the user continue.
+    else: # So this is a free user
+        testscount, interviewscount, testsninterviewscount = 0, 0, 0
+        testsql = "select count(*) from Tests_test where creator_id=%s"
+        dbcursor.execute(testsql, (userobj.id,))
+        alltestrecs = dbcursor.fetchall()
+        if alltestrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+            testscount = 0
+        else:
+            testscount = int(alltestrecs[0][0])
+        interviewsql = "select count(*) from Tests_interview where interviewer_id=%s"
+        dbcursor.execute(interviewsql, (userobj.id,))
+        allinterviewrecs = dbcursor.fetchall()
+        if allinterviewrecs.__len__() == 0: #This case should not happen. If it happens, then there is an error somewhere.
+            interviewscount = 0
+        else:
+            interviewscount = int(allinterviewrecs[0][0])
+        testsninterviewscount = testscount + interviewscount
+        freeplansql = "select testsninterviews from Subscription_plan where planname='Free Plan'"
+        dbcursor.execute(freeplansql)
+        planrecords = dbcursor.fetchall()
+        if planrecords.__len__() >= 0:
+            testsninterviewsquota = planrecords[0][0]
+        else:
+            testsninterviewsquota = 5 # Default free quota is this value.
+        if int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
+            message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+            return (False, message)
+        elif int(mysettings.NEW_USER_FREE_TESTS_COUNT) == -1 and testsninterviewscount >= testsninterviewsquota:
+            message = "Error: You have already consumed the allocated count of tests and interviews for a free account. Please buy a subscription plan to create more tests and interviews."
+            return (False, message)
+        else:
+            pass # Allow user to continue creating tests and interviews.
+    disconnectdb(dbconn, dbcursor)
+    return (True, "success")
+
 """
 Function to create a test from data in a xlsx file.
 TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
 """
 def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
+    (outcome, message) = _check_subscription_plan_limits(userobj, filepath, "xlsx")
+    if outcome is False:
+        return message
     try:
         wb = load_workbook(filename=filepath)
         ws = wb.worksheets[0]
@@ -5460,6 +5579,9 @@ def create_test_from_xlsx(uploadedfile, filepath, testlinkid, userobj):
 TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
 """
 def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
+    (outcome, message) = _check_subscription_plan_limits(userobj, filepath, "xls")
+    if outcome is False:
+        return message
     try:
         wb = open_workbook(filepath)
         for sheet in wb.sheets():
@@ -5663,6 +5785,9 @@ def create_test_from_xls(uploadedfile, filepath, testlinkid, userobj):
 TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
 """
 def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
+    (outcome, message) = _check_subscription_plan_limits(userobj, filepath, "csv")
+    if outcome is False:
+        return message
     try:
         with open(filepath, 'rb') as csvfile:
             csvreader = csv.reader(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
@@ -5925,6 +6050,9 @@ def create_test_from_csv(uploadedfile, filepath, testlinkid, userobj):
 TO DO: Improper values or absence of values of mandatory parameters should raise appropriate exceptions.
 """
 def create_test_from_xml(uploadedfile, filepath, testlinkid, userobj):
+    outcome, message = _check_subscription_plan_limits(userobj, filepath, "xml")
+    if outcome is False:
+        return message
     try:
         tree = et.parse(filepath)
         root = tree.getroot()
