@@ -1155,6 +1155,8 @@ alter table Tests_usertest ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NOW();
 
 alter table Tests_wouldbeusers ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NOW();
 
+alter table Tests_interviewcandidates ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NOW();
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;

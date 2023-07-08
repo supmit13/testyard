@@ -8101,6 +8101,61 @@ def savenewinterviewschedule(request):
             uniqemails[email] = 1
         else:
             pass
+    # Find out when this interview was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
+    interviewcreateddate = interviewobj.createdate
+    dbconn, dbcursor = connectdb_p()
+    candidatescount = 5 # Default candidates count for Free Plan.
+    plnname = 'Free Plan'
+    freeplansql = "select candidates from Subscription_plan where planname='%s'"
+    dbcursor.execute(freeplansql, (plnname,))
+    allplanrecs = dbcursor.fetchall()
+    if allplanrecs.__len__() > 0:
+        candidatescount = allplanrecs[0][0]
+    else:
+        pass
+    userplanid = -1
+    subsuserplansql = "select pl.planname, pl.candidates, up.planstartdate, up.planenddate, up.id from Subscription_plan pl, Subscription_userplan up where up.user_id=%s and pl.id=up.plan_id and up.planstartdate < %s and up.planenddate > %s"
+    # Note that the plan in question may have expired, but the user still has the right to send invitations to candidates in order to use the test created during the period of the plan.
+    dbcursor.execute(subsuserplansql, (userobj.id, interviewcreateddate, interviewcreateddate))
+    allusrplanrecs = dbcursor.fetchall()
+    planstartdate = None
+    planenddate = None
+    if allusrplanrecs.__len__() == 0: # If no userplan is found, we should consider it to be a free plan.
+        pass
+    else:
+        planname = allusrplanrecs[0][0]
+        candidatescount = int(allusrplanrecs[0][1])
+        planstartdate = allusrplanrecs[0][2]
+        planenddate = allusrplanrecs[0][3]
+        userplanid = allusrplanrecs[0][4]
+    rightnow = datetime.datetime.now()
+    if userplanid > 0: # Check to see if the user has extended his plan at present.
+        planextsql = "select allowedinvites, periodstart, periodend from Subscription_planextensions where userplan_id=%s and user_id=%s and periodstart <= %s and periodend > %s"
+        dbcursor.execute(planextsql, (userplanid, userobj.id, rightnow, rightnow))
+        allextensionrecs = dbcursor.fetchall()
+        if allextensionrecs.__len__() > 0:
+            candidatescount = allextensionrecs[0][0]
+            planstartdate = allextensionrecs[0][1]
+            planenddate = allextensionrecs[0][2]
+    # Now, find how many (distinct) candidates have already been invited to this test. If that count is less than the allowed
+    # number of candidates permitted by the subscription plan, then go ahead. Otherwise, return a response with an error message.
+    reguserinvitations_sql = "select count(distinct emailaddr) from Tests_interviewcandidates where interview_id=%s and dateadded > %s and dateadded < %s"
+    dbcursor.execute(reguserinvitations_sql, (interviewobj.id, planstartdate, planenddate))
+    allreguserinvitations = dbcursor.fetchall()
+    totalcandidates = 0
+    if allreguserinvitations.__len__() > 0:
+        totalcandidates += allreguserinvitations[0][0]
+    if totalcandidates >= candidatescount:
+        message = "Error: You have exhausted the allocated quota of invitations for this interview."
+        return HttpResponse(message)
+    # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
+    postoperationuserinvitations = totalcandidates + emailidslist.__len__()
+    if postoperationuserinvitations > candidatescount:
+        decrementfactor = postoperationuserinvitations - candidatescount
+        message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
+        return HttpResponse(message)
+    disconnectdb(dbconn, dbcursor)
+    # Done checking invitations quota.
     # So emailidslist is not a list of unique emails sent to us for scheduling
     intcandidateobj = InterviewCandidates()
     intcandidateobj.interview = interviewobj

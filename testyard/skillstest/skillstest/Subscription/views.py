@@ -651,5 +651,16 @@ def showsubscriptiondashboard(request):
 @skillutils.session_location_match
 @csrf_protect
 def extenduserplan(request):
-    pass
+    message = ""
+    if request.method == 'GET':
+        userplanid = -1
+        if 'userplanid' in request.GET.keys():
+            userplanid = request.GET['userplanid']
+        else:
+            message = "Required parameter userplanid is missing. The server can't process this request."
+            response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+            return response
+        # Display the plans extension interface. It should also display the history of this specific userplan.
+    elif request.method == 'POST': # process this request and extend the userplan by adding a record in th PlanExtensions model.
+        pass
 

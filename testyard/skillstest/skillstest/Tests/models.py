@@ -473,6 +473,7 @@ class InterviewCandidates(models.Model):
     interviewlinkid = models.CharField(max_length=200, null=False, blank=False)
     totaltimetaken = models.IntegerField(default=0, null=True, blank=True)
     interviewurl = models.TextField(default='', null=True, blank=True)
+    dateadded = models.DateTimeField(auto_now_add=True)
     
     class Meta:
         verbose_name = "Interview Candidates Table"
