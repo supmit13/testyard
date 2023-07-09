@@ -36,13 +36,70 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/static/plans_assets/images/favicon.png">
     <!-- Custom CSS -->
     <link href="/static/plans_assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-    
   <!-- Dashboard static files end -->
-  <script language="JavaScript">
+  
+  <style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#ccffff;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:0px; width:275%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+        .semitrans2 {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#ccffff;
+	  color:#FFFFFF;
+	  position:absolute; top:150px; left:100px; width:75%; height:50%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+  </style>
+  
+  <script language="javascript">
   
     function extendplan(userplanid){
-      //Send request to {{plan_extension_url}}
-    
+      planextdiv = document.getElementById('planextscreen');
+      var xmlhttp;
+      if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+      }
+      else{
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+          planextdiv.opacity = "1.0";
+	  //planextdiv.className= "";
+	  var mouseX;
+          var mouseY;
+          $(document).mousemove( function(e) {
+	    mouseX = e.pageX; 
+	    mouseY = e.pageY;
+	  }); 
+	  planextdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1200px;background-color:#ccffff;position:fixed;top:" + mouseY + "px;left:"+mouseX +"px;";
+	  errorpattern = new RegExp("^Error");
+          if(errorpattern.test(xmlhttp.responseText)){
+            alert(xmlhttp.responseText);
+	  }
+	  else{
+	    planextdiv.innerHTML = xmlhttp.responseText;
+	  }
+	  return false;
+       }  
+     };
+     //Send request to {{plan_extension_url}}
+     xmlhttp.open("GET", "{{plan_extension_url}}?userplanid=" + userplanid, true);
+     //xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+     //xmlhttp.setRequestHeader('Content-length', postdata.length.toString());
+     //xmlhttp.setRequestHeader('Accept', 'application/json');
+     xmlhttp.send();
     }
   </script>
     
@@ -204,7 +261,11 @@
                                             <td><span class="label label-danger label-rounded">Expired</span></td>
                                             {% endif %}
                                             {% if userplan.planname != "Free Plan" %}
-                                            <td><span class="font-medium">&nbsp;**&nbsp;<input type='button' name='btnextend' value='Extend Plan' onclick="javascript:extendplan({{userplan.userplanid}});"></span></td>
+                                              {% if userplan.planstatus == 1 %}
+                                                <td><span class="font-medium">&nbsp;**&nbsp;<input type='button' name='btnextend' value='Extend Plan' onclick="javascript:extendplan({{userplan.userplanid}});" disabled></span></td>
+                                              {% else %}
+                                                <td><span class="font-medium">&nbsp;**&nbsp;<input type='button' name='btnextend' value='Extend Plan' onclick="javascript:extendplan({{userplan.userplanid}});"></span></td>
+                                              {% endif %}
                                             {% else %}
                                             <td><span class="font-medium">&nbsp;*&nbp;</span></td>
                                             {% endif %}
@@ -250,6 +311,7 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="semitrans" style="display:none;" id="planextscreen"></div>
                         <span>* Free Plan cannot be extended.</span><br/><span>** Extending a Subscription Plan would allow you to send more invitations for the Tests and Interviews created during the plan period.</span><br/>
                     </div>
                 </div>      

@@ -652,15 +652,68 @@ def showsubscriptiondashboard(request):
 @csrf_protect
 def extenduserplan(request):
     message = ""
+    sesscode = ""
+    try:
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    except:
+        sessionobj = None
+        userobj = None
+    if userobj is None or sessionobj is None:
+        # Redirect to login page
+        return HttpResponseRedirect(mysettings.LOGIN_URL)
+    else:
+        pass
+    context = {}
+    if skillutils.isloggedin(request):
+        context['logged_in_as'] = userobj.displayname
+    else:
+        context['logged_in_as'] = ""
     if request.method == 'GET':
         userplanid = -1
         if 'userplanid' in request.GET.keys():
             userplanid = request.GET['userplanid']
         else:
-            message = "Required parameter userplanid is missing. The server can't process this request."
+            message = "Error: Required parameter userplanid is missing. The server can't process this request."
             response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
             return response
+        # First, make sure that the userplan identified by the given userplanid belongs to the current logged in user
+        userplanobj = None
+        try:
+            userplanobj = UserPlan.objects.get(id=userplanid)
+        except:
+            message = "Error: Could not find the userplan object identified by the given userplanid. "
+            response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+            return response
+        if userplanobj.user != userobj: # The userplan does not belong to this user.
+            message = "Error: The userplan identified by the given Id doesn't belong to you. This incident will be reported."
+            response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+            return response
+        if not userplanobj.plan.status:
+            message = "Error: The requested subscription plan is no longer available for use. Please select a different subscription plan to continue. We are sorry for the inconvenience."
+            response = HttpResponse(message)
+            return response
         # Display the plans extension interface. It should also display the history of this specific userplan.
+        planextensionslist = []
+        planextensionsqset = PlanExtensions.objects.filter(userplan=userplanobj).order_by('-paymentdate')
+        for planext in planextensionsqset:
+            d = {'planextid' : planext.id, 'planname' : planext.userplan.plan.planname, 'username' : planext.user.displayname, 'periodstart' : planext.periodstart.strftime("%Y-%m-%d %H:%M:%S"), 'periodend' : planext.periodend.strftime("%Y-%m-%d %H:%M:%S"), 'invitescount' : planext.allowedinvites, 'amountpaid' : "{0:.2f}".format(planext.amountpaid), 'paymentdate' : planext.paymentdate.strftime("%Y-%m-%d %H:%M:%S"), 'status' : planext.extensionstatus, 'blocked' : planext.blocked}
+            planextensionslist.append(d)
+        context['planextensions'] = planextensionslist
+        if planextensionslist.__len__() == 0:
+            context['message'] = "You have not extended any subscription plan as yet."
+        else:
+            context['message'] = ""
+        context['plan_extension_url'] = skillutils.gethosturl(request) + "/" + mysettings.PLAN_EXTEND_URL
+        tmpl = get_template("subscription/extenduserplan.html")
+        context.update(csrf(request))
+        cxt = Context(context)
+        planextensionhtml = tmpl.render(cxt)
+        for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+            planextensionhtml = planextensionhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+        return HttpResponse(planextensionhtml)
     elif request.method == 'POST': # process this request and extend the userplan by adding a record in th PlanExtensions model.
         pass
 
