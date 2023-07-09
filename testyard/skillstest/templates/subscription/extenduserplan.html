@@ -15,10 +15,10 @@
 	<input type='hidden' name='userplanid' id='userplanid' value='{{userplanid}}'>
 	<div class="form-outline" style="padding-top:40px;padding-left:30px;">
 	<label class="form-label" for="selinvitescount">Select Invitations Count:</label>
-	<select name='selinvitescount' id='selinvitescount' onchange="javascript:computecost();" class='form-control'>
+	<select name='selinvitescount' id='selinvitescount' onchange="javascript:computecost();" class='form-control' data-role="select-dropdown">
 	<option value='10'>10 Invitations Per Test/Interview</option>
 	<option value='20'>20 Invitations Per Test/Interview</option>
-	<option value='50' selected>50 Invitations Per Test/Interview</option>
+	<option value='50' defaultSelected>50 Invitations Per Test/Interview</option>
 	<option value='100'>100 Invitations Per Test/Interview</option>
 	<option value='200'>200 Invitations Per Test/Interview</option>
 	<option value='500'>500 Invitations Per Test/Interview</option>
@@ -27,7 +27,7 @@
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
 	<label class="form-label" for="selperiod">Select Period:</label>
-	<select name='selperiod' id='selperiod' class='form-control'>
+	<select name='selperiod' id='selperiod' class='form-control' data-role="select-dropdown">
 	<option value='30' defaultSelected>30 Days</option>
 	<option value='60'>60 Days</option>
 	<option value='90'>90 Days</option>
