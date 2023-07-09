@@ -8,12 +8,45 @@
 
 
 <div class="row">
-	<div>
+	<div class="overflow-auto d-flex justify-content-center">
 	<!-- Form for extending a userplan -->
+	<span style='font-weight:bold;font-size:large;padding-left:30px;padding-right:25px;'>Extend UserPlan</span><br/>
+	<form name='frmextendsubscription' id='frmextendsubscription' method='POST' action='{{plan_extension_url}}' class="form-horizontal">
+	<input type='hidden' name='userplanid' id='userplanid' value='{{userplanid}}'>
+	<div class="form-outline" style="padding-top:40px;padding-left:30px;">
+	<label class="form-label" for="selinvitescount">Select Invitations Count:</label>
+	<select name='selinvitescount' id='selinvitescount' onchange="javascript:computecost();" class='form-control'>
+	<option value='10'>10 Invitations Per Test/Interview</option>
+	<option value='20'>20 Invitations Per Test/Interview</option>
+	<option value='50' selected>50 Invitations Per Test/Interview</option>
+	<option value='100'>100 Invitations Per Test/Interview</option>
+	<option value='200'>200 Invitations Per Test/Interview</option>
+	<option value='500'>500 Invitations Per Test/Interview</option>
+	<option value='1000'>1000 Invitations Per Test/Interview</option>
+	</select>
+	</div><br/>
+	<div class="form-outline" style="padding-left:30px;">
+	<label class="form-label" for="selperiod">Select Period:</label>
+	<select name='selperiod' id='selperiod' class='form-control'>
+	<option value='30' defaultSelected>30 Days</option>
+	<option value='60'>60 Days</option>
+	<option value='90'>90 Days</option>
+	</select>
+	</div><br/>
+	<div class="form-outline" style="padding-left:30px;">
+	<span>Estimated Cost: </span><span id='estcost' style='display:none;'></span>
+	</div><br/>
+	<div class="form-outline" style="padding-left:30px;">
+	<span style="padding-left:30px;"><input type='button' name='btnbuyext' id='btnbuyext' value='Pay' class='btn btn-primary' onclick='javascript:extensionpayment();' style="background-color:#263238;">&nbsp;&nbsp;</span><span style="padding-left:20px;"><input type='button' name='btnextclose' id='btnextclose' value='Close' onclick='closeplanext();' class='btn btn-testyard1' style="color:#aa0000;"></span>
+	</div>
+	<input type="hidden" id='numextcost' id='numextcost' value='' class='form-control'>
+	<br/>
+	{% csrf_token %}
+	</form>
 	</div>
             <!-- column -->
-            <div class="col-12">
-                <div class="card">
+            <div class="col-12" style="padding-left:30px;padding-right:20px;">
+                <div class="card" style="color:#808080;">
                     <div class="card-body">
                         <h4 class="card-title" style="font-weight:bold;">Plan Extension History</h4>
                     </div>
@@ -24,29 +57,26 @@
                                     <th class="border-top-0">PLAN</th>
                                     <th class="border-top-0">VALID FROM</th>
                                     <th class="border-top-0">VALID TILL</th>
-                                    <th class="border-top-0">PRICE</th>
+                                    <th class="border-top-0">INVITES (PER TEST/INT.)</th>
+                                    <th class="border-top-0">AMOUNT PAID</th>
                                     <th class="border-top-0">STATUS</th>
                                 </tr>
                             </thead>
                             {% if message != "" %}
-                            <tbody>{{message}}</tbody>
+                            <tbody style="padding-left:10px;text-align:center;">{{message}}</tbody>
                             {% else %}
                             <tbody>
-                                {% for userplan in planextensions %}
+                                {% for userplandict in planextensions %}
                                 <tr>
-                                    <td class="txt-oflo">{{userplan.planname}}</td>
-                                    <td><span class="font-medium">{{userplan.planstartdate}}</span> </td>
-                                    <td class="txt-oflo">{{userplan.planenddate}}</td>
-                                    <td><span class="font-medium">${{userplan.amountpaid}}</span></td>
-                                    {% if userplan.planstatus == 1 %}
+                                    <td class="txt-oflo">{{userplandict.planname}}</td>
+                                    <td><span class="font-medium">{{userplandict.periodstart}}</span> </td>
+                                    <td class="txt-oflo">{{userplandict.periodend}}</td>
+                                    <td class="txt-oflo">{{userplandict.invitescount}}</td>
+                                    <td><span class="font-medium">${{userplandict.amountpaid}}</span></td>
+                                    {% if userplandict.status == 1 %}
                                     <td><span class="label label-success label-rounded">Active</span></td>
                                     {% else %}
                                     <td><span class="label label-danger label-rounded">Expired</span></td>
-                                    {% endif %}
-                                    {% if userplan.planname != "Free Plan" %}
-                                    <td><span class="font-medium">&nbsp;**&nbsp;<input type='button' name='btnextend' value='Extend Plan' onclick="javascript:extendplan({{userplan.userplanid}});"></span></td>
-                                    {% else %}
-                                    <td><span class="font-medium">&nbsp;*&nbp;</span></td>
                                     {% endif %}
                                 </tr>
                                 {% endfor %}

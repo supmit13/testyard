@@ -707,6 +707,7 @@ def extenduserplan(request):
         else:
             context['message'] = ""
         context['plan_extension_url'] = skillutils.gethosturl(request) + "/" + mysettings.PLAN_EXTEND_URL
+        context['userplanid'] = userplanid
         tmpl = get_template("subscription/extenduserplan.html")
         context.update(csrf(request))
         cxt = Context(context)

@@ -75,15 +75,14 @@
       }
       xmlhttp.onreadystatechange = function(){
         if(xmlhttp.readyState == 4 && xmlhttp.status==200){
-          planextdiv.opacity = "1.0";
-	  //planextdiv.className= "";
-	  var mouseX;
-          var mouseY;
-          $(document).mousemove( function(e) {
-	    mouseX = e.pageX; 
-	    mouseY = e.pageY;
-	  }); 
-	  planextdiv.style = "display:;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:800px;width:1200px;background-color:#ccffff;position:fixed;top:" + mouseY + "px;left:"+mouseX +"px;";
+          planextdiv.opacity = "100%";
+	  //var mouseX;
+          //var mouseY;
+          //$(document).mousemove( function(e) {
+	   // mouseX = e.pageX*3/2; 
+	   // mouseY = e.pageY*3/2;
+	  //}); 
+	  planextdiv.style = "display:float;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:600px;width:800px;background-color:#17a2b8;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;";
 	  errorpattern = new RegExp("^Error");
           if(errorpattern.test(xmlhttp.responseText)){
             alert(xmlhttp.responseText);
@@ -101,6 +100,22 @@
      //xmlhttp.setRequestHeader('Accept', 'application/json');
      xmlhttp.send();
     }
+    
+    function computecost(){
+    
+    }
+    
+    
+    function extensionpayment(){
+    
+    }
+    
+    function closeplanext(){
+      planextdiv = document.getElementById('planextscreen');
+      //planextdiv.innerHTML = "";
+      planextdiv.style.display = "none";
+    }
+    
   </script>
     
 </head>
@@ -312,7 +327,7 @@
                             </div>
                         </div>
                         <div class="semitrans" style="display:none;" id="planextscreen"></div>
-                        <span>* Free Plan cannot be extended.</span><br/><span>** Extending a Subscription Plan would allow you to send more invitations for the Tests and Interviews created during the plan period.</span><br/>
+                        <span>* Free Plan cannot be extended.</span><br/><span>** Extending a subscription would allow you to send more invitations for the Tests and Interviews created during the period of that specific subscription plan.</span><br/><span style="color:#0000aa;"><u>Note: You can't extend a subscription that is in "Active" state.</u></span><br/>
                     </div>
                 </div>      
       		<!-- column -->
