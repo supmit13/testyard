@@ -4220,12 +4220,12 @@ def sendtestinvitations(request):
         totalcandidates += allreguserinvitations[0][0]
     if allunreguserinvitations.__len__() > 0:
         totalcandidates += allunreguserinvitations[0][0]
-    if totalcandidates >= candidatescount:
+    if totalcandidates >= candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
         message = "Error: You have exhausted the allocated quota of test invitations for this test."
         return HttpResponse(message)
     # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
     postoperationuserinvitations = totalcandidates + emailslist.__len__()
-    if postoperationuserinvitations > candidatescount:
+    if postoperationuserinvitations > candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
         decrementfactor = postoperationuserinvitations - candidatescount
         message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
         return HttpResponse(message)
@@ -7121,12 +7121,12 @@ def setschedule(request):
             totalcandidates += allreguserinvitations[0][0]
         if allunreguserinvitations.__len__() > 0:
             totalcandidates += allunreguserinvitations[0][0]
-        if totalcandidates >= candidatescount:
+        if totalcandidates >= candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
             message = "Error: You have exhausted the allocated quota of test invitations for this test."
             return HttpResponse(message)
         # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
         postoperationuserinvitations = totalcandidates + emailslist.__len__()
-        if postoperationuserinvitations > candidatescount:
+        if postoperationuserinvitations > candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
             decrementfactor = postoperationuserinvitations - candidatescount
             message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
             return HttpResponse(message)
@@ -8273,12 +8273,12 @@ def savenewinterviewschedule(request):
     totalcandidates = 0
     if allreguserinvitations.__len__() > 0:
         totalcandidates += allreguserinvitations[0][0]
-    if totalcandidates >= candidatescount:
+    if totalcandidates >= candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
         message = "Error: You have exhausted the allocated quota of invitations for this interview."
         return HttpResponse(message)
     # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
     postoperationuserinvitations = totalcandidates + emailidslist.__len__()
-    if postoperationuserinvitations > candidatescount:
+    if postoperationuserinvitations > candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
         decrementfactor = postoperationuserinvitations - candidatescount
         message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
         return HttpResponse(message)
@@ -9398,12 +9398,12 @@ def mobile_setschedule(request):
         totalcandidates += allreguserinvitations[0][0]
     if allunreguserinvitations.__len__() > 0:
         totalcandidates += allunreguserinvitations[0][0]
-    if totalcandidates >= candidatescount:
+    if totalcandidates >= candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
         message = "Error: You have exhausted the allocated quota of test invitations for this test."
         return HttpResponse(message)
     # Now, check if the number of invitations being sent would surpass the quota of allowed invitations for the selected plan.
     postoperationuserinvitations = totalcandidates + emailslist.__len__()
-    if postoperationuserinvitations > candidatescount:
+    if postoperationuserinvitations > candidatescount and mysettings.UNLIMITED_INVITATIONS == False:
         decrementfactor = postoperationuserinvitations - candidatescount
         message = "Error: The number of users being invited will surpass the allowed number of invitations that can be sent under your subscription plan. Please remove %s email addresses and try again."%decrementfactor
         return HttpResponse(message)
