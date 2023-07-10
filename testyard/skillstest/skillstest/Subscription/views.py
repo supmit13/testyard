@@ -634,6 +634,31 @@ def showsubscriptiondashboard(request):
     context['unlimitedplan_tests_count'] = unlimitedplan_tests_count
     context['unlimitedplan_interviews_count'] = unlimitedplan_interviews_count
     context['planextrate'] = mysettings.PLAN_EXTENSION_RATE
+    couponslist = []
+    curdate = datetime.datetime.now()
+    couponsql = "select id, coupon_code, coupon_description, discount_value, max_use_count, currency_unit from Subscription_coupon where valid_from < %s and valid_till > %s and status=TRUE"
+    dbcursor.execute(couponsql, (curdate, curdate))
+    couponrecs = dbcursor.fetchall()
+    usercouponsql = "select count(coupon_id), coupon_id from Subscription_usercoupon group by coupon_id"
+    dbcursor.execute(usercouponsql)
+    usercouponrecs = dbcursor.fetchall()
+    usercouponsdict = {}
+    for usercoup in usercouponrecs:
+        usercouponsdict[str(usercoup[1])] = usercoup[0]
+    for couponrec in couponrecs:
+        couponid = couponrec[0]
+        couponcode = couponrec[1]
+        coupondesc = couponrec[2]
+        discountval = couponrec[3]
+        maxcount = couponrec[4]
+        currencyunit = couponrec[5]
+        if str(couponid) in usercouponsdict.keys():
+            if usercouponsdict[str(couponid)] > maxcount:
+                continue
+        d = {'couponid' : couponid, 'couponcode' : couponcode, 'coupondesc' : coupondesc, 'discountval' : discountval, 'currencyunit' : currencyunit}
+        couponslist.append(d)
+    # Get all available coupons from DB along with their discount percentages.
+    context['couponslist'] = couponslist
     inc_context = skillutils.includedtemplatevars("", request)
     for inc_key in inc_context.keys():
         context[inc_key] = inc_context[inc_key]
@@ -710,9 +735,33 @@ def extenduserplan(request):
         context['plan_extension_url'] = skillutils.gethosturl(request) + "/" + mysettings.PLAN_EXTEND_URL
         context['userplanid'] = userplanid
         context['planextrate'] = mysettings.PLAN_EXTENSION_RATE
-        couponrecs = []
+        couponslist = []
+        curdate = datetime.datetime.now()
+        dbconn, dbcursor = skillutils.connectdb()
+        couponsql = "select id, coupon_code, coupon_description, discount_value, max_use_count, currency_unit from Subscription_coupon where valid_from < %s and valid_till > %s and status=TRUE"
+        dbcursor.execute(couponsql, (curdate, curdate))
+        couponrecs = dbcursor.fetchall()
+        usercouponsql = "select count(coupon_id), coupon_id from Subscription_usercoupon group by coupon_id"
+        dbcursor.execute(usercouponsql)
+        usercouponrecs = dbcursor.fetchall()
+        usercouponsdict = {}
+        for usercoup in usercouponrecs:
+            usercouponsdict[str(usercoup[1])] = usercoup[0]
+        for couponrec in couponrecs:
+            couponid = couponrec[0]
+            couponcode = couponrec[1]
+            coupondesc = couponrec[2]
+            discountval = couponrec[3]
+            maxcount = couponrec[4]
+            currencyunit = couponrec[5]
+            if str(couponid) in usercouponsdict.keys():
+                if usercouponsdict[str(couponid)] > maxcount:
+                    continue
+            d = {'couponid' : couponid, 'couponcode' : couponcode, 'coupondesc' : coupondesc, 'discountval' : discountval, 'currencyunit' : currencyunit}
+            couponslist.append(d)
         # Get all available coupons from DB along with their discount percentages.
-        context['couponslist'] = couponrecs
+        context['couponslist'] = couponslist
+        skillutils.disconnectdb(dbconn, dbcursor)
         context['amt_payable'] = "US$ " + "{0:.2f}".format(context['planextrate'] * 50); # We are setting 50 as the default value for invites count.
         tmpl = get_template("subscription/extenduserplan.html")
         context.update(csrf(request))
@@ -754,4 +803,82 @@ def extenduserplan(request):
             message = "The UserPlan associated with this request is still active. You may extend a userplan only when the userplan itself is not active anymore."
             response = HttpResponse(message)
             return response
+        # Get the coupons data in a variable
+        curdate = datetime.datetime.now()
+        dbconn, dbcursor = skillutils.connectdb()
+        couponsql = "select id, coupon_code, coupon_description, discount_value, max_use_count, currency_unit from Subscription_coupon where valid_from < %s and valid_till > %s and status=TRUE"
+        dbcursor.execute(couponsql, (curdate, curdate))
+        couponrecs = dbcursor.fetchall()
+        usercouponsql = "select count(coupon_id), coupon_id from Subscription_usercoupon group by coupon_id"
+        dbcursor.execute(usercouponsql)
+        usercouponrecs = dbcursor.fetchall()
+        usercouponsdict = {}
+        coupondiscountdict = {}
+        for usercoup in usercouponrecs:
+            usercouponsdict[str(usercoup[1])] = usercoup[0]
+        for couponrec in couponrecs:
+            couponid = couponrec[0]
+            couponcode = couponrec[1]
+            coupondesc = couponrec[2]
+            discountval = couponrec[3]
+            maxcount = couponrec[4]
+            currencyunit = couponrec[5]
+            if str(couponid) in usercouponsdict.keys():
+                if usercouponsdict[str(couponid)] > maxcount:
+                    continue
+            usercouponsdict[couponcode] = discountval
+        skillutils.disconnectdb(dbconn, dbcursor)
+        # Get the values entered by the user
+        userplanid, invitescount, period, yescoupon, couponcode, amtpayable = -1, 0, 30, 0, None, 0.00
+        if 'userplanid' in request.POST.keys():
+            try:
+                userplanid = int(request.POST['userplanid'])
+            except:
+                message = "Invalid value for userplan Id. Please rectify it and try again."
+                response = HttpResponse(message)
+                return response
+        else:
+            message = "The request did not come with the required userplanid value. Please rectify the mistake and try again."
+            response = HttpResponse(message)
+            return response
+        if 'selinvitescount' in request.POST.keys():
+            try:
+                invitescount = int(request.POST['selinvitescount'])
+            except:
+                message = "Invalid value for the count of invites selected. Expected an integer value."
+                response = HttpResponse(message)
+                return response
+        else:
+            message = "The request did not come with the required invites count. Please rectify the mistake and try again."
+            response = HttpResponse(message)
+            return response
+        if 'selperiod' in request.POST.keys():
+            try:
+                period = int(request.POST['selperiod'])
+            except:
+                message = "Invalid value for period. Please specify an integer value in days."
+                response = HttpResponse(message)
+                return response
+        else:
+            message = "The request did not come with the required period value in days. Please rectify the mistake and try again."
+            response = HttpResponse(message)
+            return response
+        if 'yescoupon' in request.POST.keys():
+            try:
+                yescoupon = int(request.POST['yescoupon'])
+            except:
+                pass # We will merely assume that the user did not specify a coupon code.
+        else:
+            yescoupon = 0
+        if 'txtcoupon' in request.POST.keys() and yescoupon == 1:
+            couponcode = request.POST['txtcoupon']
+        else:
+            pass
+        if 'amtpayable' in request.POST.keys():
+            try:
+                amtpayable = float(request.POST['amtpayable'])
+            except:
+                pass # This is a hidden field value. And anyway, we are going to compute it. So no action is taken.
+        else:
+            pass
         # Finally, make the computation based on the values received. Compare it with the value sent.

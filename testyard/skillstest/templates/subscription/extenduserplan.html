@@ -5,8 +5,7 @@
     <!-- Custom CSS -->
     <link href="/static/plans_assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
   <!-- Dashboard static files end -->
-
-
+  
 <div class="row">
 	<div class="overflow-auto d-flex justify-content-center">
 	<!-- Form for extending a userplan -->
@@ -33,14 +32,14 @@
 	</div><br/>
 	<div class="form-check row" style="padding-left:30px;">
 	<label class="form-check-label" for="yescoupon">Apply Coupon:</label>&nbsp;<input type='checkbox' name='yescoupon' id='yescoupon' value='1' class='form-check-input' onclick='javascript:showhidecouponfield();'>
-	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' class='form-control' max-length='10' placeholder='Coupon Code' disabled></span>
+	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' class='form-control' max-length='10' placeholder='Coupon Code' disabled onblur="javascript:computecost();"></span>
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
 	<span>Amount Payable: </span><span id='estcost'>{{amt_payable}}</span>
 	<input type='hidden' name='amtpayable' id='amtpayable' value=''>
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
-	<span ><input type='button' name='btnbuyext' id='btnbuyext' value='Pay' class='btn btn-primary' onclick='javascript:extensionpayment();' style="background-color:#263238;width:90px;">&nbsp;&nbsp;</span><span style="padding-left:20px;"><input type='button' name='btnextclose' id='btnextclose' value='Close' onclick='closeplanext();' class='btn btn-testyard1' style="color:#aa0000;width:90px;"></span>
+	<span ><input type='button' name='btnbuyext' id='btnbuyext' value='Pay' class='btn btn-primary' onclick='javascript:extensionpayment();' style="background-color:#263238;width:90px;">&nbsp;&nbsp;</span><span style="padding-left:20px;"><input type='button' name='btnextclose' id='btnextclose' value='Close' onclick='javascript:closeplanext();' class='btn btn-testyard1' style="color:#aa0000;width:90px;"></span>
 	</div>
 	<input type="hidden" id='numextcost' id='numextcost' value='' class='form-control'>
 	<br/>

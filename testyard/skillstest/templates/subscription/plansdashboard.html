@@ -103,16 +103,29 @@
     
     function computecost(){
       planrate = {{planextrate}};
+      couponsdict = {};
+      {% for coupon in couponslist %}
+        couponsdict['{{coupon.couponcode}}'] = {{coupon.discountval}};
+      {% endfor %}
       spantag = document.getElementById('estcost');
       estfield = document.getElementById('amtpayable');
       invitescount = document.frmextendsubscription.selinvitescount.options[document.frmextendsubscription.selinvitescount.options.selectedIndex].value;
-      amtpayablecontent = parseInt(invitescount) * planrate;
+      amtpayablecontent = parseFloat(invitescount) * planrate;
+      // Check if coupon is specified. If yes, add the discount for the coupon.
+      discountpercent = 0.00;
+      if(document.frmextendsubscription.yescoupon.checked == true){
+          couponcodeval = document.frmextendsubscription.txtcoupon.value.trim();
+          discountpercent = parseFloat(couponsdict[couponcodeval]);
+          if(Number.isNaN(discountpercent) == false){
+            amtpayablecontent = amtpayablecontent - (amtpayablecontent * discountpercent/100);
+          }
+      }
       estfield.value = amtpayablecontent;
       spantag.style.display = "";
       spantag.innerHTML = "US$ " + amtpayablecontent.toFixed(2);
     }
-    
-    
+   
+        
     function extensionpayment(){
     
     }
