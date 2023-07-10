@@ -634,6 +634,7 @@ def showsubscriptiondashboard(request):
     context['unlimitedplan_tests_count'] = unlimitedplan_tests_count
     context['unlimitedplan_interviews_count'] = unlimitedplan_interviews_count
     context['planextrate'] = mysettings.PLAN_EXTENSION_RATE
+    context['coupon_discount_url'] = mysettings.FETCH_COUPON_DISCOUNT_URL
     couponslist = []
     curdate = datetime.datetime.now()
     couponsql = "select id, coupon_code, coupon_description, discount_value, max_use_count, currency_unit from Subscription_coupon where valid_from < %s and valid_till > %s and status=TRUE"
@@ -672,7 +673,66 @@ def showsubscriptiondashboard(request):
         plansdashboardhtml = plansdashboardhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(plansdashboardhtml)
 
-    
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def fetchcoupondiscount(request):
+    if request.method != 'POST':
+        message = "Error: Invalid method of call"
+        response = HttpResponse(message)
+        return response
+    sesscode = ""
+    try:
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    except:
+        sessionobj = None
+        userobj = None
+    if userobj is None or sessionobj is None:
+        message = "Error: User is not logged in or session has expired."
+        response = HttpResponse(message)
+        return response
+    else:
+        pass
+    couponcode = ""
+    if 'couponcode' not in request.POST.keys():
+        message = "Error: Required variable couponcode missing from request"
+        return HttpResponse(message)
+    couponcode = request.POST['couponcode']
+    dbconn, dbcursor = skillutils.connectdb()
+    couponsql = "select id, coupon_code, discount_value, max_use_count from Subscription_coupon where valid_from < %s and valid_till > %s and status=TRUE and coupon_code=%s"
+    curdate = datetime.datetime.now()
+    discount = 0.00
+    dbcursor.execute(couponsql, (curdate, curdate, couponcode))
+    couponrecs = dbcursor.fetchall()
+    if couponrecs.__len__() == 0:
+        message = "Error: The coupon code entered could not be found in the system."
+        return HttpResponse(message)
+    for couponrec in couponrecs:
+        couponid = couponrec[0]
+        couponcode = couponrec[1]
+        discountval = couponrec[2]
+        maxcount = couponrec[3]
+        usercouponsql = "select count(*) from Subscription_usercoupon where coupon_id=%s"
+        dbcursor.execute(usercouponsql, (couponid,))
+        usercouponrecs = dbcursor.fetchall()
+        if usercouponrecs.__len__() > 0:
+            usedcount = int(usercouponrecs[0][0])
+            if maxcount > usedcount:
+                discount = 0.00
+                break
+            else:
+                discount = float(discountval)
+                break
+        else:
+            discount = float(discountval)
+            break
+    return HttpResponse(discount)
+        
+
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
@@ -826,7 +886,7 @@ def extenduserplan(request):
             if str(couponid) in usercouponsdict.keys():
                 if usercouponsdict[str(couponid)] > maxcount:
                     continue
-            usercouponsdict[couponcode] = discountval
+            coupondiscountdict[couponcode] = discountval
         skillutils.disconnectdb(dbconn, dbcursor)
         # Get the values entered by the user
         userplanid, invitescount, period, yescoupon, couponcode, amtpayable = -1, 0, 30, 0, None, 0.00
@@ -881,4 +941,13 @@ def extenduserplan(request):
                 pass # This is a hidden field value. And anyway, we are going to compute it. So no action is taken.
         else:
             pass
-        # Finally, make the computation based on the values received. Compare it with the value sent.
+        # Next, make the computation based on the values received. Compare it with the value sent.
+        amounttopay = float(invitescount) * float(mysettings.PLAN_EXTENSION_RATE)
+        if yescoupon > 0 and couponcode is not None:
+            try:
+                amounttopay = amounttopay - coupondiscountdict[couponcode] * amounttopay/100
+            except:
+                message = "Could not apply discount for the coupon code entered by you. Please check with support for the availability of that coupon, or try another coupon code."
+                response = HttpResponse(message)
+                return response
+        # Finally, we are done with the processing on our part, so we need to integrate with the payment gateway.

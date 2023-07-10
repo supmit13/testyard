@@ -101,31 +101,58 @@
      xmlhttp.send();
     }
     
+    function fetchcoupondiscount(couponcode){
+      couponcodeval = document.frmextendsubscription.txtcoupon.value.trim();
+      csrf = document.frmextendsubscription.csrfmiddlewaretoken.value;
+      postdata = "couponcode=" + couponcodeval + "&csrfmiddlewaretoken=" + csrf;
+      var xmlhttp;
+      if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+      }
+      else{
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+          //alert(xmlhttp.responseText);
+          return (xmlhttp.responseText);
+        }
+      };
+      xmlhttp.open("POST", "{{coupon_discount_url}}", true);
+      xmlhttp.send(postdata);
+    }
+    
     function computecost(){
       planrate = {{planextrate}};
-      couponsdict = {};
-      {% for coupon in couponslist %}
-        couponsdict['{{coupon.couponcode}}'] = {{coupon.discountval}};
-      {% endfor %}
       spantag = document.getElementById('estcost');
       estfield = document.getElementById('amtpayable');
+      errorpattern = new RegExp(/Error/g);
       invitescount = document.frmextendsubscription.selinvitescount.options[document.frmextendsubscription.selinvitescount.options.selectedIndex].value;
       amtpayablecontent = parseFloat(invitescount) * planrate;
       // Check if coupon is specified. If yes, add the discount for the coupon.
       discountpercent = 0.00;
       if(document.frmextendsubscription.yescoupon.checked == true){
           couponcodeval = document.frmextendsubscription.txtcoupon.value.trim();
-          discountpercent = parseFloat(couponsdict[couponcodeval]);
-          if(Number.isNaN(discountpercent) == false){
-            amtpayablecontent = amtpayablecontent - (amtpayablecontent * discountpercent/100);
+          if(couponcodeval != ""){
+            coupondiscount = fetchcoupondiscount(couponcodeval);
+            if(errorpattern.test(coupondiscount)){
+              alert(coupondiscount); //'coupondiscount' is an error message.
+              discountpercent = 0;
+            }
+            else{
+              discountpercent = parseFloat(coupondiscount);
+              if(Number.isNaN(discountpercent) == false){
+                amtpayablecontent = amtpayablecontent - (amtpayablecontent * discountpercent/100);
+              }
+            }
           }
       }
       estfield.value = amtpayablecontent;
       spantag.style.display = "";
       spantag.innerHTML = "US$ " + amtpayablecontent.toFixed(2);
     }
-   
-        
+    
+    
     function extensionpayment(){
     
     }
