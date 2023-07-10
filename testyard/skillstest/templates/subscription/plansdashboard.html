@@ -116,6 +116,17 @@
       planextdiv.style.display = "none";
     }
     
+    function showhidecouponfield(){
+      if(document.getElementById('yescoupon').checked == true){
+        document.getElementById('txtcoupon').disabled = false;
+        document.getElementById('couponwrapper').style.display = "";
+      }
+      else{
+        document.getElementById('txtcoupon').disabled = true;
+        document.getElementById('couponwrapper').style.display = "none";
+      }
+    }
+    
   </script>
     
 </head>
