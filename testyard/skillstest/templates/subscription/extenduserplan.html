@@ -36,10 +36,11 @@
 	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' class='form-control' max-length='10' placeholder='Coupon Code' disabled></span>
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
-	<span>Amount Payable: </span><span id='estcost' style='display:none;'></span>
+	<span>Amount Payable: </span><span id='estcost'>{{amt_payable}}</span>
+	<input type='hidden' name='amtpayable' id='amtpayable' value=''>
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
-	<span style="padding-left:30px;"><input type='button' name='btnbuyext' id='btnbuyext' value='Pay' class='btn btn-primary' onclick='javascript:extensionpayment();' style="background-color:#263238;width:90px;">&nbsp;&nbsp;</span><span style="padding-left:20px;"><input type='button' name='btnextclose' id='btnextclose' value='Close' onclick='closeplanext();' class='btn btn-testyard1' style="color:#aa0000;width:90px;"></span>
+	<span ><input type='button' name='btnbuyext' id='btnbuyext' value='Pay' class='btn btn-primary' onclick='javascript:extensionpayment();' style="background-color:#263238;width:90px;">&nbsp;&nbsp;</span><span style="padding-left:20px;"><input type='button' name='btnextclose' id='btnextclose' value='Close' onclick='closeplanext();' class='btn btn-testyard1' style="color:#aa0000;width:90px;"></span>
 	</div>
 	<input type="hidden" id='numextcost' id='numextcost' value='' class='form-control'>
 	<br/>

@@ -102,7 +102,14 @@
     }
     
     function computecost(){
-    
+      planrate = {{planextrate}};
+      spantag = document.getElementById('estcost');
+      estfield = document.getElementById('amtpayable');
+      invitescount = document.frmextendsubscription.selinvitescount.options[document.frmextendsubscription.selinvitescount.options.selectedIndex].value;
+      amtpayablecontent = parseInt(invitescount) * planrate;
+      estfield.value = amtpayablecontent;
+      spantag.style.display = "";
+      spantag.innerHTML = "US$ " + amtpayablecontent.toFixed(2);
     }
     
     

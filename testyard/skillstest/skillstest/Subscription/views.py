@@ -633,6 +633,7 @@ def showsubscriptiondashboard(request):
     context['businessplan_interviews_count'] = businessplan_interviews_count
     context['unlimitedplan_tests_count'] = unlimitedplan_tests_count
     context['unlimitedplan_interviews_count'] = unlimitedplan_interviews_count
+    context['planextrate'] = mysettings.PLAN_EXTENSION_RATE
     inc_context = skillutils.includedtemplatevars("", request)
     for inc_key in inc_context.keys():
         context[inc_key] = inc_context[inc_key]
@@ -708,6 +709,11 @@ def extenduserplan(request):
             context['message'] = ""
         context['plan_extension_url'] = skillutils.gethosturl(request) + "/" + mysettings.PLAN_EXTEND_URL
         context['userplanid'] = userplanid
+        context['planextrate'] = mysettings.PLAN_EXTENSION_RATE
+        couponrecs = []
+        # Get all available coupons from DB along with their discount percentages.
+        context['couponslist'] = couponrecs
+        context['amt_payable'] = "US$ " + "{0:.2f}".format(context['planextrate'] * 50); # We are setting 50 as the default value for invites count.
         tmpl = get_template("subscription/extenduserplan.html")
         context.update(csrf(request))
         cxt = Context(context)
@@ -716,5 +722,36 @@ def extenduserplan(request):
             planextensionhtml = planextensionhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
         return HttpResponse(planextensionhtml)
     elif request.method == 'POST': # process this request and extend the userplan by adding a record in th PlanExtensions model.
-        pass
-
+        """
+        a) Check if the user logged in is the same as the user whose plan is being extended.
+        b) Check if the subscription plan is still active, or if any extension of the same plan is active. If yes, don't proceed.
+        c) Check for coupon code. If found, apply the discount available for that coupon and populate the appropriate fields.
+        """
+        userplanid = -1
+        if 'userplanid' in request.GET.keys():
+            userplanid = request.GET['userplanid']
+        else:
+            message = "Error: Required parameter userplanid is missing. The server can't process this request."
+            response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+            return response
+        # First, make sure that the userplan identified by the given userplanid belongs to the current logged in user
+        userplanobj = None
+        try:
+            userplanobj = UserPlan.objects.get(id=userplanid)
+        except:
+            message = "Error: Could not find the userplan object identified by the given userplanid. "
+            response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+            return response
+        if userplanobj.user != userobj: # The userplan does not belong to this user.
+            message = "Error: The userplan identified by the given Id doesn't belong to you. This incident will be reported."
+            response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PLANS_URL + "?msg=%s"%message)
+            return response
+        if not userplanobj.plan.status:
+            message = "Error: The requested subscription plan is no longer available for use. Please select a different subscription plan to continue. We are sorry for the inconvenience."
+            response = HttpResponse(message)
+            return response
+        if userplanobj.planstatus is True:
+            message = "The UserPlan associated with this request is still active. You may extend a userplan only when the userplan itself is not active anymore."
+            response = HttpResponse(message)
+            return response
+        # Finally, make the computation based on the values received. Compare it with the value sent.
