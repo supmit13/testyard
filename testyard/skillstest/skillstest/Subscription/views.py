@@ -950,4 +950,6 @@ def extenduserplan(request):
                 message = "Could not apply discount for the coupon code entered by you. Please check with support for the availability of that coupon, or try another coupon code."
                 response = HttpResponse(message)
                 return response
-        # Finally, we are done with the processing on our part, so we need to integrate with the payment gateway.
+        # TODO: Finally, we are done with the processing on our part, so we need to integrate with the payment gateway.
+        # TODO: The data has to be inserted in the Subscription_planextension table in DB. Add a record for this user and plan in the table. 
+        #TODO: Also, add a record in the Subscription_usercoupon table, if the user used a coupon to extend the plan.
