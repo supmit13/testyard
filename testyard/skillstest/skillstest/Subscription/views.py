@@ -634,7 +634,8 @@ def showsubscriptiondashboard(request):
     context['unlimitedplan_tests_count'] = unlimitedplan_tests_count
     context['unlimitedplan_interviews_count'] = unlimitedplan_interviews_count
     context['planextrate'] = mysettings.PLAN_EXTENSION_RATE
-    context['coupon_discount_url'] = mysettings.FETCH_COUPON_DISCOUNT_URL
+    context['coupon_discount_url'] = skillutils.gethosturl(request) + "/" + mysettings.FETCH_COUPON_DISCOUNT_URL
+    context['search_test_subscription_url'] = skillutils.gethosturl(request) + "/" + mysettings.SEARCH_TEST_SUBSCRIPTION_URL
     couponslist = []
     curdate = datetime.datetime.now()
     couponsql = "select id, coupon_code, coupon_description, discount_value, max_use_count, currency_unit from Subscription_coupon where valid_from < %s and valid_till > %s and status=TRUE"
@@ -730,7 +731,76 @@ def fetchcoupondiscount(request):
         else:
             discount = float(discountval)
             break
+    skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
     return HttpResponse(discount)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def searchtestinterview(request):
+    if request.method != 'POST':
+        message = "Error: Invalid method of call"
+        response = HttpResponse(message)
+        return response
+    sesscode = ""
+    try:
+        sesscode = request.COOKIES['sessioncode']
+        usertype = request.COOKIES['usertype']
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    except:
+        sessionobj = None
+        userobj = None
+    if userobj is None or sessionobj is None:
+        message = "Error: User is not logged in or session has expired."
+        response = HttpResponse(message)
+        return response
+    else:
+        pass
+    searchkey, itemtype = "", "test" # We choose 'test' as the default type.
+    if 'rdtestint' in request.POST.keys():
+        itemtype = request.POST['rdtestint']
+    else:
+        message = "Error: Required parameter 'rdtestint' missing."
+        return HttpResponse(message)
+    if 'searchkey' in request.POST.keys():
+        searchkey = request.POST['searchkey']
+    if itemtype != "test" and itemtype != "interview":
+        message = "Error: item type could not be recognized"
+        return HttpResponse(message)
+    if searchkey == "":
+        message = "Error: Invalid search key specified."
+        return HttpResponse(message)
+    dbconn, dbcursor = skillutils.connectdb()
+    if itemtype == "test":
+        searchsql = "select createdate, testname from Tests_test where creator_id=" + str(userobj.id) + " and testname like '%" + searchkey + "%'"
+        try:
+            dbcursor.execute(searchsql)
+        except:
+            message = "Error: The sql statement to find the tests and interviews matching the search key failed."
+            return HttpResponse(message)
+    elif itemtype == "interview":
+        searchsql = "select createdate, title from Tests_interview where interviewer_id=" + str(userobj.id) + " and title like '%" + searchkey + "%'"
+        try:
+            dbcursor.execute(searchsql)
+        except:
+            message = "Error: The sql statement to find the tests and interviews matching the search key failed."
+            return HttpResponse(message)
+    else:
+        message = "Error: item type could not be recognized"
+        return HttpResponse(message)
+    allrecs = dbcursor.fetchall()
+    userplanidlist = []
+    for rec in allrecs:
+        createdate = rec[0]
+        userplansql = "select id, plan_id from Subscription_userplan where user_id=%s and planstartdate < %s and planenddate > %s"
+        dbcursor.execute(userplansql, (userobj.id, createdate, createdate))
+        userplanrecords = dbcursor.fetchall()
+        for userplanrec in userplanrecords:
+            userplanidlist.append(userplanrec[0])
+    skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
+    return HttpResponse(json.dumps(userplanidlist))
         
 
 @skillutils.is_session_valid

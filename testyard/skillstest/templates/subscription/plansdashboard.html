@@ -174,6 +174,50 @@
       }
     }
     
+    function searchitem(){
+      postdata = "";
+      errorpattern = new RegExp(/Error/g);
+      radiobtns = document.getElementsByName('rdtestint');
+      for(var i=0; i < radiobtns.length; i++){
+        if(radiobtns[i].checked){
+          postdata = "rdtestint=" + radiobtns[i].value;
+          break;
+        }
+      }
+      csrf = document.frmsearch.csrfmiddlewaretoken.value;
+      postdata = postdata + "&csrfmiddlewaretoken=" + csrf;
+      searchkeyval = document.getElementById('searchkey').value;
+      postdata = postdata + "&searchkey=" + searchkeyval;
+      var xmlhttp;
+      if (window.XMLHttpRequest){
+	xmlhttp=new XMLHttpRequest();
+      }
+      else{
+	xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xmlhttp.onreadystatechange = function(){
+        if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+          // Show the only plan in which the test or interview was created.
+          if(errorpattern.test(xmlhttp.responseText)){
+            alert(xmlhttp.responseText);
+          }
+          else{
+            upidlist = JSON.parse(xmlhttp.responseText);
+            //alert(upidlist);
+            alltrtags = document.getElementsByTagName("tr");
+            for(var j=0; j < alltrtags.length; j++){
+              alltrtags[j].style.display = "none";
+            }
+            for(var i=0; i < upidlist.length;i++){
+              document.getElementById('up_' + upidlist[i].toString()).style.display = "";
+            }
+          }
+        }
+      };
+      xmlhttp.open("POST", "{{search_test_subscription_url}}", true);
+      xmlhttp.send(postdata);
+    }
+    
   </script>
     
 </head>
@@ -304,8 +348,12 @@
                     <!-- column -->
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-body">
+                            <div class="card-body" style="border:2px solid black;">
                                 <h4 class="card-title" style="font-weight:bold;">Subscription History</h4>
+                                <form name='frmsearch'>
+                                {% csrf_token %}
+                                <span>Search for Test <input type='radio' name='rdtestint' id='rdtestint' value='test' class='form-check-input' checked style='padding-left:5px;padding-right:5px;' placeholder='test'> or Interview <input type='radio' name='rdtestint' id='rdtestint' value='interview' class='form-check-input' style='padding-left:5px;padding-right:5px;' placeholder='interview'> <input type='text' name='searchkey' id='searchkey' value='' placeholder='Search by Test/Interview Name' class='form-control' style='padding-left:5px;padding-right:5px;'> <input type='button' name='btnsearch' id='btnsearch' value='Search' class='btn btn-testyard1' onclick='javascript:searchitem();'>
+                                </form>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-hover">
@@ -323,7 +371,7 @@
                                     {% else %}
                                     <tbody>
                                         {% for userplan in userplanslist %}
-                                        <tr>
+                                        <tr id='up_{{userplan.userplanid}}' style="display:;">
                                             <td class="txt-oflo">{{userplan.planname}}</td>
                                             <td><span class="font-medium">{{userplan.planstartdate}}</span> </td>
                                             <td class="txt-oflo">{{userplan.planenddate}}</td>
