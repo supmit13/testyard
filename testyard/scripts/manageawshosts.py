@@ -6,7 +6,7 @@
 
 import os, sys, re, time
 import uuid, glob, random
-import boto3
+import boto3, botocore
 from botocore.exceptions import ClientError
 import mysql.connector
 import simplejson as json
@@ -17,6 +17,7 @@ TARGET_INSTANCE_TYPE = 't2.micro'
 TY_SECURITY_GROUP = "sg-0fad5a10d984b4a78" # HTTP/HTTPS from anywhere, ssh from anywhere. Also port 8888 open for incoming traffic for signal server from local. (launch-wizard-6)
 SVC_SECURITY_GROUP = "" # Port for coturn and urlshortener (8080) - access from anywhere.
 KEYS_DIR = "./keys"
+REPOHOSTIP = "13.232.197.1"
 
 
 def createdbconnection(dbuser='root', dbpasswd='Spmprx13@', dbhost='localhost', dbport='3306', dbname='amazondb'):
@@ -111,7 +112,7 @@ def createkeypair(ec2client, keyname=None):
                 keysql = "insert into aws_keypairs (fingerprint, keyfilename, keyname, keypairid) values ('%s', '%s', '%s', '%s')"%(keyfingerprint, keyfilename, keyname, keypairid)
                 dbcursor.execute(keysql)
                 lastid = dbcursor.lastrowid
-                print(lastid)
+                #print(lastid)
             else:
                 print("Failed to create keypair - %s"%keyresponse)
     except:
@@ -179,12 +180,13 @@ def createinstance(ec2client, keypairname, elasticipaddr, secgroup=TY_SECURITY_G
         platformdetails = instobj['PlatformDetails']
         instownerid = instobj['OwnerId']
         instreservationid = instobj['ReservationId']
-        instancesql = "insert into aws_instance () values ()"
+        instancesql = "insert into aws_instance (instanceid, instancetype, keyname, launchdatetime, privatednsname, privateipaddress, publicdnsname, publicipaddress, subnetid, vpcid, architecture, blockdevicename, volumeid, hypervisor, netinterfaceattachmentid, networkgroups, netmacaddress, netinterfaceid, netownerid, netsubnetid, netvpcid, rootdevicename, rootdevicetype, securitygroups, platformdetails, instanceownerid, instancereservationid, creationdate) values ('%s', '%s', '%s', %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', NOW())"%(instanceid, instancetype, keyname, launchdatetime, pvtdnsname, pvtipaddress, pubdnsname, pubipaddress, subnetid, vpcid, architecture, blockdevicename, volumeid, hypervisor, netifaceattachmentid, networkgroups, netmacaddress, netifaceid, netownerid, subnetid, netvpcid, rootdevicename, rootdevicetype, securitygroups, platformdetails, instownerid, instreservationid)
         dbcursor.execute(instancesql)
         lastid = dbcursor.lastrowid
-        print(lastid)
+        return instanceid
     except:
         print("Failed to create instance object: %s"%sys.exc_info()[1].__str__())
+        return -1
 
 
 
@@ -256,21 +258,117 @@ def imposesecurityrestrictions(instanceid, ec2client, restrictions={}):
     pass
 
 
-def preparehosts(tyinstanceid, svcinstanceid, ec2client):
+def preparehosts(tyinstanceid, svcinstanceid, keyname, ec2client):
     """
     Function to prepare a set of 2 aws instances in order to deploy
-    the TestYard app. This involves 1) pulling the docker image 
-    containing TestYard django app + mysql DB (testyard schema) + signal
-    server + redis/celery/sendmail from the repository into tyinstanceid,
-    2) pulling the docker image containing the coturn setup + urlshortener
-    services into svcinstanceid. 3) Run both images in their respective 
-    instances. Finally, edit skills_settings.py in tyinstanceid to
-    contain the IP address of svcinstanceid, and edit urlhortener's 
-    config.py and coturn config to contain IP address of tyinstanceid.
+    the TestYard app. This involves logging into the instances and 1)
+    pulling the docker image containing TestYard django app + mysql DB
+    (testyard schema) + signal server + redis/celery/sendmail from the
+    repository into tyinstanceid, 2) pulling the docker image containing
+    the coturn setup + urlshortener services into svcinstanceid. 
+    3) Run both images in their respective instances. Finally, edit 
+    skills_settings.py in tyinstanceid to contain the IP address of 
+    svcinstanceid, and edit urlhortener's config.py and coturn config 
+    to contain IP address of tyinstanceid. 
     Note: Need to open port 8888 for incoming http traffic on tyinstanceid.
     Note: Need to open port for coturn traffic on svcinstanceid.
     """
-    pass
+    tydockerimgurl = ""
+    svcdockerimgurl = ""
+    awsdbconn = mysql.connector.connect(host='localhost', user='root', password='Spmprx13@', port=3306, database='amazondb', auth_plugin='mysql_native_password', autocommit=True)
+    awscursor = awsdbconn.cursor()
+    keysql = "select keyfilename, keypairid from aws_keypairs where keyname='%s'"%keyname
+    awscursor.execute(keysql)
+    allkeyrecs = awscursor.fetchall()
+    if allkeyrecs.__len__() == 0:
+        print("Couldn't find key with name %s"%keyname)
+        return None
+    keypairid = allkeyrecs[0][1]
+    keyfilename = allkeyrecs[0][0]
+    keyfilepath = KEYS_DIR + os.path.sep + keyfilename
+    instancesql = "select instanceid, publicipaddress from aws_instance where instanceid in ('%s', '%s')"(tyinstanceid, svcinstanceid)
+    awscursor.execute(instancesql)
+    allinstances = awscursor.fetchall()
+    instancesdict = {}
+    for instancerec in allinstances:
+        instanceid = instancerec[0]
+        instanceip = instancerec[1]
+        instancesdict[instanceid] = instanceip
+    #kfp = open(keyfilepath, "r")
+    #secretkey = kfp.read()
+    #kfp.close()
+    #client = createawsclient(keypairid, secretkey)
+    #tycommands = "sshpass -f '/path/to/passwordfile' scp ubuntu@%s:/home/ubuntu/dockerimages/tyimage.tar /home/ubuntu/."%REPOHOSTIP
+    tycommand = "scp -i %s /home/supmit/work/ty_newiface/docker/tyimage.tar ubuntu@%s:/home/ubuntu/"(keyfilepath, instancesdict[tyinstanceid])
+    svccommand = "scp -i %s /home/supmit/work/ty_newiface/docker/svcimage.tar ubuntu@%s:/home/ubuntu/"(keyfilepath, instancesdict[svcinstanceid])
+    os.system(tycommand)
+    os.system(svccommand)
+    #tycommands = "scp ubuntu@%s:/home/ubuntu/dockerimages/tyimage.tar /home/ubuntu/"%REPOHOSTIP
+    #svccommands = "scp ubuntu@%s:/home/ubuntu/dockerimages/svcimage.tar /home/ubuntu/"%REPOHOSTIP
+    #tyresp = client.send_command(DocumentName="AWS-RunShellScript", Parameters={'commands': tycommands}, InstanceIds=[tyinstanceid,])
+    #svcresp = client.send_command(DocumentName="AWS-RunShellScript", Parameters={'commands': svccommands}, InstanceIds=[svcinstanceid,])
+    # Next, run the images in both hosts to create the corresponding docker instances.
+    tycommands = "docker load -i /home/ubuntu/tyimage.tar;docker run -it -d tyimage;"
+    svccommands = "docker load -i /home/ubuntu/svcimage.tar;docker run -it -d svcimage;"
+    tyresp = client.send_command(DocumentName="AWS-RunShellScript", Parameters={'commands': tycommands}, InstanceIds=[tyinstanceid,])
+    svcresp = client.send_command(DocumentName="AWS-RunShellScript", Parameters={'commands': svccommands}, InstanceIds=[svcinstanceid,])
+    # At this point both instances have the corresponding docker images running. So we need to run the services inside them now.
+    
+    awscursor.close()
+    awsdbconn.close()
+
+
+def setupawshosts(targetdate=None):
+    """
+    Function to check the 'Subscription_userplan' table in 'testyard'
+    database for entries for the given date (passed in as argument).
+    It will check for subscribers of the "Unlimited Plan". It will
+    check if the required amount has been paid. If yes, it will create
+    2 aws instances where the testyard application and the coturn services
+    would be deployed. If the date passed in as argument is None, then it
+    will look for records for the current date. If it is passed as an
+    argument, it should be a string in the format 'YYYY-MM-DD'.
+    """
+    tydbconn = mysql.connector.connect(host='localhost', user='root', password='Spmprx13@', port=3306, database='testyard', auth_plugin='mysql_native_password', autocommit=True)
+    tycursor = tydbconn.cursor()
+    if targetdate is None:
+        targetdate = datetime.datetime.now()
+    else:
+        try:
+            targetdate = datetime.datetime.strptime(targetdate, "%Y-%m-%d %H:%M:%S")
+        except:
+            print("Error: %s"%sys.exc_info()[1].__str__())
+            return None
+    subscriptionqry = "select up.user_id, up.totalcost, up.amountpaid, up.discountamountapplied, u.displayname, u.emailid from Subscription_userplan up, Subscription_plan p, Auth_user u where up.planstatus=TRUE and p.planname='Unlimited Plan' and p.id=up.plan_id and p.status=TRUE and up.subscribedon=%s and up.user_id=u.id and u.active=TRUE and u.newuser=FALSE"
+    tycursor.execute(subscriptionqry, (targetdate,))
+    subscriptionrecords = tycursor.fetchall()
+    allusers = {} # This will hold the valid displayname values and the corresponding email Ids.
+    for srec in subscriptionrecords:
+        uid = srec[0]
+        totalcost = srec[1]
+        amtpaid = srec[2]
+        discountamt = srec[3]
+        displayname = srec[4]
+        emailid = srec[5]
+        if amtpaid + discountamt < totalcost:
+            continue # Skip users who haven't paid the entire amount (with discount)
+        allusers[displayname] = emailid
+    # Now we need to start creating the aws instances for the users in allusers dict.
+    ec2client = createawsclient('ACCESS_KEY_ID', 'SECRET_ACCESS_KEY')
+    for username in allusers.keys():
+        emailid = allusers[username]
+        # Create 2 elastic IP addresses for the 2 instances we will create
+        testyardip = createelasticip(ec2client)
+        servicesip = createelasticip(ec2client)
+        # Create a keypair, and we will use the same keypair for both instances.
+        kpair = createkeypair(ec2client, username) # We are using the username as the keypair name.
+        # Create an instance for the testyard application
+        tyinstid = createinstance(ec2client, kpair, testyardip)
+        # Create an instance for the helper services
+        svcinstid = createinstance(ec2client, kpair, servicesip)
+        # Now we have our instances ready (It already contains docker since the AMI used had docker). 
+        # Time to login and pull the appropriate docker images from the repos. Call 
+        preparehosts(tyinstid, svcinstid, kpair, ec2client)
 
 
 def setupty(tyinstanceid, svcinstanceid, ec2client):
@@ -330,4 +428,4 @@ if __name__ == "__main__":
     
 
 
-
+#https://stackoverflow.com/questions/42645196/how-to-ssh-and-run-commands-in-ec2-using-boto3
