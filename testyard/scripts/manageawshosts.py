@@ -339,6 +339,11 @@ def setupawshosts(targetdate=None):
             targetdate = hhmmsspattern.sub("00:00:00", targetdate)
             targetdate = datetime.datetime.strptime(targetdate, "%Y-%m-%d %H:%M:%S")
             nextdaydate = targetdate + datetime.timedelta(days=1)
+        except TypeError:
+            targetdatestr = targetdate.strftime("%Y-%m-%d %H:%M:%S")
+            targetdatestr = hhmmsspattern.sub("00:00:00", targetdatestr)
+            targetdate = datetime.datetime.strptime(targetdatestr, "%Y-%m-%d %H:%M:%S")
+            nextdaydate = targetdate + datetime.timedelta(days=1)
         except:
             print("Error: %s"%sys.exc_info()[1].__str__())
             return None
