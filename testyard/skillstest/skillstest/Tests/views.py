@@ -426,6 +426,7 @@ def get_user_tests(request):
         interviews_list['asinterviewee'][interviewname] = intdata
     tests_user_dict = {}
     tests_user_dict['downloadmydata'] = downloadtestninterviewsdatalink
+    tests_user_dict['downloadmydataurl'] = skillutils.gethosturl(request) + "/" + mysettings.DOWNLOAD_MY_DATA_URL
     tests_user_dict['user_creator_other_evaluators_dict'] = user_creator_other_evaluators_dict
     tests_user_dict['user_evaluator_creator_other_evaluators_dict'] = user_evaluator_creator_other_evaluators_dict
     tests_user_dict['user_candidate_other_creator_evaluator_dict'] = user_candidate_other_creator_evaluator_dict
@@ -10186,7 +10187,27 @@ def addinterviewtogooglecalendar(request):
         cxt = Context(msgdict)
         gcalendar = tmpl.render(cxt)
         return HttpResponse(gcalendar)
-        
 
 
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def downloadmydata(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.PROFILE_URL + "?msg=%s"%message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponseBadRequest(skillutils.gethosturl(request) + "/" + mysettings.CREATE_INTERVIEW_URL + "?msg=%s"%message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    # TODO: Implementation pending.
+    
+    
 
