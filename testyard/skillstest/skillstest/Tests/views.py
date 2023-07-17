@@ -195,7 +195,8 @@ def get_user_tests(request):
     # Check for user's subscription plan; If user is a "Business Plan" user, then we will need to provide a test and interview data download link.
     busplanobj = None
     busplanflag = False
-    downloadtestninterviewsdatalink = ""
+    #downloadtestninterviewsdatalink = "" # To be uncommented later.
+    downloadtestninterviewsdatalink = "<a href='#/' onclick='javascript:downloadmydata();'>Download My Data</a>"
     try:
         busplanobj = Plan.objects.get(planname="Business Plan")
     except:
