@@ -294,19 +294,15 @@ def preparehosts(tyinstanceid, svcinstanceid, keyname, ec2client):
         instanceid = instancerec[0]
         instanceip = instancerec[1]
         instancesdict[instanceid] = instanceip
-    #kfp = open(keyfilepath, "r")
-    #secretkey = kfp.read()
-    #kfp.close()
-    #client = createawsclient(keypairid, secretkey)
+    kfp = open(keyfilepath, "r")
+    secretkey = kfp.read()
+    kfp.close()
+    client = createawsclient(keypairid, secretkey)
     #tycommands = "sshpass -f '/path/to/passwordfile' scp ubuntu@%s:/home/ubuntu/dockerimages/tyimage.tar /home/ubuntu/."%REPOHOSTIP
     tycommand = "scp -i %s /home/supmit/work/ty_newiface/docker/tyimage.tar ubuntu@%s:/home/ubuntu/"(keyfilepath, instancesdict[tyinstanceid])
     svccommand = "scp -i %s /home/supmit/work/ty_newiface/docker/svcimage.tar ubuntu@%s:/home/ubuntu/"(keyfilepath, instancesdict[svcinstanceid])
     os.system(tycommand)
     os.system(svccommand)
-    #tycommands = "scp ubuntu@%s:/home/ubuntu/dockerimages/tyimage.tar /home/ubuntu/"%REPOHOSTIP
-    #svccommands = "scp ubuntu@%s:/home/ubuntu/dockerimages/svcimage.tar /home/ubuntu/"%REPOHOSTIP
-    #tyresp = client.send_command(DocumentName="AWS-RunShellScript", Parameters={'commands': tycommands}, InstanceIds=[tyinstanceid,])
-    #svcresp = client.send_command(DocumentName="AWS-RunShellScript", Parameters={'commands': svccommands}, InstanceIds=[svcinstanceid,])
     # Next, run the images in both hosts to create the corresponding docker instances.
     tycommands = "docker load -i /home/ubuntu/tyimage.tar;docker run -it -d tyimage;"
     svccommands = "docker load -i /home/ubuntu/svcimage.tar;docker run -it -d svcimage;"
@@ -329,18 +325,25 @@ def setupawshosts(targetdate=None):
     will look for records for the current date. If it is passed as an
     argument, it should be a string in the format 'YYYY-MM-DD'.
     """
+    hhmmsspattern = re.compile("\d{2}\:\d{2}\:\d{2}")
     tydbconn = mysql.connector.connect(host='localhost', user='root', password='Spmprx13@', port=3306, database='testyard', auth_plugin='mysql_native_password', autocommit=True)
     tycursor = tydbconn.cursor()
     if targetdate is None:
         targetdate = datetime.datetime.now()
+        targetdatestr = targetdate.strftime("%Y-%m-%d %H:%M:%S")
+        targetdatestr = hhmmsspattern.sub("00:00:00", targetdatestr)
+        targetdate = datetime.datetime.strptime(targetdatestr, "%Y-%m-%d %H:%M:%S")
+        nextdaydate = targetdate + datetime.timedelta(days=1)
     else:
         try:
+            targetdate = hhmmsspattern.sub("00:00:00", targetdate)
             targetdate = datetime.datetime.strptime(targetdate, "%Y-%m-%d %H:%M:%S")
+            nextdaydate = targetdate + datetime.timedelta(days=1)
         except:
             print("Error: %s"%sys.exc_info()[1].__str__())
             return None
-    subscriptionqry = "select up.user_id, up.totalcost, up.amountpaid, up.discountamountapplied, u.displayname, u.emailid from Subscription_userplan up, Subscription_plan p, Auth_user u where up.planstatus=TRUE and p.planname='Unlimited Plan' and p.id=up.plan_id and p.status=TRUE and up.subscribedon=%s and up.user_id=u.id and u.active=TRUE and u.newuser=FALSE"
-    tycursor.execute(subscriptionqry, (targetdate,))
+    subscriptionqry = "select up.user_id, up.totalcost, up.amountpaid, up.discountamountapplied, u.displayname, u.emailid from Subscription_userplan up, Subscription_plan p, Auth_user u where up.planstatus=TRUE and p.planname='Unlimited Plan' and p.id=up.plan_id and p.status=TRUE and up.subscribedon > %s and subscribedon < %s and up.user_id=u.id and u.active=TRUE and u.newuser=FALSE"
+    tycursor.execute(subscriptionqry, (targetdate, nextdaydate))
     subscriptionrecords = tycursor.fetchall()
     allusers = {} # This will hold the valid displayname values and the corresponding email Ids.
     for srec in subscriptionrecords:
@@ -413,8 +416,11 @@ def _sendemail(fromaddr, toaddr, subject, message, cc="", bcc=""):
 
 
 if __name__ == "__main__":
+    targetdate = datetime.datetime.now()
     if sys.argv.__len__() > 1:
-        keyname = sys.argv[1]
+        targetdate = sys.argv[1]
+    if sys.argv.__len__() > 2:
+        keyname = sys.argv[2]
     else:
         keyname = None
     try:
