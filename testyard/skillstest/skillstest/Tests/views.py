@@ -194,9 +194,8 @@ def get_user_tests(request):
     createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl, addtogooglecalendarurl, showinterviewschedulescreenurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL, mysettings.GOOGLE_CALENDAR_URL, mysettings.SHOW_INTERVIEW_SCHEDULE_SCREEN_URL
     # Check for user's subscription plan; If user is a "Business Plan" user, then we will need to provide a test and interview data download link.
     busplanobj = None
-    busplanflag = False
-    #downloadtestninterviewsdatalink = "" # To be uncommented later.
-    downloadtestninterviewsdatalink = "<a href='#/' onclick='javascript:downloadmydata();'>Download My Data</a>"
+    busplanflag = True # TODO: To be initialized to False later.
+    downloadtestninterviewsdatalink = "" 
     try:
         busplanobj = Plan.objects.get(planname="Business Plan")
     except:
@@ -209,7 +208,7 @@ def get_user_tests(request):
                 busplanflag = True
                 break
     if busplanflag is True:
-        downloadtestninterviewsdatalink = "<a href='#/' onclick='javascript:downloadmydata();'>Download My Tests and Interviews</a>"
+        downloadtestninterviewsdatalink = "<h3><img src='static/images/download.png' style='height:25px;width:25px;'>&nbsp;&nbsp; <a href='#/' onclick='javascript:downloadmydata();'>Download My Data</a></h3><span id='waiterspan' style='display:none;'></span>"
     test_created_count = Test.objects.filter(creator=userobj).count()
     if test_created_count <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id

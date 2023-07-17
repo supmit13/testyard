@@ -4707,6 +4707,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
           fmt = "xml";
           waitspan = document.getElementById('waiterspan');
           waitspan.style.display = "";
+          waitspan.innerHTML = "<img src='/static/images/loading_small.gif'>";
 	  csrf = document.frmmaintests.csrfmiddlewaretoken.value;
 	  postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + csrf;
 	  if (window.XMLHttpRequest){
@@ -4725,7 +4726,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	  xmlhttp.open("POST", "{{downloadmydataurl}}", true);
 	  xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   	  xmlhttp.send(postdata);
-  	  waitspan.innerHTML = "<img src='/static/images/loading_small.gif'>";
   	  return false;
         }
 
@@ -4742,7 +4742,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 				<h3><img src='static/images/newTest.png' style='height:25px;width:25px;'>&nbsp;&nbsp; {{ createlink }}</h3>
 				<h3><img src='static/images/upload.png' style='height:25px;width:25px;'>&nbsp;&nbsp; {{ uploadlink }}</h3>
 				<h3><img src='static/images/meeting.png' style='height:25px;width:25px;'>&nbsp;&nbsp; {{ interviewlink }}</h3>
-				<h3><img src='static/images/download.png' style='height:25px;width:25px;'>&nbsp;&nbsp; {{downloadmydata}} </h3><span id='waiterspan' style="display:none;"></span>
+				{{downloadmydata}} 
 				
 			</div>
 			<br />			
