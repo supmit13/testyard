@@ -192,7 +192,10 @@ def get_user_tests(request):
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')[startctr_ascreator:endctr_ascreator]
     # Determine if the user should be shown the "Create Test" link
     createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl, addtogooglecalendarurl, showinterviewschedulescreenurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL, mysettings.GOOGLE_CALENDAR_URL, mysettings.SHOW_INTERVIEW_SCHEDULE_SCREEN_URL
-    # Check for user's subscription plan; If user is a "Business Plan" user, then we will need to provide a test and interview data download link.
+    # Check for user's subscription plan; If user is a "Business Plan" user, 
+    # then we will need to provide a test and interview data download link.
+    # NOTE: If the user is on a Business Plan extension, she/he/other should not
+    # be able to download the data.
     busplanobj = None
     busplanflag = True # TODO: To be initialized to False later.
     downloadtestninterviewsdatalink = "" 
@@ -10213,7 +10216,29 @@ def downloadmydata(request):
         message = "Error: Invalid format specification."
         response = HttpResponse(message)
         return response
-    # TODO: Implementation pending. First, check if user is a "Business Plan" user
+    # First, check for user's subscription plan; If user is a "Business Plan" user, 
+    # then we will need to provide a test and interview data download link.
+    # NOTE: If the user is on a Business Plan extension, she/he/other should not
+    # be able to download the data. This is only for active Business Plan users.
+    busplanobj = None
+    busplanflag = False
+    try:
+        busplanobj = Plan.objects.get(planname="Business Plan")
+    except:
+        pass
+    if busplanobj is not None:
+        userplanqset = UserPlan.objects.filter(plan=busplanobj, user=userobj, planstatus=True).order_by('-subscribedon')
+        curdate = datetime.datetime.now()
+        for userplanobj in userplanqset:
+            if curdate >= userplanobj.planstartdate and curdate <  userplanobj.planenddate:
+                busplanflag = True
+                break
+    if busplanflag is False:
+        message = "Error: User '%s' is not an active Business Plan user. This facility is available to 'Active' Business Plan users only."%userobj.displayname
+        response = HttpResponse(message)
+        return response
+    # TODO: Get all tests created by this user, tests taken by this user, and Interviews created by this user.
+    # Implementation pending. 
     
     
 
