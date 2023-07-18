@@ -10207,7 +10207,13 @@ def downloadmydata(request):
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
     fmt = "xml"
-    # TODO: Implementation pending.
+    if 'format' in request.POST.keys():
+        fmt = request.POST['format']
+    if fmt != "xml" and fmt != "csv":
+        message = "Error: Invalid format specification."
+        response = HttpResponse(message)
+        return response
+    # TODO: Implementation pending. First, check if user is a "Business Plan" user
     
     
 
