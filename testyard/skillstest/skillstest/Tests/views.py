@@ -208,7 +208,7 @@ def get_user_tests(request):
                 busplanflag = True
                 break
     if busplanflag is True:
-        downloadtestninterviewsdatalink = "<h3><img src='static/images/download.png' style='height:25px;width:25px;'>&nbsp;&nbsp; <a href='#/' onclick='javascript:downloadmydata();'>Download My Data</a></h3><span id='waiterspan' style='display:none;'></span>"
+        downloadtestninterviewsdatalink = "<h3><img src='static/images/download.png' style='height:25px;width:25px;'>&nbsp;&nbsp; <a href='#/' onclick='javascript:showformatoptions();'>Download My Data</a></h3><span id='waiterspan' style='display:none;'></span>"
     test_created_count = Test.objects.filter(creator=userobj).count()
     if test_created_count <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
@@ -10206,6 +10206,7 @@ def downloadmydata(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
+    fmt = "xml"
     # TODO: Implementation pending.
     
     

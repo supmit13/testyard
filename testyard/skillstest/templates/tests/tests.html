@@ -4702,11 +4702,28 @@ ul.tab li a:focus, .active {background-color: #ccc;}
           document.getElementById("listemails_"+candidateid).title = emailslist;
         }
         
+        
+        function showformatoptions(){
+          waitspan = document.getElementById('waiterspan');
+          waitspan.style = "display:flex; flex-direction:row;vertical-align:middle;justify-content: center; align-items: center;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:50px;width:200px;background-color:#ccffff;";
+          waitspan.innerHTML = "<span style='float:left;padding-left:10px;padding-right:10px;'>xml&nbsp;<input type='radio' name='rdfmt' id='rdfmt1' value='xml' checked style='display:flex;float:left;'></span>&nbsp;|&nbsp;<span style='float:left;padding-left:10px;padding-right:10px;'>csv<input type='radio' name='rdfmt' id='rdfmt2' value='csv' style='display:flex;float:left;'></span>&nbsp;<span><input type='button' name='btngo' value='Go' onclick='javascript:downloadmydata();' style='background-color:#0489ca;border-radius:8px;height:35px;vertical-align:middle;text-align:center;color:#ffffff;font-weight:bold;'></span>";
+        }
+        
+        
         function downloadmydata(){ //TODO: Implement downloading of tests and interviews data.
           var xmlhttp;
           fmt = "xml";
+          fmtradiobtn1 = document.getElementById('rdfmt1');
+          fmtradiobtn2 = document.getElementById('rdfmt2');
+          if(fmtradiobtn1.checked == true){
+            fmt = "xml";
+          }
+          else if(fmtradiobtn2.checked == true){
+            fmt = "csv";
+          }
+          //alert(fmt);
           waitspan = document.getElementById('waiterspan');
-          waitspan.style.display = "";
+          waitspan.style = "display:;";
           waitspan.innerHTML = "<img src='/static/images/loading_small.gif'>";
 	  csrf = document.frmmaintests.csrfmiddlewaretoken.value;
 	  postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + csrf;
