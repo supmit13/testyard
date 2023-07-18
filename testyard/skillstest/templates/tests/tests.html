@@ -4703,10 +4703,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
         }
         
         
+        function closewaiter(){
+          waitspan = document.getElementById('waiterspan');
+          waitspan.innerHTML = "";
+          waitspan.style.display = "none";
+        }
+        
         function showformatoptions(){
           waitspan = document.getElementById('waiterspan');
-          waitspan.style = "display:flex; flex-direction:row;vertical-align:middle;justify-content: center; align-items: center;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:50px;width:200px;background-color:#ccffff;";
-          waitspan.innerHTML = "<span style='float:left;padding-left:10px;padding-right:10px;'>xml&nbsp;<input type='radio' name='rdfmt' id='rdfmt1' value='xml' checked style='display:flex;float:left;'></span>&nbsp;|&nbsp;<span style='float:left;padding-left:10px;padding-right:10px;'>csv<input type='radio' name='rdfmt' id='rdfmt2' value='csv' style='display:flex;float:left;'></span>&nbsp;<span><button  name='btngo' value='Go' onclick='javascript:downloadmydata();' style='background-color:#0489ca;border-radius:8px;height:35px;width:60px;color:#ffffff;font-weight:bold;'>Go</button></span>";
+          waitspan.style = "display:flex; flex-direction:row;justify-content:center;align-items: center;padding-left:5px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:50px;width:200px;background-color:#ccffff;border:2px groove blue;border-radius:7px;";
+          waitspan.innerHTML = "<span style='float:left;padding-left:10px;padding-right:10px;'>xml&nbsp;<input type='radio' name='rdfmt' id='rdfmt1' value='xml' checked style='display:flex;float:left;'></span>&nbsp;|&nbsp;<span style='float:left;padding-left:10px;padding-right:10px;'>csv<input type='radio' name='rdfmt' id='rdfmt2' value='csv' style='display:flex;float:left;'></span>&nbsp;<span><button  name='btngo' value='Go' onclick='javascript:downloadmydata();' style='background-color:#0489ca;border-radius:8px;height:35px;width:50px;color:#ffffff;font-weight:bold;'>Go</button></span><span><button  name='btngo' onclick='javascript:closewaiter();' style='background-color:#0489ca;border-radius:8px;height:35px;width:50px;color:#ffffff;font-weight:bold;'>X</button></span>";
         }
         
         
