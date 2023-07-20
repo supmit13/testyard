@@ -1139,3 +1139,15 @@ def paypal_seller_onboarding(request):
         message = "Could not retrieve sign up link response: %s"%sys.exc_info()[1].__str__()
         return message
 
+
+
+def dumpasxml(testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
+    pass
+
+
+def dumpascsv(testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
+    pass
+
+
+
+
