@@ -10244,9 +10244,9 @@ def downloadmydata(request):
     interviewrecords_ascreator = []
     interviewrecords_ascandidate = []
     # Get tests created by this user:
-    mytestssql_creator = "select t.id, t.testname, t.topicname, tt.topicname, t.creatorisevaluator, e.evalgroupname, t.testtype, t.createdate, t.maxscore, t.passscore, t.ruleset, t.duration, t.allowedlanguages, t.challengecount, t.activationdate, t.publishdate, t.status, t.allowmultiattempts, t.maxattemptscount, t.attemptsinterval, t.attemptsintervalunit, t.randomsequencing, t.multimediareqd, t.testlinkid, t.progenv, t.scope, t.quality, t.negativescoreallowed, c.statement, c.challengetype, c.maxresponsesizeallowable, c.option1, c.option2, c.option3, c.option4, c.option5, c.option6, c.option7, c.option8, c.challengescore, c.negativescore, c.mustrespond, c.responsekey, c.mediafile, c.additionalurl, c.timeframe, c.subtopic, c.challengequality, c.testlinkid, c.oneormore, c.proglang, c.mathenv from Tests_test t, Tests_challenge c, Tests_evaluator e, Tests_topic tt where t.id=c.test_id and t.evaluator_id=e.id and t.topic_id=tt.id and t.creator_id=%s"%userobj.id
+    mytestssql_creator = "select t.id, t.testname, t.topicname, tt.topicname, t.creatorisevaluator, e.evalgroupname, t.testtype, t.createdate, t.maxscore, t.passscore, t.ruleset, t.duration, t.allowedlanguages, t.challengecount, t.activationdate, t.publishdate, t.status, t.allowmultiattempts, t.maxattemptscount, t.attemptsinterval, t.attemptsintervalunit, t.randomsequencing, t.multimediareqd, t.testlinkid, t.progenv, t.scope, t.quality, t.negativescoreallowed, c.statement, c.challengetype, c.maxresponsesizeallowable, c.option1, c.option2, c.option3, c.option4, c.option5, c.option6, c.option7, c.option8, c.challengescore, c.negativescore, c.mustrespond, c.responsekey, c.mediafile, c.additionalurl, c.timeframe, c.subtopic, c.challengequality, c.testlinkid, c.oneormore, c.proglang, c.mathenv from Tests_test t, Tests_challenge c, Tests_evaluator e, Tests_topic tt where t.id=c.test_id and t.evaluator_id=e.id and t.topic_id=tt.id and t.creator_id=%s"
     try:
-        dbcursor.execute(mytestssql_creator)
+        dbcursor.execute(mytestssql_creator, (userobj.id,))
         testrecords_ascreator = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
@@ -10254,9 +10254,9 @@ def downloadmydata(request):
         response = HttpResponse(message)
         return response
     # Get tests taken by this user:
-    mytestssql_candidate = "select ut.id, ut.test_id, t.testname, t.topicname, ut.emailaddr, ut.testurl, ut.validfrom, ut.validtill, ut.status, ut.outcome, ut.score, ut.starttime, ut.endtime, ut.ipaddress, ut.clientsware, ut.sessid, ut.active, ut.cancelled, ut.stringid, ut.evaluator_comment, ut.first_eval_timestamp, ut.visibility, ut.evalcommitstate, ut.disqualified, ut.schedule, ut.windowchangeattempts, ut.dateadded from Tests_usertest ut, Tests_test t where t.id=ut.test_id and ut.user_id=%s"%userobj.id
+    mytestssql_candidate = "select ut.id, ut.test_id, t.testname, t.topicname, ut.emailaddr, ut.testurl, ut.validfrom, ut.validtill, ut.status, ut.outcome, ut.score, ut.starttime, ut.endtime, ut.ipaddress, ut.clientsware, ut.sessid, ut.active, ut.cancelled, ut.stringid, ut.evaluator_comment, ut.first_eval_timestamp, ut.visibility, ut.evalcommitstate, ut.disqualified, ut.schedule, ut.windowchangeattempts, ut.dateadded from Tests_usertest ut, Tests_test t where t.id=ut.test_id and ut.user_id=%s"
     try:
-        dbcursor.execute(mytestssql_candidate)
+        dbcursor.execute(mytestssql_candidate, (userobj.id,))
         testrecords_ascandidate = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
@@ -10264,9 +10264,9 @@ def downloadmydata(request):
         response = HttpResponse(message)
         return response
     # Get interviews created by this user:
-    myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, t.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i, Tests_topic t where i.topic_id=t.id and i.interviewer_id=%d"%userobj.id
+    myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, t.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i, Tests_topic t where i.topic_id=t.id and i.interviewer_id=%d"
     try:
-        dbcursor.execute(myinterviewssql_creator)
+        dbcursor.execute(myinterviewssql_creator, (userobj.id,))
         interviewrecords_ascreator = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
@@ -10274,9 +10274,9 @@ def downloadmydata(request):
         response = HttpResponse(message)
         return response
     # Get interviews attended by this user:
-    myinterviewssql_candidate = "select ic.id, ic.interview_id, i.title, ic.emailaddr, ic.scheduledtime, ic.actualstarttime, ic.interviewlinkid, ic.totaltimetaken, ic.interviewurl, ic.dateadded from Tests_interviewcandidates ic, Tests_interview i where ic.interview_id=i.id and ic.emailaddr='%s'"%userobj.emailid
+    myinterviewssql_candidate = "select ic.id, ic.interview_id, i.title, ic.emailaddr, ic.scheduledtime, ic.actualstarttime, ic.interviewlinkid, ic.totaltimetaken, ic.interviewurl, ic.dateadded from Tests_interviewcandidates ic, Tests_interview i where ic.interview_id=i.id and ic.emailaddr='%s'"
     try:
-        dbcursor.execute(myinterviewssql_candidate)
+        dbcursor.execute(myinterviewssql_candidate, (userobj.emailid,))
         interviewrecords_ascandidate = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
@@ -10286,9 +10286,9 @@ def downloadmydata(request):
     dumpfilepath = ""
     mimetype = "text/xml"
     if fmt == "xml":
-        dumpfilepath = skillutils.dumpasxml(testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate)
+        dumpfilepath = skillutils.dumpasxml(userobj.displayname, testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate)
     elif fmt == "csv":
-        dumpfilepath = skillutils.dumpascsv(testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate)
+        dumpfilepath = skillutils.dumpascsv(userobj.displayname, testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate)
         mimetype = "text/csv"
     else:
         skillutils.disconnectdb(dbconn, dbcursor)

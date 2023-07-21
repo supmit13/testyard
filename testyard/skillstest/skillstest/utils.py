@@ -1141,12 +1141,34 @@ def paypal_seller_onboarding(request):
 
 
 
-def dumpasxml(testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
-    pass
+def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
+    """
+    We will create 4 files here - one each for each of the record types.
+    Finally, we will zip them up and return the path to the zipped archive.
+    """
+    curdatetime = datetime.datetime.now()
+    curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
+    dumpfile1 = username + "_testsascreator_" + curdatetimestr + ".xml"
+    dumpfile2 = username + "_testsascandidate_" + curdatetimestr + ".xml"
+    dumpfile3 = username + "_interviewsascreator_" + curdatetimestr + ".xml"
+    dumpfile4 = username + "_interviewsascandidate_" + curdatetimestr + ".xml"
+    filecontent1 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
+    filecontent2 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
+    filecontent3 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
+    filecontent4 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
 
 
-def dumpascsv(testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
-    pass
+def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
+    """
+    We will create 4 files here - one each for each of the record types.
+    Finally, we will zip them up and return the path to the zipped archive.
+    """
+    curdatetime = datetime.datetime.now()
+    curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
+    dumpfile1 = username + "_testsascreator_" + curdatetimestr + ".csv"
+    dumpfile2 = username + "_testsascandidate_" + curdatetimestr + ".csv"
+    dumpfile3 = username + "_interviewsascreator_" + curdatetimestr + ".csv"
+    dumpfile4 = username + "_interviewsascandidate_" + curdatetimestr + ".csv"
 
 
 
