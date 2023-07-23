@@ -10243,8 +10243,9 @@ def downloadmydata(request):
     testrecords_ascandidate = []
     interviewrecords_ascreator = []
     interviewrecords_ascandidate = []
+    testsdict_ascreator, testsdict_ascandidate, interviewsdict_ascreator, interviewsdict_ascandidate = {}, {}, {}, {}
     # Get tests created by this user:
-    mytestssql_creator = "select t.id, t.testname, t.topicname, tt.topicname, t.creatorisevaluator, e.evalgroupname, t.testtype, t.createdate, t.maxscore, t.passscore, t.ruleset, t.duration, t.allowedlanguages, t.challengecount, t.activationdate, t.publishdate, t.status, t.allowmultiattempts, t.maxattemptscount, t.attemptsinterval, t.attemptsintervalunit, t.randomsequencing, t.multimediareqd, t.testlinkid, t.progenv, t.scope, t.quality, t.negativescoreallowed, c.statement, c.challengetype, c.maxresponsesizeallowable, c.option1, c.option2, c.option3, c.option4, c.option5, c.option6, c.option7, c.option8, c.challengescore, c.negativescore, c.mustrespond, c.responsekey, c.mediafile, c.additionalurl, c.timeframe, c.subtopic, c.challengequality, c.testlinkid, c.oneormore, c.proglang, c.mathenv from Tests_test t, Tests_challenge c, Tests_evaluator e, Tests_topic tt where t.id=c.test_id and t.evaluator_id=e.id and t.topic_id=tt.id and t.creator_id=%s"
+    mytestssql_creator = "select t.id, t.testname, t.topicname, tt.topicname, t.creatorisevaluator, e.evalgroupname, t.testtype, t.createdate, t.maxscore, t.passscore, t.ruleset, t.duration, t.allowedlanguages, t.challengecount, t.activationdate, t.publishdate, t.status, t.allowmultiattempts, t.maxattemptscount, t.attemptsinterval, t.attemptsintervalunit, t.randomsequencing, t.multimediareqd, t.testlinkid, t.progenv, t.scope, t.quality, t.negativescoreallowed, c.id, c.statement, c.challengetype, c.maxresponsesizeallowable, c.option1, c.option2, c.option3, c.option4, c.option5, c.option6, c.option7, c.option8, c.challengescore, c.negativescore, c.mustrespond, c.responsekey, c.mediafile, c.additionalurl, c.timeframe, c.subtopic_id, c.challengequality, c.testlinkid, c.oneormore, c.proglang, c.mathenv from Tests_test t, Tests_challenge c, Tests_evaluator e, Tests_topic tt where t.id=c.test_id and t.evaluator_id=e.id and t.topic_id=tt.id and t.creator_id=%s"
     try:
         dbcursor.execute(mytestssql_creator, (userobj.id,))
         testrecords_ascreator = dbcursor.fetchall()
@@ -10253,6 +10254,51 @@ def downloadmydata(request):
         message = "Error: Something went wrong - %s"%sys.exc_info()[1].__str__()
         response = HttpResponse(message)
         return response
+    testchallengesdict = {}
+    for testrecord in  testrecords_ascreator:
+        testid = testrecord[0]
+        testname = testrecord[1]
+        test_topicname = testrecord[2]
+        topic_topicname = testrecord[3]
+        creatorisevaluator = testrecord[4]
+        evalgroupname = testrecord[5]
+        testtype = testrecord[6]
+        test_createdate = testrecord[7]
+        maxscore = testrecord[8]
+        passscore = testrecord[9]
+        ruleset = testrecord[10]
+        test_duration = testrecord[11]
+        allowedlanguages = testrecord[12]
+        challengescount = testrecord[13]
+        activationdate = testrecord[14]
+        publishdate = testrecord[15]
+        test_status = testrecord[16]
+        allowmultipleattempts = testrecord[17]
+        maxattemptscount = testrecord[18]
+        attemptsinterval = testrecord[19]
+        attemptsintervalunit = testrecord[20]
+        randomsequencing = testrecord[21]
+        multimediarequired = testrecord[22]
+        testlinkid = testrecord[23]
+        progenv = testrecord[24]
+        test_scope = testrecord[25]
+        test_quality = testrecord[26]
+        negativescoreallowed = testrecord[27]
+        challenge = {'challengeid' : testrecord[28], 'statement' : testrecord[29], 'challengetype' : testrecord[30], 'maxresponsesizeallowable' : testrecord[31], 'option1' : testrecord[32], 'option2' : testrecord[33], 'option3' : testrecord[34], 'option4' : testrecord[35], 'option5' : testrecord[36], 'option6' : testrecord[37], 'option7' : testrecord[38], 'option8' : testrecord[39], 'challengescore' : testrecord[40], 'negativescore' : testrecord[41], 'mustrespond' : testrecord[42], 'responsekey' : testrecord[43], 'mediafile' : testrecord[44], 'additionalurl' : testrecord[45], 'timeframe' : testrecord[46], 'challenge_subtopic_id' : testrecord[47], 'challengequality' : testrecord[48], 'challenge_testlinkid' : testrecord[49], 'oneormore' : testrecord[50], 'proglang' : testrecord[51], 'mathenv' : testrecord[52]}
+        if testname in testchallengesdict.keys():
+            challengeslist = testchallengesdict[testname]
+            challengeslist.append(challenge)
+            testchallengesdict[testname] = challengeslist
+        else:
+            challengeslist = []
+            challengeslist.append(challenge)
+            testchallengesdict[testname] = challengeslist
+            testsdict_ascreator[testname] = {'testid' : testid, 'testname' : testname, 'test_topicname' : test_topicname, 'topic_topicname' : topic_topicname, 'creatorisevaluator' : creatorisevaluator, 'evalgroupname' : evalgroupname, 'testtype' : testtype, 'test_createdate' : test_createdate, 'maxscore' : maxscore, 'passscore' : passscore, 'ruleset' : ruleset, 'test_duration' : test_duration, 'allowedlanguages' : allowedlanguages, 'challengescount' : challengescount, 'activationdate' : activationdate, 'publishdate' : publishdate, 'test_status' : test_status, 'allowmultipleattempts' : allowmultipleattempts, 'maxattemptscount' : maxattemptscount, 'attemptsinterval' : attemptsinterval, 'attemptsintervalunit' : attemptsintervalunit, 'randomsequencing' : randomsequencing, 'multimediarequired' : multimediarequired, 'testlinkid' : testlinkid, 'progenv' : progenv, 'test_scope' : test_scope, 'test_quality' : test_quality, 'negativescoreallowed' : negativescoreallowed, 'challenges' : []}
+    for testname in testchallengesdict.keys():
+        challengeslist = testchallengesdict[testname]
+        for challenge in challengeslist:
+            testsdict_ascreator[testname]['challenges'].append(challenge)
+    # So, now testsdict_ascreator is a dict with test names as keys and a dict with the test attributes and challenges list as value.
     # Get tests taken by this user:
     mytestssql_candidate = "select ut.id, ut.test_id, t.testname, t.topicname, ut.emailaddr, ut.testurl, ut.validfrom, ut.validtill, ut.status, ut.outcome, ut.score, ut.starttime, ut.endtime, ut.ipaddress, ut.clientsware, ut.sessid, ut.active, ut.cancelled, ut.stringid, ut.evaluator_comment, ut.first_eval_timestamp, ut.visibility, ut.evalcommitstate, ut.disqualified, ut.schedule, ut.windowchangeattempts, ut.dateadded from Tests_usertest ut, Tests_test t where t.id=ut.test_id and ut.user_id=%s"
     try:

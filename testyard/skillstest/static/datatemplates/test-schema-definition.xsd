@@ -1,0 +1,65 @@
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="test">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="metadata">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="testname"/>
+              <xs:element type="xs:string" name="testtype"/>
+              <xs:element type="xs:string" name="testrules"/>
+              <xs:element type="xs:string" name="testtopic"/>
+              <xs:element type="xs:string" name="othertopicname"/>
+              <xs:element type="xs:byte" name="totalscore"/>
+              <xs:element type="xs:byte" name="numberofchallenges"/>
+              <xs:element type="xs:string" name="eachchallengesamescore"/>
+              <xs:element type="xs:string" name="incorrectresponsenegativescore"/>
+              <xs:element type="xs:byte" name="passscore"/>
+              <xs:element type="xs:byte" name="testduration"/>
+              <xs:element type="xs:string" name="testdurationunit"/>
+              <xs:element type="xs:byte" name="maxchallengeduration"/>
+              <xs:element type="xs:string" name="maxchallengedurationunit"/>
+              <xs:element type="xs:string" name="evaluatoremailids"/>
+              <xs:element type="xs:string" name="evaluatorgroupname"/>
+              <xs:element type="xs:string" name="testpublishdate"/>
+              <xs:element type="xs:string" name="testactivationdate"/>
+              <xs:element type="xs:string" name="testtargetskilllevel"/>
+              <xs:element type="xs:string" name="testscope"/>
+              <xs:element type="xs:string" name="answeringlanguage"/>
+              <xs:element type="xs:string" name="programmingenvironment"/>
+              <xs:element type="xs:string" name="needssoundimage"/>
+              <xs:element type="xs:string" name="randomsequencing"/>
+              <xs:element type="xs:string" name="allowmultipleattempts"/>
+              <xs:element type="xs:byte" name="maxattemptsallowed"/>
+              <xs:element type="xs:byte" name="intervalbetweenattempts"/>
+              <xs:element type="xs:string" name="intervalunits"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="challenge" maxOccurs="unbounded" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element type="xs:string" name="challengestatement"/>
+              <xs:element type="xs:byte" name="challengescore"/>
+              <xs:element type="xs:string" name="challengeallocatedtime"/>
+              <xs:element type="xs:string" name="negativescore"/>
+              <xs:element type="xs:string" name="challengeimagepath"/>
+              <xs:element type="xs:string" name="externalresourcepath"/>
+              <xs:element type="xs:string" name="challengetype"/>
+              <xs:element type="xs:string" name="compulsoryforuser"/>
+              <xs:element type="xs:string" name="morethanoneoptioncorrect"/>
+              <xs:element type="xs:string" name="challengequality"/>
+              <xs:element type="xs:string" name="correctresponse"/>
+              <xs:element type="xs:string" name="option_1" minOccurs="0"/>
+              <xs:element type="xs:string" name="option_2" minOccurs="0"/>
+              <xs:element type="xs:string" name="option_3" minOccurs="0"/>
+              <xs:element type="xs:string" name="option_4" minOccurs="0"/>
+              <xs:element type="xs:string" name="option_5" minOccurs="0"/>
+              <xs:element type="xs:string" name="option_6" minOccurs="0"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

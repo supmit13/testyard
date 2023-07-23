@@ -1140,7 +1140,6 @@ def paypal_seller_onboarding(request):
         return message
 
 
-
 def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
     """
     We will create 4 files here - one each for each of the record types.
@@ -1156,6 +1155,35 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
     filecontent2 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent3 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent4 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
+    """
+    from lxml import etree
+    # https://stackoverflow.com/questions/58002988/how-to-validate-xml-with-xsd-in-python
+    root = etree.Element('a')
+    child1 = etree.SubElement(root, 'b')
+    print(etree.tostring(root))
+    xmlschema_doc = etree.parse('test_xsd.xsd')
+    xmlschema = etree.XMLSchema(xmlschema_doc)
+    doc = etree.XML(etree.tostring(root))
+    validation_result = xmlschema.validate(doc)
+    print(validation_result)
+    
+    # https://www.geeksforgeeks.org/reading-and-writing-xml-files-in-python/
+    
+    # https://stackoverflow.com/questions/3330366/how-to-validate-an-xml-file-against-an-xsd-schema-using-amara-library-in-python
+    from lxml import etree
+    source_file = 'test.xml'
+    schema_file = 'test.xsd'
+    with open(schema_file) as f_schema:
+        schema_doc = etree.parse(f_schema)
+        schema = etree.XMLSchema(schema_doc)
+        parser = etree.XMLParser(schema = schema)
+        with open(source_file) as f_source:
+            try:
+                doc = etree.parse(f_source, parser)
+            except etree.XMLSyntaxError as e:
+                # this exception is thrown on schema validation error
+                print e
+    """
 
 
 def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, interviewrecords_ascreator, interviewrecords_ascandidate):
