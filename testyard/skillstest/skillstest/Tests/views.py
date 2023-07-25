@@ -10410,7 +10410,8 @@ def downloadmydata(request):
     fp = open(dumpfilepath, "rb")
     dumpcontents = fp.read()
     fp.close()
-    fname = dumpfilepath.split(os.path.sep)[-1]
+    #fname = dumpfilepath.split(os.path.sep)[-1]
+    fname = os.path.basename(dumpfilepath)
     response = HttpResponse(dumpcontents, content_type=mimetype)
     response['Content-Disposition'] = 'attachment; filename="%s"'%fname
     return response

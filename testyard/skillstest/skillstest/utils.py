@@ -15,6 +15,8 @@ import socket
 import simplejson as json
 import razorpay
 import MySQLdb
+from lxml import etree
+from zipfile import ZipFile
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -1147,14 +1149,94 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
     """
     curdatetime = datetime.datetime.now()
     curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
-    dumpfile1 = username + "_testsascreator_" + curdatetimestr + ".xml"
-    dumpfile2 = username + "_testsascandidate_" + curdatetimestr + ".xml"
-    dumpfile3 = username + "_interviewsascreator_" + curdatetimestr + ".xml"
-    dumpfile4 = username + "_interviewsascandidate_" + curdatetimestr + ".xml"
+    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_" + curdatetimestr
+    if not os.path.exists(tmpdir):
+        mkdir_p(tmpdir)
+    targetzipfile = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_" + curdatetimestr + ".zip"
+    dumpfile1 = tmpdir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".xml"
+    dumpfile2 = tmpdir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".xml"
+    dumpfile3 = tmpdir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".xml"
+    dumpfile4 = tmpdir + os.path.sep + username + "_interviewsascandidate_" + curdatetimestr + ".xml"
     filecontent1 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent2 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent3 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent4 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
+    filepaths = []
+    alltestscreated = etree.Element("tests")
+    for testname in testrecords_ascreator.keys():
+        testtag = etree.SubElement(alltestscreated, "test")
+        metadata = etree.SubElement(testtag, "metadata")
+        testrecord = testrecords_ascreator[testname]
+        for tagname in testrecord.keys():
+            if tagname != "challenges":
+                tag = etree.SubElement(metadata, tagname.lower())
+                tag.text = str(testrecord[tagname])
+            else:
+                pass
+                
+        challenges = testrecord['challenges']
+        for challenge in challenges:
+            chtag = etree.SubElement(testtag, "challenge")
+            for chkey in challenge.keys():
+                chkeytag = etree.SubElement(chtag, chkey.lower())
+                chkeytag.text = str(challenge[chkey])
+    alltestscreatedxml = etree.tostring(alltestscreated)
+    filecontent1 += alltestscreatedxml
+    tcrfp = open(dumpfile1, "wb")
+    tcrfp.write(filecontent1)
+    tcrfp.close()
+    filepaths.append(dumpfile1)
+    # Done writing all tests created by user.
+    alltestscandidate = etree.Element("tests")
+    for testname in testrecords_ascandidate.keys():
+        testtag = etree.SubElement(alltestscandidate, "test")
+        testrecord = testrecords_ascandidate[testname]
+        for testkey in testrecord:
+            attributetag = etree.SubElement(testtag, testkey.lower())
+            attributetag.text = str(testrecord[testkey])
+    alltestscandidatexml = etree.tostring(alltestscandidate)
+    filecontent2 += alltestscandidatexml
+    tcdfp = open(dumpfile2, "wb")
+    tcdfp.write(filecontent2)
+    tcdfp.close()
+    filepaths.append(dumpfile2)
+    # Done writing all tests where user was a candidate (test taker)
+    allinterviewscreated = etree.Element("interviews")
+    for interviewtitle in interviewrecords_ascreator.keys():
+        interviewtag = etree.SubElement(allinterviewscreated, "interview")
+        interviewrecord = interviewrecords_ascreator[interviewtitle]
+        for intkey in interviewrecord.keys():
+            intkeytag = etree.SubElement(interviewtag, intkey.lower())
+            intkeytag.text = str(interviewrecord[intkey])
+    allinterviewscreatedxml = etree.tostring(allinterviewscreated)
+    filecontent3 += allinterviewscreatedxml
+    icrfp = open(dumpfile3, "wb")
+    icrfp.write(filecontent3)
+    icrfp.close()
+    filepaths.append(dumpfile3)
+    # Done writing all interviews created by the user.
+    allinterviewscandidate = etree.Element("interviews")
+    for interviewtitle in interviewrecords_ascandidate.keys():
+        interviewtag = etree.SubElement(allinterviewscandidate, "interview")
+        interviewrecord = interviewrecords_ascandidate[interviewtitle]
+        for intkey in interviewrecord.keys():
+            intkeytag = etree.SubElement(interviewtag, intkey.lower())
+            intkeytag.text = str(interviewrecord[intkey])
+    allinterviewscandidatexml = etree.tostring(allinterviewscandidate)
+    filecontent4 += allinterviewscandidatexml
+    icdfp = open(dumpfile4, "wb")
+    icdfp.write(filecontent4)
+    icdfp.close()
+    filepaths.append(dumpfile4)
+    # TODO: Validate all 4 files against their respective xsd files.
+    # Done writing all interviews that the user attended as an interviewee... Now we have all 4 files.
+    # So zip the flippin' thing up and shove it up the user's a***.
+    with ZipFile(targetzipfile, 'w') as zip:
+        for filep in filepaths:
+            zip.write(filep)
+    return targetzipfile # Done and dusted!
+    
+    
     """
     from lxml import etree
     # https://stackoverflow.com/questions/58002988/how-to-validate-xml-with-xsd-in-python
