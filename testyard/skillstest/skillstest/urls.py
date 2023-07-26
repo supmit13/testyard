@@ -229,7 +229,7 @@ urlpatterns += patterns('',
     
     url(r'%s$'%mysettings.PLAN_SUBSCRIBE_URL, 'skillstest.Subscription.views.buyplan', name='subscribeplan'),
     url(r'%s$'%mysettings.PLAN_EXTEND_URL, 'skillstest.Subscription.views.extenduserplan', name='extenduserplan'),
-    url(r'%s$'%mysettings.UPGRADE_PLAN_URL, 'skillstest.Subscription.views.upgradeuserplan', name='upgradeuserplan'),
+    url(r'%s$'%mysettings.UPGRADE_PLAN_SCREEN_URL, 'skillstest.Subscription.views.upgradeuserplanscreen', name='upgradeuserplanscreen'),
     url(r'%s$'%mysettings.SEARCH_TEST_SUBSCRIPTION_URL, 'skillstest.Subscription.views.searchtestinterview', name='searchtestinterview'),
     url(r'%s$'%mysettings.FETCH_COUPON_DISCOUNT_URL, 'skillstest.Subscription.views.fetchcoupondiscount', name='fetchcoupondiscount'),
     url(r'%s$'%mysettings.PAYMENT_GW_OPTIONS_URL, 'skillstest.Subscription.views.showpaymentgwoptions', name='showpaymentgwoptions'),

@@ -245,7 +245,7 @@ def buyplan(request):
     
     plans_dict['privacypolicy_url'] = skillutils.gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
     plans_dict['tou_url'] = skillutils.gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
-    plans_dict['show_upgrade_plan_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_PLAN_URL
+    plans_dict['show_upgrade_plan_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_PLAN_SCREEN_URL
     if skillutils.isloggedin(request):
         plans_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("subscription/plansnpricing.html")
@@ -260,7 +260,7 @@ def buyplan(request):
 @skillutils.is_session_valid
 @skillutils.session_location_match
 @csrf_protect
-def upgradeuserplan(request):
+def upgradeuserplanscreen(request):
     if request.method != 'GET':
         message = error_msg('1004')
         return HttpResponseBadRequest(message)
@@ -280,6 +280,7 @@ def upgradeuserplan(request):
     currentdatetime = datetime.datetime.now()
     userplanqset = UserPlan.objects.filter(currentdatetime > planstartdate, currentdatetime <= planenddate, user=userobj, planstatus=True).order_by('-subscribedon')
     upgradeableplanslist = []
+    context = {}
     if userplanqset.__len__() == 0 or "Free" in userplanqset[0].plan.planname: # User is under 'Free Plan'
         upgradeableplansqset = Plan.objects.filter(status=True)
         for upgradeableplanobj in upgradeableplansqset:
@@ -299,7 +300,15 @@ def upgradeuserplan(request):
             # Note: We don't make allowance for the time remaining for the current plan to end for the user. Even if it is just 1 second, we request a full payment for the upgrade.
             d = {'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
             upgradeableplanslist.append(d)
-    return HttpResponse(json.dumps(upgradeableplanslist))
+    context['upgradeableplanslist'] = upgradeableplanslist
+    tmpl = get_template("subscription/upgradeplanscreen.html")
+    context.update(csrf(request))
+    cxt = Context(context)
+    upgradeplanhtml = tmpl.render(cxt)
+    for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
+        upgradeplanhtml = upgradeplanhtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
+    return HttpResponse(upgradeplanhtml)
+
 
 
 @skillutils.is_session_valid
