@@ -806,6 +806,7 @@ def plansnpricing(request):
     if skillutils.isloggedin(request):
         plans_dict['logged_in_as'] = userobj.displayname
     plans_dict['plans_dashboard_url'] = mysettings.SUBSCRIPTION_URL
+    plans_dict['show_upgrade_plan_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_PLAN_SCREEN_URL
     tmpl = get_template("subscription/plansnpricing.html")
     plans_dict.update(csrf(request))
     cxt = Context(plans_dict)

@@ -80,13 +80,19 @@
 	  else{
 	    upgradediv.innerHTML = xmlhttp.responseText;
 	  }
-	  return false;
        }  
      };
      //Send request to {{plan_extension_url}}
      xmlhttp.open("GET", "{{show_upgrade_plan_url}}", true);
      xmlhttp.send();
   }
+  
+  function closeplanupgrade(){
+    upgradediv = document.getElementById('upgrade');
+    upgradediv.innerHTML = "";
+    upgradediv.style.display = "none";
+  }
+  
 
   </script>
 </head>
