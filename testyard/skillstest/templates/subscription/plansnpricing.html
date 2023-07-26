@@ -29,7 +29,43 @@
   <link rel="stylesheet" type="text/css" href="/static/css/plansnpricing/style.css">
   <script src="/static/javascript/plansnpricing/jquery.min.js"></script>
   <!-- Plans and Pricing static files end -->
-  
+  <script language="javascript">
+  function showupgradescreen(){
+    upgradediv = document.getElementById('upgrade');
+    upgradediv.style.display = "";
+    var xmlhttp;
+    if (window.XMLHttpRequest){
+      xmlhttp=new XMLHttpRequest();
+    }
+    else{
+      xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xmlhttp.onreadystatechange = function(){
+      if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+        upgradediv.opacity = "100%";
+	  //var mouseX;
+          //var mouseY;
+          //$(document).mousemove( function(e) {
+	   // mouseX = e.pageX*3/2; 
+	   // mouseY = e.pageY*3/2;
+	  //}); 
+	  upgradediv.style = "display:float;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:600px;width:800px;background-color:#17a2b8;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;";
+	  errorpattern = new RegExp("^Error");
+          if(errorpattern.test(xmlhttp.responseText)){
+            alert(xmlhttp.responseText);
+	  }
+	  else{
+	    upgradediv.innerHTML = xmlhttp.responseText;
+	  }
+	  return false;
+       }  
+     };
+     //Send request to {{plan_extension_url}}
+     xmlhttp.open("GET", "{{show_upgrade_plan_url}}", true);
+     xmlhttp.send();
+  }
+
+  </script>
 </head>
 <body id="page-top" >
 
@@ -98,11 +134,11 @@
 		
 	</div>
       </div>
-
+	<div id="upgrade" style="display:none;"></div>
 	<div class="row">
       <h3 style="color:#505050;font-style:italic;font-weight:bold;font-size:+4;">We Have Plans for Your Team</h3>&nbsp;&nbsp;
       {% if logged_in_as != "" %}
-      <span style="padding-left:30px;text-align:right;float:right;vertical-align:top;display:inline-block;width:57%;"><a href="{{plans_dashboard_url}}" class="ui-btn ui-shadow ui-corner-all ui-btn-inline btn-primary" style="text-align:right;padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;border-radius:5px;color:#ffffff;">View Your Subscriptions</a></span>
+      <span style="padding-left:30px;text-align:right;float:right;vertical-align:top;display:inline-block;width:57%;"><a href="{{plans_dashboard_url}}" class="ui-btn ui-shadow ui-corner-all ui-btn-inline btn-primary" style="text-align:right;padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;border-radius:5px;color:#ffffff;">View My Subscriptions</a>&nbsp;&nbsp;<a href="#/" class="ui-btn ui-shadow ui-corner-all ui-btn-inline btn-primary" style="text-align:right;padding-left:10px;padding-right:10px;padding-top:5px;padding-bottom:5px;border-radius:5px;color:#ffffff;" onclick="javascript:showupgradescreen();">Upgrade My Plan</a></span>
       {% endif %}
 	</div>
 	<!-- Plans and Pricing Content here -->

@@ -245,6 +245,7 @@ def buyplan(request):
     
     plans_dict['privacypolicy_url'] = skillutils.gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
     plans_dict['tou_url'] = skillutils.gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
+    plans_dict['show_upgrade_plan_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_PLAN_URL
     if skillutils.isloggedin(request):
         plans_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("subscription/plansnpricing.html")
@@ -254,6 +255,51 @@ def buyplan(request):
     for htmlkey in mysettings.HTML_ENTITIES_CHAR_MAP.keys():
         planshtml = planshtml.replace(htmlkey, mysettings.HTML_ENTITIES_CHAR_MAP[htmlkey])
     return HttpResponse(planshtml)
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def upgradeuserplan(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode, usertype = "", ""
+    if request.COOKIES.has_key('sessioncode'):
+        sesscode = request.COOKIES['sessioncode']
+    if request.COOKIES.has_key('usertype'):
+        usertype = request.COOKIES['usertype']
+    sessionobj, userobj = None, None
+    if sesscode != "":
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    if userobj is None:
+        message = "Error: Couldn't identify the user. This could be due to your session getting expired. Please login and try again."
+        return HttpResponse(message)
+    # Find the current plan in effect for the user
+    currentdatetime = datetime.datetime.now()
+    userplanqset = UserPlan.objects.filter(user=userobj, currentdatetime > planstartdate, currentdatetime <= planenddate, planstatus=True).order_by('-subscribedon')
+    upgradeableplanslist = []
+    if userplanqset.__len__() == 0 or "Free" in userplanqset[0].plan.planname: # User is under 'Free Plan'
+        upgradeableplansqset = Plan.objects.filter(status=True)
+        for upgradeableplanobj in upgradeableplansqset:
+            if 'Free' in upgradeableplanobj.planname:
+                continue
+            validfor = str(upgradeableplanobj.planvalidfor) + " " + str(upgradeableplanobj.validfor_unit)
+            extra_amount_to_pay = float(upgradeableplanobj.price) + float(upgradeableplanobj.fixedcost)
+            d = {'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
+            upgradeableplanslist.append(d)
+    else: # We should only consider plans whose 'price' are greater than the user's current plan's price. Just kidding...
+        existinguserplanobj = userplanqset[0]
+        existinguserplantestsinterviews = existinguserplanobj.plan.testsninterviews
+        upgradeableplansqset = Plan.objects.filter(testsninterviews > existinguserplantestsinterviews)
+        for upgradeableplanobj in upgradeableplansqset:
+            validfor = str(upgradeableplanobj.planvalidfor) + " " + str(upgradeableplanobj.validfor_unit)
+            extra_amount_to_pay = float(upgradeableplanobj.price) + float(upgradeableplanobj.fixedcost) - float(existinguserplanobj.plan.price) - float(existinguserplanobj.plan.fixedcost)
+            # Note: We don't make allowance for the time remaining for the current plan to end for the user. Even if it is just 1 second, we request a full payment for the upgrade.
+            d = {'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
+            upgradeableplanslist.append(d)
+    return HttpResponse(json.dumps(upgradeableplanslist))
 
 
 @skillutils.is_session_valid
@@ -801,7 +847,7 @@ def searchtestinterview(request):
             userplanidlist.append(userplanrec[0])
     skillutils.disconnectdb(dbconn, dbcursor) # Important to close DB connections
     return HttpResponse(json.dumps(userplanidlist))
-        
+
 
 @skillutils.is_session_valid
 @skillutils.session_location_match

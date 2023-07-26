@@ -1149,10 +1149,10 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
     """
     curdatetime = datetime.datetime.now()
     curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
-    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_" + curdatetimestr
+    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_xml_" + curdatetimestr
     if not os.path.exists(tmpdir):
         mkdir_p(tmpdir)
-    targetzipfile = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_" + curdatetimestr + ".zip"
+    targetzipfile = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_xml_" + curdatetimestr + ".zip"
     dumpfile1 = tmpdir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".xml"
     dumpfile2 = tmpdir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".xml"
     dumpfile3 = tmpdir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".xml"
@@ -1275,10 +1275,118 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
     """
     curdatetime = datetime.datetime.now()
     curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
-    dumpfile1 = username + "_testsascreator_" + curdatetimestr + ".csv"
-    dumpfile2 = username + "_testsascandidate_" + curdatetimestr + ".csv"
-    dumpfile3 = username + "_interviewsascreator_" + curdatetimestr + ".csv"
-    dumpfile4 = username + "_interviewsascandidate_" + curdatetimestr + ".csv"
+    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_csv_" + curdatetimestr
+    if not os.path.exists(tmpdir):
+        mkdir_p(tmpdir)
+    targetzipfile = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_csv_" + curdatetimestr + ".zip"
+    dumpfile1 = tmpdir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".csv"
+    dumpfile2 = tmpdir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".csv"
+    dumpfile3 = tmpdir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".csv"
+    dumpfile4 = tmpdir + os.path.sep + username + "_interviewsascandidate_" + curdatetimestr + ".csv"
+    filecontent1, filecontent2, filecontent3, filecontent4 = "", "", "", ""
+    headerflag = True
+    headers = []
+    messages = []
+    filepaths = []
+    for testname in testrecords_ascreator.keys():
+        testrecord = testrecords_ascreator[testname]
+        if headerflag is True:
+            for testkey in testrecord.keys():
+                if testkey != "challenges":
+                    headers.append(testkey)
+                else:
+                    challengeslist = testrecord['challenges']
+                    try:
+                        challengeheaders = challengeslist[0].keys()
+                    except:
+                        challengeheaders = ['challengeid', 'challengestatement', 'challengetype', 'maxresponsesizeallowable', 'challengescore', 'negativescore', 'compulsoryforuser', 'challengeimagepath', 'externalresourcepath', 'challengeallocatedtime', 'challenge_subtopic_id', 'challengequality', 'challenge_testlinkid', 'morethanoneoptioncorrect', 'proglang', 'mathenv', 'option1', 'option2', 'option3', 'option4', 'option5', 'option6', 'option7', 'option8', 'correctresponse']
+                    for chhdr in challengeheaders:
+                        headers.append(chhdr)
+            filecontent1 += ",".join(headers) + "\n"
+            headerflag = False
+        for hdr in headers:
+            try:
+                value = testrecord[hdr]
+            except: # The header could be a field in the dict in challenges list.
+                try:
+                    value = testrecord['challenges'][hdr]
+                except: # May be a mistake somewhere...
+                    value = ""
+                    messages.append("Value for header '%' could not be found for test with name '%s'"%(hdr, testname))
+            filecontent1 += '"' + str(value) + '",'
+        filecontent1 = filecontent1[:-1] + "\n" # Remove last comma from the string and add a newline.
+    tcrfp = open(dumpfile1, "wb")
+    tcrfp.write(filecontent1)
+    tcrfp.close() # Data for tests as creator dumped in file.
+    filepaths.append(dumpfile1)
+    headerflag = True
+    headers = []
+    for testname in testrecords_ascandidate.keys():
+        testrecord = testrecords_ascandidate[testname]
+        if headerflag is True:
+            for testkey in testrecord.keys():
+                headers.append(testkey)
+            filecontent2 = ",".join(headers) + "\n"
+            headerflag = False
+        for hdr in headers:
+            try:
+                value = str(testrecord[hdr])
+            except:
+                messages.append("Could not find value for key '%s' of test '%s'"%(hdr, testname))
+                value = ""
+            filecontent2 += '"' + value + '",'
+        filecontent2 = filecontent2[:-1] + "\n"
+    tcdfp = open(dumpfile2, "wb")
+    tcdfp.write(filecontent2)
+    tcdfp.close() # Data for tests as candidate dumped in file
+    filepaths.append(dumpfile2)
+    headerflag = True
+    headers = []
+    for interviewtitle in interviewrecords_ascreator.keys():
+        interviewrecord = interviewrecords_ascreator[interviewtitle]
+        if headerflag is True:
+            for intkey in interviewrecord.keys():
+                headers.append(intkey)
+            filecontent3 = ",".join(headers) + "\n"
+            headerflag = False
+        for hdr in headers:
+            try:
+                value = str(interviewrecord[hdr])
+            except:
+                message.append("Could not find value for key '%s' of interview titled '%s'"%(hdr, interviewtitle))
+                value = ""
+            filecontent3 += '"' + value + '",'
+        filecontent3 = filecontent3[:-1] + "\n"
+    icrfp = open(dumpfile3, "wb")
+    icrfp.write(filecontent3)
+    icrfp.close() # Data for interviews as creator dumped in file
+    filepaths.append(dumpfile3)
+    headerflag = True
+    headers = []
+    for interviewtitle in interviewrecords_ascandidate.keys():
+        interviewrecord = interviewrecords_ascandidate[interviewtitle]
+        if headerflag is True:
+            for intkey in interviewrecord.keys():
+                headers.append(intkey)
+            filecontent4 = ",".join(headers) + "\n"
+            headerflag = False
+        for hdr in headers:
+            try:
+                value = str(interviewrecord[hdr])
+            except:
+                message.append("Could not find value for key '%s' of interview titled '%s'"%(hdr, interviewtitle))
+                value = ""
+            filecontent4 += '"' + value + '",'
+        filecontent4 = filecontent4[:-1] + "\n"
+    icrfp = open(dumpfile4, "wb")
+    icrfp.write(filecontent4)
+    icrfp.close() # Data for interviews as candidate dumped in file.
+    filepaths.append(dumpfile4)
+    # Now zip up all files in the directory 
+    with ZipFile(targetzipfile, 'w') as zip:
+        for filep in filepaths:
+            zip.write(filep)
+    return targetzipfile # Zipped archive path
 
 
 
