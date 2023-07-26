@@ -1704,7 +1704,8 @@ def create(request):
             testobj = Test.objects.filter(id=exist_test_id)[0]
     # Check the allowed number of tests for this user - only in case of new tests
     if exist_test_id is None or exist_test_id == "":
-        dbconn, dbcursor = connectdb_p()
+        dbconn, dbcursor = connectdb()
+        #dbconn, dbcursor = connectdb_p()
         userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
         dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
         allrecords = dbcursor.fetchall()
@@ -4195,7 +4196,8 @@ def sendtestinvitations(request):
         return response
     # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
     testcreateddate = testobj.createdate
-    dbconn, dbcursor = connectdb_p()
+    dbconn, dbcursor = connectdb()
+    #dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
     freeplansql = "select candidates from Subscription_plan where planname='%s'"
@@ -5279,7 +5281,8 @@ def createtestbulkupload(request):
 def _check_subscription_plan_limits(userobj, filepath, filetype="csv"):
     todaynow = datetime.datetime.now()
     # Check the allowed number of tests for this user - only in case of new tests
-    dbconn, dbcursor = connectdb_p()
+    dbconn, dbcursor = connectdb()
+    #dbconn, dbcursor = connectdb_p()
     userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
     dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
     allrecords = dbcursor.fetchall()
@@ -7096,7 +7099,8 @@ def setschedule(request):
         new_emails_list = emails_new.split(",")
         # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
         testcreateddate = testobj.createdate
-        dbconn, dbcursor = connectdb_p()
+        dbconn, dbcursor = connectdb()
+        #dbconn, dbcursor = connectdb_p()
         candidatescount = 5 # Default candidates count for Free Plan.
         plnname = 'Free Plan'
         freeplansql = "select candidates from Subscription_plan where planname='%s'"
@@ -7694,7 +7698,8 @@ def createinterview(request):
         resp = HttpResponse(error_msg('1170'))
         return resp
     else: # User is trying to create a new interview. Check quotas as per subscription plan
-        dbconn, dbcursor = connectdb_p()
+        dbconn, dbcursor = connectdb()
+        #dbconn, dbcursor = connectdb_p()
         todaynow = datetime.datetime.now()
         userplansql = "select pl.testsninterviews, up.plan_id, pl.planname, up.amountdue, up.planstartdate, up.planenddate from Subscription_userplan up, Subscription_plan pl where up.planstartdate < %s and up.planenddate > %s and up.planstatus=TRUE and up.plan_id=pl.id and up.user_id=%s"
         dbcursor.execute(userplansql, (todaynow, todaynow, userobj.id))
@@ -8253,7 +8258,8 @@ def savenewinterviewschedule(request):
             pass
     # Find out when this interview was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
     interviewcreateddate = interviewobj.createdate
-    dbconn, dbcursor = connectdb_p()
+    dbconn, dbcursor = connectdb()
+    #dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
     freeplansql = "select candidates from Subscription_plan where planname='%s'"
@@ -9373,7 +9379,8 @@ def mobile_setschedule(request):
         return response
     # Find out when this test was created. Then find the subscription plan that the user was subscribed to during that period, and also the number of candidates permitted by that plan.
     testcreateddate = testobj.createdate
-    dbconn, dbcursor = connectdb_p()
+    dbconn, dbcursor = connectdb()
+    #dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
     freeplansql = "select candidates from Subscription_plan where planname='%s'"
