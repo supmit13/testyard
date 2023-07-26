@@ -29,6 +29,29 @@
   <link rel="stylesheet" type="text/css" href="/static/css/plansnpricing/style.css">
   <script src="/static/javascript/plansnpricing/jquery.min.js"></script>
   <!-- Plans and Pricing static files end -->
+  <style>
+	.semitrans {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#ccffff;
+	  color:#FFFFFF;
+	  position:absolute; top:250px; left:0px; width:275%; height:150%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+
+        .semitrans2 {
+	  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=90)";
+	  filter: alpha(opacity=90);
+	  opacity: 0.9;
+	  -moz-opacity: .90; 
+	  -khtml-opacity: 0.9;
+	  background-color:#ccffff;
+	  color:#FFFFFF;
+	  position:absolute; top:150px; left:100px; width:75%; height:50%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
+	}
+  </style>
   <script language="javascript">
   function showupgradescreen(){
     upgradediv = document.getElementById('upgrade');
@@ -134,7 +157,7 @@
 		
 	</div>
       </div>
-	<div id="upgrade" style="display:none;"></div>
+	<div class="semitrans" id="upgrade" style="display:none;"></div>
 	<div class="row">
       <h3 style="color:#505050;font-style:italic;font-weight:bold;font-size:+4;">We Have Plans for Your Team</h3>&nbsp;&nbsp;
       {% if logged_in_as != "" %}
