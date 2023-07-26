@@ -278,7 +278,7 @@ def upgradeuserplan(request):
         return HttpResponse(message)
     # Find the current plan in effect for the user
     currentdatetime = datetime.datetime.now()
-    userplanqset = UserPlan.objects.filter(user=userobj, currentdatetime > planstartdate, currentdatetime <= planenddate, planstatus=True).order_by('-subscribedon')
+    userplanqset = UserPlan.objects.filter(currentdatetime > planstartdate, currentdatetime <= planenddate, user=userobj, planstatus=True).order_by('-subscribedon')
     upgradeableplanslist = []
     if userplanqset.__len__() == 0 or "Free" in userplanqset[0].plan.planname: # User is under 'Free Plan'
         upgradeableplansqset = Plan.objects.filter(status=True)
