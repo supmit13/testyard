@@ -1,62 +1,49 @@
+
  <!-- Dashboard static files start -->
     <link rel="canonical" href="https://www.wrappixel.com/templates/niceadmin-lite/" />
     <!-- Favicon icon -->
     <link rel="icon" type="image/png" sizes="16x16" href="/static/plans_assets/images/favicon.png">
     <!-- Custom CSS -->
     <link href="/static/plans_assets/libs/chartist/dist/chartist.min.css" rel="stylesheet">
-  <!-- Dashboard static files end -->
-  
-  <script language="javascript">
-  
-  function showplandetails(){
-  
-  }
-  
-  function computecost(){
-    // This may be called from 2 places - i) on selection of period, and ii) on applying a coupon code.
-  }
-  
-  function showhidecouponfield(){
-  
-  }
-  
-  function upgradationpayment(){
-  
-  }
-    
-  </script>
-  
-<div class="row">
+ <!-- Dashboard static files end -->
+ <br/>
+ 
+<div style='font-weight:bold;font-size:larger;text-align:center;color:#ffffff;'>Upgrade UserPlan</div><br/>
+ <hr/>
+<div class="row d-flex justify-content-center">
 	<div class="overflow-auto d-flex justify-content-center">
 	<!-- Form for extending a userplan -->
-	<span style='font-weight:bold;font-size:large;padding-left:30px;padding-right:25px;'>Upgrade UserPlan</span><br/>
 	<form name='frmupgradesubscription' id='frmupgradesubscription' method='POST' action='{{plan_upgrade_url}}' class="form-horizontal">
+	{% csrf_token %}
 	<input type='hidden' name='userplanid' id='userplanid' value='{{currentuserplanid}}'>
 	<input type='hidden' name='currentplanname' id='currentplanname' value='{{currentplanname}}'>
 	<div class="form-outline row" style="padding-top:40px;padding-left:30px;">
-	<label class="form-label" for="seltargetplan">Upgrade To:</label><span id='planwrapper' style='text-align:right;padding-right:10px;display:flex;justify-content:flex-end;'><select name='seltargetplan' id='seltargetplan' onchange="javascript:showplandetails();" class='form-select' data-role="select-dropdown" style='height:40px;color:#000000;padding-left:10px;'>
+	<label class="form-label" for="seltargetplan" style="display:flex;align-items:center;">Upgrade To:</label><span id='planwrapper' style='text-align:right;padding-right:10px;padding-left:15px;display:flex;justify-content:flex-end;'><select name='seltargetplan' id='seltargetplan' onchange="javascript:showplandetails();" class='form-select' data-role="select-dropdown" style='height:30px;color:#000000;padding-left:10px;'>
+	<option value='' selected>Select Plan</option>
 	{% for plan in upgradeableplanslist %}
-	<option value='{{plan.id}}'>{{plan.planname}}</option>
+	<option value='{{plan.planid}}'>{{plan.planname}}</option>
 	{% endfor %}
 	</select></span>
 	</div><br/>
 	<div class="form-outline row" style="padding-top:40px;padding-left:30px;" id="plandetails">
-	<label class="form-label" for="selperiod">Select Period:</label><span id='periodwrapper' class='col-sm-6' style='padding-right:10px;display:flex;justify-content:flex-end;'><select name='selperiod' id='selperiod' class='form-select' data-role="select-dropdown" style='height:40px;color:#000000;width:200px;padding-right:100px;' onchange="javascript:computecost();">
-	<option value='30' selected>30 Days</option>
-	<option value='60'>60 Days</option>
-	<option value='90'>90 Days</option>
+	<label class="form-label" for="selperiod" style="display:flex;align-items:center;">Select Period:</label><span id='periodwrapper' class='col-sm-6' style='padding-right:10px;padding-left:15px;display:flex;justify-content:flex-end;'><select name='selperiod' id='selperiod' class='form-select' data-role="select-dropdown" style='height:30px;color:#000000;padding-left:10px;' onchange="javascript:computecost();">
+	<option value='0' selected>Period</option>
+	<option value='1'>30 Days</option>
+	<option value='2'>60 Days</option>
+	<option value='3'>90 Days</option>
+	<option value='12'>1 Year</option>
 	</select></span>
 	</div><br/>
-	<div class="form-check row" style="padding-left:30px;">
-	<label class="form-check-label" for="yescoupon">Apply Coupon:</label>&nbsp;<input type='checkbox' name='yescoupon' id='yescoupon' value='1' class='form-check-input' onclick='javascript:showhidecouponfield();'>
-	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' class='form-control' max-length='10' placeholder='Coupon Code' disabled onblur="javascript:computecost();"></span>
+	<div class="form-outline row" style="padding-top:40px;padding-left:30px;">
+	<label class="form-check-label" for="yescoupon" style="display:flex;align-items:center;">Apply Coupon:</label><span id='couponusewrapper' style='width:30px;padding-right:10px;display:flex;justify-content:flex-end;align-items:center;'><input type='checkbox' name='yescoupon' id='yescoupon' value='1' class='form-input' onclick='javascript:showhidecouponfield();' style="padding-left:10px;"></span>
+	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' maxlength='12' placeholder='Coupon Code' style="height:30px;border-radius:5px;color:#000;" disabled onblur="javascript:computecost();"></span>
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
-	<span>Plan Price: </span><span id='totcost'><!-- Populated using computecost() --></span>
-	<span>Amount Payable: </span><span id='extcost'><!-- Populated using computecost() --></span>
+	<span>Plan Price: </span><span id='totcost' style="padding-right:10px;">NA<!-- Populated using computecost() --></span>|
+	<span style="padding-left:10px;">Amount Payable: </span><span id='extcost'>NA<!-- Populated using computecost() --></span>
 	<input type='hidden' name='amtpayable' id='amtpayable' value=''>
 	</div><br/>
-	<div class="form-outline" style="padding-left:30px;">
+	<div class="form-outline row" style="padding-left:30px;">
 	<span ><input type='button' name='btnbuyext' id='btnbuyext' value='Pay' class='btn btn-primary' onclick='javascript:upgradationpayment();' style="background-color:#263238;width:90px;">&nbsp;&nbsp;</span><span style="padding-left:20px;"><input type='button' name='btnextclose' id='btnextclose' value='Close' onclick='javascript:closeplanupgrade();' class='btn btn-testyard1' style="color:#aa0000;width:90px;"></span>
 	</div>
 	<input type="hidden" id='numextcost' id='numextcost' value='' class='form-control'>

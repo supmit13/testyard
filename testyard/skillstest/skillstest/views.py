@@ -27,6 +27,7 @@ import decimal, math
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, OptionalUserInfo
 from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Subscription.views import getupgradeableplanslist
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest.models import Careers
 from skillstest import settings as mysettings
@@ -807,6 +808,11 @@ def plansnpricing(request):
         plans_dict['logged_in_as'] = userobj.displayname
     plans_dict['plans_dashboard_url'] = mysettings.SUBSCRIPTION_URL
     plans_dict['show_upgrade_plan_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_PLAN_SCREEN_URL
+    if userobj is not None:
+        context = getupgradeableplanslist(userobj)
+        plans_dict['upgradeableplanslist'] = context['upgradeableplanslist']
+    else:
+        plans_dict['upgradeableplanslist'] = []
     tmpl = get_template("subscription/plansnpricing.html")
     plans_dict.update(csrf(request))
     cxt = Context(plans_dict)

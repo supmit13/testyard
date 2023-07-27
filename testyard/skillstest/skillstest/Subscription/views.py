@@ -257,26 +257,7 @@ def buyplan(request):
     return HttpResponse(planshtml)
 
 
-@skillutils.is_session_valid
-@skillutils.session_location_match
-@csrf_protect
-def upgradeuserplanscreen(request):
-    if request.method != 'GET':
-        message = error_msg('1004')
-        return HttpResponseBadRequest(message)
-    sesscode, usertype = "", ""
-    if request.COOKIES.has_key('sessioncode'):
-        sesscode = request.COOKIES['sessioncode']
-    if request.COOKIES.has_key('usertype'):
-        usertype = request.COOKIES['usertype']
-    sessionobj, userobj = None, None
-    if sesscode != "":
-        sessionobj = Session.objects.filter(sessioncode=sesscode)
-        userobj = sessionobj[0].user
-    if userobj is None:
-        message = "Error: Couldn't identify the user. This could be due to your session getting expired. Please login and try again."
-        return HttpResponse(message)
-    # Find the current plan in effect for the user
+def getupgradeableplanslist(userobj):
     currentdatetime = datetime.datetime.now()
     userplanqset = UserPlan.objects.filter(user=userobj, planstatus=True).order_by('-subscribedon')
     upgradeableplanslist = []
@@ -323,6 +304,30 @@ def upgradeuserplanscreen(request):
                 d = {'planid' : upgradeableplanobj.id, 'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
                 upgradeableplanslist.append(d)
     context['upgradeableplanslist'] = upgradeableplanslist
+    return context
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def upgradeuserplanscreen(request):
+    if request.method != 'GET':
+        message = error_msg('1004')
+        return HttpResponseBadRequest(message)
+    sesscode, usertype = "", ""
+    if request.COOKIES.has_key('sessioncode'):
+        sesscode = request.COOKIES['sessioncode']
+    if request.COOKIES.has_key('usertype'):
+        usertype = request.COOKIES['usertype']
+    sessionobj, userobj = None, None
+    if sesscode != "":
+        sessionobj = Session.objects.filter(sessioncode=sesscode)
+        userobj = sessionobj[0].user
+    if userobj is None:
+        message = "Error: Couldn't identify the user. This could be due to your session getting expired. Please login and try again."
+        return HttpResponse(message)
+    # Find the current plan in effect for the user
+    context = getupgradeableplanslist(userobj)
     context['plan_upgrade_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_USERPLAN_URL
     tmpl = get_template("subscription/upgradeplanscreen.html")
     context.update(csrf(request))

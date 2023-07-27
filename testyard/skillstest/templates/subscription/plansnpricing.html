@@ -51,6 +51,7 @@
 	  color:#FFFFFF;
 	  position:absolute; top:150px; left:100px; width:75%; height:50%; text-align:left; vertical-align:middle;padding-left:25px;padding-top:35px;padding-right:50px;
 	}
+	
   </style>
   <script language="javascript">
   function showupgradescreen(){
@@ -72,13 +73,15 @@
 	   // mouseX = e.pageX*3/2; 
 	   // mouseY = e.pageY*3/2;
 	  //}); 
-	  upgradediv.style = "display:float;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:600px;width:800px;background-color:#17a2b8;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;";
+	  upgradediv.style = "display:float;padding-left:10px;padding-top:5px;padding-bottom:5px;padding-right:5px;height:600px;width:800px;background-color:#007bff;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;";
 	  errorpattern = new RegExp("^Error");
           if(errorpattern.test(xmlhttp.responseText)){
             alert(xmlhttp.responseText);
 	  }
 	  else{
-	    upgradediv.innerHTML = xmlhttp.responseText;
+	    divtag = document.createElement("div");
+	    divtag.innerHTML = xmlhttp.responseText;
+	    upgradediv.appendChild(divtag);
 	  }
        }  
      };
@@ -93,8 +96,72 @@
     upgradediv.style.display = "none";
   }
   
+  function showhidecouponfield(){
+    couponwrapperdiv = document.getElementById('couponwrapper');
+    if(document.getElementById('yescoupon').checked == true){
+      couponwrapperdiv.style.display = "";
+      document.getElementById('txtcoupon').disabled = false;
+    }
+    else{
+      couponwrapperdiv.style.display = "none";
+      document.getElementById('txtcoupon').disabled = true;
+    }
+  }
 
   </script>
+  
+  <script language="javascript">
+  let plansdict = {};
+  {% for plan in upgradeableplanslist %}
+  plansdict["{{plan.planid}}"] = new Array("{{plan.planname}}", "{{plan.testsninterviews}}", "{{plan.price}}", "{{plan.fixedcost}}", "{{plan.validfor}}", "{{plan.extra_amount_to_pay}}");
+  {% endfor %}
+   
+  function computecost(){
+    // This may be called from 2 places - i) on selection of period, and ii) on applying a coupon code.
+    selectedplan = document.frmupgradesubscription.seltargetplan.options[document.frmupgradesubscription.seltargetplan.options.selectedIndex].value;
+    fixedcost = plansdict[selectedplan][3];
+    price = plansdict[selectedplan][2];
+    validfor = plansdict[selectedplan][4];
+    extra_amt = plansdict[selectedplan][5];
+    selectedperiod = document.frmupgradesubscription.selperiod.options[document.frmupgradesubscription.selperiod.options.selectedIndex].value;
+    if(plansdict[selectedplan][0] != "Unlimited Plan"){
+      amount_to_pay = parseFloat(selectedperiod) * parseFloat(extra_amt)
+      total_plan_price = parseFloat(fixedcost) + (parseFloat(selectedperiod) * parseFloat(price));
+    }
+    else{
+      amount_to_pay = "Billed on a monthly basis";
+      total_plan_price = fixedcost + " + monthly bill";
+    }
+    if(plansdict[selectedplan][0] != "Unlimited Plan"){
+      if(Number.isNaN(total_plan_price)){
+        total_plan_price = "NA";
+      }
+      else{
+        total_plan_price = "US$ " + total_plan_price.toFixed(2).toString();
+      }
+      if(Number.isNaN(amount_to_pay)){
+        amount_to_pay = "NA";
+      }
+      else{
+        amount_to_pay = "US$ " + amount_to_pay.toFixed(2).toString();
+      }
+    }
+    document.getElementById('totcost').innerHTML = total_plan_price;
+    document.getElementById('extcost').innerHTML = amount_to_pay;
+  }
+  
+  
+  function showplandetails(){
+    computecost();
+  }
+  
+   
+  function upgradationpayment(){
+  
+  }
+    
+  </script>
+  
 </head>
 <body id="page-top" >
 
