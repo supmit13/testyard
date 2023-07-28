@@ -105,6 +105,7 @@
     else{
       couponwrapperdiv.style.display = "none";
       document.getElementById('txtcoupon').disabled = true;
+      computecost();
     }
   }
 
@@ -114,6 +115,11 @@
   let plansdict = {};
   {% for plan in upgradeableplanslist %}
   plansdict["{{plan.planid}}"] = new Array("{{plan.planname}}", "{{plan.testsninterviews}}", "{{plan.price}}", "{{plan.fixedcost}}", "{{plan.validfor}}", "{{plan.extra_amount_to_pay}}");
+  {% endfor %}
+  
+  let couponslist = {};
+  {% for coupon in couponslist %}
+  couponslist["{{coupon.coupon_code}}"] = new Array("{{coupon.id}}", "{{coupon.coupon_code}}", "{{coupon.coupon_description}}", "{{coupon.discount_value}}", "{{coupon.currency_unit}}");
   {% endfor %}
    
   function computecost(){
@@ -155,6 +161,20 @@
     computecost();
   }
   
+  function applycoupon(){
+    amt_to_pay = document.getElementById('extcost').innerHTML;
+    amount_pattern = new RegExp("US\\$\\s+([\\d\\.]+)");
+    match = amount_pattern.exec(amt_to_pay);
+    amountvalue = "";
+    if(match != null && match.length > 1){
+      amountvalue = parseFloat(match[1]);
+      //alert(amountvalue);
+      couponcode = document.getElementById('txtcoupon').value.trim();
+      discountval = parseFloat(couponslist[couponcode][3]);
+      amountvalue = amountvalue - discountval;
+      document.getElementById('extcost').innerHTML = "US$ " + amountvalue.toFixed(2).toString();
+    }
+  }
    
   function upgradationpayment(){
   

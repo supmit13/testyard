@@ -36,7 +36,7 @@
 	</div><br/>
 	<div class="form-outline row" style="padding-top:40px;padding-left:30px;">
 	<label class="form-check-label" for="yescoupon" style="display:flex;align-items:center;">Apply Coupon:</label><span id='couponusewrapper' style='width:30px;padding-right:10px;display:flex;justify-content:flex-end;align-items:center;'><input type='checkbox' name='yescoupon' id='yescoupon' value='1' class='form-input' onclick='javascript:showhidecouponfield();' style="padding-left:10px;"></span>
-	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' maxlength='12' placeholder='Coupon Code' style="height:30px;border-radius:5px;color:#000;" disabled onblur="javascript:computecost();"></span>
+	<span id='couponwrapper' style='display:none;padding-left:8px;'><input type='text' name='txtcoupon' id='txtcoupon' value='' maxlength='12' placeholder='Coupon Code' style="height:30px;border-radius:5px;color:#000;" disabled onblur="javascript:applycoupon();"></span>
 	</div><br/>
 	<div class="form-outline" style="padding-left:30px;">
 	<span>Plan Price: </span><span id='totcost' style="padding-right:10px;">NA<!-- Populated using computecost() --></span>|

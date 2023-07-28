@@ -26,7 +26,7 @@ import decimal, math
 
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege, OptionalUserInfo
-from skillstest.Subscription.models import Plan, UserPlan, Transaction
+from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon
 from skillstest.Subscription.views import getupgradeableplanslist
 from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse
 from skillstest.models import Careers
@@ -813,6 +813,13 @@ def plansnpricing(request):
         plans_dict['upgradeableplanslist'] = context['upgradeableplanslist']
     else:
         plans_dict['upgradeableplanslist'] = []
+    couponslist = []
+    couponsqset = Coupon.objects.filter(status=True)
+    for coupon in couponsqset:
+        if coupon.valid_from.replace(tzinfo=None) < curdate and coupon.valid_till.replace(tzinfo=None) > curdate:
+            d = {'coupon_code' : coupon.coupon_code, 'coupon_description' : coupon.coupon_description, 'discount_value' : coupon.discount_value, 'currency_unit' : coupon.currency_unit, 'id' : coupon.id}
+            couponslist.append(d)
+    plans_dict['couponslist'] = couponslist
     tmpl = get_template("subscription/plansnpricing.html")
     plans_dict.update(csrf(request))
     cxt = Context(plans_dict)
