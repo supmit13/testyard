@@ -246,6 +246,11 @@ def buyplan(request):
     plans_dict['privacypolicy_url'] = skillutils.gethosturl(request) + "/" + mysettings.PRIVPOLICY_URL
     plans_dict['tou_url'] = skillutils.gethosturl(request) + "/" + mysettings.TERMSOFUSE_URL
     plans_dict['show_upgrade_plan_url'] = skillutils.gethosturl(request) + "/" + mysettings.UPGRADE_PLAN_SCREEN_URL
+    if userobj is not None:
+        context = getupgradeableplanslist(userobj)
+        plans_dict['upgradeableplanslist'] = context['upgradeableplanslist']
+    else:
+        plans_dict['upgradeableplanslist'] = []
     if skillutils.isloggedin(request):
         plans_dict['logged_in_as'] = userobj.displayname
     tmpl = get_template("subscription/plansnpricing.html")
