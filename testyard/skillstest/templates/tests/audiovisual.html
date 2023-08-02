@@ -2,7 +2,12 @@
 <html>
 <head>
 <script src='/static/javascript/pageutils.js' type='text/javascript'></script>
-
+<!--
+Note: If a browser cannot connect to wss://192.168.1.6:8888, then possibly it has a self signed certificate
+and that is causing the connection to fail. In that case, first visit the URL on browser like this:
+https://192.168.1.6:8888/OpenWebSocket
+Then accept the certificate and try again with the websocket connection.
+-->
 <script>
 
 var webrtc_capable = true;
@@ -43,7 +48,8 @@ else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
   rtc_peer_connection = RTCPeerConnection;
   //rtc_session_description = mozRTCSessionDescription;
   rtc_session_description = RTCSessionDescription;
-  get_user_media = navigator.mozGetUserMedia.bind(navigator);
+  //get_user_media = navigator.mozGetUserMedia.bind(navigator);
+  get_user_media = navigator.mediaDevices.getUserMedia.bind(navigator);
   //get_user_media = navigator.getUserMedia.bind(navigator);
   connect_stream_to_src = function(media_stream, media_element) {
     media_element.mozSrcObject = media_stream;
