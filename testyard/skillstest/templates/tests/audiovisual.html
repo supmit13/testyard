@@ -10,15 +10,17 @@ var rtc_peer_connection = null;
 var rtc_session_description = null;
 var get_user_media = null;
 var connect_stream_to_src = null;
-var stun_server = "stun.l.google.com:19302";
-//var stun_server = "testyard.in:3478";
+//var stun_server = "stun.l.google.com:19302";
+var stun_server = "13.232.197.1:3478"; // This is on AWS.
 
 if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
   if (typeof RTCPeerConnection == 'undefined'){
       rtc_peer_connection = webkitRTCPeerConnection;
+        //alert("1");
   }
   else {
     rtc_peer_connection = RTCPeerConnection;
+      //alert("2");
   }
   rtc_session_description = RTCSessionDescription;
   get_user_media = navigator.getUserMedia.bind(navigator);
@@ -53,8 +55,8 @@ else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
       }
     }
   };
- stun_server = "74.125.204.127:19302";
- //stun_server = "13.232.197.1:3478";
+ //stun_server = "74.125.204.127:19302";
+ stun_server = "13.232.197.1:3478"; // This is on AWS.
 } 
 else if (navigator.webkitGetUserMedia) { // early webkit webrtc implementation
   rtc_peer_connection = webkitRTCPeerConnection;
@@ -155,8 +157,8 @@ function enablestartcallbtn(elem){
 function start() {
   peer_connection = new rtc_peer_connection({ // RTCPeerConnection configuration 
     "iceServers": [ 
-        { "url": "stun:"+stun_server }, // stun server info
-     // { "url": "stun:"+stun_server, 'username' : 'tyuser', 'credentials' : 'typasswd' }, // stun server info
+     //   { "url": "stun:"+stun_server }, // stun server info
+      { "url": "stun:"+stun_server, 'username' : 'tyuser', 'credentials' : 'typasswd' }, // stun server info on AWS
     ]
   });
 

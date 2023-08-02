@@ -207,7 +207,7 @@ def get_user_tests(request):
         userplanqset = UserPlan.objects.filter(plan=busplanobj, user=userobj, planstatus=True).order_by('-subscribedon')
         curdate = datetime.datetime.now()
         for userplanobj in userplanqset:
-            if curdate >= userplanobj.planstartdate and curdate <  userplanobj.planenddate:
+            if curdate >= userplanobj.planstartdate.replace(tzinfo=None) and curdate <  userplanobj.planenddate.replace(tzinfo=None):
                 busplanflag = True
                 break
     if busplanflag is True:
@@ -7738,7 +7738,7 @@ def createinterview(request):
                 interviewscount = int(allinterviewrecs[0][0])
             testsninterviewscount = testscount + interviewscount
             if testsninterviewscount >= testsandinterviewsquota and planname != "Free Plan": # User has already consumed the allocated quota.
-                message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests."
+                message = "Error: You have already consumed the allocated count of tests and interviews in your subscription plan. Please extend your subscription to create more tests and interviews."
                 return HttpResponse(message)
             else: # Allow user to go ahead and create test (unless user has consumed the number of tests and interviews allowed by Free Plan.
                 if planname == "Free Plan" and int(mysettings.NEW_USER_FREE_TESTS_COUNT) != -1 and mysettings.NEW_USER_FREE_TESTS_COUNT <= testsninterviewscount:
@@ -7783,7 +7783,7 @@ def createinterview(request):
                 pass # Allow user to continue creating tests and interviews.
         disconnectdb(dbconn, dbcursor)
     interviewobj = Interview()
-    if introbtntext == 'Add Intro'  or introbtntext == 'Create Interview': # We are here for the first time
+    if introbtntext == 'Add Intro'  or introbtntext == 'Start Video Call': # We are here for the first time
         interviewobj.title = interviewtitle
     elif introbtntext == 'Open Intro':
         try:
@@ -10237,7 +10237,7 @@ def downloadmydata(request):
         userplanqset = UserPlan.objects.filter(plan=busplanobj, user=userobj, planstatus=True).order_by('-subscribedon')
         curdate = datetime.datetime.now()
         for userplanobj in userplanqset:
-            if curdate >= userplanobj.planstartdate and curdate <  userplanobj.planenddate:
+            if curdate >= userplanobj.planstartdate.replace(tzinfo=None) and curdate <  userplanobj.planenddate.replace(tzinfo=None):
                 busplanflag = True
                 break
     if busplanflag is False:
