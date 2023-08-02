@@ -7820,6 +7820,7 @@ def createinterview(request):
     interviewobj.scheduledtime = interviewdatetime
     hashtoken = binascii.hexlify(os.urandom(16))
     testyardhosturl = skillutils.gethosturl(request)
+    interviewurlparams = mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget
     if emailinvitationtarget: # Send an email invitation link to the email address.
         message = """Dear Candidate,
                      <br/><br/>
@@ -7827,7 +7828,7 @@ def createinterview(request):
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     %s/%s <br/><br/>
+                     <a href="#" onClick="window.open('%s/%s','videocallwin','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -7837,7 +7838,7 @@ def createinterview(request):
 
                      Good Luck!<br/>
                      The TestYard Interview Team.
-    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
+    """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), interviewurlparams, skillutils.gethosturl(request), interviewurlparams, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         #str(message).content_subtype = 'html'
