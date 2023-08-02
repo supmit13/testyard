@@ -512,6 +512,12 @@ def get_user_tests(request):
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
+    inttitle = skillutils.generate_random_string()
+    intqset = Interview.objects.filter(title=inttitle, interviewer=userobj)
+    while intqset.__len__() > 0:
+        inttitle = skillutils.generate_random_string()
+        intqset = Interview.objects.filter(title=inttitle, interviewer=userobj)
+    tests_user_dict['interviewtitle'] = inttitle + "-interview"
     tests_user_dict['showinterviewschedulescreenurl'] = skillutils.gethosturl(request) + "/" + showinterviewschedulescreenurl
     # pagination related vars
     tests_user_dict['nextpage_ascreator'] = nextpage_ascreator

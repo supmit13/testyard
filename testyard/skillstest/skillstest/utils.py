@@ -1389,5 +1389,17 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
     return targetzipfile # Zipped archive path
 
 
-
+def generate_random_text():
+    response = requests.get(mysettings.WORD_SITE)
+    words = response.content.splitlines()
+    numwords = 3
+    sep = "-"
+    selwords = []
+    ctr = 0
+    while ctr < numwords:
+        randnum = random.randint(0, words.__len__() - 1)
+        selwords.append(words[randnum])
+        ctr += 1
+    return sep.join(selwords)
+    
 
