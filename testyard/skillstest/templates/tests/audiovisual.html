@@ -39,7 +39,8 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
   };
 } 
 else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
-  rtc_peer_connection = mozRTCPeerConnection;
+  //rtc_peer_connection = mozRTCPeerConnection;
+  rtc_peer_connection = RTCPeerConnection;
   rtc_session_description = mozRTCSessionDescription;
   get_user_media = navigator.mozGetUserMedia.bind(navigator);
   connect_stream_to_src = function(media_stream, media_element) {
