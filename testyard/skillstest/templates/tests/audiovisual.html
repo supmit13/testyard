@@ -33,11 +33,9 @@ var stun_server = "13.232.197.1:3478"; // This is on AWS.
 if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
   if (typeof RTCPeerConnection == 'undefined'){
       rtc_peer_connection = webkitRTCPeerConnection;
-        //alert("1");
   }
   else {
     rtc_peer_connection = RTCPeerConnection;
-      //alert("2");
   }
   rtc_session_description = RTCSessionDescription;
   get_user_media = navigator.getUserMedia.bind(navigator);
@@ -54,8 +52,8 @@ if (navigator.getUserMedia) { // WebRTC 1.0 standard compliant browser
       }
     }
   };
-} 
-else if (navigator.mozGetUserMedia) { // early firefox webrtc implementation
+}
+else if (navigator.mozGetUserMedia) { // firefox webrtc implementation
   //rtc_peer_connection = mozRTCPeerConnection;
   rtc_peer_connection = RTCPeerConnection;
   //rtc_session_description = mozRTCSessionDescription;
