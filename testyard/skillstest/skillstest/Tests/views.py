@@ -8387,7 +8387,7 @@ def savenewinterviewschedule(request):
         retval = send_emails.delay(subject, message, mysettings.MAILSENDER, fromaddr, False)
     except:
         if mysettings.DEBUG:
-            print "sendemail failed for %s - %s\n"%(interviewerem, sys.exc_info()[1].__str__())
+            print "sendemail failed for %s - %s\n"%(fromaddr, sys.exc_info()[1].__str__())
     message = "The interview schedule has been successfully saved and the requisite emails are being sent out."
     response = HttpResponse(message)
     return response
@@ -8541,7 +8541,7 @@ def rescheduleinterview(request):
         retval = send_emails.delay(subject, message, mysettings.MAILSENDER, fromaddr, False)
     except:
         if mysettings.DEBUG:
-            print "sendemail failed for %s - %s\n"%(interviewerem, sys.exc_info()[1].__str__())
+            print "sendemail failed for %s - %s\n"%(fromaddr, sys.exc_info()[1].__str__())
     message = "The interview schedule has been successfully saved and the requisite emails are being sent out."
     response = HttpResponse(message)
     return response
