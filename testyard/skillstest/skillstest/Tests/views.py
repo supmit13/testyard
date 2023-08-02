@@ -8263,7 +8263,7 @@ def savenewinterviewschedule(request):
     #dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
-    freeplansql = "select candidates from Subscription_plan where planname='%s'"
+    freeplansql = "select candidates from Subscription_plan where planname=%s"
     dbcursor.execute(freeplansql, (plnname,))
     allplanrecs = dbcursor.fetchall()
     if allplanrecs.__len__() > 0:
@@ -8585,26 +8585,33 @@ def attendinterview(request):
         intobj = intobjqset[0]
     else:
         intobj = None
-    intcandobj = InterviewCandidates.objects.get(interview=intobj)
-    intcandobj.actualstarttime = datetime.datetime.now()
-    scheduledatetime = intcandobj.scheduledtime
-    year, month, day, hour, minute, second = scheduledatetime.year, scheduledatetime.month, scheduledatetime.day, scheduledatetime.hour, scheduledatetime.minute, scheduledatetime.second
-    scheduledatetime = datetime.datetime(year,month,day, hour, minute, second, 0, pytz.UTC)
+    try:
+        intcandobj = InterviewCandidates.objects.get(interview=intobj)
+    except:
+        intcandobj = None
+    if intcandobj is None:
+        intcandobj = InterviewCandidates.objects.get(interviewlinkid=interviewlinkid)
     curdatetime = datetime.datetime.now()
-    curdatetime = pytz.utc.localize(curdatetime)
-    #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
-    intcandobj.save()
+    scheduledatetime = None
+    if intcandobj is not None:
+        intcandobj.actualstarttime = datetime.datetime.now()
+        scheduledatetime = intcandobj.scheduledtime
+        year, month, day, hour, minute, second = scheduledatetime.year, scheduledatetime.month, scheduledatetime.day, scheduledatetime.hour, scheduledatetime.minute, scheduledatetime.second
+        scheduledatetime = datetime.datetime(year,month,day, hour, minute, second, 0, pytz.UTC)
+        curdatetime = pytz.utc.localize(curdatetime)
+        #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
+        intcandobj.save()
     int_user_dict = {}
     int_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     if intobj is not None:
         interviewschedulestart = intobj.scheduledtime
         #fp.write(str(time.strptime(interviewschedulestart, "%Y-%m-%d %H:%M:%S")))
         #fp.close()
-        if interviewschedulestart:
+        if interviewschedulestart is not None:
             yeari, monthi, dayi, houri, minutei, secondi = interviewschedulestart.year, interviewschedulestart.month, interviewschedulestart.day, interviewschedulestart.hour, interviewschedulestart.minute, interviewschedulestart.second
             interviewschedulestart = datetime.datetime(yeari,monthi,dayi, houri, minutei, secondi, 0, pytz.UTC)
             interviewscheduleend = interviewschedulestart
-        if interviewschedulestart: # if this is not None
+        if interviewschedulestart is not None: # if this is not None
             interviewscheduleend  = interviewschedulestart + datetime.timedelta(0, intobj.maxduration)
             #if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
             if curdatetime > interviewschedulestart:
@@ -8632,7 +8639,7 @@ def attendinterview(request):
                 cxt = Context(int_user_dict)
                 intscreen = tmpl.render(cxt)
                 return HttpResponse(intscreen)
-    if scheduledatetime <= curdatetime:
+    if scheduledatetime is not None and scheduledatetime <= curdatetime:
         #tmpl = get_template("tests/interview_candidate_screen.html")
         tmpl = get_template("tests/audiovisual.html")
         if intobj:
@@ -8644,14 +8651,19 @@ def attendinterview(request):
             int_user_dict['interviewfilename'] = interviewfilename
     else:
         tmpl = get_template("tests/waitscreen.html")
-        int_user_dict['interviewtitle'] = intobj.title
-        interviewfilename = intobj.title
-        interviewfilename = interviewfilename.replace("-", "_")
-        interviewfilename = interviewfilename.replace(" ", "_")
-        interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
-        int_user_dict['interviewfilename'] = interviewfilename
-        int_user_dict['scheduledatetime'] = scheduledatetime
-        int_user_dict['email'] = intcandobj.emailaddr
+        if intobj is not None:
+            int_user_dict['interviewtitle'] = intobj.title
+            interviewfilename = intobj.title
+            interviewfilename = interviewfilename.replace("-", "_")
+            interviewfilename = interviewfilename.replace(" ", "_")
+            interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
+            int_user_dict['interviewfilename'] = interviewfilename
+            int_user_dict['scheduledatetime'] = scheduledatetime
+            int_user_dict['email'] = intcandobj.emailaddr
+        else:
+            int_user_dict['interviewtitle'] = ""
+            int_user_dict['scheduledatetime'] = ""
+            int_user_dict['email'] = ""
     int_user_dict['hashtoken'] = hashtoken
     int_user_dict['curdatetime'] = curdatetime
     int_user_dict.update(csrf(request))
