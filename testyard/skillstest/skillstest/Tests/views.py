@@ -7834,7 +7834,7 @@ def createinterview(request):
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#" onClick="window.open('%s/%s','videocallwin','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
+                     <a href="#" onClick="window.open('%s/%s','_blank','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8349,7 +8349,7 @@ def savenewinterviewschedule(request):
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#" onClick="window.open('%s','videocallwin','resizable,height=260,width=370'); return false;">%s/%s</a> <br/><br/>
+                     <a href="#/" onClick="window.open('%s','_blank','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8378,7 +8378,7 @@ def savenewinterviewschedule(request):
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#" onClick="window.open('%s','videocallwin','resizable,height=260,width=370'); return false;">%s/%s</a> <br/><br/>
+                     <a href="#" onClick="window.open('%s','_blank','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8499,7 +8499,7 @@ def rescheduleinterview(request):
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#" onClick="window.open('%s','pagename','resizable,height=260,width=370'); return false;">%s</a> <br/><br/>
+                     <a href="#" onClick="window.open('%s','pagename','resizable,height=1000,width=800'); return false;">%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8532,7 +8532,7 @@ def rescheduleinterview(request):
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#" onClick="window.open('%s','pagename','resizable,height=260,width=370'); return false;">%s</a> <br/><br/>
+                     <a href="#" onClick="window.open('%s','pagename','resizable,height=1000,width=800'); return false;">%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8600,6 +8600,7 @@ def attendinterview(request):
     if intcandobj is None:
         try:
             intcandobj = InterviewCandidates.objects.get(interviewlinkid=interviewlinkid)
+            intobj = intcandobj.interview
         except:
             intcandobj = None
     curdatetime = datetime.datetime.now()
