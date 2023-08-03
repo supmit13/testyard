@@ -1,8 +1,19 @@
 <doctype 'html'>
 <head>
 <title> Wait Please!!!</title>
+<script language="JavaScript">
+
+function resizewindow(){
+    var width = "1000";
+    var height = "800";
+    window.resizeTo(width, height);
+    //alert(width);
+    window.moveTo(((screen.width - width) / 2), ((screen.height - height) / 2));      
+}
+
+</script>
 </head>
-<body  bgcolor='#669999'>
+<body  bgcolor='#669999' onload="javascript:resizewindow();">
 <div id="container">
 	<div id="header">
 		<h1><a href="#">TEST<span>YARD</span></a></h1>

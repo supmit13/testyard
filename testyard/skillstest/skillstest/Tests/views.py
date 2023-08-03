@@ -8343,13 +8343,13 @@ def savenewinterviewschedule(request):
     # Send out the requisite emails.
     if emailidslist.__len__() > 0: # Send an email invitation link to the email addresses.
         interviewlinkurlwithparams = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist)
-        message = """Dear Candidate,
+        message = """<html><head></head><body>Dear Candidate,
                      <br/><br/>
                      This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the<br/> 
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#/" onClick="window.open('%s','_blank','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
+                     <a href="%s" target='_blank'>%s/%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8358,7 +8358,7 @@ def savenewinterviewschedule(request):
                      view application.<br/><br/>
 
                      Good Luck!<br/>
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</body></html>
     """%(interviewobj.title, userobj.displayname, newsched_datetime, interviewlinkurlwithparams, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist), skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
@@ -8372,13 +8372,13 @@ def savenewinterviewschedule(request):
                     print "sendemail failed for %s - %s\n"%(targetemail, sys.exc_info()[1].__str__())
     # Send an email to the interviewers
     interviewlinkurlwithparams = skillutils.gethosturl(request) + "/" + mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken
-    message = """Dear Interviewer,
+    message = """<html><head></head><body>Dear Interviewer,
                      <br/><br/>
                      You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the<br/> 
                      link below to load the interview interface. If it doesn't work, then copy <br/>
                      the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
                      
-                     <a href="#" onClick="window.open('%s','_blank','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
+                     <a href="%s" target='_blank'>%s/%s</a> <br/><br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8387,7 +8387,7 @@ def savenewinterviewschedule(request):
                      view application.<br/><br/>
 
                      Good Luck!<br/>
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</body></html>
          """%(",".join(emailidslist), interviewobj.title, newsched_datetime, interviewlinkurlwithparams, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
     subject = "TestYard Interview Scheduled"
     fromaddr = userobj.emailid
@@ -8493,22 +8493,18 @@ def rescheduleinterview(request):
         return response
     # Send requisite emails to candidates
     if candidateemailslist.__len__() > 0:
-        message = """Dear Candidate,
+        message = """<html><head></head><body><pre>Dear Candidate,
                      <br/><br/>
-                     This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the<br/> 
-                     link below to load the interview interface. If it doesn't work, then copy <br/>
-                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit "Enter".<br/>
                      
-                     <a href="#" onClick="window.open('%s','pagename','resizable,height=1000,width=800'); return false;">%s</a> <br/><br/>
+                     <a href="%s" target='_blank'>%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
-                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
-                     Browsers other than these 3 may not support every feature used by the inter-<br/>
-                     view application.<br/><br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview. Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
 
                      Good Luck!<br/>
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</pre></body></html>
     """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
@@ -8526,22 +8522,18 @@ def rescheduleinterview(request):
         interviewerurl = interviewurl.split("&attend")[0]
     except:
         pass
-    message = """Dear Interviewer,
+    message = """<html><head></head><body><pre>Dear Interviewer,
                      <br/><br/>
-                     You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the<br/> 
-                     link below to load the interview interface. If it doesn't work, then copy <br/>
-                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit "Enter".<br/>
                      
-                     <a href="#" onClick="window.open('%s','pagename','resizable,height=1000,width=800'); return false;">%s</a> <br/><br/>
+                     <a href="%s" target='_blank'>%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
-                     <br/><br/>
-                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
-                     Browsers other than these 3 may not support every feature used by the inter-<br/>
-                     view application.<br/><br/>
+                     <br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview. Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
 
                      Good Luck!<br/>
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</pre></body></html>
          """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
     subject = "TestYard Interview Scheduled"
     fromaddr = userobj.emailid
@@ -8612,7 +8604,7 @@ def attendinterview(request):
         scheduledatetime = datetime.datetime(year,month,day, hour, minute, second, 0, pytz.UTC)
         curdatetime = pytz.utc.localize(curdatetime)
         #scheduledatetime_dt = datetime.datetime.strptime(scheduledatetime, "%Y-%m-%d %H:%M:%S")
-        intcandobj.save()
+        #intcandobj.save()
     int_user_dict = {}
     int_user_dict['signal_server'] = mysettings.SIGNAL_SERVER
     if intobj is not None:
@@ -8635,6 +8627,10 @@ def attendinterview(request):
                 interviewfilename = interviewfilename.replace(" ", "_")
                 interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
                 int_user_dict['interviewfilename'] = interviewfilename
+                try:
+                    intcandobj.save()
+                except:
+                    pass
             else:
                 tmpl = get_template("tests/waitscreen.html")
                 int_user_dict['interviewtitle'] = intobj.title
@@ -8661,6 +8657,10 @@ def attendinterview(request):
             interviewfilename = interviewfilename.replace(" ", "_")
             interviewfilename += "_" + int(time.time()).__str__() + ".mp4"
             int_user_dict['interviewfilename'] = interviewfilename
+            try:
+                intcandobj.save()
+            except:
+                pass
     else:
         tmpl = get_template("tests/waitscreen.html")
         if intobj is not None:
