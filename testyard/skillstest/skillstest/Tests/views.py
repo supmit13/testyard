@@ -7828,22 +7828,18 @@ def createinterview(request):
     testyardhosturl = skillutils.gethosturl(request)
     interviewurlparams = mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + emailinvitationtarget
     if emailinvitationtarget: # Send an email invitation link to the email address.
-        message = """Dear Candidate,
+        message = """<pre>Dear Candidate,
                      <br/><br/>
-                     This is an invitation to attend an interview with %s on %s hours. Please click on the<br/> 
-                     link below to load the interview interface. If it doesn't work, then copy <br/>
-                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     This is an invitation to attend an interview with %s on %s hours. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit <enter>.<br/>
                      
-                     <a href="#" onClick="window.open('%s/%s','_blank','resizable,height=1000,width=800'); return false;">%s/%s</a> <br/><br/>
+                     <a href="%s/%s" target='_blank'>%s/%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
-                     <br/><br/>
-                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
-                     Browsers other than these 3 may not support every feature used by the inter-<br/>
-                     view application.<br/><br/>
+                     <br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview. Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
 
                      Good Luck!<br/>
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</pre>
     """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), interviewurlparams, skillutils.gethosturl(request), interviewurlparams, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
@@ -7864,22 +7860,18 @@ def createinterview(request):
         else:
             pass
     if intervieweremailslist.__len__() >= 1: # Send an email with the interviewer's link to the email addresses
-        message = """Dear Interviewer,
+        message = """<pre>Dear Interviewer,
                      <br/><br/>
-                     You have invited a candidate identified by email '%s' to interview at %s. Please click on the<br/> 
-                     link below to load the interview interface. If it doesn't work, then copy <br/>
-                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     You have invited a candidate identified by email '%s' to interview at %s. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit <enter>.<br/>
                      
-                     %s/%s <br/><br/>
+                     %s/%s <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
-                     <br/><br/>
-                     Important Note: Please use Chrome, Firefox or Opera to attend the interview.<br/>
-                     Browsers other than these 3 may not support every feature used by the inter-<br/>
-                     view application.<br/><br/>
+                     <br/>
+                     Important Note: Please use Chrome, Firefox or Opera to attend the interview. Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
 
                      Good Luck!<br/>
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</pre>
          """%(emailinvitationtarget, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Scheduled"
         fromaddr = userobj.emailid
@@ -7930,21 +7922,18 @@ def createinterview(request):
             scheduledatetime_dt = scheduledatetime
         #if datetime.datetime.strptime(scheduledatetime_dt, "%Y-%m-%d %H:%M:%S") > currentdatetime:
         if scheduledatetime_dt > currentdatetime:
-            message = """Dear Candidate,<br/><br/>
+            message = """<pre>Dear Candidate,<br/><br/>
                      
 
-                     This is an invitation to attend an interview named '%s' with %s on %s.  Please click on the 
-                     link below to load the interview interface. If it doesn't work, then copy
-                     the link and paste it in your browser's address bar and hit <enter>.<br/><br/>
+                     This is an invitation to attend an interview named '%s' with %s on %s.  Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit <enter>.<br/>
                      
-                     %s<br/><br/>
-                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.<br/><br/>
+                     %s<br/>
+                     You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.<br/>
                      
-                     Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview.<br/>
-                     Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
+                     Important Note: Please use a recent version of Chrome, Firefox or Opera to attend the interview. Browsers other than these 3 may not support every feature used by the interview application.<br/><br/>
                      
                      Good Luck!
-                     The TestYard Interview Team.
+                     The TestYard Interview Team.</pre>
     """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
             subject = "TestYard Interview Invitation"
             fromaddr = userobj.emailid
@@ -7958,17 +7947,16 @@ def createinterview(request):
                     retmsg = "sendemail failed for %s - %s\n"%(emailinvitationtarget, sys.exc_info()[1].__str__())
                     return HttpResponse(retmsg)
             # Now, send a similar email to the creator/conductor of the interview with the appropriate interview URL.
-            message = """Dear Interviewer,<br/><br/>
-        You have successfully set up an interview titled '%s' for %s at %s hours. You may click on the following link to access the interview application<br/>
-        that will assist you in conducting the interview at the aforementioned time.<br/><br/>
+            message = """<pre>Dear Interviewer,<br/><br/>
+        You have successfully set up an interview titled '%s' for %s at %s hours. You may click on the following link to access the interview application that will assist you in conducting the interview at the aforementioned time.<br/>
 
-        %s <br/><br/>
+        %s <br/>
         
         You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.<br/><br/>
 
         Good Luck!
 
-        The TestYard Team.
+        The TestYard Team.</pre>
         """%(interviewobj.title, emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
             #str(message).content_subtype = 'html'
             subject = "Interview Scheduled"
