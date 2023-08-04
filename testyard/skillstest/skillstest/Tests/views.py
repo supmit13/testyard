@@ -8485,7 +8485,7 @@ def rescheduleinterview(request):
                      <br/><br/>
                      This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit "Enter".<br/>
                      
-                     <a href="%s" target='_blank'>%s</a> <br/>
+                     <a href="%s" target='_blank' onclick="javascript:window.open('%s', 'reschedulewin', 'width=1000,height=800');">%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8493,7 +8493,7 @@ def rescheduleinterview(request):
 
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre></body></html>
-    """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+    """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, interviewurl, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         # Send email
@@ -8514,7 +8514,7 @@ def rescheduleinterview(request):
                      <br/><br/>
                      You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit "Enter".<br/>
                      
-                     <a href="%s" target='_blank'>%s</a> <br/>
+                     <a href="%s" target='_blank' onclick="javascript:window.open('%s', 'reschedulewin', 'width=1000,height=800')">%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/>
@@ -8522,7 +8522,7 @@ def rescheduleinterview(request):
 
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre></body></html>
-         """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+         """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, interviewerurl, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
     subject = "TestYard Interview Scheduled"
     fromaddr = userobj.emailid
     try:
