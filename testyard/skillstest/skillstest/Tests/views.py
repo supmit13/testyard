@@ -8485,7 +8485,7 @@ def rescheduleinterview(request):
                      <br/><br/>
                      This is an invitation to attend an interview titled '%s' with %s on %s hours. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit "Enter".<br/>
                      
-                     <a href="%s" target='_blank' onclick="javascript:window.open('%s', 'reschedulewin', 'width=1000,height=800');">%s</a> <br/>
+                     <a href="%s" target='_blank'>%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/><br/>
@@ -8514,7 +8514,7 @@ def rescheduleinterview(request):
                      <br/><br/>
                      You have invited candidates identified by emails %s to interview titled '%s' at %s. Please click on the link below to load the interview interface. If it doesn't work, then copy the link and paste it in your browser's address bar and hit "Enter".<br/>
                      
-                     <a href="%s" target='_blank' onclick="javascript:window.open('%s', 'reschedulewin', 'width=1000,height=800')">%s</a> <br/>
+                     <a href="%s" target='_blank'>%s</a> <br/>
                      
                      You may add the schedule to your <a href='%s/skillstest/interview/addtocalendar/?inturl=%s'>google calendar</a>.
                      <br/>
