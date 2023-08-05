@@ -4553,9 +4553,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	}
 	
 	
-	function copylink(url){
+	function copylink(url, ctr){
 	    try {
 	      navigator.clipboard.writeText(url);
+	      document.getElementById('copyanchor_'+ctr).innerHTML = "copied";
 	    } 
 	    catch (err) {
 	      console.error('Failed to copy: ', err);
@@ -5133,7 +5134,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		   	    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:12 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:13 }}</font></td>
 			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:15 }}</font></td>
-			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}<br/>&nbsp;&nbsp;<a href='#/' onclick="javascript:copylink('{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}');" style="font-size:small;">copy</a></font></td>
+			    <td><font size=-1 color='#0000AA'>{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}<br/>&nbsp;&nbsp;<a href='#/' id="copyanchor_{{ forloop.counter }}" onclick="javascript:copylink('{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}', '{{ forloop.counter }}');" style="font-size:small;">copy</a></font></td>
 			    <td><font size=-1 color='#0000AA'><a href='#/' onClick="javascript:postonlinkedin('{{ interviewlist_asinterviewee|dictlookup:interviewtitle|getval:14 }}', 'interviewattended');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png " alt="LinkedIn Add to Profile button"></a></font></td>
 			</tr>
 			{% endfor %}
