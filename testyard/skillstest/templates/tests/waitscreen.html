@@ -12,18 +12,27 @@ function resizewindow(){
 }
 
 </script>
+<link rel="stylesheet" type="text/css" href="static/css/style.css" />
+<!-- New interface code starts here -->
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<!-- New interface code ends here -->
+
 </head>
 <body  bgcolor='#ffffff' onload="javascript:resizewindow();">
-<div id="container">
-	<div id="header">
-		<h1><a href="#">TEST<span>YARD</span></a></h1>
-		<p style="color:#6c757d;font-size:14;font-face:'arial';font-style:oblique;">Committed to identifying the best professionals for your business...</p>
- 	</div>
+<div id="container" style="width:90%;padding-top:35px;">
+	<div id="header">	
+		<h1><a href="/skillstest/index/" style="text-shadow: rgba(245,245,245,0.5);background-clip: text;-moz-background-clip: text;-webkit-background-clip: text;">TEST<span>YARD</span></a></h1>
+	<!--	<p style="color:#0000FF;font-size:14;font-face:'cursive, Parkavenue';font-style:oblique;">Committed to identifying the best professionals for your business...</p> -->
+		<p style="color:#FFFFFF;font-size:14;font-family: Futura;text-shadow: rgba(245,245,245,0.5);background-clip: text;-moz-background-clip: text;-webkit-background-clip: text;background-color: #666666;font-style:oblique;">Taking care of your skills testing needs...</p> 
+	</div>
 </div>
-<div style="align:center;color:#6c757d;">
+<div style="color:#000000;padding:60px;">
+<div>
 The interview named "{{interviewtitle}}" has been scheduled on {{scheduledatetime}}. An email containing the link to the interview screen has been emailed to you at the following email address: {{email}}. To join the interview, you will need to click on that link at the scheduled hour. 
+</div><br/>
+<div> <form name='temp'><input type='button' name='btnclose' class="btn btn-primary" value='Close Me' onClick='javascript:window.close();'></form></div>
 </div>
-<span style="align:center"> <form name='temp'><input type='button' name='btnclose' value='Close window' onClick='javascript:window.close();'></form></span>
 </body>
 </html>
 

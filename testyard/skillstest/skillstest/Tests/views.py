@@ -8493,7 +8493,7 @@ def rescheduleinterview(request):
 
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre></body></html>
-    """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, interviewurl, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+    """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
         subject = "TestYard Interview Invitation"
         fromaddr = userobj.emailid
         # Send email
@@ -8522,7 +8522,7 @@ def rescheduleinterview(request):
 
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre></body></html>
-         """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, interviewerurl, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
+         """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
     subject = "TestYard Interview Scheduled"
     fromaddr = userobj.emailid
     try:
