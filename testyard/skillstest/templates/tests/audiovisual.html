@@ -1314,17 +1314,18 @@ html, body {
   </div>  
   <div id="open_call_state" class="center">
     <div>
-    <span class="video-controls">Screen Name:<input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;border-radius:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;border-radius:3px;"><img src="/static/webrtc/images/screen.svg" style="width:20px;height:20px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;border-radius:5px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;border-radius:5px;"/></span>
+    <span class="video-controls"><input type='text' maxlength='20' size='20' placeholder="Screen Name" id="screen_name" name="screen_name" style="position:absolute;left:120px;padding-left:5px;border-radius:5px;" onkeydown="javascript:enablestartcallbtn(this);">&nbsp;&nbsp;<button id="share-screen" title="Share Screen" style="position:absolute;left:350px;width:30px;height:30px;padding-left:5px;padding-right:5px;border-radius:3px;"><img src="/static/webrtc/images/screen.svg" style="width:20px;height:20px;"></button><button name='btnstartcapture' id="btnstartcapture" type='button' style="position:absolute;left:400px;height:30px;width:150px;padding-left:10px;background:#ccffff;border:1px solid #00f;border-radius:5px;" onClick='javascript:startCapture();' disabled>Start Recording</button><input type='button' id="stopme" name= 'stopme' value='Stop Me' style="position:absolute;left:560px;height:30px;padding-left:10px;background:#ffcccc;border:1px solid #f00;border-radius:5px;"/></span>
    </div>
-
-   <div class="center" style="padding-left:20px;padding-top:50px;display:block;text-align:center;">
-   <span>
+    <br/>
+   <div class="center" style="padding-top:50px;display:block;text-align:center;">
+   <span style="padding-right:50px;">
     <video id="remote_video" controls></video>
     <video id="local_video" controls muted></video>
     </span>
     </div>
+    <div class="row" style="position:relative;top:86%;left:210px;font-size:small;width:80%;padding-top:8px;padding-left:125px;"><span class="row" style="font-size:small;width:30%;padding-top:8px;padding-left:15px;text-align:left;white-space:nowrap;color:#0000aa;">Enable/Disable Webcam:&nbsp;&nbsp;<input type="checkbox" id='togglewebcam' name='togglewebcam' class="form-check-control" style="align:left;vertical-align:top;position:static;top:20px;left:160px;width:15px;" value="0" onchange="javascript:webcamstatechange();" checked></span><span class="row justify-content-end" style="font-size:small;width:30%;padding-top:8px;padding-left:15px;text-align:right;color:#0000aa;">Enable/Disable Mic:&nbsp;&nbsp;<input type="checkbox" id='togglemic' name='togglemic' class="form-control" style="vertical-align:top;position:static;top:20px;left:520px;width:15px;" value="0" onchange="javascript:microphonestatechange();" checked></span></div>
  </div>
- <div class="row" style="position:absolute;top:86%;left:210px;font-size:small;width:80%;padding-top:8px;padding-left:5px;"><span style="font-size:small;width:50%;padding-top:8px;padding-left:5px;text-align:left;white-space:nowrap;color:#0000aa;">Enable/Disable Webcam:&nbsp;&nbsp;<input type="checkbox" id='togglewebcam' name='togglewebcam' class="form-control" style="align:left;vertical-align:top;position:absolute;top:20px;left:160px;width:20px;" value="0" onchange="javascript:webcamstatechange();" checked></span><span style="font-size:small;width:50%;padding-top:8px;padding-left:5px;text-align:left;color:#0000aa;">Enable/Disable Mic:&nbsp;&nbsp;<input type="checkbox" id='togglemic' name='togglemic' class="form-control" style="vertical-align:top;position:absolute;top:20px;left:520px;width:20px;" value="0" onchange="javascript:microphonestatechange();" checked></span></div>
+ 
   <br />
   <div align='center'>
   <form name='captureinterview' id='captureinterview' method='POST'>
@@ -1335,7 +1336,7 @@ html, body {
   <div class="center">
     <img id="photo" style="display:none;"/>
   </div>
-  <fieldset style="position:absolute;border:2px solid #00a;color:#0000aa;background:#ccffff;left:200px;top:95%;width:65%;height:180px;text-align:left;padding-left:20px;vertical-align:bottom;overflow:auto;">
+  <fieldset style="position:static;border:2px solid #00a;color:#0000aa;background:#ccffff;left:200px;top:95%;width:65%;height:180px;text-align:left;padding-left:20px;vertical-align:bottom;overflow:auto;">
   <legend style="font-weight:bold;font-size:medium;width:11%;">Chat Box</legend>
   <div id="chatlogs">
   <!-- Space for log of chat conversation -->
