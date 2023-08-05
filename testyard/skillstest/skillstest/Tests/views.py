@@ -10271,9 +10271,10 @@ def downloadmydata(request):
         testrecords_ascreator = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
-        message = "Error: Something went wrong - %s"%sys.exc_info()[1].__str__()
-        response = HttpResponse(message)
-        return response
+        message = "Error4: Something went wrong - %s"%sys.exc_info()[1].__str__() # TODO: Need to create a log of these messages and send them back with the final response.
+        #response = HttpResponse(message)
+        #return response
+        testrecords_ascreator = []
     for testrecord in  testrecords_ascreator:
         testid = testrecord[0]
         testname = testrecord[1]
@@ -10282,15 +10283,24 @@ def downloadmydata(request):
         creatorisevaluator = testrecord[4]
         evalgroupname = testrecord[5]
         testtype = testrecord[6]
-        test_createdate = testrecord[7].strftime("%Y-%m-%d %H:%M:%S")
+        if testrecord[7] is not None:
+            test_createdate = testrecord[7].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            test_createdate = ""
         maxscore = testrecord[8]
         passscore = testrecord[9]
         ruleset = testrecord[10]
         test_duration = testrecord[11]
         allowedlanguages = testrecord[12]
         challengescount = testrecord[13]
-        activationdate = testrecord[14].strftime("%Y-%m-%d %H:%M:%S")
-        publishdate = testrecord[15].strftime("%Y-%m-%d %H:%M:%S")
+        if testrecord[14] is not None:
+            activationdate = testrecord[14].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            activationdate = ""
+        if testrecord[15] is not None:
+            publishdate = testrecord[15].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            publishdate = ""
         test_status = testrecord[16]
         allowmultipleattempts = testrecord[17]
         maxattemptscount = testrecord[18]
@@ -10322,9 +10332,10 @@ def downloadmydata(request):
         testrecords_ascandidate = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
-        message = "Error: Something went wrong - %s"%sys.exc_info()[1].__str__()
-        response = HttpResponse(message)
-        return response
+        message = "Error3: Something went wrong - %s"%sys.exc_info()[1].__str__() # TODO: Need to create a log of these messages and send them back with the final response.
+        #response = HttpResponse(message)
+        #return response
+        testrecords_ascandidate = []
     for testrecord in testrecords_ascandidate:
         utid = testrecord[0]
         testid = testrecord[1]
@@ -10332,13 +10343,25 @@ def downloadmydata(request):
         topicname = testrecord[3]
         emailaddress = testrecord[4]
         testurl = testrecord[5]
-        validfrom = testrecord[6].strftime("%Y-%m-%d %H:%M:%S")
-        validtill = testrecord[7].strftime("%Y-%m-%d %H:%M:%S")
+        if testrecord[6] is not None:
+            validfrom = testrecord[6].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            validfrom = ""
+        if testrecord[7] is not None:
+            validtill = testrecord[7].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            validtill = ""
         status = testrecord[8]
         outcome = testrecord[9]
         score = testrecord[10]
-        starttime = testrecord[11].strftime("%Y-%m-%d %H:%M:%S")
-        endtime = testrecord[12].strftime("%Y-%m-%d %H:%M:%S")
+        if testrecord[11] is not None:
+            starttime = testrecord[11].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            starttime = ""
+        if testrecord[12] is not None:
+            endtime = testrecord[12].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            endtime = ""
         ipaddress = testrecord[13]
         clientsware = testrecord[14]
         sessionid = testrecord[15]
@@ -10355,15 +10378,16 @@ def downloadmydata(request):
         dateadded = testrecord[26].strftime("%Y-%m-%d %H:%M:%S")
         testsdict_ascandidate[testname] = {'usertestid' : utid, 'testid' : testid, 'topicname' : topicname, 'emailaddress' : emailaddress, 'testurl' : testurl, 'validfrom' : validfrom, 'validtill' : validtill, 'status' : status, 'outcome' : outcome, 'score' : score, 'starttime' : starttime, 'endtime' : endtime, 'ipaddress' : ipaddress, 'clientsware' : clientsware, 'sessionid' : sessionid, 'active' : active, 'cancelled' : cancelled, 'stringid' : stringid, 'evaluatorcomment' : evaluatorcomment, 'firstevaltimestamp' : firstevaltimestamp, 'visibility' : visibility, 'evalcommitstate' : evalcommitstate, 'disqualified' : disqualified, 'scheduleid' : scheduleid, 'windowchangeattempts' : windowchangeattempts, 'dateadded' : dateadded}
     # Get interviews created by this user:
-    myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, t.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i, Tests_topic t where i.topic_id=t.id and i.interviewer_id=%d"
+    myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, t.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i, Tests_topic t where i.topic_id=t.id and i.interviewer_id=%s"
     try:
         dbcursor.execute(myinterviewssql_creator, (userobj.id,))
         interviewrecords_ascreator = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
-        message = "Error: Something went wrong - %s"%sys.exc_info()[1].__str__()
-        response = HttpResponse(message)
-        return response
+        message = "Error2: Something went wrong - %s"%sys.exc_info()[1].__str__() # TODO: Need to create a log of these messages and send them back with the final response.
+        #response = HttpResponse(message)
+        #return response
+        interviewrecords_ascreator = []
     for interviewrecord in interviewrecords_ascreator:
         intid = interviewrecord[0]
         interviewtitle = interviewrecord[1]
@@ -10373,8 +10397,14 @@ def downloadmydata(request):
         topicname = interviewrecord[5]
         medium = interviewrecord[6]
         intlanguage = interviewrecord[7]
-        intcreatedate = interviewrecord[8].strftime("%Y-%m-%d %H:%M:%S")
-        intpublishdate = interviewrecord[9].strftime("%Y-%m-%d %H:%M:%S")
+        if interviewrecord[8] is not None:
+            intcreatedate = interviewrecord[8].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            intcreatedate = ""
+        if interviewrecord[9] is not None:
+            intpublishdate = interviewrecord[9].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            intpublishdate = ""
         intstatus = interviewrecord[10]
         intmaxscore = interviewrecord[11]
         intmaxduration = interviewrecord[12]
@@ -10386,7 +10416,10 @@ def downloadmydata(request):
         introfilepath = interviewrecord[18]
         intfiletype = interviewrecord[19]
         intrealtime = interviewrecord[20]
-        intscheduletime = interviewrecord[21].strftime("%Y-%m-%d %H:%M:%S")
+        if interviewrecord[21] is not None:
+            intscheduletime = interviewrecord[21].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            intscheduletime = ""
         numofinterviewers = interviewrecord[22]
         interviewerids = interviewrecord[23]
         interviewsdict_ascreator[interviewtitle] = {'interviewtitle' : interviewtitle, 'interviewid' : intid, 'numchallenges' : numchallenges, 'maxresponsestarttime' : maxresponsestarttime, 'interviewtopicname' : inttopicname, 'topicname' : topicname, 'medium' : medium, 'language' : intlanguage, 'createdate' : intcreatedate, 'publishdate' : intpublishdate, 'interviewstatus' : intstatus, 'maxscore' : intmaxscore, 'maxduration' : intmaxduration, 'randomsequencing' : randomsequencing, 'interviewlinkid' : intlinkid, 'interviewscope' : intscope, 'interviewquality' : intquality, 'challengesfilepath' : intchallengesfilepath, 'introfilepath' : introfilepath, 'filetype' : intfiletype, 'realtime' : intrealtime, 'scheduletime' : intscheduletime, 'numofinterviewers' : numofinterviewers, 'interviewerids' : interviewerids} 
@@ -10397,20 +10430,30 @@ def downloadmydata(request):
         interviewrecords_ascandidate = dbcursor.fetchall()
     except:
         skillutils.disconnectdb(dbconn, dbcursor)
-        message = "Error: Something went wrong - %s"%sys.exc_info()[1].__str__()
-        response = HttpResponse(message)
-        return response
+        message = "Error1: Something went wrong - %s"%sys.exc_info()[1].__str__() # TODO: Need to create a log of these messages and send them back with the final response.
+        interviewrecords_ascandidate = []
+        #response = HttpResponse(message)
+        #return response
     for interviewrecord in interviewrecords_ascandidate:
         interviewcandidateid = interviewrecord[0]
         interviewid = interviewrecord[1]
         interviewtitle = interviewrecord[2]
         candidateemailaddress = interviewrecord[3]
-        scheduledtime = interviewrecord[4].strftime("%Y-%m-%d %H:%M:%S")
-        actualstarttime = interviewrecord[5].strftime("%Y-%m-%d %H:%M:%S")
+        if interviewrecord[4] is not None:
+            scheduledtime = interviewrecord[4].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            scheduledtime = ""
+        if interviewrecord[5] is not None:
+            actualstarttime = interviewrecord[5].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            actualstarttime = ""
         interviewlinkid = interviewrecord[6]
         totaltime = interviewrecord[7]
         interviewurl = interviewrecord[8]
-        interviewdate = interviewrecord[9].strftime("%Y-%m-%d %H:%M:%S")
+        if interviewrecord[9] is not None:
+            interviewdate = interviewrecord[9].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            interviewdate = ""
         interviewsdict_ascandidate[interviewtitle] = {'interviewcandidateid' : interviewcandidateid, 'interviewid' : interviewid, 'interviewtitle' : interviewtitle, 'candidateemailaddress' : candidateemailaddress, 'scheduledtime' : scheduledtime, 'actualstarttime' : actualstarttime, 'interviewlinkid' : interviewlinkid, 'totaltime' : totaltime, 'interviewurl' : interviewurl, 'interviewdate' : interviewdate}
     dumpfilepath = ""
     mimetype = "text/xml"
@@ -10419,12 +10462,12 @@ def downloadmydata(request):
     elif fmt == "csv":
         dumpfilepath = skillutils.dumpascsv(userobj.displayname, testsdict_ascreator, testsdict_ascandidate, interviewsdict_ascreator, interviewsdict_ascandidate)
         mimetype = "text/csv"
+        skillutils.disconnectdb(dbconn, dbcursor)
     else:
         skillutils.disconnectdb(dbconn, dbcursor)
         message = "Could not identify the format."
         response = HttpResponse(message)
         return response
-    skillutils.disconnectdb(dbconn, dbcursor)
     # Content-disposition of dumpfilepath
     dumpcontents = ""
     fp = open(dumpfilepath, "rb")

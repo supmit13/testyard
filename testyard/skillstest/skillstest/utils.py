@@ -1055,7 +1055,8 @@ def connectdb_p(user='root', passwd='Spmprx13@', dbname='testyard', host='localh
     
 def disconnectdb(dbconn, cursor):
     cursor.close()
-    dbconn.close()
+    if dbconn.ping(True):
+        dbconn.close()
 
 
 def createopener():
@@ -1312,7 +1313,7 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
                     value = testrecord['challenges'][hdr]
                 except: # May be a mistake somewhere...
                     value = ""
-                    messages.append("Value for header '%' could not be found for test with name '%s'"%(hdr, testname))
+                    messages.append("Value for header '%s' could not be found for test with name '%s'"%(hdr, testname))
             filecontent1 += '"' + str(value) + '",'
         filecontent1 = filecontent1[:-1] + "\n" # Remove last comma from the string and add a newline.
     tcrfp = open(dumpfile1, "wb")
