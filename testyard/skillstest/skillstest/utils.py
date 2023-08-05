@@ -17,6 +17,7 @@ import razorpay
 import MySQLdb
 from lxml import etree
 from zipfile import ZipFile
+import io
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -1276,14 +1277,18 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
     """
     curdatetime = datetime.datetime.now()
     curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
-    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_csv_" + curdatetimestr
+    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir"
+    csvdir = username + "_csv_" + curdatetimestr
     if not os.path.exists(tmpdir):
         mkdir_p(tmpdir)
+    currdir = os.getcwd()
+    os.chdir(tmpdir)
+    mkdir_p(csvdir)
     targetzipfile = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_csv_" + curdatetimestr + ".zip"
-    dumpfile1 = tmpdir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".csv"
-    dumpfile2 = tmpdir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".csv"
-    dumpfile3 = tmpdir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".csv"
-    dumpfile4 = tmpdir + os.path.sep + username + "_interviewsascandidate_" + curdatetimestr + ".csv"
+    dumpfile1 = csvdir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".csv"
+    dumpfile2 = csvdir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".csv"
+    dumpfile3 = csvdir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".csv"
+    dumpfile4 = csvdir + os.path.sep + username + "_interviewsascandidate_" + curdatetimestr + ".csv"
     filecontent1, filecontent2, filecontent3, filecontent4 = "", "", "", ""
     headerflag = True
     headers = []
@@ -1383,10 +1388,18 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
     icrfp.write(filecontent4)
     icrfp.close() # Data for interviews as candidate dumped in file.
     filepaths.append(dumpfile4)
-    # Now zip up all files in the directory 
-    with ZipFile(targetzipfile, 'w') as zip:
+    # Now zip up all files in the directory
+    buffer = io.BytesIO() 
+    with ZipFile(buffer, 'w') as zip:
         for filep in filepaths:
-            zip.write(filep)
+            fp = open(filep, "rb")
+            zip.writestr(filep, fp.read())
+            fp.close()
+    zfp = open(targetzipfile, "wb")
+    zfp.write(buffer.getvalue())
+    zfp.close()
+    # Now that all files have been dumped, return to the dir where we started.
+    os.chdir(currdir)
     return targetzipfile # Zipped archive path
 
 

@@ -4747,7 +4747,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	      //alert(xmlhttp.responseText);
   	      contentdispohdr = xmlhttp.getResponseHeader("Content-Disposition");
   	      filename = contentdispohdr.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1];
-  	      var csvdata = new Blob([xmlhttp.responseText], { type: 'application/zip' });
+  	      var csvdata = new Blob([xmlhttp.responseText], { type: 'application/x-zip-compressed' });
               var a = document.createElement("a");
               document.body.appendChild(a);
               a.style = "display: none";

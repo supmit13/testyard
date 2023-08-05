@@ -10456,12 +10456,11 @@ def downloadmydata(request):
             interviewdate = ""
         interviewsdict_ascandidate[interviewtitle] = {'interviewcandidateid' : interviewcandidateid, 'interviewid' : interviewid, 'interviewtitle' : interviewtitle, 'candidateemailaddress' : candidateemailaddress, 'scheduledtime' : scheduledtime, 'actualstarttime' : actualstarttime, 'interviewlinkid' : interviewlinkid, 'totaltime' : totaltime, 'interviewurl' : interviewurl, 'interviewdate' : interviewdate}
     dumpfilepath = ""
-    mimetype = "text/xml"
+    mimetype = "application/x-zip-compressed"
     if fmt == "xml":
         dumpfilepath = skillutils.dumpasxml(userobj.displayname, testsdict_ascreator, testsdict_ascandidate, interviewsdict_ascreator, interviewsdict_ascandidate)
     elif fmt == "csv":
         dumpfilepath = skillutils.dumpascsv(userobj.displayname, testsdict_ascreator, testsdict_ascandidate, interviewsdict_ascreator, interviewsdict_ascandidate)
-        mimetype = "text/csv"
         skillutils.disconnectdb(dbconn, dbcursor)
     else:
         skillutils.disconnectdb(dbconn, dbcursor)
@@ -10469,13 +10468,15 @@ def downloadmydata(request):
         response = HttpResponse(message)
         return response
     # Content-disposition of dumpfilepath
-    dumpcontents = ""
+    dumpcontents = b''
     fp = open(dumpfilepath, "rb")
     dumpcontents = fp.read()
     fp.close()
     #fname = dumpfilepath.split(os.path.sep)[-1]
     fname = os.path.basename(dumpfilepath)
-    response = HttpResponse(dumpcontents, content_type=mimetype)
+    response = HttpResponse(dumpcontents)
+    response['Content-Type'] = mimetype
+    response['Content-Length'] = dumpcontents.__len__()
     response['Content-Disposition'] = 'attachment; filename="%s"'%fname
     return response
 
