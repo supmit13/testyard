@@ -4747,12 +4747,14 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	      //alert(xmlhttp.responseText);
   	      contentdispohdr = xmlhttp.getResponseHeader("Content-Disposition");
   	      filename = contentdispohdr.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1];
-  	      var csvdata = new Blob([xmlhttp.responseText], { type: 'application/x-zip-compressed' });
+  	      const rpat = /\"/g;
+  	      filename = filename.replace(rpat, "");
+  	      var zipdata = new Blob([xmlhttp.response], { type: 'application/x-zip-compressed' });
               var a = document.createElement("a");
               document.body.appendChild(a);
               a.style = "display: none";
-              var csvurl = URL.createObjectURL(csvdata);
-              a.href =  csvurl;
+              var zipurl = URL.createObjectURL(zipdata);
+              a.href =  zipurl;
               a.download = filename;
               a.click();
               URL.revokeObjectURL(a.href)
@@ -4761,6 +4763,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	  };
   	  xmlhttp.open("POST", "{{downloadmydataurl}}", true);
 	  xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+	  xmlhttp.responseType = 'blob'; // Very important, as we are expecting binary (zip) object.
   	  xmlhttp.send(postdata);
   	  return false;
         }
