@@ -1172,16 +1172,22 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
         for tagname in testrecord.keys():
             if tagname != "challenges":
                 tag = etree.SubElement(metadata, tagname.lower())
-                tag.text = str(testrecord[tagname])
+                try:
+                    tag.text = str(testrecord[tagname].decode('utf-8'))
+                except:
+                    tag.text = str(testrecord[tagname])
             else:
                 pass
                 
-        challenges = testrecord['challenges']
+        challenges = json.loads(testrecord['challenges'])
         for challenge in challenges:
             chtag = etree.SubElement(testtag, "challenge")
             for chkey in challenge.keys():
                 chkeytag = etree.SubElement(chtag, chkey.lower())
-                chkeytag.text = str(challenge[chkey])
+                try:
+                    chkeytag.text = challenge[chkey].decode('utf-8')
+                except:
+                    chkeytag.text = ""
     alltestscreatedxml = etree.tostring(alltestscreated)
     filecontent1 += alltestscreatedxml
     tcrfp = open(dumpfile1, "wb")
@@ -1195,7 +1201,10 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
         testrecord = testrecords_ascandidate[testname]
         for testkey in testrecord:
             attributetag = etree.SubElement(testtag, testkey.lower())
-            attributetag.text = str(testrecord[testkey])
+            try:
+                attributetag.text = str(testrecord[testkey].decode('utf-8'))
+            except:
+                attributetag.text = str(testrecord[testkey])
     alltestscandidatexml = etree.tostring(alltestscandidate)
     filecontent2 += alltestscandidatexml
     tcdfp = open(dumpfile2, "wb")
@@ -1301,7 +1310,7 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
                 if testkey != "challenges":
                     headers.append(testkey)
                 else:
-                    challengeslist = testrecord['challenges']
+                    challengeslist = json.loads(testrecord['challenges'])
                     try:
                         challengeheaders = challengeslist[0].keys()
                     except:

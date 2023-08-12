@@ -10276,23 +10276,23 @@ def downloadmydata(request):
         #return response
         testrecords_ascreator = []
     for testrecord in  testrecords_ascreator:
-        testid = testrecord[0]
-        testname = testrecord[1]
-        test_topicname = testrecord[2]
-        topic_topicname = testrecord[3]
-        creatorisevaluator = testrecord[4]
-        evalgroupname = testrecord[5]
-        testtype = testrecord[6]
+        testid = str(testrecord[0])
+        testname = str(testrecord[1])
+        test_topicname = str(testrecord[2])
+        topic_topicname = str(testrecord[3])
+        creatorisevaluator = str(testrecord[4])
+        evalgroupname = str(testrecord[5])
+        testtype = str(testrecord[6])
         if testrecord[7] is not None:
             test_createdate = testrecord[7].strftime("%Y-%m-%d %H:%M:%S")
         else:
             test_createdate = ""
-        maxscore = testrecord[8]
-        passscore = testrecord[9]
-        ruleset = testrecord[10]
-        test_duration = testrecord[11]
-        allowedlanguages = testrecord[12]
-        challengescount = testrecord[13]
+        maxscore = str(testrecord[8])
+        passscore = str(testrecord[9])
+        ruleset = str(testrecord[10])
+        test_duration = str(testrecord[11])
+        allowedlanguages = str(testrecord[12])
+        challengescount = str(testrecord[13])
         if testrecord[14] is not None:
             activationdate = testrecord[14].strftime("%Y-%m-%d %H:%M:%S")
         else:
@@ -10301,29 +10301,30 @@ def downloadmydata(request):
             publishdate = testrecord[15].strftime("%Y-%m-%d %H:%M:%S")
         else:
             publishdate = ""
-        test_status = testrecord[16]
-        allowmultipleattempts = testrecord[17]
-        maxattemptscount = testrecord[18]
-        attemptsinterval = testrecord[19]
-        attemptsintervalunit = testrecord[20]
-        randomsequencing = testrecord[21]
-        multimediarequired = testrecord[22]
-        testlinkid = testrecord[23]
-        progenv = testrecord[24]
-        test_scope = testrecord[25]
-        test_quality = testrecord[26]
-        negativescoreallowed = testrecord[27]
+        test_status = str(testrecord[16])
+        allowmultipleattempts = str(testrecord[17])
+        maxattemptscount = str(testrecord[18])
+        attemptsinterval = str(testrecord[19])
+        attemptsintervalunit = str(testrecord[20])
+        randomsequencing = str(testrecord[21])
+        multimediarequired = str(testrecord[22])
+        testlinkid = str(testrecord[23])
+        progenv = str(testrecord[24])
+        test_scope = str(testrecord[25])
+        test_quality = str(testrecord[26])
+        negativescoreallowed = str(testrecord[27])
         # Note: the keys in the dicts are the same as the tags in the xml file (see Sample.xml) for uploading a test.
         # When we create the xml file, we will use these keys to create the nodes in the xml doc.
-        challenge = {'challengeid' : testrecord[28], 'challengestatement' : testrecord[29], 'challengetype' : testrecord[30], 'maxresponsesizeallowable' : testrecord[31], 'option1' : testrecord[32], 'option2' : testrecord[33], 'option3' : testrecord[34], 'option4' : testrecord[35], 'option5' : testrecord[36], 'option6' : testrecord[37], 'option7' : testrecord[38], 'option8' : testrecord[39], 'challengescore' : testrecord[40], 'negativescore' : testrecord[41], 'compulsoryforuser' : testrecord[42], 'correctresponse' : testrecord[43], 'challengeimagepath' : testrecord[44], 'externalresourcepath' : testrecord[45], 'challengeallocatedtime' : testrecord[46], 'challenge_subtopic_id' : testrecord[47], 'challengequality' : testrecord[48], 'challenge_testlinkid' : testrecord[49], 'morethanoneoptioncorrect' : testrecord[50], 'proglang' : testrecord[51], 'mathenv' : testrecord[52]}
+        challenge = {'challengeid' : str(testrecord[28]), 'challengestatement' : str(testrecord[29]), 'challengetype' : str(testrecord[30]), 'maxresponsesizeallowable' : str(testrecord[31]), 'option1' : str(testrecord[32]), 'option2' : str(testrecord[33]), 'option3' : str(testrecord[34]), 'option4' : str(testrecord[35]), 'option5' : str(testrecord[36]), 'option6' : str(testrecord[37]), 'option7' : str(testrecord[38]), 'option8' : str(testrecord[39]), 'challengescore' : str(testrecord[40]), 'negativescore' : str(testrecord[41]), 'compulsoryforuser' : str(testrecord[42]), 'correctresponse' : str(testrecord[43]), 'challengeimagepath' : str(testrecord[44]), 'externalresourcepath' : str(testrecord[45]), 'challengeallocatedtime' : str(testrecord[46]), 'challenge_subtopic_id' : str(testrecord[47]), 'challengequality' : str(testrecord[48]), 'challenge_testlinkid' : str(testrecord[49]), 'morethanoneoptioncorrect' : str(testrecord[50]), 'proglang' : str(testrecord[51]), 'mathenv' : str(testrecord[52])}
         if testname in testsdict_ascreator.keys():
-            challengeslist = testsdict_ascreator[testname]['challenges']
+            challengeslist = json.loads(testsdict_ascreator[testname]['challenges'])
+            #print(challengeslist)
             challengeslist.append(challenge)
-            testsdict_ascreator[testname]['challenges'] = challengeslist
+            testsdict_ascreator[testname]['challenges'] = json.dumps(challengeslist)
         else:
             challengeslist = []
             challengeslist.append(challenge)
-            testsdict_ascreator[testname] = {'testid' : testid, 'testname' : testname, 'testtopic' : test_topicname, 'othertopicname' : topic_topicname, 'creatorisevaluator' : creatorisevaluator, 'evaluatorgroupname' : evalgroupname, 'testtype' : testtype, 'test_createdate' : test_createdate, 'totalscore' : maxscore, 'passscore' : passscore, 'testrules' : ruleset, 'testduration' : test_duration, 'testdurationunit' : 'seconds', 'answeringlanguage' : allowedlanguages, 'numberofchallenges' : challengescount, 'testactivationdate' : activationdate, 'testpublishdate' : publishdate, 'teststatus' : test_status, 'allowmultipleattempts' : allowmultipleattempts, 'eachchallengesamescore' : False, 'maxattemptsallowed' : maxattemptscount, 'intervalbetweenattempts' : attemptsinterval, 'intervalunits' : attemptsintervalunit, 'randomsequencing' : randomsequencing, 'needssoundimage' : multimediarequired, 'testlinkid' : testlinkid, 'programmingenvironment' : progenv, 'testscope' : test_scope, 'testtargetskilllevel' : test_quality, 'incorrectresponsenegativescore' : negativescoreallowed, 'challenges' : challengeslist}
+            testsdict_ascreator[testname] = {'testid' : str(testid), 'testname' : str(testname), 'testtopic' : str(test_topicname), 'othertopicname' : str(topic_topicname), 'creatorisevaluator' : str(creatorisevaluator), 'evaluatorgroupname' : str(evalgroupname), 'testtype' : str(testtype), 'test_createdate' : str(test_createdate), 'totalscore' : str(maxscore), 'passscore' : str(passscore), 'testrules' : str(ruleset), 'testduration' : str(test_duration), 'testdurationunit' : 'seconds', 'answeringlanguage' : str(allowedlanguages), 'numberofchallenges' : str(challengescount), 'testactivationdate' : str(activationdate), 'testpublishdate' : str(publishdate), 'teststatus' : str(test_status), 'allowmultipleattempts' : str(allowmultipleattempts), 'eachchallengesamescore' : False, 'maxattemptsallowed' : str(maxattemptscount), 'intervalbetweenattempts' : str(attemptsinterval), 'intervalunits' : str(attemptsintervalunit), 'randomsequencing' : str(randomsequencing), 'needssoundimage' : str(multimediarequired), 'testlinkid' : str(testlinkid), 'programmingenvironment' : str(progenv), 'testscope' : str(test_scope), 'testtargetskilllevel' : str(test_quality), 'incorrectresponsenegativescore' : str(negativescoreallowed), 'challenges' : json.dumps(challengeslist)}
     # So, now testsdict_ascreator is a dict with test names as keys and a dict with the test attributes and challenges list as value.
     # Get tests taken by this user:
     mytestssql_candidate = "select ut.id, ut.test_id, t.testname, t.topicname, ut.emailaddr, ut.testurl, ut.validfrom, ut.validtill, ut.status, ut.outcome, ut.score, ut.starttime, ut.endtime, ut.ipaddress, ut.clientsware, ut.sessid, ut.active, ut.cancelled, ut.stringid, ut.evaluator_comment, ut.first_eval_timestamp, ut.visibility, ut.evalcommitstate, ut.disqualified, ut.schedule_id, ut.windowchangeattempts, ut.dateadded from Tests_usertest ut, Tests_test t where t.id=ut.test_id and ut.user_id=%s"
@@ -10376,7 +10377,7 @@ def downloadmydata(request):
         scheduleid = testrecord[24]
         windowchangeattempts = testrecord[25]
         dateadded = testrecord[26].strftime("%Y-%m-%d %H:%M:%S")
-        testsdict_ascandidate[testname] = {'usertestid' : utid, 'testid' : testid, 'topicname' : topicname, 'emailaddress' : emailaddress, 'testurl' : testurl, 'validfrom' : validfrom, 'validtill' : validtill, 'status' : status, 'outcome' : outcome, 'score' : score, 'starttime' : starttime, 'endtime' : endtime, 'ipaddress' : ipaddress, 'clientsware' : clientsware, 'sessionid' : sessionid, 'active' : active, 'cancelled' : cancelled, 'stringid' : stringid, 'evaluatorcomment' : evaluatorcomment, 'firstevaltimestamp' : firstevaltimestamp, 'visibility' : visibility, 'evalcommitstate' : evalcommitstate, 'disqualified' : disqualified, 'scheduleid' : scheduleid, 'windowchangeattempts' : windowchangeattempts, 'dateadded' : dateadded}
+        testsdict_ascandidate[testname] = {'usertestid' : str(utid), 'testid' : str(testid), 'topicname' : str(topicname), 'emailaddress' : str(emailaddress), 'testurl' : str(testurl), 'validfrom' : str(validfrom), 'validtill' : str(validtill), 'status' : str(status), 'outcome' : str(outcome), 'score' : str(score), 'starttime' : str(starttime), 'endtime' : str(endtime), 'ipaddress' : str(ipaddress), 'clientsware' : str(clientsware), 'sessionid' : str(sessionid), 'active' : str(active), 'cancelled' : str(cancelled), 'stringid' : str(stringid), 'evaluatorcomment' : str(evaluatorcomment), 'firstevaltimestamp' : str(firstevaltimestamp), 'visibility' : str(visibility), 'evalcommitstate' : str(evalcommitstate), 'disqualified' : str(disqualified), 'scheduleid' : str(scheduleid), 'windowchangeattempts' : str(windowchangeattempts), 'dateadded' : str(dateadded)}
     # Get interviews created by this user:
     myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, t.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i, Tests_topic t where i.topic_id=t.id and i.interviewer_id=%s"
     try:
@@ -10422,7 +10423,7 @@ def downloadmydata(request):
             intscheduletime = ""
         numofinterviewers = interviewrecord[22]
         interviewerids = interviewrecord[23]
-        interviewsdict_ascreator[interviewtitle] = {'interviewtitle' : interviewtitle, 'interviewid' : intid, 'numchallenges' : numchallenges, 'maxresponsestarttime' : maxresponsestarttime, 'interviewtopicname' : inttopicname, 'topicname' : topicname, 'medium' : medium, 'language' : intlanguage, 'createdate' : intcreatedate, 'publishdate' : intpublishdate, 'interviewstatus' : intstatus, 'maxscore' : intmaxscore, 'maxduration' : intmaxduration, 'randomsequencing' : randomsequencing, 'interviewlinkid' : intlinkid, 'interviewscope' : intscope, 'interviewquality' : intquality, 'challengesfilepath' : intchallengesfilepath, 'introfilepath' : introfilepath, 'filetype' : intfiletype, 'realtime' : intrealtime, 'scheduletime' : intscheduletime, 'numofinterviewers' : numofinterviewers, 'interviewerids' : interviewerids} 
+        interviewsdict_ascreator[interviewtitle] = {'interviewtitle' : str(interviewtitle), 'interviewid' : str(intid), 'numchallenges' : str(numchallenges), 'maxresponsestarttime' : str(maxresponsestarttime), 'interviewtopicname' : str(inttopicname), 'topicname' : str(topicname), 'medium' : str(medium), 'language' : str(intlanguage), 'createdate' : str(intcreatedate), 'publishdate' : str(intpublishdate), 'interviewstatus' : str(intstatus), 'maxscore' : str(intmaxscore), 'maxduration' : str(intmaxduration), 'randomsequencing' : str(randomsequencing), 'interviewlinkid' : str(intlinkid), 'interviewscope' : str(intscope), 'interviewquality' : str(intquality), 'challengesfilepath' : str(intchallengesfilepath), 'introfilepath' : str(introfilepath), 'filetype' : str(intfiletype), 'realtime' : str(intrealtime), 'scheduletime' : str(intscheduletime), 'numofinterviewers' : str(numofinterviewers), 'interviewerids' : str(interviewerids)} 
     # Get interviews attended by this user:
     myinterviewssql_candidate = "select ic.id, ic.interview_id, i.title, ic.emailaddr, ic.scheduledtime, ic.actualstarttime, ic.interviewlinkid, ic.totaltimetaken, ic.interviewurl, ic.dateadded from Tests_interviewcandidates ic, Tests_interview i where ic.interview_id=i.id and ic.emailaddr='%s'"
     try:
@@ -10454,7 +10455,7 @@ def downloadmydata(request):
             interviewdate = interviewrecord[9].strftime("%Y-%m-%d %H:%M:%S")
         else:
             interviewdate = ""
-        interviewsdict_ascandidate[interviewtitle] = {'interviewcandidateid' : interviewcandidateid, 'interviewid' : interviewid, 'interviewtitle' : interviewtitle, 'candidateemailaddress' : candidateemailaddress, 'scheduledtime' : scheduledtime, 'actualstarttime' : actualstarttime, 'interviewlinkid' : interviewlinkid, 'totaltime' : totaltime, 'interviewurl' : interviewurl, 'interviewdate' : interviewdate}
+        interviewsdict_ascandidate[interviewtitle] = {'interviewcandidateid' : str(interviewcandidateid), 'interviewid' : str(interviewid), 'interviewtitle' : str(interviewtitle), 'candidateemailaddress' : str(candidateemailaddress), 'scheduledtime' : str(scheduledtime), 'actualstarttime' : str(actualstarttime), 'interviewlinkid' : str(interviewlinkid), 'totaltime' : str(totaltime), 'interviewurl' : str(interviewurl), 'interviewdate' : str(interviewdate)}
     dumpfilepath = ""
     mimetype = "application/x-zip-compressed"
     if fmt == "xml":
