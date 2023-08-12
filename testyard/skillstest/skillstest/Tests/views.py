@@ -10379,7 +10379,7 @@ def downloadmydata(request):
         dateadded = testrecord[26].strftime("%Y-%m-%d %H:%M:%S")
         testsdict_ascandidate[testname] = {'usertestid' : str(utid), 'testid' : str(testid), 'topicname' : str(topicname), 'emailaddress' : str(emailaddress), 'testurl' : str(testurl), 'validfrom' : str(validfrom), 'validtill' : str(validtill), 'status' : str(status), 'outcome' : str(outcome), 'score' : str(score), 'starttime' : str(starttime), 'endtime' : str(endtime), 'ipaddress' : str(ipaddress), 'clientsware' : str(clientsware), 'sessionid' : str(sessionid), 'active' : str(active), 'cancelled' : str(cancelled), 'stringid' : str(stringid), 'evaluatorcomment' : str(evaluatorcomment), 'firstevaltimestamp' : str(firstevaltimestamp), 'visibility' : str(visibility), 'evalcommitstate' : str(evalcommitstate), 'disqualified' : str(disqualified), 'scheduleid' : str(scheduleid), 'windowchangeattempts' : str(windowchangeattempts), 'dateadded' : str(dateadded)}
     # Get interviews created by this user:
-    myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, t.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i, Tests_topic t where i.topic_id=t.id and i.interviewer_id=%s"
+    myinterviewssql_creator = "select i.id, i.title, i.challengescount, i.maxresponsestarttime, i.topicname, i.medium, i.language, i.createdate, i.publishdate, i.status, i.maxscore, i.maxduration, i.randomsequencing, i.interviewlinkid, i.scope, i.quality, i.challengesfilepath, i.introfilepath, i.filetype, i.realtime, i.scheduledtime, i.interviewers_count, i.interviewer_ids from Tests_interview i where i.interviewer_id=%s"
     try:
         dbcursor.execute(myinterviewssql_creator, (userobj.id,))
         interviewrecords_ascreator = dbcursor.fetchall()
@@ -10395,37 +10395,36 @@ def downloadmydata(request):
         numchallenges = interviewrecord[2]
         maxresponsestarttime = interviewrecord[3]
         inttopicname = interviewrecord[4]
-        topicname = interviewrecord[5]
-        medium = interviewrecord[6]
-        intlanguage = interviewrecord[7]
+        medium = interviewrecord[5]
+        intlanguage = interviewrecord[6]
         if interviewrecord[8] is not None:
-            intcreatedate = interviewrecord[8].strftime("%Y-%m-%d %H:%M:%S")
+            intcreatedate = interviewrecord[7].strftime("%Y-%m-%d %H:%M:%S")
         else:
             intcreatedate = ""
-        if interviewrecord[9] is not None:
-            intpublishdate = interviewrecord[9].strftime("%Y-%m-%d %H:%M:%S")
+        if interviewrecord[8] is not None:
+            intpublishdate = interviewrecord[8].strftime("%Y-%m-%d %H:%M:%S")
         else:
             intpublishdate = ""
-        intstatus = interviewrecord[10]
-        intmaxscore = interviewrecord[11]
-        intmaxduration = interviewrecord[12]
-        randomsequencing = interviewrecord[13]
-        intlinkid = interviewrecord[14]
-        intscope = interviewrecord[15]
-        intquality = interviewrecord[16]
-        intchallengesfilepath = interviewrecord[17]
-        introfilepath = interviewrecord[18]
-        intfiletype = interviewrecord[19]
-        intrealtime = interviewrecord[20]
-        if interviewrecord[21] is not None:
-            intscheduletime = interviewrecord[21].strftime("%Y-%m-%d %H:%M:%S")
+        intstatus = interviewrecord[9]
+        intmaxscore = interviewrecord[10]
+        intmaxduration = interviewrecord[11]
+        randomsequencing = interviewrecord[12]
+        intlinkid = interviewrecord[13]
+        intscope = interviewrecord[14]
+        intquality = interviewrecord[15]
+        intchallengesfilepath = interviewrecord[16]
+        introfilepath = interviewrecord[17]
+        intfiletype = interviewrecord[18]
+        intrealtime = interviewrecord[19]
+        if interviewrecord[20] is not None:
+            intscheduletime = interviewrecord[20].strftime("%Y-%m-%d %H:%M:%S")
         else:
             intscheduletime = ""
-        numofinterviewers = interviewrecord[22]
-        interviewerids = interviewrecord[23]
-        interviewsdict_ascreator[interviewtitle] = {'interviewtitle' : str(interviewtitle), 'interviewid' : str(intid), 'numchallenges' : str(numchallenges), 'maxresponsestarttime' : str(maxresponsestarttime), 'interviewtopicname' : str(inttopicname), 'topicname' : str(topicname), 'medium' : str(medium), 'language' : str(intlanguage), 'createdate' : str(intcreatedate), 'publishdate' : str(intpublishdate), 'interviewstatus' : str(intstatus), 'maxscore' : str(intmaxscore), 'maxduration' : str(intmaxduration), 'randomsequencing' : str(randomsequencing), 'interviewlinkid' : str(intlinkid), 'interviewscope' : str(intscope), 'interviewquality' : str(intquality), 'challengesfilepath' : str(intchallengesfilepath), 'introfilepath' : str(introfilepath), 'filetype' : str(intfiletype), 'realtime' : str(intrealtime), 'scheduletime' : str(intscheduletime), 'numofinterviewers' : str(numofinterviewers), 'interviewerids' : str(interviewerids)} 
+        numofinterviewers = interviewrecord[21]
+        interviewerids = interviewrecord[22]
+        interviewsdict_ascreator[interviewtitle] = {'interviewtitle' : str(interviewtitle), 'interviewid' : str(intid), 'numchallenges' : str(numchallenges), 'maxresponsestarttime' : str(maxresponsestarttime), 'interviewtopicname' : str(inttopicname), 'medium' : str(medium), 'language' : str(intlanguage), 'createdate' : str(intcreatedate), 'publishdate' : str(intpublishdate), 'interviewstatus' : str(intstatus), 'maxscore' : str(intmaxscore), 'maxduration' : str(intmaxduration), 'randomsequencing' : str(randomsequencing), 'interviewlinkid' : str(intlinkid), 'interviewscope' : str(intscope), 'interviewquality' : str(intquality), 'challengesfilepath' : str(intchallengesfilepath), 'introfilepath' : str(introfilepath), 'filetype' : str(intfiletype), 'realtime' : str(intrealtime), 'scheduletime' : str(intscheduletime), 'numofinterviewers' : str(numofinterviewers), 'interviewerids' : str(interviewerids)} 
     # Get interviews attended by this user:
-    myinterviewssql_candidate = "select ic.id, ic.interview_id, i.title, ic.emailaddr, ic.scheduledtime, ic.actualstarttime, ic.interviewlinkid, ic.totaltimetaken, ic.interviewurl, ic.dateadded from Tests_interviewcandidates ic, Tests_interview i where ic.interview_id=i.id and ic.emailaddr='%s'"
+    myinterviewssql_candidate = "select ic.id, ic.interview_id, i.title, ic.emailaddr, ic.scheduledtime, ic.actualstarttime, ic.interviewlinkid, ic.totaltimetaken, ic.interviewurl, ic.dateadded from Tests_interviewcandidates ic, Tests_interview i where ic.interview_id=i.id and ic.emailaddr=%s"
     try:
         dbcursor.execute(myinterviewssql_candidate, (userobj.emailid,))
         interviewrecords_ascandidate = dbcursor.fetchall()

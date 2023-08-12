@@ -1151,14 +1151,18 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
     """
     curdatetime = datetime.datetime.now()
     curdatetimestr = curdatetime.strftime("%Y%m%d%H%M%S")
-    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_xml_" + curdatetimestr
+    tmpdir = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir"
+    xmldir = username + "_xml_" + curdatetimestr
     if not os.path.exists(tmpdir):
         mkdir_p(tmpdir)
+    currdir = os.getcwd()
+    os.chdir(tmpdir)
+    mkdir_p(xmldir)
     targetzipfile = mysettings.PROJECT_ROOT + os.path.sep + "userdata" + os.path.sep + "tmpdir" + os.path.sep + username + "_xml_" + curdatetimestr + ".zip"
-    dumpfile1 = tmpdir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".xml"
-    dumpfile2 = tmpdir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".xml"
-    dumpfile3 = tmpdir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".xml"
-    dumpfile4 = tmpdir + os.path.sep + username + "_interviewsascandidate_" + curdatetimestr + ".xml"
+    dumpfile1 = xmldir + os.path.sep + username + "_testsascreator_" + curdatetimestr + ".xml"
+    dumpfile2 = xmldir + os.path.sep + username + "_testsascandidate_" + curdatetimestr + ".xml"
+    dumpfile3 = xmldir + os.path.sep + username + "_interviewsascreator_" + curdatetimestr + ".xml"
+    dumpfile4 = xmldir + os.path.sep + username + "_interviewsascandidate_" + curdatetimestr + ".xml"
     filecontent1 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent2 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
     filecontent3 = """<?xml version="1.0" encoding="UTF-8" ?>\n"""
@@ -1245,6 +1249,7 @@ def dumpasxml(username, testrecords_ascreator, testrecords_ascandidate, intervie
     with ZipFile(targetzipfile, 'w') as zip:
         for filep in filepaths:
             zip.write(filep)
+    os.chdir(currdir)
     return targetzipfile # Done and dusted!
     
     
