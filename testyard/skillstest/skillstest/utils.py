@@ -1324,17 +1324,35 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
                         headers.append(chhdr)
             filecontent1 += ",".join(headers) + "\n"
             headerflag = False
-        for hdr in headers:
-            try:
-                value = testrecord[hdr]
-            except: # The header could be a field in the dict in challenges list.
+        challengeslist = json.loads(testrecord['challenges'])
+        if challengeslist.__len__() > 0:
+            for challengeobj in challengeslist:
+                for hdr in headers:
+                    try:
+                        value = testrecord[hdr].encode('utf-8').decode('ascii', 'ignore')
+                        value = value.replace('"', "'")
+                        value = value.replace("\n", mysettings.SEPARATOR_CHARSEQ).replace("\r", "")
+                    except: # The header could be a field in the dict in challenges list.
+                        try:
+                            value = challengeobj[hdr].encode('utf-8').decode('ascii', 'ignore')
+                            value = value.replace('"', "'")
+                            value = value.replace("\n", mysettings.SEPARATOR_CHARSEQ).replace("\r", "")
+                        except: # May be a mistake somewhere...
+                            value = ""
+                            messages.append("Value for header '%s' could not be found for test with name '%s'"%(hdr, testname))
+                    filecontent1 += '"' + str(value) + '",'
+                filecontent1 = filecontent1[:-1] + "\n" # Remove last comma from the string and add a newline.
+        else: # For tests that have no challenges at present
+            for hdr in headers:
                 try:
-                    value = testrecord['challenges'][hdr]
-                except: # May be a mistake somewhere...
+                    value = testrecord[hdr].encode('utf-8').decode('ascii', 'ignore')
+                    value = value.replace('"', "'")
+                    value = value.replace("\n", mysettings.SEPARATOR_CHARSEQ).replace("\r", "")
+                except: # The header could be a field in the dict in challenges list.
                     value = ""
-                    messages.append("Value for header '%s' could not be found for test with name '%s'"%(hdr, testname))
-            filecontent1 += '"' + str(value) + '",'
-        filecontent1 = filecontent1[:-1] + "\n" # Remove last comma from the string and add a newline.
+                    messages.append("Value for header '%s' could not be found for test with name '%s'"%(hdr, testname))    
+                filecontent1 += '"' + str(value) + '",'
+            filecontent1 = filecontent1[:-1] + "\n" # Remove last comma from the string and add a newline.
     tcrfp = open(dumpfile1, "wb")
     tcrfp.write(filecontent1)
     tcrfp.close() # Data for tests as creator dumped in file.
@@ -1351,6 +1369,7 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
         for hdr in headers:
             try:
                 value = str(testrecord[hdr])
+                value = value.replace('"', "'")
             except:
                 messages.append("Could not find value for key '%s' of test '%s'"%(hdr, testname))
                 value = ""
@@ -1372,6 +1391,7 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
         for hdr in headers:
             try:
                 value = str(interviewrecord[hdr])
+                value = value.replace('"', "'")
             except:
                 message.append("Could not find value for key '%s' of interview titled '%s'"%(hdr, interviewtitle))
                 value = ""
@@ -1393,6 +1413,7 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
         for hdr in headers:
             try:
                 value = str(interviewrecord[hdr])
+                value = value.replace('"', "'")
             except:
                 message.append("Could not find value for key '%s' of interview titled '%s'"%(hdr, interviewtitle))
                 value = ""
