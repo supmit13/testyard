@@ -10,6 +10,10 @@
 	<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 	<!-- New interface code ends here -->
 	
+	<!-- Front tables style start -->
+	<link rel="stylesheet" href="static/css/front_tables.css" />
+	<!-- Front tables style end   -->
+	
         <!-- Speech to text Code starts here -->
         <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/shoelace-css/1.0.0-beta16/shoelace.css"> -->
         <link rel="stylesheet" href="static/css/speech2text/styles.css" />
@@ -4797,8 +4801,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
                         </ul>
 			<div id='testsascreator' style="display:block" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
-			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
-			<tr class="th">
+			<table bgcolor='#E1F6FF' class="styled-table">
+			<tr class="styled-table-hdrrow">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>
@@ -4829,35 +4833,35 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% autoescape on %}
 			{% for testnm in tests_creator_ordered_createdate reversed %}
 			  {% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
-			  <tr bgcolor='#f56e62'>
+			  <tr style="color:#f56e62;">
 			  {% else %}
-			  <tr>
+			  <tr style="color:#0000aa;">
 			  {% endif %}
-			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
+			  <td nowrap><font size=-1>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
 			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
-			  <td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
-			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
-			  <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
+			  <td nowrap><font size=-1><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
+			  <td nowrap><font size=-1><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
+			  <td nowrap align='right'><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:3 }}</font></td>
 			  {% if creator_tests_info|dictlookup:testnm|getval:21 < 1 %}
-			  <td nowrap align='center'><font size=-1 color='#AA0000'>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  <td nowrap align='center'><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
 			  {% else %}
-			  <td nowrap align='center'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
+			  <td nowrap align='center'><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
 			  {% endif %}
-			  <td><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
-			  {% if not creator_tests_info|dictlookup:testnm|getval:4 %}<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> {% else %} <td nowrap align='right'><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:4 }}</font></td> {% endif %}
-			  {% if not creator_tests_info|dictlookup:testnm|getval:13 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
-			  {% if not creator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td> {% else %} <td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td> {% endif %}
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:22 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:23 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>{{ creator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
-			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
-			  <td nowrap><font size=-1 color='#0000AA'>
+			  <td><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:19 }}</font></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:5 }}</font></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:6 }}</font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:4 %}<td nowrap align='right'><font size=-1 >&nbsp;</font></td> {% else %} <td nowrap align='right'><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:4 }}</font></td> {% endif %}
+			  {% if not creator_tests_info|dictlookup:testnm|getval:13 %}<td nowrap align='center'><font size=-1>No</font></td> {% else %} <td nowrap align='center'><font size=-1>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:10 }}</font></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:8 }}*</font></td>
+			  {% if not creator_tests_info|dictlookup:testnm|getval:14 %}<td nowrap align='center'><font size=-1>No</font></td> {% else %} <td nowrap align='center'><font size=-1>Yes</font></td> {% endif %}
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:22 }}</font></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:23 }}</font></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:24 }}</font></td>
+			  <td nowrap><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:25 }}</font></td>
+			  <td nowrap><font size=-1><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
+			  <td nowrap><font size=-1>
 			  {% if creator_tests_info|dictlookup:testnm|getval:18 == 'private' %}<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='0' checked onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='1'  onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' id='creator_visibility_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("test", {{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Public
 			  {% else %}
 			    {% if creator_tests_info|dictlookup:testnm|getval:18 == 'protected' %}
@@ -4867,11 +4871,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    {% endif %}
 			  {% endif %}
 			  </font></td>
-			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
+			  <td nowrap align='right'><font size=-1><a href='#/' onclick=javascript:scheduletest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Schedule Test</a></font></td>
 			{% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1 color='#0000AA'><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png" alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><font size=-1><a href='#/' onclick=javascript:activatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');>Activate Test Now</a></font></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png" alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
 			{% else %}
-			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png" alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
+			  <td nowrap align='right' id='teststatus_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick=javascript:deactivatestatusnow('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><font size=-1>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_{{ creator_tests_info|dictlookup:testnm|getval:0 }}'><a href='#/' onclick="javascript:postonlinkedin('{{ creator_tests_info|dictlookup:testnm|getval:0 }}', 'creator');"><img src="https://download.linkedin.com/desktop/add2profile/buttons/en_US.png" alt="LinkedIn Add to Profile button"></a><!-- <span class="semitrans2" id='linkedinauth_creator_{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:30%;width:30%;'></span> --></td>
 			{% endif %}
 			</tr> 
 			{% endfor %}
@@ -4901,7 +4905,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='testsasevaluator' style="" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
-			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<table bgcolor='#E1F6FF' class="styled-table">
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
@@ -4980,7 +4984,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='testsascandidate' style="" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
-			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<table bgcolor='#E1F6FF' class="styled-table">
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
@@ -5053,7 +5057,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			</div>
 			<div id='interviewsconducted' style="" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>			
-			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<table bgcolor='#E1F6FF' class="styled-table">
 			<tr class="th">
 			  <td align='center' nowrap style="width:200px;display:auto;"><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
@@ -5111,7 +5115,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='interviewsattended' style="" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
-			<table border='1' cellspacing='1' cellpadding='4' bgcolor='#E1F6FF'>
+			<table bgcolor='#E1F6FF' class="styled-table">
 			<tr class="th">
 			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
