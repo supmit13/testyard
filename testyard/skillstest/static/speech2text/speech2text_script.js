@@ -8,8 +8,8 @@
 //var isBlink = (isChrome || isOpera) && !!window.CSS;
 // https://stackoverflow.com/questions/39784986/speechrecognition-is-not-working-in-firefox
 try {
-  const speechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  var recognition = new speechRecognition();
+  const tySpeechRecognition = window.speechRecognition || window.webkitSpeechRecognition;
+  const recognition = new tySpeechRecognition();
   //console.log("HIIIIIIII");
 }
 catch(e) {
