@@ -266,11 +266,12 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 **** Make every path/link in the system absolute. [High Priority]
 **** Change payment related fields in "Create a Group" screen. Bank Name should be Payment Processor (Paypal, Wise and RazorPay), Branch Name should be country, IFSC code should be eliminated, Account Number should be username in payment processor's website, etc. [Done]
 **** All floating overlay screens to be opened up at the centre of the screen. [High priority]
+**** Create a new key for github and update config for that key.
 
 https://192.168.1.6/skillstest/privacypolicy/ [Done]
 https://192.168.1.6/skillstest/termsofuse/ [Done]
 
-https://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@github.com/supmit13/testyard.git
+
 
 #464646
 
