@@ -111,7 +111,7 @@ Immediate Plans:
 350. Google Calendar Integration with test scheduling. [Done, needs testing with correct domain (testyard.in)]
 400. Export tests created by user to a google sheet/doc. (Low priority)
 410. Reimplement Bitly for v4. (https://dev.bitly.com/)  [Done]
-450. Debug code running mechanisms. (High priority)
+450. Debug code running mechanisms. (Very high priority)
 500. Licensing and Pricing Plans. [WIP]
 550. Integrating ChatGPT based support assistant and an issue tracker system.
 600. Create a basic URL Shortener API using logic from https://realpython.com/build-a-python-url-shortener-with-fastapi/ , set up as a heroku app (service on cloud) or on AWS - https://realpython.com/django-hosting-on-heroku/ . This should be a separate service altogether. [Done]
@@ -126,21 +126,56 @@ Immediate Plans:
 1050. PayPal and Wise integration in Network (Create Group). [Very high priority] [WIP]
 1100. Implement Feature Update Notification System [Low Priority]
 1150. System to Manage Commercial Spaces on the website [Low Priority]
-1200. PayPal and Wise Integration during making Payments to join groups. [Very high priority]
-1250. Certificate of Incorporation (as Limited Liability Partnership), PAN card creation, GST Registration. [High priority]
+1200. PayPal, Wise and RazorPay (already done) Integration during making Payments to join groups. [Very high priority]
+1250. Certificate of Incorporation (as Limited Liability Partnership), PAN card creation, GST Registration, Domain registration and webhost purchase. Also fine tune Privacy Policy and Terms of Use.[High priority]
+1300. Implement Test Rules that have not been implemented as yet. [High priority]
+1350. Chatbot for Support. [High priority]
+1400. Interview to be renamed as Video Call/Interview. It should support multiple candidates (more than 2 participants).
+
+
+Scope of #1400 - Video Call (VC) [Very high priority]:
+------------------------------------------------
+1400. Work on the following:
+	a) Doesn't work on Firefox - Fix it. [Ff has problems with WebRTC, possibly cannot be fixed]
+	b) Screen share doesn't show shared screen on mobile - Fix it. 
+	c) Video on/off and microphone on/off to be tested and fixed if found to have any issue. 
+	d) Refine the look of the video call screen. [Done]
+	e) Display window based on screen size. [Done]
+1401. Rename Interview to Video Call. [Done]
+1402. Implement multiple participants - more than 1 candidate.
+1403. Should have Interview Name generated randomly - supporting uniqueness condition. All fields should have default values. [Done]
+1404. Interface to be more refined (allow raise hand functionality, blocking of user by VC creator, noise cancellation functionality, improve audio/video quality, etc).
+1405. Tests should support proctored tests.
+1406. Create 'Plan's for Video Discussion functionality.
+1407. Ensure that the video call window opens with the defined size from the email links sent to participants. [Not required as the canvas elements have been placed appropriately now]
+1408. Ensure that the interview joiner's session remains valid even if she/he tries to join when the interview when it hasn't been started by the interview creator. Currently, the session of the joiner becomes stale if that happens. Needs to be fixed.
+1409. The wait screen doesn't show the interview name and the email address of the recipient. Needs to be fixed. Also, needs to be beautified. [Done]
 
 
 Scope of #500 - Licensing and Pricing Plans:
 --------------------------------------------
 501. Implement scripts necessary to create an EC2 instance on AWS (t2.micro or aws lambda, also check out other EC2 instance types)
-502. Implement scripts to create the environment necessary to run TestYard on aws instance. (python virtual env, install python modules, install servers, install certificates, etc)
+502. Implement scripts to create the environment necessary to run TestYard on aws instance. (python virtual env, install python modules, install servers, install certificates, install nodejs, node modules, etc)
 503. Implement scripts to deploy TestYard on aws instance. Investigate a docker based solution - Check if and how to run a docker container on EC2 instances.
 504. Implement mechanism to track and limit the number of tests, interviews, and invitations for both. This should be done on a separate fork of the main TestYard github repo.
-505. Formulate 3 types of plans (All premium plans. The free version would be the main TestYard installation on https://testyard.in/). Plan value would be based on expected usage cost of EC2 instances + cost of SSL certificate. Formulate terms and conditions for each plan. EC2 instance would be under TestYard's control. Users would only get access to the service using IP based URL. TestYard would have access to the data, and may use it for statistical analysis purposes. However, data would be owned by the user. Also, the EC2 instance and all data in it will be destroyed after n days from the end of the subscription period. Users may download tests and interviews data (as a zip of csv or xml or json) before that.
-506. Create DB to store and manage Plans related data - which client subscribed to which plan, their limits, usage information, etc.
-507. Add Plans and Pricing page and Plan status/dashboard page in main TestYard codebase (free version). 
+505. Formulate 3 types of plans (All premium plans. The free version would be the main TestYard installation on https://testyard.in/). Plan value would be based on expected usage cost of EC2 instances + cost of SSL certificate. Formulate terms and conditions for each plan. EC2 instance would be under TestYard's control. Users would only get access to the service using IP based URL. TestYard would have access to the data, and may use it for statistical analysis purposes. However, data would be owned by the user. Also, the EC2 instance and all data in it will be destroyed after n days from the end of the subscription period. Users may download tests and interviews data (as a zip of csv or xml or json) before that. [Done]
+506. Create DB to store and manage Plans related data - which user subscribed to which plan, their limits, usage information, etc. [Done]
+507. Add a) Plans and Pricing page, b) Plan status/dashboard page. Add content describing how the plans work. [Done]
 508. Integrate Payment Gateway for the Plans and Pricing Page (above).
+509. Add content specifying the rights of the user as far as data is considered. [Done]
+510. Add checks in Tests and Interviews views.py for keeping track of user's quotas. [Done]
+511. On Extend Subscription Plan screen, show Tests and Interviews created during the UserPlan. (Implemented as search) [Done]
+512. Compute cost (in javascript) in the Extend Subscription Plan screen when the user selects the invites count field. [Done]
+513. Write data purging management task that has to run each day to purge tests and interviews data after 60 days. [Low priority]
+514. Write management task that sends email alert to subscribed users 2 days before their subscription ends. [Low priority]
+515. Display pie charts for Aggregate Figures in Plans Subscription page. [High priority] [Done]
+516. Provide means to upgrade current plan. [Done]
+517. Test/Interview creation using openai.com's ChatGPT. [Low priority]
+518. Fix Speech Recognition javascript error on Test listing page. [High priority] [Can't be fixed on FF as it doesn't support it as yet]
+519. Fix zipping issue in utils.py, xml data generation issue in views.py, csv issue (why interviews as creator and candidates have no data). Create log of messages during generation of data to be displayed to user. [High priority] [Done]
 
+Functions to implement/reimplement: [ skillstest.subscription.views.cancelsubscription, skillstest.subscription.views.subscribeplan, skillstest.subscription.views.dashboard, ... ]
+TODO: Complete plans dashboard views.py (refer to line 588) [Done]
 
 Scope of #50 - Pagination:
 --------------------------
@@ -223,11 +258,24 @@ Scope of #150 - Hardening with Inappropriate Inputs:
 **** Forgot password. [Very High Priority] [Done]
 **** Fix bug in Social logins (Google and LinkedIn) where user is not authenticated if the email Id exists in TestYard DB. [Done]
 **** PayPal partner referrals need to be enabled (https://developer.paypal.com/docs/multiparty/#tell-us-about-your-platform)
-**** Allow '@', '#', '-' and a few other special chars in paypal username in group creation screen.
-
-
+**** Allow '@', '#', '-' and a few other special chars in paypal username in group creation screen. [High Priority]
+**** Add a middleware to stop well known bots and online tools from copying or targetting the website for a DDoS attack. [Very High Priority] [Done]
+(Search Google with "clone a website online", add user-agents to block from bad-bots list.)
+**** Log analyser application for nginx logs - aim is to find bot behaviour patterns. [High priority]
+**** Add reCaptcha in login screen and registration screen.(https://developers.google.com/recaptcha/intro) [High priority, but it can only be implemented once the domain has been bought.]
+**** Make every path/link in the system absolute. [High Priority]
+**** Change payment related fields in "Create a Group" screen. Bank Name should be Payment Processor (Paypal, Wise and RazorPay), Branch Name should be country, IFSC code should be eliminated, Account Number should be username in payment processor's website, etc. [Done]
+**** All floating overlay screens to be opened up at the centre of the screen. [High priority]
 
 https://192.168.1.6/skillstest/privacypolicy/ [Done]
 https://192.168.1.6/skillstest/termsofuse/ [Done]
+
+https://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@github.com/supmit13/testyard.git
+
+#464646
+
+cloudflare acct:
+testyard.in@gmail.com / xtmt365i@
+
 
 
