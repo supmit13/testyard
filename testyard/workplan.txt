@@ -274,8 +274,5 @@ https://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@github.com/supmit13/testyard.gi
 
 #464646
 
-cloudflare acct:
-testyard.in@gmail.com / xtmt365i@
-
 
 
