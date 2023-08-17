@@ -6,6 +6,46 @@
 <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 <script language='JavaScript' type="text/javascript" src='/static/javascript/pageutils.js'></script>
 
+<!-- Google Charts -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawtychart);
+      
+      function drawtychart(){
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Test Type');
+	data.addColumn('number', 'Counts');
+	data.addRows([ ['Tests', {{basicplan_tests_count}}], ['Interviews', {{basicplan_interviews_count}}]]);
+	options = {'title' : 'Basic Plan aggregated Usage (USD {{basicplan_aggregated_spending}})', 'width' : 400, 'height' : 300};
+	var chart = new google.visualization.PieChart(document.getElementById('basic_plan_chart'));
+        chart.draw(data, options);
+        
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Test Type');
+	data.addColumn('number', 'Counts');
+	data.addRows([ ['Tests', {{businessplan_tests_count}}], ['Interviews', {{businessplan_interviews_count}}]]);
+	options = {'title' : 'business Plan aggregated Usage (USD {{businessplan_aggregated_spending}})', 'width' : 400, 'height' : 300};
+	var chart = new google.visualization.PieChart(document.getElementById('business_plan_chart'));
+        chart.draw(data, options);
+        
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Test Type');
+	data.addColumn('number', 'Counts');
+	data.addRows([ ['Tests', {{unlimitedplan_tests_count}}], ['Interviews', {{unlimitedplan_interviews_count}}]]);
+	options = {'title' : 'business Plan aggregated Usage (USD {{unlimitedplan_aggregated_spending}})', 'width' : 400, 'height' : 300};
+	var chart = new google.visualization.PieChart(document.getElementById('unlimited_plan_chart'));
+        chart.draw(data, options);
+      }
+
+
+</script>  
+<!-- Google chart ends -->
+
 <!-- New interface code starts here -->
 <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
@@ -294,56 +334,74 @@
                 <!-- ============================================================== -->
                 <!-- Email campaign chart -->
                 <!-- ============================================================== -->
-                <div class="row">
-                    <div class="col-lg-8">
+                <h4 class="card-title" style="font-weight:bold;text-align:center;">Aggregate Figures</h4>
+                <div class="row" style="display:flex;width:170%;">
+                    <div class="col-lg-4" style="padding-right:20px;float:left;">
                         <div>
                             <div class="card-body">
-                                <h4 class="card-title" style="font-weight:bold;">Aggregate Figures</h4>
-                                <div class="sales ct-charts mt-3"></div>
+                                <h4 class="card-title" style="font-weight:bold;"></h4>
+                                <div class="sales ct-charts mt-3" id='basic_plan_chart'></div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4">
+                    
+                    <div class="col-lg-4" style="padding-left:20px;float:right;">
                         <div>
                             <div class="card-body">
                                 <h4 class="card-title mb-1">Basic Plan</h4>
                                 <h5 class="font-light">Tests: {{basicplan_tests_count}}</h5>
                                 <h5 class="font-light">Intrviews: {{basicplan_interviews_count}}</h5>
                                 <div class="mt-3 text-center">Spending: 
-                                    <div id="earnings">US${{basicplan_aggregated_spending}}</div>
-                                </div>
+                                <div id="earnings">US${{basicplan_aggregated_spending}}</div>
                             </div>
                         </div>
-                        <hr/>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-lg-4" style="padding-right:20px;">
+                        <div>
+                            <div class="card-body">
+                                <h4 class="card-title" style="font-weight:bold;"></h4>
+                                <div class="sales ct-charts mt-3" id='business_plan_chart'></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" style="padding-left:20px;">
                         <div>
                             <div class="card-body">
                                 <h4 class="card-title mb-0">Business Plan</h4>
                                 <h5 class="font-light">Tests: {{businessplan_tests_count}}</h5>
                                 <h5 class="font-light">Intrviews: {{businessplan_interviews_count}}</h5>
                                 <div class="mt-3 text-center">Spending: 
-                                    <div id="earnings">US${{businessplan_aggregated_spending}}</div>
-                                </div>
+                                <div id="earnings">US${{businessplan_aggregated_spending}}</div>
                             </div>
                         </div>
-                        <hr/>
+                    </div>
+                </div>
+                <hr/>
+                <div class="row">
+                    <div class="col-lg-4" style="padding-right:20px;">
+                        <div>
+                            <div class="card-body">
+                                <h4 class="card-title" style="font-weight:bold;"></h4>
+                                <div class="sales ct-charts mt-3" id='unlimited_plan_chart'></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4" style="padding-left:20px;">
                         <div>
                             <div class="card-body">
                                 <h4 class="card-title mb-0">Unlimited Plan</h4>
                                 <h5 class="font-light">Tests: {{unlimitedplan_tests_count}}</h5>
                                 <h5 class="font-light">Intrviews: {{unlimitedplan_interviews_count}}</h5>
                                 <div class="mt-3 text-center">Spending: 
-                                    <div id="earnings">US${{unlimitedplan_aggregated_spending}}</div>
-                                </div>
+                                <div id="earnings">US${{unlimitedplan_aggregated_spending}}</div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <!-- ============================================================== -->
-                <!-- Email campaign chart -->
-                <!-- ============================================================== -->
-                <!-- ============================================================== -->
-                <!-- Ravenue - page-view-bounce rate -->
-                <!-- ============================================================== -->
+                
                 <div class="row">
                     <!-- column -->
                     <div class="col-12">
@@ -392,41 +450,7 @@
                                             {% endif %}
                                         </tr>
                                         {% endfor %}
-                                        <!-- <tr>
-                                            <td class="txt-oflo">Real Homes WP Theme</td>
-                                            <td><span class="label label-info label-rounded">EXTENDED</span></td>
-                                            <td class="txt-oflo">April 19, 2021</td>
-                                            <td><span class="font-medium">$1250</span></td>
-                                            <td><span class="font-medium">Expired</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="txt-oflo">Ample Admin</td>
-                                            <td><span class="label label-purple label-rounded">Tax</span></td>
-                                            <td class="txt-oflo">April 19, 2021</td>
-                                            <td><span class="font-medium">$1250</span></td>
-                                            <td><span class="font-medium">Expired</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="txt-oflo">Medical Pro WP Theme</td>
-                                            <td><span class="label label-success label-rounded">Sale</span></td>
-                                            <td class="txt-oflo">April 20, 2021</td>
-                                            <td><span class="font-medium">-$24</span></td>
-                                            <td><span class="font-medium">Expired</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="txt-oflo">Hosting press html</td>
-                                            <td><span class="label label-success label-rounded">SALE</span></td>
-                                            <td class="txt-oflo">April 21, 2021</td>
-                                            <td><span class="font-medium">$24</span></td>
-                                            <td><span class="font-medium">Expired</span></td>
-                                        </tr>
-                                        <tr>
-                                            <td class="txt-oflo">Digital Agency PSD</td>
-                                            <td><span class="label label-danger label-rounded">Tax</span> </td>
-                                            <td class="txt-oflo">April 23, 2021</td>
-                                            <td><span class="font-medium">-$14</span></td>
-                                            <td><span class="font-medium">Expired</span></td>
-                                        </tr> -->
+                   
                                     </tbody>
                                     {% endif %}
                                 </table>
@@ -436,65 +460,7 @@
                         <span>* Free Plan cannot be extended.</span><br/><span>** Extending a subscription would allow you to send more invitations for the Tests and Interviews created during the period of that specific subscription plan.</span><br/><span style="color:#0000aa;"><u>Note: You can't extend a subscription that is in "Active" state.</u></span><br/>
                     </div>
                 </div>      
-      		<!-- column -->
-                <!--    <div class="col-lg-6">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Temp Guide</h4>
-                                <div class="d-flex align-items-center flex-row mt-4">
-                                    <div class="display-5 text-info"><i class="wi wi-day-showers"></i>
-                                        <span>73<sup>°</sup></span></div>
-                                    <div class="ms-2">
-                                        <h3 class="mb-0">Saturday</h3><small>Ahmedabad, India</small>
-                                    </div>
-                                </div>
-                                <table class="table no-border mini-table mt-3">
-                                    <tbody>
-                                        <tr>
-                                            <td class="text-muted">Wind</td>
-                                            <td class="font-medium">ESE 17 mph</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">Humidity</td>
-                                            <td class="font-medium">83%</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">Pressure</td>
-                                            <td class="font-medium">28.56 in</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-muted">Cloud Cover</td>
-                                            <td class="font-medium">78%</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                                <ul class="row list-style-none text-center mt-4">
-                                    <li class="col-3">
-                                        <h4 class="text-info"><i class="wi wi-day-sunny"></i></h4>
-                                        <span class="d-block text-muted">09:30</span>
-                                        <h3 class="mt-1">70<sup>°</sup></h3>
-                                    </li>
-                                    <li class="col-3">
-                                        <h4 class="text-info"><i class="wi wi-day-cloudy"></i></h4>
-                                        <span class="d-block text-muted">11:30</span>
-                                        <h3 class="mt-1">72<sup>°</sup></h3>
-                                    </li>
-                                    <li class="col-3">
-                                        <h4 class="text-info"><i class="wi wi-day-hail"></i></h4>
-                                        <span class="d-block text-muted">13:30</span>
-                                        <h3 class="mt-1">75<sup>°</sup></h3>
-                                    </li>
-                                    <li class="col-3">
-                                        <h4 class="text-info"><i class="wi wi-day-sprinkle"></i></h4>
-                                        <span class="d-block text-muted">15:30</span>
-                                        <h3 class="mt-1">76<sup>°</sup></h3>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-
-                    </div> -->
-                    
+                </div>
                 </div>
                 <!-- ============================================================== -->
                 <!-- Recent comment and chats -->
@@ -502,11 +468,11 @@
                 
             </div>
         <!-- Container fluid ends  -->
-        
-        
+      </div>  
+       </div>
         
        <!-- Footer starts here -->	
-      <div class="container-fluid footer" style="background-color:#707070;">
+      <div class="container-fluid footer" style="background-color:#707070;width:100%;">
         <div class="row contact" style="background-color:#505050;">
           <div class="col-md-6 contact-form">
             <h3 class="content-ct"><span class="ti-email"></span> Contact Form</h3>
@@ -557,7 +523,7 @@
             </ul>
           </div>
         </div>
-      </div>
+      
       <!-- Footer ends here -->
 
 
