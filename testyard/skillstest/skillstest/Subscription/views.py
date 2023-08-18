@@ -276,7 +276,7 @@ def getupgradeableplanslist(userobj):
                 continue
             validfor = str(upgradeableplanobj.planvalidfor) + " " + str(upgradeableplanobj.validfor_unit)
             extra_amount_to_pay = float(upgradeableplanobj.price) + float(upgradeableplanobj.fixedcost)
-            d = {'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
+            d = {'planid' : upgradeableplanobj.id, 'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
             upgradeableplanslist.append(d)
     else: # We should only consider plans whose 'price' are greater than the user's current plan's price. Just kidding...
         existinguserplanobj = None
@@ -293,7 +293,7 @@ def getupgradeableplanslist(userobj):
                     continue
                 validfor = str(upgradeableplanobj.planvalidfor) + " " + str(upgradeableplanobj.validfor_unit)
                 extra_amount_to_pay = float(upgradeableplanobj.price) + float(upgradeableplanobj.fixedcost)
-                d = {'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
+                d = {'planid' : upgradeableplanobj.id, 'planname' : upgradeableplanobj.planname, 'testsninterviews' : upgradeableplanobj.testsninterviews, 'plandescription' : upgradeableplanobj.plandescription, 'candidates' : upgradeableplanobj.candidates, 'price' : format(float(upgradeableplanobj.price), ".2f"), 'fixedcost' : format(float(upgradeableplanobj.fixedcost), ".2f"), 'validfor' : validfor, 'extra_amount_to_pay' : format(extra_amount_to_pay, ".2f") }
                 upgradeableplanslist.append(d)
         else:
             context['currentplanname'] = existinguserplanobj.plan.planname

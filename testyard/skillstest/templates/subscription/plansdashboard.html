@@ -21,7 +21,7 @@
         data.addColumn('string', 'Test Type');
 	data.addColumn('number', 'Counts');
 	data.addRows([ ['Tests', {{basicplan_tests_count}}], ['Interviews', {{basicplan_interviews_count}}]]);
-	options = {'title' : 'Basic Plan aggregated Usage (USD {{basicplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green']};
+	options = {'title' : 'Basic Plan aggregated Usage (USD {{basicplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
 	var chart = new google.visualization.PieChart(document.getElementById('basic_plan_chart'));
         chart.draw(data, options);
         
@@ -29,7 +29,7 @@
         data.addColumn('string', 'Test Type');
 	data.addColumn('number', 'Counts');
 	data.addRows([ ['Tests', {{businessplan_tests_count}}], ['Interviews', {{businessplan_interviews_count}}]]);
-	options = {'title' : 'business Plan aggregated Usage (USD {{businessplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green']};
+	options = {'title' : 'business Plan aggregated Usage (USD {{businessplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
 	var chart = new google.visualization.PieChart(document.getElementById('business_plan_chart'));
         chart.draw(data, options);
         
@@ -37,7 +37,7 @@
         data.addColumn('string', 'Test Type');
 	data.addColumn('number', 'Counts');
 	data.addRows([ ['Tests', {{unlimitedplan_tests_count}}], ['Interviews', {{unlimitedplan_interviews_count}}]]);
-	options = {'title' : 'business Plan aggregated Usage (USD {{unlimitedplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green']};
+	options = {'title' : 'business Plan aggregated Usage (USD {{unlimitedplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
 	var chart = new google.visualization.PieChart(document.getElementById('unlimited_plan_chart'));
         chart.draw(data, options);
       }
