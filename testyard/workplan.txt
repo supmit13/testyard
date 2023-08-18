@@ -145,7 +145,10 @@ Scope of #1400 - Video Call (VC) [Very high priority]:
 1402. Implement multiple participants - more than 1 candidate.
 1403. Should have Interview Name generated randomly - supporting uniqueness condition. All fields should have default values. [Done]
 1404. Interface to be more refined (allow raise hand functionality, blocking of user by VC creator, noise cancellation functionality, improve audio/video quality, etc).
-1405. Tests should support proctored tests.
+1405. Tests should support proctored tests.[Doc: https://support.edx.org/hc/en-us/articles/360000218027-Proctored-Exam-Rules-and-Requirements, ty_newiface/documents/Proctored_Exam_Rules_and_Requirements.pdf]
+    1405a) To support proctored tests, add a checkbox (default unchecked) for proctored test in create test and edit test screens.
+    1405b) Add supporting code in views for handling the input from the above checkbox.
+    1405c) Add a column in creator, evaluator and candidate tests display for showing if the test is proctored.
 1406. Create 'Plan's for Video Discussion functionality.
 1407. Ensure that the video call window opens with the defined size from the email links sent to participants. [Not required as the canvas elements have been placed appropriately now]
 1408. Ensure that the interview joiner's session remains valid even if she/he tries to join when the interview when it hasn't been started by the interview creator. Currently, the session of the joiner becomes stale if that happens. Needs to be fixed.
