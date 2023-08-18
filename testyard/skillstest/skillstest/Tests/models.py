@@ -115,6 +115,7 @@ class Test(models.Model):
     quality = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()), default='INT') # Determines the class of users the 'Test' is for.
     # Proficient/Beginner/Intermediate etc. Refer to mysettings.SKILL_QUALITY
     negativescoreallowed = models.NullBooleanField(default=False, null=True, blank=False)
+    proctored = models.BooleanField(default=False, null=True, blank=True)
 
     class Meta:
         verbose_name = "Tests Table"
@@ -359,6 +360,21 @@ class WouldbeUsers(models.Model):
         return "%s ==>> %s"%(self.test.testname, self.emailaddr)
     """
 
+class ProctorInfo(models.Model):
+    test = models.ForeignKey(Test, related_name="+", null=False, blank=False)
+    usertesttbl = models.CharField(max_length=50, null=False, blank=False)
+    usertesttbl_id = models.IntegerField(default=0)
+    useremail = models.CharField(max_length=255, null=False, blank=False)
+    capturestarttime = models.DateTimeField(default=datetime.datetime.now())
+    captureendtime = models.DateTimeField(null=False, blank=False, default=datetime.datetime.now())
+    filelocation = models.TextField(null=False, blank=False, default="")
+    guestipaddress = models.CharField(max_length=50, null=False, blank=False)
+    guestbrowserfingerprint = models.TextField(null=True, blank=True, default="")
+    dateadded = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        verbose_name = "Proctor Info Table"
+        db_table = 'Tests_proctorinfo'
 
 """
 Model to store failures in sending test invitation emails

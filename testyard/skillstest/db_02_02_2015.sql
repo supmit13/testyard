@@ -1157,6 +1157,25 @@ alter table Tests_wouldbeusers ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NO
 
 alter table Tests_interviewcandidates ADD COLUMN dateadded DATETIME NOT NULL DEFAULT NOW();
 
+alter table Tests_test add COLUMN proctored boolean default FALSE;
+
+create table Tests_proctorinfo (
+id int NOT NULL primary key AUTO_INCREMENT,
+test_id int NOT NULL,
+usertesttbl varchar(50) NOT NULL,
+usertesttbl_id int NOT NULL,
+useremail varchar(255) NOT NULL,
+capturestarttime DATETIME NOT NUll,
+captureendtime DATETIME NOT NUll,
+filelocation text,
+guestipaddress varchar(50) DEFAULT '',
+guestbrowserfingerprint text,
+dateadded DATETIME NOT NULL DEFAULT NOW(),
+FOREIGN KEY (test_id) REFERENCES Tests_test(id)
+);
+
+
+
 COMMIT;
 
 /*!40101 SET character_set_client = @saved_cs_client */;
