@@ -10480,4 +10480,10 @@ def downloadmydata(request):
     response['Content-Disposition'] = 'attachment; filename="%s"'%fname
     return response
 
-
+"""
+Endpoints for proctored tests: 
+1) saveproctorinfo - This would be used by the browser extensions (4 in number). They will send this info to be stored in DB and filesystem.
+HTTP request would include: test_id, user_email, usertest_id/wouldbeuser_id (would be determined by user_email), file, start_time, end_time.
+2) identifyuser - This would be used by the browser extensions as above. HTTP request would include: user_photo (file), user_email, test_id.
+Response from both endpoints: 204 for success, 403 for failure.
+"""
