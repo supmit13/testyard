@@ -98,6 +98,18 @@
   background-color: #3b5998;
 }
 
+.btn-primary {
+  font-size: 13px;
+  font-weight:bold;
+  color: rgba(255, 255, 255, 1.0);
+  letter-spacing: 1px;
+  line-height: 15px;
+  border: 2px solid rgba(58, 133, 191, 0.75);
+  border-radius: 5px;
+  transition: all 0.3s ease 0s;
+}
+
+
 </style>
 </head>
 <body>
@@ -238,7 +250,7 @@ function signinwithfacebook(){
 		        <input type="checkbox" class="custom-control-input" id="customCheck1">
 		        <label class="custom-control-label" for="customCheck1">Remember password?</label>
 		      </div> -->
-		      <button class="btn btn-lg btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:10px;padding-top:5px;border:0px radius 5px;">Sign In</button>
+		      <button class="btn-primary btn-block" type="button" name="login" onClick='javascript:process_login();' style="height:35px;font-size:large;vertical-align:middle;padding-bottom:10px;padding-top:5px;border:0px radius 5px;">Sign In</button>
 		      <div id="forgotpasswd"><a href="#/" onclick='javascript:forgotpassword();' style="font-size:small;">Forgot Password</a><p id='emailnotification' style='color:#0000aa;font-size:small;display:none;'>An email has been sent to your email address. Please follow the instructions therein.</p></div>
 
 		      <hr class="my-4">
