@@ -4474,7 +4474,7 @@ def sendtestinvitations(request):
     # Dump all emails Ids to which email could not be sent
     failure = False
     for error_email in error_emails_list:
-        print error_email
+        #print error_email
         emailfail = EmailFailure()
         emailfail.user = userobj
         emailfail.sessionid = sesscode
@@ -4489,7 +4489,7 @@ def sendtestinvitations(request):
             message = sys.exc_info()[1].__str__()
             print message
     if failure:
-        message = "Some emails could not be sent. Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"
+        message = "Emails could not be sent to " + ", ".join(error_emails_list) + ". Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"
     response = HttpResponse(message)
     return(response)
 
