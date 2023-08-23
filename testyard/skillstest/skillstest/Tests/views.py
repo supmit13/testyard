@@ -4206,7 +4206,7 @@ def sendtestinvitations(request):
     #dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
-    freeplansql = "select candidates from Subscription_plan where planname='%s'"
+    freeplansql = "select candidates from Subscription_plan where planname=%s"
     dbcursor.execute(freeplansql, (plnname,))
     allplanrecs = dbcursor.fetchall()
     if allplanrecs.__len__() > 0:
@@ -4489,7 +4489,7 @@ def sendtestinvitations(request):
             message = sys.exc_info()[1].__str__()
             print message
     if failure:
-        message = "The emails could not be sent. Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"
+        message = "Some emails could not be sent. Please contact " + mysettings.MAILSENDER + " with the test details and email addresses"
     response = HttpResponse(message)
     return(response)
 
@@ -7109,7 +7109,7 @@ def setschedule(request):
         #dbconn, dbcursor = connectdb_p()
         candidatescount = 5 # Default candidates count for Free Plan.
         plnname = 'Free Plan'
-        freeplansql = "select candidates from Subscription_plan where planname='%s'"
+        freeplansql = "select candidates from Subscription_plan where planname=%s"
         dbcursor.execute(freeplansql, (plnname,))
         allplanrecs = dbcursor.fetchall()
         if allplanrecs.__len__() > 0:
@@ -9396,7 +9396,7 @@ def mobile_setschedule(request):
     #dbconn, dbcursor = connectdb_p()
     candidatescount = 5 # Default candidates count for Free Plan.
     plnname = 'Free Plan'
-    freeplansql = "select candidates from Subscription_plan where planname='%s'"
+    freeplansql = "select candidates from Subscription_plan where planname=%s"
     dbcursor.execute(freeplansql, (plnname,))
     allplanrecs = dbcursor.fetchall()
     if allplanrecs.__len__() > 0:
