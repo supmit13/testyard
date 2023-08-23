@@ -2284,7 +2284,7 @@ def edit(request):
     savedchallengesscore = 0
     for chlng in savedchallengesqset:
         savedchallengesscore += chlng.challengescore
-    statusmessage = "<font color='#0000AA'>Number of Challenges framed:<b>%s</b><br>Total Number of Challenges in the test: <b>%s</b><br>Score accounted for: <b>%s</b><br>Total Score: <b>%s</b></font><br>"%(savedchallengescount.__str__(), totalchallengescount.__str__(), savedchallengesscore.__str__(), testobj.maxscore.__str__())
+    statusmessage = "<font color='#ffffff'>Number of Challenges framed:<b>%s</b><br>Total Number of Challenges in the test: <b>%s</b><br>Score accounted for: <b>%s</b><br>Total Score: <b>%s</b></font><br>"%(savedchallengescount.__str__(), totalchallengescount.__str__(), savedchallengesscore.__str__(), testobj.maxscore.__str__())
     if editoperationflag == True:
         statusmessage = "<font color='#0000BB'><b><i>The changes were saved successfully</i></b></font>"
     editchallengehtml = _challenge_edit_form(request, testobj, lastchallengectr,  evendistribution, challengeobj.timeframe, int(testobj.negativescoreallowed), multiprogenv)
