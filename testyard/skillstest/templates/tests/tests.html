@@ -973,7 +973,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			// Write an error message to inform the user that the page hasn't loaded entirely.
 			}
 		      }
-		      themaindiv.style = "";
+		      themaindiv.style = "font-family:poppler sans-serif;";
     		      themaindiv.innerHTML = "<pre>" + xmlhttp.responseText + "</pre>";
 		      return (true);
   		    }
@@ -1508,7 +1508,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		  if(xmlhttp.readyState == 4 && xmlhttp.status==200){
     		    var thediv=document.getElementById('createtestdiv');
     		    thediv.className = "register";
-		    thediv.style = "height:900px;width:110%;padding-left:20px;padding-top:20px;padding-right:20px;display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;";
+		    thediv.style = "height:900px;width:110%;padding-left:20px;padding-top:20px;padding-right:20px;display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;font-family:poppler sans-serif;";
 		    thediv.innerHTML = xmlhttp.responseText;
   		  }
   		  };
