@@ -126,9 +126,9 @@ img.alignleft {
 	margin: 0px 2px 0px 2px;
 	padding: 6px 6px 6px 6px;
 	background: #9ecaed;
-    color: #003044;
-    border-radius: 17px;
-    border: 2px solid #fff;
+    	color: #003044;
+    	border-radius: 5px;
+    	border: 2px groove #9ecaed;
 	min-width:100px;
 	text-align:center;
 }
