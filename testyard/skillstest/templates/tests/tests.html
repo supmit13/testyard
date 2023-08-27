@@ -826,30 +826,30 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 
 		function getresponseoptionswithradios(){
-		  var html = "<b>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);' class='helptext'>[why should I do this?]</a></font>:</b><br>";
+		  var html = "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;'><font color='#0000AA' style='font-style:italic;justify:left;padding-left;15px;'>Check/Select the correct response(s)<font size='-2'><a href='#' onmouseover='javascript:showwhyresponsekey(this);' class='helptext'>[why should I do this?]</a></font>:</font></div></span><br>";
 		  if(document.challengeform.choice1.value.trim() != ""){
-		    html += "<i>Option #a: <input type='radio' name='responsekey' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #a: <input type='radio' name='responsekey' value='"+ document.challengeform.choice1.value + "'>" + document.challengeform.choice1.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice2.value.trim() != ""){
-		    html += "<i>Option #b: <input type='radio' name='responsekey' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #b: <input type='radio' name='responsekey' value='" + document.challengeform.choice2.value + "'>" + document.challengeform.choice2.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice3.value.trim() != ""){
-		    html += "<i>Option #c: <input type='radio' name='responsekey' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #c: <input type='radio' name='responsekey' value='" + document.challengeform.choice3.value + "'>" + document.challengeform.choice3.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice4.value.trim() != ""){
-		    html += "<i>Option #d: <input type='radio' name='responsekey' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #d: <input type='radio' name='responsekey' value='" + document.challengeform.choice4.value + "'>" + document.challengeform.choice4.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice5.value.trim() != ""){
-		    html += "<i>Option #e: <input type='radio' name='responsekey' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #e: <input type='radio' name='responsekey' value='" + document.challengeform.choice5.value + "'>" + document.challengeform.choice5.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice6.value.trim() != ""){
-		    html += "<i>Option #f: <input type='radio' name='responsekey' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #f: <input type='radio' name='responsekey' value='" + document.challengeform.choice6.value + "'>" + document.challengeform.choice6.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice7.value.trim() != ""){
-		    html += "<i>Option #g: <input type='radio' name='responsekey' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;0000aa;'><i style='color:#0000aa;'>Option #g: <input type='radio' name='responsekey' value='" + document.challengeform.choice7.value + "'>" + document.challengeform.choice7.value + "</i></div></span><br>";
 		  }
 		  if(document.challengeform.choice8.value.trim() != ""){
-		    html += "<i>Option #h: <input type='radio' name='responsekey' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i><br>";
+		    html += "<span class='slide-container' style='width:100%;'><div class='slide' style='width:100%;padding-left;10px;color:0000aa;'><i style='color:#0000aa;'>Option #h: <input type='radio' name='responsekey' value='" + document.challengeform.choice8.value + "'>" + document.challengeform.choice8.value + "</i></div></span><br>";
 		  }
 		  return(html);
 		}
