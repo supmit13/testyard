@@ -177,7 +177,7 @@ def network(request):
             pass
     uniqgroups = {}
     for groupmember in groupmembersqset:
-        grouplink = "<a href='#/' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
+        grouplink = "<a href='#' onClick='javascript:managegroup(&quot;%s&quot;, &quot;%s&quot;, &quot;%s&quot;);'>%s</a>"%(groupmember.member.displayname, groupmember.group.groupname, groupmember.group.currency, groupmember.group.groupname)
         if uniqgroups.has_key(groupmember.group.groupname):
             continue
         uniqgroups[groupmember.group.groupname] = 1
