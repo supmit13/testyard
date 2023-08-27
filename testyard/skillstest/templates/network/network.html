@@ -939,22 +939,22 @@
 		        searchresultarea.innerHTML = noresulthtml;
 			return(0);
 		    }
-		    screendiv.style = "display:;height:100%;";
+		    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;;height:100%;";
 		    //alert(jsonresult.length);
                     if(jsonresult.length < 20){
-			screendiv.style = "display:;height:200%;";
+			screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:200%;";
 		    }
                     else if(jsonresult.length < 40){
-			screendiv.style = "display:;height:300%;";
+			screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:300%;";
 		    }
 		    else if(jsonresult.length < 60){
-			screendiv.style = "display:;height:550%;";
+			screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:550%;";
 		    }
 		    else if(jsonresult.length < 100){
-			screendiv.style = "display:;height:750%;";
+			screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:750%;";
 		    }
 		    else{
-			screendiv.style = "display:;height:1500%;";
+			screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:1500%;";
 		    }
 		    html = "<table border=0 cellspacing=2 cellpadding=5 width='95%' class='tbl-fixed-width'>";
 		    for(var j=0; j < jsonresult.length; j++){
@@ -982,7 +982,7 @@
 
 	function displayjoinagroupscreen(){
 	    screendiv = document.getElementById('transscreens');
-            screendiv.style = "display:;";
+            screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;";
 	    html = "<center><h3><font color='#0000AA'>Search for a group based on the following parameters:</font></h3>";
 	    html += "<form name='joinagroup' id='joinagroup' method='POST' action=''>";
 	    html += "{% csrf_token %}";
@@ -1063,22 +1063,22 @@
 			html = "<tr><td colspan=4 style='text-align:center;font-weight:bold;padding-left:10px;'><p style='color:#aa0000;font-style:italic;'>No records found</p></td></tr>";
 		    }
 		    else{
-			screendiv.style = "display:;height:100%;";
+			screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:100%;";
 		        //alert(alldispnames.length);
                         if(alldispnames.length < 20){
-			    screendiv.style = "display:;height:200%;";
+			    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:200%;";
 		        }
                         else if(alldispnames.length < 40){
-			    screendiv.style = "display:;height:400%;";
+			    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:400%;";
 		        }
 		        else if(alldispnames.length < 60){
-			    screendiv.style = "display:;height:750%;";
+			    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:750%;";
 		        }
 		        else if(alldispnames.length < 100){
-			    screendiv.style = "display:;height:1000%;";
+			    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:1000%;";
 		        }
 		        else{
-			    screendiv.style = "display:;height:2000%;";
+			    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:2000%;";
 		        }
 			ctr = 0;
 		        for (dispname in alldispnames){
@@ -1111,7 +1111,7 @@
 
 	function displayaddcontactscreen(){
             screendiv = document.getElementById('transscreens');
-            screendiv.style = "display:;height:80%;";
+            screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:80%;";
 	    //screendiv.style.display = "";
 	    html = "<center><font color='#0000AA' style='font-weight:bold'>Search User using one or more of the following parameters</font></center>";
 	    html += "<form name='frmSearchUser' id='frmSearchUser' method='POST' action=''>";
@@ -1869,7 +1869,7 @@
 
 	function displaypostamessagescreen(){
 	    screendiv = document.getElementById('transscreens');
-	    screendiv.style = "display:;width:80%;height:150%;";
+	    screendiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;width:80%;height:150%;";
 	    html = "<form name='frmpostamessage' id='frmpostamessage' method='POST' action='' enctype='multipart/form-data'>";
 	    html += "{% csrf_token %}";
 	    html += "<center><font color='#0000AA' size=+1 style='font-weight:bold;'>Create New Message Thread</font></center><br/><br/>";
@@ -2470,7 +2470,7 @@
 
 	function givetesttogroups(){
 	    transdiv = document.getElementById('transscreens2');
-            transdiv.style = "display:;height:300px;width:700px;";
+            transdiv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:300px;width:700px;";
 	    var xmlhttp;
 	    var fmt = "json";
 	    postdata = "format=" + fmt + "&csrfmiddlewaretoken=" + document.searchform.csrfmiddlewaretoken.value;
