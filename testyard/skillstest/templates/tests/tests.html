@@ -860,6 +860,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		  var responsekeydiv = document.getElementById('responsekeydiv'); 
 		  // alert(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value);
 		  if(document.challengeform.challengetype.options[document.challengeform.challengetype.options.selectedIndex].value == 'MULT'){
+		    //parentdiv = document.getElementById('createtestdiv');
+		    //parentdiv.style.height = "2450px";
 		    ansoptsdiv.style.display = "";
 		    ansoptsdiv.innerHTML = "<span class='slide-container row'><div class='slide align-items-start' id='ansopts'><font color='#0000AA' style='font-weight:bold;justify:left;'>Can there be more than one correct answer:</font></div><div class='align-items-end' style='width:50%;'>&nbsp;<label class='radio-inline control-label' style='color:#0000AA;'><input type='radio' name='oneormore' value='yes' checked=true  onchange='javascript:displayresponsekeycontrols();' style='height:35px;'>Yes</label>&nbsp;&nbsp;&nbsp;&nbsp;<label class='radio-inline control-label' style='color:#0000AA;'><input type='radio' name='oneormore' value='no'  onchange='javascript:displayresponsekeycontrols();' style='height:35px;'>No</label></div></span><br><span class='slide-container row'><div class='slide'><font color='#0000AA' style='font-weight:bold;justify:left;'>Please enter the options you want to be made available for this challenge/question.(max 8 options) </font></div><div class='float-right' style='width:50%;color:#0000AA;'><div style='white-space: nowrap;display: inline-block;'><i>Option #a:</i><input type='text' name='choice1' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #b:</i><input type='text' name='choice2' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #c:</i><input type='text' name='choice3' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #d:</i><input type='text' name='choice4' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #e:</i><input type='text' name='choice5' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #f:</i><input type='text' name='choice6' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #g:</i><input type='text' name='choice7' value=''  onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div><br/><div style='white-space: nowrap;display: inline-block;'><i>Option #h:</i><input type='text' name='choice8' value='' onblur='javascript:displayresponsekeycontrols();' class='form-control input-ty-tiny'></div></div></span><br />";
 		    responsekeydiv.style.display = "";
@@ -1137,9 +1139,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		      }
 		      var thediv=document.getElementById('createtestdiv');
 		      thediv.className = "";
-		      thediv.style = "height:1400px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
+		      thediv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;font-family:helvetica;height:1400px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:";
                       if(challengetype == "Multiple Choice"){
-			thediv.style = "height:2450px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:block;";
+			thediv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;font-family:helvetica;height:2450px;width:1200px;padding-left:10px;padding-right:10px;padding-top:10px;padding-bottom:10px;display:block;";
 		      }
 		      thediv.className = "register";
 		      thediv.innerHTML = xmlhttp.responseText;
@@ -1766,6 +1768,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		function showtestcandidatemode(testid){
 		  var thediv = document.getElementById('createtestdiv');
 		  thediv.style.display = "";
+		  //thediv.style = "display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;font-family:helvetica;"
 		  var xmlhttp;
 		  if (window.XMLHttpRequest){
     		    xmlhttp=new XMLHttpRequest();
