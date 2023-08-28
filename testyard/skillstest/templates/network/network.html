@@ -612,7 +612,7 @@
             screendiv = document.getElementById(screendivid);
 	    ispaid = document.getElementById('ispaid');
 	    if(ispaid.checked == true){
-                screendiv.style="display:;height:280%;";
+                screendiv.style="display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:280%;";
 	    	paymentdiv = document.getElementById('paymentdiv');
 	    	// Create the HTML for innerHTML
 	    	html = "<table border='0' cellspacing='2' cellpadding='8'>";
@@ -653,7 +653,7 @@
 	    	paymentdiv.innerHTML = html;
 	    }
 	    else{
-                screendiv.style="display:;height:175%;";
+                screendiv.style="display:float;position:absolute;top:100px;left:100px;border:5px groove #999999;z-index:1;height:175%;";
 		document.frmcreategroup.require_owner_perms.disabled = false;
 		paymentdiv = document.getElementById('paymentdiv');
 		paymentdiv.style.display = "none";
