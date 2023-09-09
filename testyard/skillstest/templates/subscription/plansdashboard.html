@@ -21,7 +21,7 @@
         data.addColumn('string', 'Test Type');
 	data.addColumn('number', 'Counts');
 	data.addRows([ ['Tests', {{basicplan_tests_count}}], ['Interviews', {{basicplan_interviews_count}}]]);
-	options = {'title' : 'Basic Plan aggregated Usage (USD {{basicplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
+	options = {'title' : 'Basic Plan aggregated usage  (USD {{basicplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
 	var chart = new google.visualization.PieChart(document.getElementById('basic_plan_chart'));
         chart.draw(data, options);
         
@@ -29,7 +29,7 @@
         data.addColumn('string', 'Test Type');
 	data.addColumn('number', 'Counts');
 	data.addRows([ ['Tests', {{businessplan_tests_count}}], ['Interviews', {{businessplan_interviews_count}}]]);
-	options = {'title' : 'Business Plan aggregated Usage (USD {{businessplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
+	options = {'title' : 'Business Plan aggregated usage (USD {{businessplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
 	var chart = new google.visualization.PieChart(document.getElementById('business_plan_chart'));
         chart.draw(data, options);
         
@@ -37,7 +37,7 @@
         data.addColumn('string', 'Test Type');
 	data.addColumn('number', 'Counts');
 	data.addRows([ ['Tests', {{unlimitedplan_tests_count}}], ['Interviews', {{unlimitedplan_interviews_count}}]]);
-	options = {'title' : 'Unlimited Plan aggregated Usage (USD {{unlimitedplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
+	options = {'title' : 'Unlimited Plan aggregated usage (USD {{unlimitedplan_aggregated_spending}})', 'width' : 400, 'height' : 300, 'colors' : ['Blue', 'Green', 'blue', 'green'], 'titleTextStyle' : {'fontSize' : 14}};
 	var chart = new google.visualization.PieChart(document.getElementById('unlimited_plan_chart'));
         chart.draw(data, options);
       }
@@ -406,7 +406,7 @@
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body" style="border:1px solid #DCDCDC;">
-                                <h4 class="card-title" style="font-weight:bold;">Subscription History</h4>
+                                <span class="row" style="padding-left:15px;"><h4 class="card-title" style="font-weight:bold;">Subscription History </h4><abbr title="This allows you to find out the subscription plans under which the tests and interviews being searched for were created. Once you identify those subscription plans, you can extend them to send more invitations to candidates for those tests and interviews.">What does it do?</abbr></span>
                                 <form name='frmsearch'>
                                 {% csrf_token %}
                                 <span>Search by Test <input type='radio' name='rdtestint' id='rdtestint' value='test' class='form-check-input' checked style='padding-left:5px;padding-right:5px;' placeholder='test'> or Interview <input type='radio' name='rdtestint' id='rdtestint' value='interview' class='form-check-input' style='padding-left:5px;padding-right:5px;' placeholder='interview'> <input type='text' name='searchkey' id='searchkey' value='' placeholder='Search by Test/Interview Name' class='form-control' style='padding-left:5px;padding-right:5px;'> <input type='button' name='btnsearch' id='btnsearch' value='Search' class='btn btn-testyard1' onclick='javascript:searchitem();'>
