@@ -4019,26 +4019,26 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>\
-                          <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
 			</tr>\
 			<tr>\
 			  <td colspan=\"23\">&nbsp;</td>\
@@ -4056,42 +4056,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            else{
 		                searchhtml += "<tr>";
 		            }
-		            searchhtml += "<td nowrap style='color:#0000AA;font-size:smaller;'>" + testvals[1] + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a> --></font></td>";
+		            searchhtml += "<td nowrap style='color:#0000AA;'>" + testvals[1] + "&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a> --></font></td>";
 			    searchhtml += "<!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(" + testvals[0] + ");'>" + testvals[1] + "</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a></font></td> -->";
 			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates(" + testvals[0] + ");'>Invite</a></font><div id='invitationdiv" + testvals[0] + "' style='display:none'></div></td>";
 			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations(\"" + testvals[0] + "\");'>Manage Invitations</a></font><div id='existinginvitationdiv" + testvals[0] + "' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>";
-			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>";
-			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testvals[0] + ");'>Edit Interface</a></font></td>";
 			    if(testvals[19] < 1){
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testvals[19] + "  (" + testvals[20] + " out of " + testvals[7] + ")</font></td>";
 			    }
 			    else{
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[19] + "  (" + testvals[20] + " out of " + testvals[7] + ")</font></td>";
 			    }
-			    searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>";
-			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>";
-			    if(testvals[21]){
-			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
-			    }
-			    else{
-			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
-			    }
-			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
-			      <td nowrap><font size=-1 color='#0000AA'>" + testvals[9] + "*</font></td>";
-			    if (testvals[22]){
-			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
-			    }
-			    else{
-			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
-			    }
-			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[24] + "</font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[25] + "</font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[26] + "</font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testvals[0] + ");'>Edit Interface</a></font></td>\
-			        <td nowrap><font size=-1 color='#0000AA'>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>";
 			    if(testvals[17] == 'private'){
 			        searchhtml += "<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='0' checked onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='1'  onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='creator_visibility_" + testvals[0] + "' id='creator_visibility_" + testvals[0] + "' value='2' onChange='javascript:setvisibility(\"test\", " + testvals[0] + ");'>Public";
 			    }
@@ -4111,6 +4087,30 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    else{
 			        searchhtml += "<td nowrap align='right' id='teststatus_" + testvals[0] + "'><a href='#/' onclick=javascript:deactivatestatusnow('" + testvals[0] + "');><font size=-1 color='#AA0000'>Deactivate Test Now</font></a></td><td align='right' id='postlinkedin_" + testvals[0] + "'><a href='#/' onclick=\"javascript:postonlinkedin('" + testvals[0] + "', 'creator');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png\" alt=\"LinkedIn Add to Profile button\"></a><!-- <span class=\"semitrans2\" id='linkedinauth_creator_" + testvals[0] + "' style='display:none;height:30%;width:30%;'></span> --></td>";
 			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>";
+			    searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>";
+			    searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>";
+			    if(testvals[21]){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[9] + "*</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>";
+			    if (testvals[22]){
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
+			    }
+			    else{
+			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>No</font></td>";
+			    }
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[24] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[25] + "</font></td>\
+			        <td nowrap><font size=-1 color='#0000AA'>" + testvals[26] + "</font></td>";
 			    searchhtml += "</tr> ";
 		        }
 		    }
@@ -4166,16 +4166,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>\
@@ -4202,18 +4202,16 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		                searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testname + "</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest(\"" + testvals[0] + "\");'>(Evaluate)</a></b></font></td>\
 			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(\"" + testvals[0] + "\");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest(\"" + testvals[0] + "\");'>(Evaluate)</a></b></font></td> -->";
 		            }
-		            searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
-			        <td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>";
-			    if(testvals[20] < 1){
+		            searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>";
+		            searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'><a href='" + testvals[0] + "'>" + testvals[2] + "</a></font></td>";
+		            searchhtml += "<td nowrap><font size=-1 color='#0000AA'></font></td>";
+		            if(testvals[20] < 1){
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testvals[20] + " (" + testvals[19] + " out of " + testvals[7] + ")</font></td>";
 			    }
 			    else{
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[20] + " (" + testvals[19] + " out of " + testvals[7] + ")</font></td>";
 			    }
-			    searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'><a href='" + testvals[0] + "'>" + testvals[2] + "</a></font></td>\
-			    <td align='left'><font size=-1 color='#0000AA'>" + testvals[21] + "</font></td>\
-			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
-			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>";
+		            searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>";
 			    if(!testvals[8]){
 			        searchhtml += "<td nowrap align='right'><font size=-1 color='#0000AA'>&nbsp;</font></td> ";
 			    }
@@ -4226,8 +4224,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    else{
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
 			    }
-			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
-			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[9] + "*</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[9] + "*</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
+			    <td nowrap><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>";
 			    if(testvals[22]){
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>Yes</font></td>";
 			    }
@@ -4293,17 +4293,17 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Percentile Score</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Taken On</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Percentile Score</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Taken On</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
 			</tr>\
 			<tr>\
@@ -4324,18 +4324,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		                searchhtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testname + "</font></td>";
 		            }
 		            searchhtml += "<td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
-			  <td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>\
-			  <td align='center'><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>\
-			  <td align='center'><font size=-1 color='#0000AA'>" + testvals[19] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[20] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[21] + "</font></td>\
-			  <td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testvals[22] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
-			  <td><font size=-1 color='#0000AA'>" + testvals[24] + "</font></td>\
-			  <td nowrap><font size=-1 color='#0000AA'>";
-			    if(testvals[25] == 0){
+		          <td nowrap><font size=-1 color='#0000AA'>";
+		          if(testvals[25] == 0){
 			        searchhtml += "<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='0' checked onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='1'  onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='2' onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Public";
 			    }
 			    else{
@@ -4346,8 +4336,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			            searchhtml += "<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='0' onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='1' onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='2' checked  onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Public";
 			        }
 			    }
-			    searchhtml += "</font></td>\
-			    <td><font size=-1 color='#0000AA'><a href='#/' onClick=\"javascript:postonlinkedin('" + testvals[0] + "', 'candidate');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
+			    searchhtml += "</font></td>";
+			  searchhtml += "<td align='center'><font size=-1 color='#0000AA'>" + testvals[19] + "</font></td>";  
+			  searchhtml += "<td nowrap align='center'><font size=-1 color='#0000AA'>" + testvals[7] + "</font></td>\
+			  <td align='center'><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>";
+			  searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[23] + "</font></td>";
+			  searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[21] + "</font></td>";
+			  searchhtml += "<td><font size=-1 color='#0000AA'>" + testvals[20] + "</font></td>\
+			  <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
+			  <td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testvals[22] + "</font></td>\
+			  <td><font size=-1 color='#0000AA'>" + testvals[18] + "</font></td>\
+			  <td><font size=-1 color='#0000AA'>" + testvals[24] + "</font></td>";
+			    searchhtml += "<td><font size=-1 color='#0000AA'><a href='#/' onClick=\"javascript:postonlinkedin('" + testvals[0] + "', 'candidate');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
 			    </tr>";
 		        }
 		    }
@@ -4401,7 +4401,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<table bgcolor='#E1F6FF' class='ty-table'>\
 			<tr class=\"th\">\
 			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedules</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>\
 			  <td align='center' nowrap style='width:150px;display:auto;'><font size=-1 style='font-weight:bold;'>Language</font></td>\
 			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
@@ -4410,8 +4412,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedules</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
 			</tr>\
 			<tr>\
@@ -4426,7 +4426,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            testvals = d[testname];
 		            searchhtml += "<tr>\
   			    <td style='width:200px;display:auto;'><font size=-1 color='#0000AA'>" + testname + "</font></td>\
+  			    <td><font size=-1 color='#0000AA'>" + testvals[11] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>\
+			    <td><a href='#/' class='btn btn-primary' id='btnscheduleinterview' name='btnscheduleinterview'  onclick='javascript:scheduleinterview(\"" + testvals[11] + "\", \"{{showinterviewschedulescreenurl}}\");' style='height:35px;width:150px;color:#ffffff;font-size:small;font-weight:bold;'>Schedules</a></td>\
 			    <td style='width:150px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
 			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[5] + "</font></td>\
@@ -4435,8 +4437,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    <td><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>\
 		  	    <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[10] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[11] + "</font></td>\
-			    <td><a href='#/' class='btn btn-primary' id='btnscheduleinterview' name='btnscheduleinterview'  onclick='javascript:scheduleinterview(\"" + testvals[11] + "\", \"{{showinterviewschedulescreenurl}}\");' style='height:35px;width:150px;color:#ffffff;font-size:small;font-weight:bold;'>Schedules</a></td>\
 			    <td><font size=-1 color='#0000AA'><a href='#/' onClick = \"javascript:postonlinkedin('" + testvals[11] + "', 'interviewconductor');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
 			    </tr>";
 		        }
@@ -4492,6 +4492,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr class=\"th\">\
 			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interviewer Name</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Scheduled Time</font></td>\
+ 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Actual Start Time</font></td>\
+ 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>\
 			  <td align='center' nowrap style='width:150px;display:auto;'><font size=-1 style='font-weight:bold;'>Language</font></td>\
 			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Create Date</font></td>\
@@ -4500,11 +4505,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Scheduled Time</font></td>\
- 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Actual Start Time</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interviewer Name</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>\
 			</tr>\
 			<tr>\
@@ -4520,6 +4520,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		            searchhtml += "<tr>";
 		            searchhtml += "<td style='width:200px;display:auto;'><font size=-1 color='#0000AA'>" + testname + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[2] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testvals[15] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>\
+		   	    <td><font size=-1 color='#0000AA'>" + testvals[12] + "</font></td>\
+		   	    <td><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
+			    <td><font size=-1 color='#0000AA'>" + testvals[16] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
 			    <td style='width:150px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[4] + "</font></td>\
 			    <td style='width:190px;display:auto;'><font size=-1 color='#0000AA'>" + testvals[5] + "</font></td>\
@@ -4528,11 +4533,6 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    <td><font size=-1 color='#0000AA'>" + testvals[8] + "</font></td>\
 		  	    <td><font size=-1 color='#0000AA'>" + testvals[9] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'>" + testvals[10] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[13] + "</font></td>\
-		   	    <td><font size=-1 color='#0000AA'>" + testvals[12] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[14] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[15] + "</font></td>\
-			    <td><font size=-1 color='#0000AA'>" + testvals[16] + "</font></td>\
 			    <td><font size=-1 color='#0000AA'><a href='#/' onClick=\"javascript:postonlinkedin('" + testvals[16] + "', 'interviewattended');\"><img src=\"https://download.linkedin.com/desktop/add2profile/buttons/en_US.png \" alt=\"LinkedIn Add to Profile button\"></a></font></td>\
 			</tr>";
 		        }
