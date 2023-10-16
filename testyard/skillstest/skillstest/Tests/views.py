@@ -7203,7 +7203,7 @@ def setschedule(request):
             error_emails_list = []
             testyardhosturl = skillutils.gethosturl(request)
             candidatename = "candidate"
-            emailsubject = "A test has been scheduled for you on testyard"
+            emailsubject = "A test has been scheduled for you on testyard by '%s'"%userobj.emailid
             emailmessage = """Dear %s,<br/><br/>
 
          A test with the name '%s' has been scheduled for you by <i>%s</i>.<br/><br/>
@@ -7445,7 +7445,7 @@ def deactivatetestbycreator(request):
 
 def captureaudiovisual(request):
     #tmpl = get_template("tests/interview_candidate_screen.html")
-    tmpl = get_template("tests/audiovisual.html")
+    tmpl = get_template("tests/m_audiovisual.html")
     tests_user_dict = {}
     tests_user_dict['blob_upload_url'] = mysettings.BLOB_UPLOAD_URL
     tests_user_dict['interviewlinkid'] = request.POST['interviewlinkid']
@@ -7502,7 +7502,7 @@ def askquestion(request):
     int_questions_dict['signal_server'] = mysettings.SIGNAL_SERVER
     if medium == "audiovisual":
         #tmpl = get_template("tests/interview_candidate_screen.html")
-        tmpl = get_template("tests/audiovisual.html")
+        tmpl = get_template("tests/m_audiovisual.html")
     elif medium == "audio":
         tmpl = get_template("tests/audio.html")
     else:
@@ -7842,7 +7842,7 @@ def createinterview(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre>
     """%(userobj.displayname, scheduledatetime, skillutils.gethosturl(request), interviewurlparams, skillutils.gethosturl(request), interviewurlparams, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
-        subject = "TestYard Interview Invitation"
+        subject = "TestYard Interview Invitation from '%s'"%userobj.emailid
         fromaddr = userobj.emailid
         #str(message).content_subtype = 'html'
         # Send email
@@ -7874,7 +7874,7 @@ def createinterview(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre>
          """%(emailinvitationtarget, scheduledatetime, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, testyardhosturl, urllib.quote_plus(str(interviewlinkid)))
-        subject = "TestYard Interview Scheduled"
+        subject = "TestYard Interview Scheduled by '%s'"%userobj.emailid
         fromaddr = userobj.emailid
         for interviewerem in uniqueintervieweremailsdict.keys():
             if interviewerem != "":
@@ -7896,7 +7896,7 @@ def createinterview(request):
         int_user_dict['errmsg'] = "Error: " + sys.exc_info()[1].__str__()
         return HttpResponse(int_user_dict['errmsg'])
     # Inform both users that interview has been scheduled. If scheduled datetime > current datetime, 
-    # then the audio.html/audiovisual.html screen should not be shown. Instead, show the URL for both
+    # then the audio.html/m_audiovisual.html screen should not be shown. Instead, show the URL for both
     # users and request the users to appear at the linked page at the scheduled time. The respective 
     # URLs will be sent to both the users through email. Additionally, the interviewer will have the 
     # URL listed in her/his list of interviews. If the interviewee is also a member of TestYard, then
@@ -7936,7 +7936,7 @@ def createinterview(request):
                      Good Luck!
                      The TestYard Interview Team.</pre>
     """%(interviewobj.title, userobj.displayname, scheduledatetime, intcandidateobj.interviewurl + "&attend=" + emailinvitationtarget, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
-            subject = "TestYard Interview Invitation"
+            subject = "TestYard Interview Invitation by '%s'"%userobj.emailid
             fromaddr = userobj.emailid
             #str(message).content_subtype = 'html'
             # Send email
@@ -7960,7 +7960,7 @@ def createinterview(request):
         The TestYard Team.</pre>
         """%(interviewobj.title, emailinvitationtarget, scheduledatetime, intcandidateobj.interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
             #str(message).content_subtype = 'html'
-            subject = "Interview Scheduled"
+            subject = "Interview Scheduled by '%s'"%userobj.emailid
             fromaddr = userobj.emailid
             toaddr = userobj.emailid
             try:
@@ -8024,7 +8024,7 @@ def createinterview(request):
             tmpl = get_template("tests/waitscreen.html")
         else:
             #tmpl = get_template("tests/interview_candidate_screen.html")
-            tmpl = get_template("tests/audiovisual.html")
+            tmpl = get_template("tests/m_audiovisual.html")
     int_user_dict.update(csrf(request))
     cxt = Context(int_user_dict)
     audiovisualhtml = tmpl.render(cxt)
@@ -8349,7 +8349,7 @@ def savenewinterviewschedule(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</body></html>
     """%(interviewobj.title, userobj.displayname, newsched_datetime, interviewlinkurlwithparams, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist), skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
-        subject = "TestYard Interview Invitation"
+        subject = "TestYard Interview Invitation from '%'"%userobj.emailid
         fromaddr = userobj.emailid
         # Send email
         for targetemail in emailidslist:
@@ -8378,7 +8378,7 @@ def savenewinterviewschedule(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</body></html>
          """%(",".join(emailidslist), interviewobj.title, newsched_datetime, interviewlinkurlwithparams, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
-    subject = "TestYard Interview Scheduled"
+    subject = "TestYard Interview Scheduled by '%s'"%userobj.emailid
     fromaddr = userobj.emailid
     try:
         retval = send_emails.delay(subject, message, mysettings.MAILSENDER, fromaddr, False)
@@ -8495,7 +8495,7 @@ def rescheduleinterview(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre></body></html>
     """%(interviewobj.title, userobj.displayname, resched_datetime, interviewurl, interviewurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
-        subject = "TestYard Interview Invitation"
+        subject = "TestYard Interview Invitation from '%s'"%userobj.emailid
         fromaddr = userobj.emailid
         # Send email
         for targetemail in candidateemailslist:
@@ -8524,7 +8524,7 @@ def rescheduleinterview(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</pre></body></html>
          """%(",".join(candidateemailslist), interviewobj.title, resched_datetime, interviewerurl, interviewerurl, skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
-    subject = "TestYard Interview Scheduled"
+    subject = "TestYard Interview Scheduled by '%s'"%userobj.emailid
     fromaddr = userobj.emailid
     try:
         retval = send_emails.delay(subject, message, mysettings.MAILSENDER, fromaddr, False)
@@ -8609,7 +8609,7 @@ def attendinterview(request):
             #if curdatetime > interviewschedulestart and curdatetime < interviewscheduleend:
             if curdatetime > interviewschedulestart:
                 #tmpl = get_template("tests/interview_candidate_screen.html")
-                tmpl = get_template("tests/audiovisual.html")
+                tmpl = get_template("tests/m_audiovisual.html")
                 int_user_dict['interviewtitle'] = intobj.title
                 interviewfilename = intobj.title
                 interviewfilename = interviewfilename.replace("-", "_")
@@ -8638,7 +8638,7 @@ def attendinterview(request):
                 return HttpResponse(intscreen)
     if scheduledatetime is not None and scheduledatetime <= curdatetime:
         #tmpl = get_template("tests/interview_candidate_screen.html")
-        tmpl = get_template("tests/audiovisual.html")
+        tmpl = get_template("tests/m_audiovisual.html")
         if intobj:
             int_user_dict['interviewtitle'] = intobj.title
             interviewfilename = intobj.title
@@ -9567,7 +9567,7 @@ def mobile_setschedule(request):
         (utobj.testurl, utobj.stringid) = gettesturlforuser(utobj.emailaddr, testid, baseurl)
         error_emails_list = []
         candidatename = "candidate"
-        emailsubject = "A test has been scheduled for you on testyard"
+        emailsubject = "A test has been scheduled for you on testyard by '%s'"%userobj.emailid
         emailmessage = """Dear %s,<br/><br/>
 
          A test with the name '%s' has been scheduled for you by <i>%s</i>. <br/><br/>

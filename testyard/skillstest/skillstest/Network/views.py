@@ -3856,7 +3856,7 @@ def sendtestemails(request, testid, forcefreshurl, emailidlist):
     except:
         message = "Could not send emails for test identified by Id %s to all identified users: %s"%(testid, sys.exc_info()[1].__str__())
     # Send an email with 'message' to the user identified in 'userobj'
-    subject = "Status of email sent to members of the selected group(s)"
+    subject = "Status of email sent to members of the selected group(s) by '%s'"%userobj.emailid
     fromaddr = userobj.emailid
     email = fromaddr
     retval = 0
