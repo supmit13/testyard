@@ -3272,6 +3272,10 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	function processrightnow(){
 	    if(document.getElementById('chkrightnow').checked == true){
 		document.getElementById('scheduledatetime').value = "";
+		document.getElementById('scheduledatetime').disabled = true;
+	    }
+	    else{
+	        document.getElementById('scheduledatetime').disabled = false;
 	    }
 	}
 
@@ -3519,7 +3523,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(\"" + testsinfo[testnm][0] + "\");'>" + testnm + "</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testsinfo[testnm][0] + "');><i>(Copy)</i></a></font></td> -->";
 			    ascreatorhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates(\"" + testsinfo[testnm][0] + "\");'>Invite</a></font><div id='invitationdiv" + testsinfo[testnm][0] + "' style='display:none'></div></td>\
 			  <td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations(\"" + testsinfo[testnm][0] + "\");'>Manage Invitations</a></font><div id='existinginvitationdiv" + testsinfo[testnm][0] + "' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>\
-			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testsinfo[testnm][0] + ");'>Edit Interface</a></font></td>";
+			  <td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testsinfo[testnm][0] + ");'>Edit</a></font></td>";
 			    if (testsinfo[testnm] && testsinfo[testnm][21] < 1){
 			      ascreatorhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testsinfo[testnm][21] + " (" + testsinfo[testnm][20] + " out of " + testsinfo[testnm][3] + ")</font></td>";
 			    }
@@ -4060,7 +4064,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			    searchhtml += "<!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode(" + testvals[0] + ");'>" + testvals[1] + "</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('" + testvals[0] + "');><i>(Copy)</i></a></font></td> -->";
 			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#/' onClick='javascript:invitecandidates(" + testvals[0] + ");'>Invite</a></font><div id='invitationdiv" + testvals[0] + "' style='display:none'></div></td>";
 			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations(\"" + testvals[0] + "\");'>Manage Invitations</a></font><div id='existinginvitationdiv" + testvals[0] + "' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>";
-			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testvals[0] + ");'>Edit Interface</a></font></td>";
+			    searchhtml += "<td nowrap><font size=-1 color='#0000AA'><a href='#' onclick='javascript:showtestsummary(" + testvals[0] + ");'>Edit</a></font></td>";
 			    if(testvals[19] < 1){
 			        searchhtml += "<td nowrap align='center'><font size=-1 color='#AA0000'>" + testvals[19] + "  (" + testvals[20] + " out of " + testvals[7] + ")</font></td>";
 			    }
@@ -4871,7 +4875,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
 			  <td nowrap><font size=-1><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
 			  <td nowrap><font size=-1><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
-			  <td nowrap><font size=-1><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit Interface</a></font></td>
+			  <td nowrap><font size=-1><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit</a></font></td>
 			  {% if creator_tests_info|dictlookup:testnm|getval:21 < 1 %}
 			  <td nowrap align='center'><font size=-1>{{ creator_tests_info|dictlookup:testnm|getval:21 }} ({{ creator_tests_info|dictlookup:testnm|getval:20 }} out of {{ creator_tests_info|dictlookup:testnm|getval:3 }})</font></td>
 			  {% else %}
