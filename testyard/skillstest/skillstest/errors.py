@@ -104,7 +104,7 @@ error_codes = { \
         '1105' : 'Could not find the user identified by the id %s',\
         '1106' : 'Could not send the invitation to the user identified by %s',\
         '1107' : 'Successfully sent the invitation to the user identified by %s',\
-        '1108' : 'You are already connected to the user identified by %s',\
+        '1108' : 'You are already connected to the user identified by %s. However, if you don\'t see the user listed as a connection, then it could be because the user has blocked you.',\
         '1109' : 'You have already sent a connection invitation to the user identified by %s',\
         '1110' : 'The target user has refused your connect request in the past. Hence you may not send any further requests to the target user.',\
         '1111' : 'No groupname or user names contained in the request',\
