@@ -4865,7 +4865,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td colspan="23">&nbsp;</td>
 			</tr>
 			{% autoescape on %}
-			{% for testnm in tests_creator_ordered_createdate reversed %}
+			{% for testnm in tests_creator_ordered_createdate %}
 			  {% if creator_tests_info|dictlookup:testnm|getval:11 == 0 %}
 			  <tr style="color:#f56e62;">
 			  {% else %}
@@ -4983,7 +4983,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr>
 			  <td colspan="18">&nbsp;</td>
 			</tr>
-			{% for testnm in tests_evaluator_ordered_createdate reversed %}
+			{% for testnm in tests_evaluator_ordered_createdate %}
 			<tr>
 			  {% if evaluator_tests_info|dictlookup:testnm|getval:18 == 'public' or evaluator_tests_info|dictlookup:testnm|getval:18 == 'protected' %}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
@@ -5074,7 +5074,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr>
 			  <td colspan="14">&nbsp;</td>
 			</tr>
-			{% for testnm in tests_candidate_ordered_createdate reversed %}
+			{% for testnm in tests_candidate_ordered_createdate %}
 			<tr>
 			  {% if candidate_tests_info|dictlookup:testnm|getval:18 == 'public' %}
 			  <td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ candidate_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>

@@ -318,9 +318,9 @@ def get_user_tests(request):
         tests_evaluator_ordered_createdate.append(testname)
         user_evaluator_creator_other_evaluators_dict[testname] = creator_evaluators
     try:
-        usertestqset = UserTest.objects.filter(user=userobj)[startctr_ascandidate:endctr_ascandidate]
+        usertestqset = UserTest.objects.filter(user=userobj).order_by('-validfrom')[startctr_ascandidate:endctr_ascandidate]
     except: # Can't say if we will find any records...
-        usertestqset = WouldbeUsers.objects.filter(emailaddr=userobj.emailid)[startctr_ascandidate:endctr_ascandidate]
+        usertestqset = WouldbeUsers.objects.filter(emailaddr=userobj.emailid).order_by('-validfrom')[startctr_ascandidate:endctr_ascandidate]
     testlist_ascandidate = []
     tests_candidate_ordered_createdate = []
     for usertestobj in usertestqset:
