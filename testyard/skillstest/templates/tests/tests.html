@@ -4811,31 +4811,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='testsascreator' style="display:block" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Creator</h3><input type='text' name='creatorsearchq' id='creatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcreators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			<table bgcolor='#E1F6FF' class="ty-table">
-			<!-- <tr class="th">
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Existing Invitations</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Evaluators</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Edit Mode Link</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedule Test</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activate/Deactivate Test</font></td>
-                          <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
-			</tr> -->
+			
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Invite Candidates Instantly</font></td>
@@ -4871,8 +4847,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  {% else %}
 			  <tr style="color:#0000aa;">
 			  {% endif %}
-			  <td nowrap><font size=-1>{{ testnm }}&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
-			  <!--<td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onClick=javascript:copytest('{{ creator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
+			  <td nowrap><font size=-1>{{ testnm }}&nbsp;&nbsp;</font></td>
+			  
 			  <td nowrap><font size=-1><a href='#/' onClick='javascript:invitecandidates("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Invite</a></font><div id='invitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none'></div></td>
 			  <td nowrap><font size=-1><a  name='manageexistinginvitations' href='#' onClick='javascript:existinginvitations("{{ creator_tests_info|dictlookup:testnm|getval:0 }}");'>Manage Invitations</a></font><div id='existinginvitationdiv{{ creator_tests_info|dictlookup:testnm|getval:0 }}' style='display:none;height:300%;width:300%;' class='semitrans'></div></td>
 			  <td nowrap><font size=-1><a href='#' onclick='javascript:showtestsummary({{ creator_tests_info|dictlookup:testnm|getval:0 }});'>Edit</a></font></td>
@@ -4940,26 +4916,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Evaluator</h3><input type='text' name='evaluatorsearchq' id='evaluatorsearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchevaluators();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
 			<table bgcolor='#E1F6FF' class="ty-table">
-			<!--<tr class="th">
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Completeness **</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Creator</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Co-evaluators</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Activation Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Repeat Allowed</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Pass</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Fail</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Count of Disqualifications</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
-			</tr> -->
+			
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
@@ -4986,11 +4943,11 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			{% for testnm in tests_evaluator_ordered_createdate %}
 			<tr>
 			  {% if evaluator_tests_info|dictlookup:testnm|getval:18 == 'public' or evaluator_tests_info|dictlookup:testnm|getval:18 == 'protected' %}
-			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<!-- <a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a> --></font></td>
-			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;<a href='#/' title='Copy test to create a new one' onclick=javascript:copytest('{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}');><i>(Copy)</i></a></font></td> -->
+			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b>&nbsp;&nbsp;</font></td>
+			  
 			  {% else %}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td>
-			  <!-- <td nowrap><font size=-1 color='#0000AA'><a href='#' onClick='javascript:showtestcandidatemode("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>{{ testnm }}</a></font>&nbsp;&nbsp;<font color='#00BB00' size=-1><b><a href='#/' onClick='javascript:evaluatetest("{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}");'>(Evaluate)</a></b></font></td> -->
+			  
 			  {% endif %}
 			  <td nowrap><font size=-1 color='#0000AA'>{{ evaluator_tests_info|dictlookup:testnm|getval:2 }}</font></td>
 			  <td nowrap align='right'><font size=-1 color='#0000AA'><a href='{{ evaluator_tests_info|dictlookup:testnm|getval:0 }}'>{{ evaluator_tests_info|dictlookup:testnm|getval:20 }} (username={{ evaluator_tests_info|dictlookup:testnm|getval:21 }})</a></font></td>
@@ -5039,22 +4996,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Tests as Candidate</h3><input type='text' name='candidatesearchq' id='candidatesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Test name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchcandidates();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
 			<table bgcolor='#E1F6FF' class="ty-table">
-			<!-- <tr class="th">
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Takers Count</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Percentile Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Taken On</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Negative Score Allowed</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Standard</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Rules</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Next Test Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
-			</tr> -->
+			
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
@@ -5128,21 +5070,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<div id='interviewsconducted' style="" class="tabcontent">
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Conducted</h3><input type='text' name='interviewersearchq' id='interviewersearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewers();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>			
 			<table bgcolor='#E1F6FF' class="ty-table">
-			<!-- <tr class="th">
-			  <td align='center' nowrap style="width:200px;display:auto;"><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
-			  <td align='center' nowrap style="width:100px;display:auto;"><font size=-1 style='font-weight:bold;'>Language</font></td>
-			  <td align='center' nowrap style="width:190px;display:auto;"><font size=-1 style='font-weight:bold;'>Create Date</font></td>
-			  <td align='center' nowrap style="width:190px;display:auto;"><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Schedules</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
-			</tr> -->
+			
 			<tr class="th">
 			  <td align='center' nowrap style="width:200px;display:auto;"><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Id</font></td>
@@ -5201,24 +5129,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<span style='padding-left:10px;padding-right:10px;padding-bottom:8px;' class='form-group autocomplete'><h3 class="blue">Interviews Attended</h3><input type='text' name='intervieweesearchq' id='intervieweesearchq' class='form-input' style='width:500px;height:40px;padding-right:10px;padding-bottom:8px;border-radius:5px;border-color:#5bc2c2;' value='' placeholder='Interview name' maxlength='100'>&nbsp;&nbsp;<a href='#/' onclick='javascript:searchinterviewees();' class='btn btn-testyard1' style='padding-left:10px;padding-right:10px;padding-bottom:8px;height:40px;width:100px;vertical-align:top;'>Search</a></span><br/><br/>
 			
 			<table bgcolor='#E1F6FF' class="ty-table">
-			<!-- <tr class="th">
-			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Medium</font></td>
-			  <td align='center' nowrap style="width:150px;display:auto;"><font size=-1 style='font-weight:bold;'>Language</font></td>
-			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Create Date</font></td>
-			  <td align='center' nowrap style='width:190px;display:auto;'><font size=-1 style='font-weight:bold;'>Publish Date</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Status</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Score</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Max Duration</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Real time</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Scheduled Time</font></td>
- 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Actual Start Time</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Time Taken</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interviewer Name</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview URL</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Post on LinkedIn</font></td>
-			</tr> -->
+			
 			<tr class="th">
 			  <td align='center' nowrap style='width:200px;display:auto;'><font size=-1 style='font-weight:bold;'>Interview Title</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Interview Topic</font></td>
