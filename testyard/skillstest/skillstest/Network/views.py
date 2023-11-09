@@ -3169,7 +3169,7 @@ def sendconnectionrequest(request):
     connqueryset = Connection.objects.filter(focususer=targetuser, connectedto=userobj, deleted=False) # Case #2
     if connqueryset.__len__() > 0:
         message = error_msg('1108')
-        message = message%focususer.displayname
+        message = message%targetuser.displayname
         response = HttpResponse(message)
         return response
     conninviteqset = ConnectionInvitation.objects.filter(fromuser=userobj, touser=targetuser, invitationstatus='open')
