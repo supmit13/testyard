@@ -471,7 +471,7 @@ def creategroup(request):
     subscriptionperiod = 0
     try:
     	if ispaid == 1:
-	    bankname = request.POST['bankname']
+	    bankname = request.POST['bankname'] # This is the payment processor field.
 	    branchname = request.POST['branchname']
 	    ifsccode = request.POST['ifsccode']
 	    acctownername = request.POST['acctownername']
