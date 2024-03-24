@@ -115,7 +115,7 @@ class Test(models.Model):
     quality = models.CharField(max_length=4, choices=((k,v) for k,v in mysettings.SKILL_QUALITY.iteritems()), default='INT') # Determines the class of users the 'Test' is for.
     # Proficient/Beginner/Intermediate etc. Refer to mysettings.SKILL_QUALITY
     negativescoreallowed = models.NullBooleanField(default=False, null=True, blank=False)
-    proctored = models.BooleanField(default=False, null=True, blank=True)
+    proctored = models.NullBooleanField(default=False, null=True, blank=True)
 
     class Meta:
         verbose_name = "Tests Table"
@@ -376,6 +376,7 @@ class ProctorInfo(models.Model):
         verbose_name = "Proctor Info Table"
         db_table = 'Tests_proctorinfo'
 
+
 """
 Model to store failures in sending test invitation emails
 """
@@ -498,7 +499,39 @@ class InterviewCandidates(models.Model):
     def __unicode__(self):
         return "InterviewCandidates: %s"%(self.emailaddr)
 
+"""
+# Model to define and track skill heads on which an interviewee is to be evaluated.
+class InterviewSkills(models.Model):
+    interview = models.ForeignKey(Interview, related_name="+", null=False, blank=False)
+    skillname = models.CharField(max_length=255, null=False, blank=False)
+    weightage = models.IntegerField(default=100, null=False, blank=False)
+    dateadded = models.DateTimeField(auto_now_add=True)
+    lastmodified = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Interview Skill Heads Table"
+        db_table = 'Tests_interviewskills'
 
+    def __unicode__(self):
+        return "Interview Skill: %s - %s"%(self.interview.title, self.skillname)
+
+
+# Model to track candidates on interview skills
+class InterviewCandidateSkill(models.Model):
+    skill = models.ForeignKey(InterviewSkills, null=False, blank=False)
+    candidate = models.ForeignKey(InterviewCandidates, null=False, blank=False)
+    skillscore = models.FloatField(default=-1.0)
+    comment = models.TextField()
+    dateadded = models.DateTimeField(auto_now_add=True)
+    lastmodified = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Interview Skill Score Table"
+        db_table = 'Tests_interviewcandidateskills'
+
+    def __unicode__(self):
+        return "Interview Skill Score: %s - %s - %s (%s/%s)"%(self.candidate.emailaddr, self.skill.interview.title, self.skill.skillname, self.skillscore, self.skill.weightage)
+"""
 
 class PostLinkedin(models.Model):
     test = models.ForeignKey(Test, related_name="+", null=True, blank=True)
