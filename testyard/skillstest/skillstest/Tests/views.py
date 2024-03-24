@@ -8167,6 +8167,8 @@ def displayinterviewschedulescreen(request):
     intdatadict['interviewid'] = interviewobj.id
     interviewcandidatesqset = InterviewCandidates.objects.filter(interview=interviewobj).order_by('-scheduledtime')
     intdatadict['existing_interviews'] = []
+    curdatetime_dt = datetime.datetime.now()
+    curdatetime = curdatetime_dt.strftime("%Y-%m-%d %H:%M:%S")
     for intcandidate in interviewcandidatesqset:
         starttime = intcandidate.actualstarttime
         schedulestatus = False
@@ -8174,7 +8176,7 @@ def displayinterviewschedulescreen(request):
             schedulestatus = True
         candidateemailslist = intcandidate.emailaddr.split(",")
         candidateemailscount = candidateemailslist.__len__()
-        d = {'email' : intcandidate.emailaddr, 'scheduled' : intcandidate.scheduledtime.strftime("%Y-%m-%d %H:%M:%S"), 'schedulestatus' : schedulestatus, 'intcandidateid' : intcandidate.id, 'interviewid' : interviewobj.id, 'emailscount' : candidateemailscount}
+        d = {'email' : intcandidate.emailaddr, 'scheduled' : intcandidate.scheduledtime.strftime("%Y-%m-%d %H:%M:%S"), 'schedulestatus' : schedulestatus, 'intcandidateid' : intcandidate.id, 'interviewid' : interviewobj.id, 'emailscount' : candidateemailscount, 'curdatetime' : curdatetime}
         intdatadict['existing_interviews'].append(d)
     tmpl = get_template("tests/schedule_interview.html")
     intdatadict.update(csrf(request))

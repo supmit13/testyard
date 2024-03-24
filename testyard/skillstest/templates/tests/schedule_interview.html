@@ -15,7 +15,7 @@
     <td nowrap style="color:#0000aa;font-size:small;text-align:center;">{{forloop.counter}}</td>
     <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">
     {% if intsched.schedulestatus %}
-    <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;'>
+    <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' onchange='javascript:refreshschedulebuttonstate({{intsched.intcandidateid}});'>
     {% else %}
     <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' disabled>
     {% endif %}
@@ -27,7 +27,13 @@
     {% endif %}
     {% if intsched.schedulestatus %}
     <td nowrap style="font-weight:bold;color:#aa0000;font-size:small;text-align:left;width:100px;padding-left:5px;padding-right:5px;">Not Conducted</td>
-    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;"><input type='button' name='btnreschedule_{{intsched.intcandidateid}}' id='btnreschedule_{{intsched.intcandidateid}}' class='btn btn-testyard1' value="Save Schedule" style="width:140px;" onclick="javascript:rescheduleinterview({{intsched.intcandidateid}}, {{intsched.interviewid}});"><div id='reschedwait_{{intsched.intcandidateid}}' style='display:none;'></div></td>
+    <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;">
+    {% if intsched.scheduled < intsched.curdatetime %}
+    <input type='button' name='btnreschedule_{{intsched.intcandidateid}}' id='btnreschedule_{{intsched.intcandidateid}}' class='btn btn-testyard1' value="Save Schedule" style="width:140px;" onclick="javascript:rescheduleinterview({{intsched.intcandidateid}}, {{intsched.interviewid}});" disabled>
+    {% else %}
+    <input type='button' name='btnreschedule_{{intsched.intcandidateid}}' id='btnreschedule_{{intsched.intcandidateid}}' class='btn btn-testyard1' value="Save Schedule" style="width:140px;" onclick="javascript:rescheduleinterview({{intsched.intcandidateid}}, {{intsched.interviewid}});">
+    {% endif %}
+    <div id='reschedwait_{{intsched.intcandidateid}}' style='display:none;'></div></td>
     {% else %}
     <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:100px;padding-left:5px;padding-right:5px;">Conducted</td>
     <td style="font-weight:bold;color:#0000aa;font-size:small;text-align:center;width:150px;padding-left:5px;padding-right:5px;">&nbsp;</td>

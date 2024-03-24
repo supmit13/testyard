@@ -4618,6 +4618,18 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   	    return false;
 	}
 	
+	function refreshschedulebuttonstate(candidateid){
+	  curdate = new Date();
+	  scheddatefield = document.getElementById('resched_datetime_' + candidateid);
+	  scheddatevalue = new Date(scheddatefield.value);
+	  if(scheddatevalue > curdate){ // Activate the schedule button
+	    document.getElementById('btnreschedule_'+candidateid).disabled = false;
+	  }
+	  else{
+	    document.getElementById('btnreschedule_'+candidateid).disabled = true;
+	  }
+	}
+	
 	function closeschedscreen(){
 	  closedivbyid("createtestdiv");
 	}
