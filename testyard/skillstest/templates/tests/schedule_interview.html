@@ -15,7 +15,7 @@
     <td nowrap style="color:#0000aa;font-size:small;text-align:center;">{{forloop.counter}}</td>
     <td nowrap style="font-weight:bold;color:#0000aa;font-size:small;text-align:left;width:200px;padding-left:5px;padding-right:5px;">
     {% if intsched.schedulestatus %}
-    <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' onchange='javascript:refreshschedulebuttonstate({{intsched.intcandidateid}});'>
+    <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' onchange='javascript:refreshschedulebuttonstate({{intsched.intcandidateid}});' onblur='javascript:refreshschedulebuttonstate({{intsched.intcandidateid}});'>
     {% else %}
     <input type='datetime-local' name='resched_datetime_{{intsched.intcandidateid}}' id='resched_datetime_{{intsched.intcandidateid}}' value='{{intsched.scheduled}}' class='form-control' style='width:250px;' disabled>
     {% endif %}

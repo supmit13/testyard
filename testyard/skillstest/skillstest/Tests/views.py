@@ -216,7 +216,7 @@ def get_user_tests(request):
     if test_created_count <= mysettings.NEW_USER_FREE_TESTS_COUNT: # Also add condition to check user's 'plan' (to be done later)
         createlink = "<a href='#' onClick='javascript:showcreatetestform(&quot;%s&quot;);loaddatepicker();'>Create New Test</a>"%userobj.id
         uploadlink = "<a href='#' onClick='javascript:showuploadtestform(&quot;%s&quot;);loaddatepicker();'>Upload New Test</a>"%userobj.id
-        interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Start Video Call</a>"%(userobj.id)
+        interviewlink = "<a href='#/' onClick='javascript:showcreateinterviewform(&quot;%s&quot;);loaddatepicker();'>Video Calls</a>"%(userobj.id)
         for ttcode in mysettings.TEST_TYPES.keys():
             ttcodeval = ttcode.replace(" ", "__")
             if ttcode == 'COMP':
