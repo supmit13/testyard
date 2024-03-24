@@ -8351,7 +8351,7 @@ def savenewinterviewschedule(request):
                      Good Luck!<br/>
                      The TestYard Interview Team.</body></html>
     """%(interviewobj.title, userobj.displayname, newsched_datetime, interviewlinkurlwithparams, skillutils.gethosturl(request), mysettings.ATTEND_INTERVIEW_URL + "?lid=" +  interviewlinkid + "&hash=" + hashtoken + "&attend=" + ",".join(emailidslist), skillutils.gethosturl(request), urllib.quote_plus(str(interviewlinkid)))
-        subject = "TestYard Interview Invitation from '%'"%userobj.emailid
+        subject = "TestYard Interview Invitation from '%s'"%userobj.emailid
         fromaddr = userobj.emailid
         # Send email
         for targetemail in emailidslist:
