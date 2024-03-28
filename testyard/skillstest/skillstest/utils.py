@@ -18,6 +18,7 @@ import MySQLdb
 from lxml import etree
 from zipfile import ZipFile
 import io
+from captcha.image import ImageCaptcha
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -30,7 +31,7 @@ from django.core.mail import send_mail
 from skillstest.Auth.models import User, Session
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
-from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse, PostLinkedin
+from skillstest.Tests.models import Test, Challenge, Topic, Subtopic, Evaluator, UserTest, UserResponse, PostLinkedin, Captcha
 from skillstest.Subscription.models import Plan, UserPlan, Transaction, Coupon, UserCoupon
 from skillstest.Network.models import ExchangeRates, OwnerBankAccount
 
@@ -1451,4 +1452,16 @@ def generate_random_text():
         ctr += 1
     return sep.join(selwords)
     
+
+def generate_captcha(w=280, h=90):
+    captchatext = generate_random_text()
+    image = ImageCaptcha(width = w, height = h)
+    imagedata = image.generate(captchatext)
+    captcha = Captcha()
+    captcha.captchatext = captchatext
+    captchakey = generate_random_string()
+    captcha.captchakey = captchakey
+    captcha.save()
+    return (imagedata, captchakey)
+
 

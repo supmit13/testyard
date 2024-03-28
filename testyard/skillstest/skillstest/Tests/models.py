@@ -551,3 +551,18 @@ class PostLinkedin(models.Model):
         return "PostLinkedin: %s"%(self.postmessage)
 
 
+
+class Captcha(models.Model):
+    captchatext = models.CharField(max_length=255, null=False, blank=False)
+    captchakey = models.CharField(max_length=50, null=False, blank=False)
+    captchatime = models.DateTimeField(auto_now_add=True)
+    success = models.BooleanField(default=False) # Field to store the outcome of the challenge, for statistical purposes
+    validityperiod = models.IntegerField(default=90) # Valid for 90 seconds
+    
+    class Meta:
+        verbose_name = "Captcha Table"
+        db_table = 'Tests_captcha'
+
+    def __unicode__(self):
+        return "Captcha: %s"%(self.captchatext)
+

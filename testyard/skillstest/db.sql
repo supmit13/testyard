@@ -848,6 +848,16 @@ create table `Network_withdrawal` (
     `activitytime` DATETIME NOT NULL
 )ENGINE=Innodb;
 
+create table Tests_captcha (
+    id int NOT NULL primary key AUTO_INCREMENT,
+    captchatext varchar(255) NOT NULL,
+    captchakey varchar(50) NOT NULL,
+    captchatime DATETIME NOT NULL,
+    success BOOLEAN default FALSE,
+    validityperiod int NOT NULL DEFAULT 90
+)ENGINE=Innodb;
+
+
 
 alter table Tests_interview add column scheduledtime datetime default NULL;
 

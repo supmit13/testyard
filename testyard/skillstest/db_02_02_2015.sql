@@ -1174,7 +1174,17 @@ create table Tests_proctorinfo (
     FOREIGN KEY (test_id) REFERENCES Tests_test(id)
 );
 
-COMMIT;
+
+create table Tests_captcha (
+    id int NOT NULL primary key AUTO_INCREMENT,
+    captchatext varchar(255) NOT NULL,
+    captchakey varchar(50) NOT NULL,
+    captchatime DATETIME NOT NULL,
+    success BOOLEAN default FALSE,
+    validityperiod int NOT NULL DEFAULT 90
+)ENGINE=Innodb;
+
+COMMIT;												
 
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
