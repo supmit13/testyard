@@ -545,6 +545,11 @@ def get_user_tests(request):
     tests_user_dict['currpage_ascandidate'] = pageno_ascandidate
     tests_user_dict['currpage_asinterviewer'] = pageno_asinterviewer
     tests_user_dict['currpage_asinterviewee'] = pageno_asinterviewee
+    captchavalues = skillutils.generate_captcha()
+    imagedata = captchavalues[0]
+    captchakey = captchavalues[1]
+    base64image = base64.b64encode(imagedata)
+    tests_user_dict['captchatagset'] = '<tr><td><img src=&quot;data:image/png;base64, %s&quot;></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=%s></td></tr>'%(base64image, captchakey)
     tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
 
@@ -2858,6 +2863,11 @@ def editexistingtest(request):
     create_test_dict['createtesturl'] = skillutils.gethosturl(request) + '/' + mysettings.CREATE_TEST_URL
     create_test_dict['evalgroupslitags'] = evalgroupslitags
     #create_test_dict['datepickercode'] = "<link rel='stylesheet' type='text/css' media='all' href='static/datepick/jsDatePick_ltr.min.css' /><script type='text/javascript' src='static/datepick/jsDatePick.min.1.3.js'></script><script>new JsDatePick({ useMode:2, target:'publishdate', dateFormat:'%d-%M-%Y', limitToToday : false });  new JsDatePick({ useMode:2, target:'activedate', dateFormat:'%d-%M-%Y', limitToToday : false });</script>"
+    captchavalues = skillutils.generate_captcha()
+    imagedata = captchavalues[0]
+    captchakey = captchavalues[1]
+    base64image = base64.b64encode(imagedata)
+    create_test_dict['captchatagset'] = '<tr><td><img src=&quot;data:image/png;base64, %s&quot;></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value=%s></td></tr>'%(base64image, captchakey)
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
     cxt = Context(create_test_dict)

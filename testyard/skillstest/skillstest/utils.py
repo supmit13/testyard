@@ -18,7 +18,7 @@ import MySQLdb
 from lxml import etree
 from zipfile import ZipFile
 import io
-#from captcha.image import ImageCaptcha
+
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -1451,16 +1451,30 @@ def generate_random_text(numwords=3):
         ctr += 1
     return sep.join(selwords)
     
-"""
+
 def generate_captcha(w=280, h=90):
     captchatext = generate_random_text(1) # We need one word only.
-    image = ImageCaptcha(width = w, height = h)
-    imagedata = image.generate(captchatext)
+    captchakey = generate_random_string()
+    # Get imagedata from service 'urlshortener' url '/captcha'
+    httpheaders = { 'User-Agent' : r'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.10) Gecko/20111103 Firefox/3.6.24',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language' : 'en-us,en;q=0.5', 'Accept-Encoding' : 'gzip,deflate', 'Accept-Charset' : 'ISO-8859-1,utf-8;q=0.7,*;q=0.7', 'Keep-Alive' : '115', 'Connection' : 'keep-alive', 'content-type' : 'application/json'}
+    requesturl = mysettings.URL_SHORTENER_HOST + "/captcha"
+    requestdict = { 'captchatext' : captchatext}
+    requestdata = json.dumps(requestdict).encode("utf-8")
+    httpheaders['content-length'] = requestdata.__len__()
+    requestobj = urllib2.Request(requesturl, data=requestdata, headers=httpheaders)
+    opener = createopener()
+    responseobj = None
+    try:
+        responseobj = opener.open(requestobj)
+    except:
+        print("Error: %s"%sys.exc_info()[1].__str__())
+        return ("", captchakey)
+    #imagedata = responseobj.read()
+    imagedata = "captcha"
     captcha = Captcha()
     captcha.captchatext = captchatext
-    captchakey = generate_random_string()
     captcha.captchakey = captchakey
     captcha.save()
     return (imagedata, captchakey)
-"""
+
 
