@@ -1439,10 +1439,9 @@ def dumpascsv(username, testrecords_ascreator, testrecords_ascandidate, intervie
     return targetzipfile # Zipped archive path
 
 
-def generate_random_text():
+def generate_random_text(numwords=3):
     response = requests.get(mysettings.WORD_SITE)
     words = response.content.splitlines()
-    numwords = 3
     sep = "-"
     selwords = []
     ctr = 0
@@ -1452,9 +1451,9 @@ def generate_random_text():
         ctr += 1
     return sep.join(selwords)
     
-
+"""
 def generate_captcha(w=280, h=90):
-    captchatext = generate_random_text()
+    captchatext = generate_random_text(1) # We need one word only.
     image = ImageCaptcha(width = w, height = h)
     imagedata = image.generate(captchatext)
     captcha = Captcha()
@@ -1463,5 +1462,5 @@ def generate_captcha(w=280, h=90):
     captcha.captchakey = captchakey
     captcha.save()
     return (imagedata, captchakey)
-
+"""
 
