@@ -18,7 +18,7 @@ import MySQLdb
 from lxml import etree
 from zipfile import ZipFile
 import io
-from captcha.image import ImageCaptcha
+#from captcha.image import ImageCaptcha
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
