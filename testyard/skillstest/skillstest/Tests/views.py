@@ -51,7 +51,7 @@ import socket
 # Application specific libraries...
 from skillstest.Auth.models import User, Session, Privilege, UserPrivilege
 from skillstest.Subscription.models import Plan, UserPlan, Transaction, PlanExtensions
-from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates, PostLinkedin
+from skillstest.Tests.models import Topic, Subtopic, Evaluator, Test, UserTest, Challenge, UserResponse, WouldbeUsers, EmailFailure, Schedule, Interview, InterviewQuestions, InterviewCandidates, PostLinkedin, Captcha
 from skillstest import settings as mysettings
 from skillstest.errors import error_msg
 import skillstest.utils as skillutils
@@ -1626,8 +1626,8 @@ def create(request):
     grpname, publishdate, activedate, skilltarget, testscope,answerlanguage, \
     progenv, multimediareqd, randomsequencing, multipleattemptsallowed, \
     maxattemptscount, attemptsinterval, attemptsintervalunit, testlinkid, \
-    csrfmiddlewaretoken  = "", "", "", "", "", "", "", "", "", "", "", "", "", \
-     "", "", "", "", "", "", "", "", "", False, True, False, "", "", "", "", ""
+    csrfmiddlewaretoken, captchavalue, captchakey  = "", "", "", "", "", "", "", "", "", "", "", "", "", \
+     "", "", "", "", "", "", "", "", "", False, True, False, "", "", "", "", "", "", ""
     lastchallengectr, challengenumbersstr, passscore = "", "", "" # \
     # 'lastchallengectr' is the counter of the last challenge entered. \
     # 'challengenumbersstr' is a string consisting of all the created \
@@ -1636,6 +1636,23 @@ def create(request):
     additionalurl, timeframe, challengequality, mustrespond, challengescore, \
     challengeoptions, exist_test_id = "", "", "", "", "", "", "", "", "", "", [], None
     message, activedatemysql, publishdatemysql = "", "", ""
+    # First, get the captcha value and the captcha key and check if it  is correct
+    if request.POST.has_key('captchakey'):
+        captchakey = request.POST['captchakey']
+    if request.POST.has_key('captchavalue'):
+        captchavalue = request.POST['captchavalue']
+    try:
+        captchaobj = Captcha.objects.get(captchakey=captchakey)
+        if captchaobj is not None:
+            if captchaobj.captchatext != captchavalue:
+                message = "Error2: Captcha verification failed."
+                return HttpResponse(message)
+        else:
+            message = "Error3: Captcha verification failed."
+            return HttpResponse(message)
+    except:
+        message = "Error1: Captcha verification failed."
+        return HttpResponse(message)
     # First get the testlinkid. If its value doesn't exist in DB, then create 
     # a new test. Otherwise, simply display the challenges of the existing test
     # and allow the user to edit them.
