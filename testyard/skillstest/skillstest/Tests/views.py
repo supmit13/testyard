@@ -550,6 +550,7 @@ def get_user_tests(request):
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
     tests_user_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=' + captchakey + '></td></tr>'
+    tests_user_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "></span></div>"
     tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
 
@@ -2885,6 +2886,7 @@ def editexistingtest(request):
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
     create_test_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value='+captchakey+'></td></tr>'
+    create_test_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "></span></div>"
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
     cxt = Context(create_test_dict)
