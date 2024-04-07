@@ -549,7 +549,7 @@ def get_user_tests(request):
     imagedata = captchavalues[0]
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
-    tests_user_dict['captchatagset'] = '<tr><td><img src=&quot;data:image/png;base64, %s&quot;></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=%s></td></tr>'%(base64image, captchakey)
+    tests_user_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=' + captchakey + '></td></tr>'
     tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
 
@@ -2867,7 +2867,7 @@ def editexistingtest(request):
     imagedata = captchavalues[0]
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
-    create_test_dict['captchatagset'] = '<tr><td><img src=&quot;data:image/png;base64,%s&quot;></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value=%s></td></tr>'%(base64image, captchakey)
+    create_test_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value='+captchakey+'></td></tr>'
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
     cxt = Context(create_test_dict)
