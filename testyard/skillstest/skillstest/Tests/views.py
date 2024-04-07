@@ -7659,7 +7659,24 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime, maxinterviewerscount, intervieweremails = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None, 1, ""
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime, maxinterviewerscount, intervieweremails, captchakey, captchavalue = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None, 1, "", "", ""
+    # First, check if captcha has been matched
+    if request.POST.has_key('captchakey'):
+        captchakey = request.POST['captchakey']
+    if request.POST.has_key('captchavalue'):
+        captchavalue = request.POST['captchavalue']
+    try:
+        captchaobj = Captcha.objects.get(captchakey=captchakey)
+        if captchaobj is not None:
+            if captchaobj.captchatext != captchavalue:
+                message = "Error2: Captcha verification failed."
+                return HttpResponse(message)
+        else:
+            message = "Error3: Captcha verification failed."
+            return HttpResponse(message)
+    except:
+        message = "Error1: Captcha verification failed."
+        return HttpResponse(message)
     if request.POST.has_key('interviewtitle'):
         interviewtitle = request.POST['interviewtitle']
     # Check to see if an interview with the same title exists in the current user's list.
