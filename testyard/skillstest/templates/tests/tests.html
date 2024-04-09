@@ -1374,6 +1374,21 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		    window.location.reload();
 		  }
 		}
+		
+		function captchavaliditytimer(){
+		  var timeleft = {{captcha_validity_period}};
+		  var captchaTimer = setInterval(function(){
+		    if(timeleft <= 0){
+		      clearInterval(captchaTimer);
+		      document.getElementById("countdown").innerHTML = "Captcha Expired";
+		    }
+		    else {
+		      document.getElementById("countdown").innerHTML = timeleft + " seconds remaining";
+		    }
+		    timeleft -= 1;
+		  }, 1000);
+		}
+		
 
 		function showcreatetestform(uid){
 		  // Populate the div (id='createtestdiv') with the form
