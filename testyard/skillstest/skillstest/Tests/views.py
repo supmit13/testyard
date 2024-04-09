@@ -549,8 +549,8 @@ def get_user_tests(request):
     imagedata = captchavalues[0]
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
-    tests_user_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=' + captchakey + '></td></tr>'
-    tests_user_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "></span></div>"
+    tests_user_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=' + captchakey + '><input type=hidden name=st id=st value=##ST##></td></tr>'
+    tests_user_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "><input type=hidden name=st id=st value=##ST##></span></div>"
     tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
 
@@ -1627,8 +1627,8 @@ def create(request):
     grpname, publishdate, activedate, skilltarget, testscope,answerlanguage, \
     progenv, multimediareqd, randomsequencing, multipleattemptsallowed, \
     maxattemptscount, attemptsinterval, attemptsintervalunit, testlinkid, \
-    csrfmiddlewaretoken, captchavalue, captchakey  = "", "", "", "", "", "", "", "", "", "", "", "", "", \
-     "", "", "", "", "", "", "", "", "", False, True, False, "", "", "", "", "", "", ""
+    csrfmiddlewaretoken, captchavalue, captchakey, st = "", "", "", "", "", "", "", "", "", "", "", "", "", \
+     "", "", "", "", "", "", "", "", "", False, True, False, "", "", "", "", "", "", "", 0
     lastchallengectr, challengenumbersstr, passscore = "", "", "" # \
     # 'lastchallengectr' is the counter of the last challenge entered. \
     # 'challengenumbersstr' is a string consisting of all the created \
@@ -1642,6 +1642,15 @@ def create(request):
         captchakey = request.POST['captchakey']
     if request.POST.has_key('captchavalue'):
         captchavalue = request.POST['captchavalue']
+    curtime = int(time.time())
+    if request.POST.has_key('st'):
+        try:
+            st = int(request.POST['st'])
+        except:
+            st = 0
+    if curtime - st > mysettings.CAPTCHA_VALIDITY_PERIOD:
+        message = "Error: Captcha expired while attempting to negotiate challenge. Please try again."
+        return HttpResponse(message)
     try:
         captchaobj = Captcha.objects.get(captchakey=captchakey)
         if captchaobj is not None:
@@ -2885,8 +2894,8 @@ def editexistingtest(request):
     imagedata = captchavalues[0]
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
-    create_test_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value='+captchakey+'></td></tr>'
-    create_test_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "></span></div>"
+    create_test_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value='+captchakey+'><input type=hidden name=st id=st value=##ST##></td></tr>'
+    create_test_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "><input type=hidden name=st id=st value=##ST##></span></div>"
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
     cxt = Context(create_test_dict)
@@ -7659,12 +7668,21 @@ def createinterview(request):
         return response
     sessionobj = sessionqset[0]
     userobj = sessionobj.user
-    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime, maxinterviewerscount, intervieweremails, captchakey, captchavalue = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None, 1, "", "", ""
+    interviewtitle, interviewtopic, totalscore, maxresponsestarttime, numchallenges, interviewduration, medium, publishdate, language, realtime, skilltarget, interviewscope, randomsequencing, interviewlinkid, introbtntext, introfilename, emailinvitationtarget, scheduledatetime, chkrightnow, interviewdatetime, maxinterviewerscount, intervieweremails, captchakey, captchavalue, st = "", "", '100', '300', '20', '3600', "audiovisual", "", "English-US", 1, "","", 0, "", "Add Intro", "intro.wav", "", "", 0, None, 1, "", "", "", 0
     # First, check if captcha has been matched
     if request.POST.has_key('captchakey'):
         captchakey = request.POST['captchakey']
     if request.POST.has_key('captchavalue'):
         captchavalue = request.POST['captchavalue']
+    curtime = int(time.time())
+    if request.POST.has_key('st'):
+        try:
+            st = int(request.POST['st'])
+        except:
+            st = 0
+    if curtime - st > mysettings.CAPTCHA_VALIDITY_PERIOD:
+        message = "Error: Captcha expired while attempting to negotiate challenge. Please try again."
+        return HttpResponse(message)
     try:
         captchaobj = Captcha.objects.get(captchakey=captchakey)
         if captchaobj is not None:
