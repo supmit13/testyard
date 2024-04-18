@@ -1453,14 +1453,14 @@ def generate_random_text(numwords=3):
     return sep.join(selwords)
     
 
-def generate_captcha(request):
+def generate_captcha(request, w=280, h=90):
     captchatext = generate_random_text(1) # We need one word only.
     captchakey = generate_random_string()
     # Get imagedata from service 'urlshortener' url '/captcha'
     httpheaders = { 'User-Agent' : r'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.10) Gecko/20111103 Firefox/3.6.24',  'Accept' : 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8', 'Accept-Language' : 'en-us,en;q=0.5', 'Accept-Encoding' : 'gzip,deflate', 'Accept-Charset' : 'ISO-8859-1,utf-8;q=0.7,*;q=0.7', 'Keep-Alive' : '115', 'Connection' : 'keep-alive'}
     requesturl = mysettings.CAPTCHA_SERVER_HOST + "/captcha/"
     csrf = get_token(request)
-    requestdata = 'captchatext=' + captchatext + "&csrfmiddlewaretoken=" + csrf
+    requestdata = 'captchatext=' + captchatext + "&csrfmiddlewaretoken=" + csrf + "&width=" + str(w) + "&height=" + str(h)
     httpheaders['Content-Type'] = 'application/x-www-form-urlencoded'
     httpheaders['Cookie'] = "csrftoken=%s;"%csrf
     httpheaders['X-CSRFToken'] = csrf

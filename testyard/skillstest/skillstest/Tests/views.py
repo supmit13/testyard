@@ -545,12 +545,12 @@ def get_user_tests(request):
     tests_user_dict['currpage_ascandidate'] = pageno_ascandidate
     tests_user_dict['currpage_asinterviewer'] = pageno_asinterviewer
     tests_user_dict['currpage_asinterviewee'] = pageno_asinterviewee
-    captchavalues = skillutils.generate_captcha(request)
+    captchavalues = skillutils.generate_captcha(request, 280, 90)
     imagedata = captchavalues[0]
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
-    tests_user_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=' + captchakey + '><input type=hidden name=st id=st value=##ST##><span id=countdown></span></td></tr>'
-    tests_user_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "><input type=hidden name=st id=st value=##ST##><div id=countdown></div></span></div>"
+    tests_user_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=text name=captchavalue id=captchavalue placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=captchakey id=captchakey value=' + captchakey + '><input type=hidden name=st id=st value=##ST##><span id=countdown></span></td></tr>'
+    tests_user_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=text name=captchavalue id=captchavalue placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=captchakey id=captchakey value=" + captchakey + "><input type=hidden name=st id=st value=##ST##><div id=countdown></div></span></div>"
     tests_user_dict['captcha_validity_period'] = mysettings.CAPTCHA_VALIDITY_PERIOD
     tests_user_dict['testspageurl'] = skillutils.gethosturl(request) + "/" + mysettings.MANAGE_TEST_URL 
     return  tests_user_dict
@@ -2891,12 +2891,12 @@ def editexistingtest(request):
     create_test_dict['createtesturl'] = skillutils.gethosturl(request) + '/' + mysettings.CREATE_TEST_URL
     create_test_dict['evalgroupslitags'] = evalgroupslitags
     #create_test_dict['datepickercode'] = "<link rel='stylesheet' type='text/css' media='all' href='static/datepick/jsDatePick_ltr.min.css' /><script type='text/javascript' src='static/datepick/jsDatePick.min.1.3.js'></script><script>new JsDatePick({ useMode:2, target:'publishdate', dateFormat:'%d-%M-%Y', limitToToday : false });  new JsDatePick({ useMode:2, target:'activedate', dateFormat:'%d-%M-%Y', limitToToday : false });</script>"
-    captchavalues = skillutils.generate_captcha(request)
+    captchavalues = skillutils.generate_captcha(request, 280, 90)
     imagedata = captchavalues[0]
     captchakey = captchavalues[1]
     base64image = base64.b64encode(imagedata)
-    create_test_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=&quot;text&quot; name=&quot;captchavalue&quot;  id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot;  value='+captchakey+'><input type=hidden name=st id=st value=##ST##><span id=countdown></span></td></tr>'
-    create_test_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=&quot;text&quot; name=&quot;captchavalue&quot; id=&quot;captchavalue&quot; placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=&quot;captchakey&quot; id=&quot;captchakey&quot; value=" + captchakey + "><input type=hidden name=st id=st value=##ST##><div id=countdown></div></span></div>"
+    create_test_dict['captchatagset'] = '<tr><td><img src=data:image/png;base64,' + base64image + '></td><td colspan=2><input type=text name=captchavalue  id=captchavalue placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=captchakey id=captchakey  value='+captchakey+'><input type=hidden name=st id=st value=##ST##><span id=countdown></span></td></tr>'
+    create_test_dict['captchatagsetint'] = "<div class=&quot;row&quot; style=&quot;padding-left:5%;padding-right:5%;&quot;><span class=&quot;form-group col-sm&quot;><img src=data:image/png;base64," + base64image + "></span><span class=&quot;form-group col-sm&quot;><input type=text name=captchavalue id=captchavalue placeholder=&quot;Enter_Captcha_Text&quot;><input type=hidden name=captchakey id=captchakey value=" + captchakey + "><input type=hidden name=st id=st value=##ST##><div id=countdown></div></span></div>"
     create_test_dict['captcha_validity_period'] = mysettings.CAPTCHA_VALIDITY_PERIOD
     tmpl = get_template("tests/create_test_form.html")
     create_test_dict.update(csrf(request))
