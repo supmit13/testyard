@@ -4655,6 +4655,37 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 	  closedivbyid("createtestdiv");
 	}
 	
+	
+	function cancelinterview(intcandidateid, interviewid){
+	  yesno = confirm("Please confirm that you would like to cancel this schedule. Please note, that once you cancel, you will not be able to change this schedule anymore. This is an irreversible change.");
+	  if(!yesno){
+	    return(false);
+	  }
+	  var xmlhttp;
+	  csrf = document.frmintschedule.csrfmiddlewaretoken.value;
+	  postdata = "interviewid=" + interviewid + "&intcandidateid=" + intcandidateid + "&csrfmiddlewaretoken=" + csrf;
+	  if (window.XMLHttpRequest){
+    	    xmlhttp=new XMLHttpRequest();
+  	  }
+  	  else{
+    	    xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
+  	  }
+  	  xmlhttp.onreadystatechange = function(){
+  	    if(xmlhttp.readyState == 4 && xmlhttp.status==200){
+  	      waitdiv.innerHTML = "";
+  	      waitdiv.style.display = "none";
+  	      alert(xmlhttp.responseText);
+  	      //closedivbyid("createtestdiv");
+  	      refreshschedulebuttonstate(intcandidateid);
+  	    }
+  	  };
+  	  xmlhttp.open("POST", "{{cancelinterviewscheduleurl}}", false);
+	  xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  	  xmlhttp.send(postdata);
+  	  return false;
+	}
+	
+	
 	function rescheduleinterview(intcandidateid, interviewid){
 	  resched_datetime = document.getElementById("resched_datetime_" + intcandidateid).value;
 	  datetimepattern = new RegExp("\\d{4}\\-\\d{2}\\-\\d{2}T\\d{2}\\:\\d{2}");
