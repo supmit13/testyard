@@ -191,7 +191,7 @@ def get_user_tests(request):
     userobj = sessionobj[0].user
     testlist_ascreator = Test.objects.filter(creator=userobj).order_by('-createdate')[startctr_ascreator:endctr_ascreator]
     # Determine if the user should be shown the "Create Test" link
-    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl, addtogooglecalendarurl, showinterviewschedulescreenurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL, mysettings.GOOGLE_CALENDAR_URL, mysettings.SHOW_INTERVIEW_SCHEDULE_SCREEN_URL
+    createlink, testtypes, testrules, testtopics, skilltarget, testscope, answeringlanguage, progenv, existingtestnames, assocevalgrps, evalgroupslitags, createtesturl, addeditchallengeurl, savechangesurl, addmoreurl, clearnegativescoreurl, deletetesturl, showuserviewurl, editchallengeurl, showtestcandidatemode, sendtestinvitationurl, manageinvitationsurl, invitationactivationurl, invitationcancelurl, uploadlink, testbulkuploadurl, testevaluationurl, evaluateresponseurl, getevaluationdetailsurl, settestvisibilityurl, getcanvasurl, savedrawingurl, disqualifycandidateurl, copytesturl, gettestscheduleurl, activatetestbycreator, deactivatetestbycreator, interviewlink, createinterviewurl, chkintnameavailabilityurl, uploadrecordingurl, codepadexecuteurl, postonlinkedinurl, linkedinpostsessionurl, showevaluationscreen, max_interviewers_count, codeexecurl, latexkbdurl, addtogooglecalendarurl, showinterviewschedulescreenurl, cancelinterviewscheduleurl = "", "", "", "", "", "", "", "", "", "var evalgrpsdict = {};", "", mysettings.CREATE_TEST_URL, mysettings.EDIT_TEST_URL, mysettings.SAVE_CHANGES_URL, mysettings.ADD_MORE_URL, mysettings.CLEAR_NEGATIVE_SCORE_URL, mysettings.DELETE_TEST_URL, mysettings.SHOW_USER_VIEW_URL, mysettings.EDIT_CHALLENGE_URL, mysettings.SHOW_TEST_CANDIDATE_MODE_URL, mysettings.SEND_TEST_INVITATION_URL, mysettings.MANAGE_INVITATIONS_URL, mysettings.INVITATION_ACTIVATION_URL, mysettings.INVITATION_CANCEL_URL, "", mysettings.TEST_BULK_UPLOAD_URL, mysettings.TEST_EVALUATION_URL, mysettings.EVALUATE_RESPONSE_URL, mysettings.GET_CURRENT_EVALUATION_DATA_URL, mysettings.SET_VISIBILITY_URL, mysettings.GET_CANVAS_URL, mysettings.SAVE_DRAWING_URL, mysettings.DISQUALIFY_CANDIDATE_URL, mysettings.COPY_TEST_URL, mysettings.GET_TEST_SCHEDULE_URL, mysettings.ACTIVATE_TEST_BY_CREATOR, mysettings.DEACTIVATE_TEST_BY_CREATOR, "", mysettings.CREATE_INTERVIEW_URL, mysettings.CHECK_INT_NAME_AVAILABILITY_URL, mysettings.UPLOAD_RECORDING_URL, mysettings.CODEPAD_EXECUTE_URL, mysettings.POST_ON_LINKEDIN_URL, mysettings.LINKEDINPOSTSESS_URL, mysettings.SHOW_EVAL_SCREEN, mysettings.MAX_INTERVIEWERS_COUNT, mysettings.CODE_EXEC_URL, mysettings.LATEX_KEYBOARD_URL, mysettings.GOOGLE_CALENDAR_URL, mysettings.SHOW_INTERVIEW_SCHEDULE_SCREEN_URL, mysettings.CANCEL_INTERVIEW_SCHEDULE_URL
     # Check for user's subscription plan; If user is a "Business Plan" user, 
     # then we will need to provide a test and interview data download link.
     # NOTE: If the user is on a Business Plan extension, she/he/other should not
@@ -509,6 +509,7 @@ def get_user_tests(request):
     tests_user_dict['addtogooglecalendarurl'] = skillutils.gethosturl(request) + "/" + addtogooglecalendarurl
     tests_user_dict['savenewinterviewscheduleurl'] = skillutils.gethosturl(request) + "/" + mysettings.SAVE_NEW_INTERVIEW_SCHEDULE_URL
     tests_user_dict['rescheduleinterviewurl'] = skillutils.gethosturl(request) + "/" + mysettings.RESCHEDULE_INTERVIEW_URL
+    tests_user_dict['cancelinterviewscheduleurl'] = skillutils.gethosturl(request) + "/" + mysettings.CANCEL_INTERVIEW_SCHEDULE_URL
     for i in range(2, mysettings.MAX_INTERVIEWERS_COUNT + 1):
         interviewerslist.append(i)
     tests_user_dict['interviewerslist'] = interviewerslist
@@ -8231,7 +8232,7 @@ def displayinterviewschedulescreen(request):
     intdatadict['interviewtitle'] = interviewobj.title
     intdatadict['interviewer'] = interviewobj.interviewer.displayname
     intdatadict['interviewid'] = interviewobj.id
-    interviewcandidatesqset = InterviewCandidates.objects.filter(interview=interviewobj).order_by('-scheduledtime')
+    interviewcandidatesqset = InterviewCandidates.objects.filter(interview=interviewobj, cancelled=False).order_by('-scheduledtime')
     intdatadict['existing_interviews'] = []
     curdatetime_dt = datetime.datetime.now()
     curdatetime = curdatetime_dt.strftime("%Y-%m-%d %H:%M:%S")
@@ -8454,6 +8455,74 @@ def savenewinterviewschedule(request):
         if mysettings.DEBUG:
             print "sendemail failed for %s - %s\n"%(fromaddr, sys.exc_info()[1].__str__())
     message = "The interview schedule has been successfully saved and the requisite emails are being sent out."
+    response = HttpResponse(message)
+    return response
+
+
+@skillutils.is_session_valid
+@skillutils.session_location_match
+@csrf_protect
+def cancelinterviewschedule(request):
+    message = ""
+    if request.method != 'POST':
+        message = "Error: %s"%error_msg('1004')
+        response = HttpResponse(message)
+        return response
+    sesscode = request.COOKIES['sessioncode']
+    usertype = request.COOKIES['usertype']
+    sessionqset = Session.objects.filter(sessioncode=sesscode)
+    if not sessionqset or sessionqset.__len__() == 0:
+        message = "Error: %s"%error_msg('1008')
+        response = HttpResponse(message)
+        return response
+    sessionobj = sessionqset[0]
+    userobj = sessionobj.user
+    interviewid, intcandidateid = -1, -1
+    if not request.POST.has_key('interviewid'):
+        message = "Error: Required parameter interview Id missing."
+        response = HttpResponse(message)
+        return response
+    interviewid = request.POST['interviewid']
+    if interviewid.strip() == "":
+        message = "Error: Required parameter interview Id is empty."
+        response = HttpResponse(message)
+        return response
+    interviewobj = None
+    try:
+        interviewobj = Interview.objects.get(id=int(interviewid))
+    except:
+        message = "Error retrieving interview object"
+        response = HttpResponse(message)
+        return response
+    # Now we do have the requisite interview object, let's check out if all other values are valid.
+    if not request.POST.has_key('intcandidateid'):
+        message = "Error: Required parameter interview candidate Id missing."
+        response = HttpResponse(message)
+        return response
+    intcandidateid = request.POST['intcandidateid']
+    if intcandidateid.strip() == "":
+        message = "Error: Required parameter interview candidate Id is empty."
+        response = HttpResponse(message)
+        return response
+    intcandidateobj = None
+    try:
+        intcandidateobj = InterviewCandidates.objects.get(id=int(intcandidateid))
+        if intcandidateobj.interview.id != int(interviewid):
+            message = "The interview object doesn't apply to this given interview candidate"
+            response = HttpResponse(message)
+            return response
+    except:
+        message = "Error retrieving interview candidate object"
+        response = HttpResponse(message)
+        return response
+    intcandidateobj.cancelled = True
+    try:
+        intcandidateobj.save()
+    except:
+        message = "Failed to save interview schedule: %s"%sys.exc_info()[1].__str__()
+        response = HttpResponse(message)
+        return response
+    message = "Successfully cancelled Interview Schedule."
     response = HttpResponse(message)
     return response
         
