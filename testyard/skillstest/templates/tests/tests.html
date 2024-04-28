@@ -1934,6 +1934,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   		    }
   		  };
 		  xmlhttp.open("POST", '{{ manageinvitationsurl }}', true);
+		  thediv.innerHTML = "<img src='static/images/loading_small.gif'>";
                   //alert(postdata);
   		  xmlhttp.send(postdata);
 		}
@@ -3756,7 +3757,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap style='width:250px;'><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
@@ -3786,7 +3787,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			        ascandidatehtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testnm + "</font></td>";
 			    }
 			    ascandidatehtml += "<td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testsinfo[testnm][2] + "</font></td>";
-			    ascandidatehtml += "<td><font size=-1 color='#0000AA'>";
+			    ascandidatehtml += "<td style='width:250px;'><font size=-1 color='#0000AA'>";
 			    if(testsinfo[testnm][25] == 0){
 			        ascandidatehtml += "<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='0' checked onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='1'  onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testsinfo[testnm][0] + "' id='candidate_visibility_" + testsinfo[testnm][0] + "' value='2' onChange='javascript:setvisibility(\"usertest\", " + testsinfo[testnm][0] + ");'>Public";
 			    }
@@ -4317,7 +4318,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr class=\"th\">\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>\
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>\
+			  <td align='center' nowrap><font size=-1 style='font-weight:bold;width:250px;'>Visibility</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>\
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>\
@@ -4348,7 +4349,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 		                searchhtml += "<td style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>" + testname + "</font></td>";
 		            }
 		            searchhtml += "<td nowrap style='padding-left:5px;padding-right:5px;'><font size=-1 color='#0000AA'>" + testvals[3] + "</font></td>\
-		          <td nowrap><font size=-1 color='#0000AA'>";
+		          <td nowrap style='width:250px;'><font size=-1 color='#0000AA'>";
 		          if(testvals[25] == 0){
 			        searchhtml += "<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='0' checked onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='1'  onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_" + testvals[0] + "' id='candidate_visibility_" + testvals[0] + "' value='2' onChange='javascript:setvisibility(\"usertest\", " + testvals[0] + ");'>Public";
 			    }
@@ -5032,7 +5033,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			<tr class="th">
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Name</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Test Topic</font></td>
-			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Visibility</font></td>
+			  <td align='center' nowrap style="width:250px;"><font size=-1 style='font-weight:bold;'>Visibility</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>My Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Total Score</font></td>
 			  <td align='center' nowrap><font size=-1 style='font-weight:bold;'>Pass Score</font></td>
@@ -5056,8 +5057,8 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 			  <td  style='width:200px;display:auto;' nowrap><font size=-1 color='#0000AA'>{{ testnm }}</font></td>
 			  {% endif %}
 			  <td nowrap style="padding-left:5px;padding-right:5px;"><font size=-1 color='#0000AA'>{{ candidate_tests_info|dictlookup:testnm|getval:2 }}</font></td>
-			  <td><font size=-1 color='#0000AA'>
-			  {% if candidate_tests_info|dictlookup:testnm|getval:25 == 0 %}<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='0' checked onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='1'  onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Public
+			  <td style="padding-left:5px;padding-right:5px;width:250px;"><font size=-1 color='#0000AA'>
+			  {% if candidate_tests_info|dictlookup:testnm|getval:25 == 0 %}<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='0' checked onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>&nbsp;&nbsp;Private<br/><input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='1'  onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>&nbsp;&nbsp;Protected<br/><input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Public
 			  {% else %}
 			    {% if candidate_tests_info|dictlookup:testnm|getval:25 == 1 %}
 			      <input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='0' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Private&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='1' checked onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Protected&nbsp;&nbsp;<input type='radio' name='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' id='candidate_visibility_{{ candidate_tests_info|dictlookup:testnm|getval:0 }}' value='2' onChange='javascript:setvisibility("usertest", {{ candidate_tests_info|dictlookup:testnm|getval:0 }});'>Public
