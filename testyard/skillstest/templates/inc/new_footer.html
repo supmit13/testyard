@@ -1,0 +1,54 @@
+<!-- Footer starts here -->	
+      <div class="container-fluid footer" style="background-color:#707070;">
+        <div class="row contact" style="background-color:#505050;">
+          <div class="col-md-6 contact-form">
+            <h3 class="content-ct"><span class="ti-email"></span> Contact Form</h3>
+            <form class="form-horizontal" data-toggle="validator" role="form" name="frmcontactty" id="frmcontactty" method='POST'>
+              <div class="form-group">
+                <label for="name" class="col-sm-3 control-label">Name<sup>*</sup></label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" id="name" name="name" placeholder="John Doe" required>
+                  <div class="help-block with-errors pull-right"></div>
+                  <span class="form-control-feedback" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="email" class="col-sm-3 control-label">Email<sup>*</sup></label>
+                <div class="col-sm-9">
+                  <input type="email" class="form-control" id="email" name="email" placeholder="you@youremail.com" required>
+                  <div class="help-block with-errors pull-right"></div>
+                  <span class="form-control-feedback" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="message" class="col-sm-3 control-label">Your Message<sup>*</sup></label>
+                <div class="col-sm-9">
+                  <textarea id="message" name="message" class="form-control" rows="3" required></textarea>
+                  <div class="help-block with-errors pull-right"></div>
+                  <span class="form-control-feedback" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-9">
+                  <button type="button" id="btnsend" name="btnsend" class="btn btn-yellow pull-right" onclick="javascript:emailty();">Send <span class="ti-arrow-right"></span></button><p style="display:none;" id="sendingimgp"><img src="/static/images/plansnpricing/sendingemail.gif" style="width:100px;height:20px;"></p>
+                  {% csrf_token %}
+                </div>
+              </div>
+            </form>
+          </div>
+          
+        </div>
+        <div class="row footer-credit">
+          <div class="col-md-6 col-sm-6">
+            <p>Copyright &copy; 2023 TestYard - testyard.in </p>
+          </div>
+          <div class="col-md-6 col-sm-6"> 
+            <ul class="footer-menu">
+              <li><a href="{{ careers_url }}"{{ select_careers }}>Careers</a></li>
+              <li><a href="{{privacypolicy_url}}">Privacy Policy</a></li>
+              <li><a href="{{tou_url}}">Terms of Use</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Footer ends here -->
