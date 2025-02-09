@@ -5,7 +5,7 @@ from skillstest.errors import error_msg
 import os, sys, re, time, datetime
 import inspect
 
-
+"""
 class TeachSession(models.Model):
     sessionid = models.CharField(max_length=100)
     sessionname = models.CharField(max_length=255)
@@ -42,7 +42,7 @@ class SessionConsumer(models.Model):
 
     def __unicode__(self):
         return "%s - %s"%(self.teachsess.sessionname, self.consumer.displayname)
-
+"""
 
 class Institution(models.Model):
     inst_name = models.CharField(max_length=255, null=False, blank=False)
@@ -53,15 +53,32 @@ class Institution(models.Model):
 
 
 class Course(models.Model):
-    pass
+    course_name = models.CharField(max_length=255, null=False, blank=False)
+    course_inst = models.ForeignKey(Institution, null=False, blank=False, db_column='course_inst_id')
+    course_credits = models.IntegerField(default=0)
+    course_start_date = models.DateTimeField(auto_now_add=True, null=False)
+    course_end_date = models.DateTimeField(null=False, blank=False)
+    course_sessions_count = models.IntegerField(default=0)
+    course_teacher = models.ForeignKey(User, null=False, blank=False, db_column='course_teacher_id')
+    course_details = models.TextField()
 
 
 class CourseParticipant(models.Model):
-    pass
+    course = models.ForeignKey(Course, null=False, blank=False, db_column='course_id')
+    participant = models.ForeignKey(User, null=False, blank=False, db_column='participant_id')
+    join_date = models.DateTimeField(auto_now_add=True)
 
 
 class CourseMaterial(models.Model):
-    pass
+    course = models.ForeignKey(Course, null=False, blank=False, db_column='course_id')
+    material_name = models.CharField(max_length=255, null=False, blank=False)
+    material_file = models.TextField()
+    created_on = models.DateTimeField(auto_now_add=True)
+    created_by = models.ForeignKey(User, null=False, blank=False, db_column='created_by_id')
+
+
+
+
 
 
 
