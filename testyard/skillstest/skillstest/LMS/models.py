@@ -77,6 +77,27 @@ class CourseMaterial(models.Model):
     created_by = models.ForeignKey(User, null=False, blank=False, db_column='created_by_id')
 
 
+class CourseSession(models.Model):
+    session_agenda = models.CharField(max_length=255, null=False, blank=False)
+    session_course = models.ForeignKey(Course, null=False, blank=False, db_column='session_course_id')
+    session_start = models.DateTimeField(null=False)
+    session_end = models.DateTimeField(null=True)
+    video_record = models.TextField() # This could be an URL or a path
+    extra_materials = models.TextField() # This could be a comma separated list of URLs or paths
+    participants_count = models.IntegerField(default=1) # Number of participants in the session (apart from the lecturer).
+    session_conductor = models.ForeignKey(User, null=False, blank=False, db_column='session_conductor_id') # The lecturer or prof.
+    session_location = models.CharField(max_length=255, null=True, blank=True)
+    session_status = models.BooleanField(default=True) # True for "active" session, False for "completed/closed" session.
+    islivestreamed = models.BooleanField(default=False) # Whether the session is being streamed live on some URL. Default is False.
+    livestream_url = models.TextField() # URL of the livestream, if applicable.
+
+
+class CourseSessionParticipants(models.Model):
+    session = models.ForeignKey(CourseSession, null=False, blank=False, db_column='session_id')
+    participant = models.ForeignKey(User, null=False, blank=False, db_column='participant_id')
+
+
+
 
 
 
