@@ -52,9 +52,16 @@ class Institution(models.Model):
     creator = models.ForeignKey(User, null=False, blank=False, db_column='creator_id')
 
 
+class Department(models.Model):
+    dept_name = models.CharField(max_length=255, null=False, blank=False)
+    dept_inst = models.ForeignKey(Institution, null=False, blank=False, db_column='dept_inst_id')
+    dept_location = models.CharField(max_length=255, null=True, blank=True)
+
+
 class Course(models.Model):
     course_name = models.CharField(max_length=255, null=False, blank=False)
-    course_inst = models.ForeignKey(Institution, null=False, blank=False, db_column='course_inst_id')
+    course_inst = models.ForeignKey(Institution, null=False, blank=False, db_column='course_inst_id') # This is for redundancy
+    course_dept = models.ForeignKey(Department, null=False, blank=False, db_column='course_dept_id')
     course_credits = models.IntegerField(default=0)
     course_start_date = models.DateTimeField(auto_now_add=True, null=False)
     course_end_date = models.DateTimeField(null=False, blank=False)
